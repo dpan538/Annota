@@ -45,5 +45,5 @@ adaptive.mkdir(parents=True, exist_ok=True)
 ''')
 # Same outlines, cropped to their actual bounds for the library sidebar.
 wordmark = '<group android:translateX="-112" android:translateY="-420.91976">' + glyphs + '</group>'
-(drawable / 'annota_wordmark.xml').write_text(vector(800, 182.16055, wordmark, 112, 25.502477))
+(drawable / 'annota_wordmark.xml').write_text(vector(800, 182.16055, wordmark.replace('#4460CE', '#000000'), 112, 25.502477))
 print('Generated launcher and sidebar resources from approved 3B SVG.')

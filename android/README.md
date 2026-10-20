@@ -1,6 +1,6 @@
 # Annota Android development build
 
-Native Kotlin application ID: `io.github.dpan538.annota`. Minimum Android 10 / API 29, compile / target API 36. Debug version 0.1.2-dev (3). The earlier 0.1.0-dev build used a simplified functional-test interface and did not meet the approved design. This folder contains the native implementation; it does not publish GitHub Releases or change the design sources.
+Native Kotlin application ID: `io.github.dpan538.annota`. Minimum Android 10 / API 29, compile / target API 36. Debug version 0.1.3-dev (4). The earlier 0.1.0-dev build used a simplified functional-test interface and did not meet the approved design. This folder contains the native implementation; it does not publish GitHub Releases or change the design sources.
 
 ## Build
 
@@ -10,10 +10,10 @@ Install a **full JDK 17 or 21**, Android SDK platform 36 and build-tools 35.0.0.
 ./gradlew assembleDebug assembleDebugAndroidTest lintDebug
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
-adb shell am instrument -w -e class io.github.dpan538.annota.CoreTest,io.github.dpan538.annota.DesignUiTest,io.github.dpan538.annota.InputTest,io.github.dpan538.annota.UpdateTest io.github.dpan538.annota.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class io.github.dpan538.annota.CoreTest,io.github.dpan538.annota.DesignUiTest,io.github.dpan538.annota.InputTest,io.github.dpan538.annota.ReaderPolishTest,io.github.dpan538.annota.RenderLifecycleTest,io.github.dpan538.annota.SeedTest,io.github.dpan538.annota.UpdateTest io.github.dpan538.annota.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
-The two `UpdateTest` cases require a local same-signed APK built with `-PannotaVersionCode=3 -PannotaVersionName=0.1.2-update-fixture`, staged in the target application’s `cache/update-test.apk` (push to `/data/local/tmp/` then copy using `adb shell run-as io.github.dpan538.annota`). Keep the installed target at versionCode 2. Without that fixture these two tests explicitly skip; the recorded 16-test verification includes the staged fixture. Run instrumentation only on a disposable emulator because the storage tests reset its test library.
+The two `UpdateTest` cases require a local same-signed APK built with `-PannotaVersionCode=5 -PannotaVersionName=0.1.4-update-fixture`, staged in the target application's `cache/update-test.apk` (push to `/data/local/tmp/` then copy using `adb shell run-as io.github.dpan538.annota`). Keep the installed target at versionCode 4. Without the fixture these two tests explicitly skip. Run instrumentation only on a disposable emulator because storage fixtures reset its library.
 
 The checked-in wrapper pins Gradle 8.13 and verifies its distribution SHA-256. `.tooling/` holds only ignored local downloads and SDK/emulator files. No SDK, build cache or private key should be committed. `scripts/sync-assets.py` can re-copy the dictionaries from the read-only `../design/dictionary/` source. The actual database SHA-256 values are checked again at installation. The original authored five-page guide is bundled as `assets/guide.pdf`; the owner-supplied original paper is bundled as a second initial document with an independent rights notice.
 
@@ -48,7 +48,7 @@ export ANNOTA_KEYSTORE=/secure/path/annota-release.jks
 export ANNOTA_STORE_PASSWORD=...
 export ANNOTA_KEY_ALIAS=...
 export ANNOTA_KEY_PASSWORD=...
-./gradlew assembleRelease -PannotaVersionCode=3 -PannotaVersionName=0.1.2
+./gradlew assembleRelease -PannotaVersionCode=5 -PannotaVersionName=0.1.4
 python3 scripts/make-update-manifest.py app/build/outputs/apk/release/app-release.apk \
   --build-tools "$ANDROID_HOME/build-tools/35.0.0" --output annota-update.json
 ```
@@ -63,6 +63,10 @@ See `../docs/IMPLEMENTATION-STATUS.md` for actual build/test evidence, artifact 
 
 ## Onboarding and regression fixtures
 
-Current development build: `0.1.2-dev` / versionCode 3. Both seed PDFs are bundled and verified by SHA-256 and page count. They publish together in a database transaction. The previous guide-only build receives the paper once; a deleted guide is not restored. Repeated launches do not resurrect deleted documents. Paper rights are separate: see `app/src/main/assets/SAMPLE-PAPER-NOTICE.md`; redistribution clearance remains a public-release checklist item.
+Current development build: `0.1.3-dev` / versionCode 4. Both seed PDFs are bundled and verified by SHA-256 and page count. They publish together in a database transaction. Any earlier initialization marker is final, including the old guide-only development build. No sample is added back on restart or upgrade, even after removal. Paper rights are separate: see `app/src/main/assets/SAMPLE-PAPER-NOTICE.md`; redistribution clearance remains a public-release checklist item.
 
-The update tests require a same-development-key versionCode 4 / versionName `0.1.3-update-fixture` APK at the target app's `cache/update-test.apk`. Build it with Gradle property overrides, keep it outside Git and stage it with `adb shell run-as io.github.dpan538.annota ...` on the dedicated emulator. Without it, those two tests are explicitly skipped; do not report them as passed. No fixture is a published update. Test APKs reset library data and must never run on a user's tablet.
+The update tests require a same-development-key versionCode 5 / versionName `0.1.4-update-fixture` APK at the target app's `cache/update-test.apk`. Build it with Gradle property overrides, keep it outside Git and stage it with `adb shell run-as io.github.dpan538.annota ...` on the dedicated emulator. Without it, those two tests are explicitly skipped; do not report them as passed. No fixture is a published update. Test APKs reset library data and must never run on a user's tablet.
+
+## Reader design, lifecycle and memory acceptance
+
+`../docs/READER-ACCEPTANCE.md` records the genuine first-page covers, landscape guide, top-only reader controls, all-black home wordmark, lazy library metadata, heap-based bounded caches and background invalidation. `scripts/verify-reader-flow.py` is a destructive, emulator-only real UI/lifecycle/upgrade check. It requires `--reset-test-library` and a same-key higher-version local fixture. Never point it at personal data.

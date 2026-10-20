@@ -13,3 +13,5 @@ npm run logos:render
 未采用的候选已从当前项目移出；历史提交中仍可追溯早期设计。
 
 安卓派生资源：`python3 android/scripts/prepare-branding.py`。启动图标留出系统安全区；Android 系统控制遮罩形状。Android 13+ 单色图标沿用同一字形，按用户系统主题着色。母版 PNG 本身始终是圆角白底和钴蓝 t。
+
+2026-10-21：正式 Logo 保持原版钴蓝 t；首页同字形采用全黑，仅为场景适配。铅笔替换尝试已放弃。

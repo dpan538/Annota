@@ -15,6 +15,7 @@ import android.widget.*
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -30,6 +31,7 @@ class MainActivity : Activity() {
     private val lookup = Executors.newSingleThreadExecutor()
     private lateinit var root: LinearLayout
     private var reader: ReaderView? = null
+    private var pageCovers: CoverRepository? = null
     private var book: Book? = null
     private val prefs by lazy { getSharedPreferences("settings", MODE_PRIVATE) }
     private var section = "home"
@@ -107,6 +109,7 @@ class MainActivity : Activity() {
                 setBackgroundColor(colors[0])
             }
         setContentView(root)
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
         androidx.core.view.WindowCompat.getInsetsController(window, root).apply {
             isAppearanceLightStatusBars = true
             isAppearanceLightNavigationBars = true
@@ -116,12 +119,7 @@ class MainActivity : Activity() {
                 insets.getInsets(
                     WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
                 )
-            v.setPadding(
-                system.left,
-                if (book == null) 0 else system.top,
-                system.right,
-                if (book == null) 0 else system.bottom,
-            )
+            v.setPadding(system.left, if (book == null) 0 else system.top, system.right, 0)
             insets
         }
         text("正在准备本地书库…").also { root.addView(it) }
@@ -151,10 +149,49 @@ class MainActivity : Activity() {
 
     override fun onDestroy() {
         reader?.dispose()
+        pageCovers?.close()
         liveTask?.cancel()
+        io.execute { store.close() }
         io.shutdown()
         lookup.shutdown()
         super.onDestroy()
+    }
+
+    private fun trimRenderMemory(background: Boolean) {
+        reader?.trimMemory(background)
+        pageCovers?.trim(background)
+        if (::root.isInitialized) (root.getChildAt(0) as? LibraryScreen)?.trimMemory(background)
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        trimRenderMemory(level >= android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN)
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        trimRenderMemory(false)
+    }
+
+    override fun onStop() {
+        trimRenderMemory(true)
+        super.onStop()
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) updateNavigationBars()
+    }
+
+    private fun updateNavigationBars() {
+        val controller =
+            androidx.core.view.WindowCompat.getInsetsController(window, window.decorView)
+        window.navigationBarColor = if (book == null) colors[0] else 0xfff4f4f4.toInt()
+        if (book != null) {
+            controller.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            controller.hide(WindowInsetsCompat.Type.navigationBars())
+        } else controller.show(WindowInsetsCompat.Type.navigationBars())
     }
 
     override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
@@ -285,6 +322,7 @@ class MainActivity : Activity() {
         reader?.dispose()
         reader = null
         book = null
+        updateNavigationBars()
         root.removeAllViews()
         root.setPadding(0, 0, 0, 0)
         root.setBackgroundColor(colors[0])
@@ -300,7 +338,7 @@ class MainActivity : Activity() {
                 folder,
                 search,
                 pdfOnly,
-                store.books(),
+                store.libraryBooks(),
                 store.folders(),
                 pdf,
                 onAction = { action ->
@@ -350,8 +388,11 @@ class MainActivity : Activity() {
                             }
                     }
                 },
-                onBook = { if (it.trash) documentMenu(it) else open(it) },
-                onBookMenu = { documentMenu(it) },
+                onBook = {
+                    val full = store.book(it.id)
+                    if (full.trash) documentMenu(full) else open(full)
+                },
+                onBookMenu = { documentMenu(store.book(it.id)) },
                 onFolder = {
                     folder = it
                     library()
@@ -457,6 +498,7 @@ class MainActivity : Activity() {
 
     private fun showReader() {
         val b = book ?: return
+        updateNavigationBars()
         root.requestApplyInsets()
         val old = reader
         val oldTool = old?.tool ?: "hand"
@@ -717,58 +759,66 @@ class MainActivity : Activity() {
 
     private fun pages() {
         val b = book ?: return
-        val scroll = ScrollView(this)
-        val list = column()
-        scroll.addView(list)
+        val covers = CoverRepository(this, pdf)
+        pageCovers?.close()
+        pageCovers = covers
+        val list = ListView(this)
         val dialog =
             AlertDialog.Builder(this)
                 .setTitle(tr("页面", "Pages"))
-                .setView(scroll)
+                .setView(list)
                 .setNegativeButton(tr("关闭", "Close"), null)
                 .create()
-        b.pages.forEachIndexed { i, p ->
-            val row = row()
-            val image = ImageView(this)
-            row.addView(image, LinearLayout.LayoutParams(dp(90), dp(110)))
-            row.addView(text("${i+1}", 17f))
-            row.setOnClickListener {
-                b.current = i
-                activePage = i
+        list.addFooterView(
+            button(tr("＋ 新增纸页", "＋ Add page")) {
+                dialog.dismiss()
+                addPage()
+            }
+        )
+        list.adapter =
+            object : BaseAdapter() {
+                override fun getCount() = b.pages.size
+
+                override fun getItem(position: Int) = b.pages[position]
+
+                override fun getItemId(position: Int) = position.toLong()
+
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View =
+                    row().apply {
+                        contentDescription = "${tr("页面", "Page")} ${position + 1}"
+                        addView(
+                            DocumentCoverView(
+                                this@MainActivity,
+                                b.copy(pages = mutableListOf(b.pages[position])),
+                                covers,
+                            ),
+                            LinearLayout.LayoutParams(dp(110), dp(116)),
+                        )
+                        addView(text("${position + 1}", 17f))
+                    }
+            }
+        list.setOnItemClickListener { _, _, position, _ ->
+            if (position in b.pages.indices) {
+                b.current = position
+                activePage = position
                 store.metadata(b)
                 reader?.fit()
                 dialog.dismiss()
             }
-            row.setOnLongClickListener {
-                dialog.dismiss()
-                pageMenu(i)
-                true
-            }
-            list.addView(row)
-            io.execute {
-                try {
-                    val bm = pdf.render(b, p, 250)
-                    runOnUiThread {
-                        image.setImageBitmap(bm)
-                        image.rotation = p.rotation.toFloat()
-                    }
-                } catch (_: Throwable) {}
-            }
         }
-        list.addView(
-            button(tr("＋ 新增纸页", "＋ Add page")) {
+        list.setOnItemLongClickListener { _, _, position, _ ->
+            if (position in b.pages.indices) {
                 dialog.dismiss()
-                choose("Paper", listOf("空白 / Blank", "点阵 / Dots", "格子 / Grid", "横线 / Lined")) { i ->
-                    b.pages.add(
-                        b.current + 1,
-                        Sheet(style = listOf("blank", "dots", "grid", "lined")[i]),
-                    )
-                    b.current++
-                    store.commit(b)
-                    reader?.refresh()
-                }
+                pageMenu(position)
             }
-        )
+            true
+        }
+        dialog.setOnDismissListener {
+            covers.close()
+            if (pageCovers === covers) pageCovers = null
+        }
         dialog.show()
+        list.setSelection(b.current)
     }
 
     private fun addPage() {
@@ -1825,6 +1875,10 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+        reader?.resumeMemory()
+        pageCovers?.resume()
+        if (::root.isInitialized) (root.getChildAt(0) as? LibraryScreen)?.resumeMemory()
+        updateNavigationBars()
         if (
             updateApk?.exists() == true &&
                 packageManager.canRequestPackageInstalls() &&

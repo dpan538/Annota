@@ -1,0 +1,27 @@
+{
+  "device": "API36 ARM64 dedicated emulator",
+  "network": "airplane mode",
+  "steps": [
+    "Offline fresh launch: exactly the two real PDFs",
+    "Real UI: create grid/black note and draw a committed stroke",
+    "Home/background/trim/resume: saved ink and paper remain intact",
+    "Force-stop and cold reopen: identical saved document state",
+    "System SAF export: a real PDF was saved outside the app",
+    "Real UI: remove both initial documents to Trash",
+    "Actual same-signature upgrade: deleted samples stay removed; no duplicate or lost note",
+    "Emulator reboot: ink, template, background and deleted-sample state persist"
+  ],
+  "foregroundPssKiB": 135094,
+  "manualTrimRequest": "Android rejected manual level due to current process state; Activity.onStop release checked separately",
+  "backgroundPssKiB": 135496,
+  "export": {
+    "file": "reader-polish-export.pdf",
+    "bytes": 106880,
+    "sha256": "972ba952674095e8a006c3779be8430b91f98cf87200ed6dea5a878a4bb0100d"
+  },
+  "noteStateSha256": "b26e65e4cfc90ed305d6fdf39a00bd061462055d4e21a43c59c0b19a87f99391",
+  "initialDocumentsResurrected": false,
+  "passed": true,
+  "targetApkSha256": "9698e3375404ab42745231af151edcce67a5bb0dad25f7f60ecb4505f809c174",
+  "upgradeFixtureSha256": "55b082f635d688919938e45be48c0c043d6497e41e987b0a9e3c9d0f005a97fa"
+}

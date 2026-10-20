@@ -10,7 +10,6 @@ import android.widget.*
 import androidx.core.graphics.PathParser
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.Executors
 import kotlin.math.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -254,8 +253,7 @@ class LibraryScreen(
     val onQuery: (String) -> Unit,
     val customBody: ((LibraryScreen, FrameLayout, Float) -> Float)? = null,
 ) : DesignScreen(context, theme, buttonSize, english) {
-    private val workers = Executors.newFixedThreadPool(2)
-    private var active = true
+    private val covers = CoverRepository(context, pdf)
     private var searchText = query
     var searchVisible = false
     private lateinit var main: FrameLayout
@@ -267,8 +265,7 @@ class LibraryScreen(
         get() = buttonSize.toFloat() + if (portrait) 8f else 0f
 
     override fun onDetachedFromWindow() {
-        active = false
-        workers.shutdownNow()
+        covers.close()
         super.onDetachedFromWindow()
     }
 
@@ -702,25 +699,7 @@ class LibraryScreen(
                     clipToOutline = true
                 }
             box(card, thumbnail, 0f, 0f, cw, 182f)
-            if (b.id == "guide") guideCover(thumbnail, cw)
-            else {
-                val p = b.pages.first()
-                val ratio = p.w / p.h
-                val ph = min(150f, 132f / ratio)
-                val pw = ph * ratio
-                val image =
-                    ImageView(context).apply {
-                        scaleType = ImageView.ScaleType.FIT_CENTER
-                        rotation = if (p.source < 0) 1f else -2f
-                    }
-                box(thumbnail, image, (cw - pw) / 2, (182 - ph) / 2, pw, ph)
-                workers.execute {
-                    try {
-                        val bm = pdf.render(b, p, 400)
-                        post { if (active) image.setImageBitmap(bm) }
-                    } catch (_: Throwable) {}
-                }
-            }
+            box(thumbnail, DocumentCoverView(context, b, covers), 0f, 0f, cw, 182f)
             box(
                 card,
                 label(
@@ -803,44 +782,20 @@ class LibraryScreen(
         )
     }
 
-    private fun guideCover(parent: FrameLayout, width: Float) {
-        val cover =
-            FrameLayout(context).apply {
-                setBackgroundColor(Color.WHITE)
-                rotation = 1f
-                elevation = 2 * unit
-            }
-        box(parent, cover, (width - 120f) / 2, 14f, 120f, 154f)
-        box(cover, View(context).apply { setBackgroundColor(palette.accent) }, 0f, 0f, 5f, 154f)
-        box(
-            cover,
-            label("ANNOTA · GUIDE", 7f, palette.accent).apply { letterSpacing = .17f },
-            17f,
-            15f,
-            90f,
-            11f,
-        )
-        box(
-            cover,
-            label("读进去，\n记下来。", 17f, 0xff242932.toInt(), 500).apply {
-                maxLines = 2
-                gravity = Gravity.TOP
-                setLineHeight(px(23.8f))
-            },
-            17f,
-            40.5f,
-            90f,
-            47.6f,
-        )
-        box(
-            cover,
-            View(context).apply { setBackgroundColor(0xffe4e7eb.toInt()) },
-            17f,
-            111f,
-            86f,
-            .6f,
-        )
-        box(cover, label("Annota 使用指南", 8f, 0xff727b87.toInt()), 17f, 119f, 90f, 14f)
+    fun trimMemory(background: Boolean) {
+        covers.trim(background)
+        invalidateCoverViews(this)
+    }
+
+    fun resumeMemory() {
+        covers.resume()
+        invalidateCoverViews(this)
+    }
+
+    private fun invalidateCoverViews(view: View) {
+        if (view is DocumentCoverView) view.invalidate()
+        if (view is ViewGroup)
+            for (i in 0 until view.childCount) invalidateCoverViews(view.getChildAt(i))
     }
 }
 

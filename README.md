@@ -7,10 +7,10 @@
 [![APK](https://img.shields.io/badge/APK-开发测试版-2f6f4e)](https://github.com/dpan538/Annota/releases)
 ![license](https://img.shields.io/badge/code-MIT-blue)
 
-<img src="android/verification/integration-library-landscape.png" width="62%" alt="主页，松间主题，横屏">
-<img src="android/verification/integration-paper.png" width="36%" alt="阅读器，松间主题，单页阅读">
+<img src="android/verification/reader-polish-library-landscape.png" width="62%" alt="主页，松间主题，横屏">
+<img src="android/verification/reader-polish-paper.png" width="36%" alt="阅读器，松间主题，单页阅读">
 
-当前为 `0.1.2-dev` 开发测试版，尚未发布正式签名 APK。日常使用不联网；只有主动检查/下载更新、提交反馈时使用应用网络功能。
+当前为 `0.1.3-dev` 开发测试版，尚未发布正式签名 APK。日常使用不联网；只有主动检查/下载更新、提交反馈时使用应用网络功能。
 
 ## 界面
 
@@ -20,9 +20,9 @@
 | 主页上方 | 新建笔记、导入文件、新建文件夹；右上角筛选、废纸篓、中英文切换 |
 | 阅读器顶部 | 左侧页面导航、中间批注工具、右侧阅读选项 |
 
-阅读区单页或相邻两页并排，缩略图侧栏按需拉出。四套外观：松间、晴昼、蓝调、原野。快速笔记有空白、点阵、格子、横线四种纸，白、灰、黑三种底色。文件长按可收藏、重命名、复制、移动、导出 PDF、移进废纸篓。
+阅读区单页或相邻两页并排，缩略图列表按需打开。书库读取真实首页封面，指南保持横版；阅读画布底部不放页码和操作条。四套外观：松间、晴昼、蓝调、原野。快速笔记有空白、点阵、格子、横线四种纸，白、灰、黑三种底色。文件长按可收藏、重命名、复制、移动、导出 PDF、移进废纸篓。
 
-首次启动预置两个文件：横版五页的使用指南，以及 11 页的 *Attention Is All You Need* 示例论文。两份 PDF 随包离线初始化，删除后不会在重启时补回。
+首次启动预置两个文件：横版五页的使用指南，以及 11 页的 *Attention Is All You Need* 示例论文。两份 PDF 随包离线初始化，删除后不会在重启或升级时补回。
 
 ## 顶栏
 
@@ -44,6 +44,7 @@
 | 词典 | 英汉、汉英各一份带索引的 SQLite 词库随包安装，SHA-256 校验后在本机只读查询，支持词形和拼写候选 |
 | 更新 | 计划通过 GitHub Releases 分发；应用内检查、下载并校验 SHA-256、签名、包名和版本，再交系统安装器；正式发布流程尚待验收 |
 | 存储 | 文件、笔迹、阅读进度、设置全在本机；同签名覆盖升级有模拟器数据保留记录，支持本地备份与合并恢复 |
+| 内存 | 首页只读封面元数据，可见封面按需渲染；页面、图片和文字缓存按设备堆预算限额，后台回收后重建 |
 
 标准笔输入和多指手势已有模拟器回归；小米真机、系统手写输入法仍待验收，专有笔身双击、轻捏和震动尚未启用。遇到问题请带上机型、手写笔型号和固件版本提 issue。
 
@@ -126,7 +127,7 @@ npm run preview:build
 | `python3 design/dictionary/build.py && python3 design/dictionary/test_lookup.py` | 词典构建与查询回归 |
 | `cd feedback-service && python3 -m unittest -v` | 反馈接收服务 |
 
-当前记录：API 36 ARM64 模拟器 19 项通过，反馈接收端 5 项通过，lint 0 errors / 51 warnings。仪器测试会重置测试书库，只对无用户数据的专用模拟器运行；两个更新校验用例需要先放入同签名 APK 夹具，未放入时会跳过。浏览器测试需先完成上面的原型构建，自动断言与截图复核共同验收。记录与剩余工作见 [实现状态](docs/IMPLEMENTATION-STATUS.md) 和 [流程审计](docs/FLOW-AUDIT.md)。
+当前记录：API 36 ARM64 模拟器 24 项通过，反馈接收端 5 项通过，lint 0 errors / 54 warnings。仪器测试会重置测试书库，只对无用户数据的专用模拟器运行；两个更新校验用例需要先放入同签名 APK 夹具，未放入时会跳过。浏览器测试需先完成上面的原型构建，自动断言与截图复核共同验收。本轮设计与持久化/内存验收见 [阅读器验收](docs/READER-ACCEPTANCE.md)。记录与剩余工作见 [实现状态](docs/IMPLEMENTATION-STATUS.md) 和 [流程审计](docs/FLOW-AUDIT.md)。
 
 ## 反馈
 

@@ -45,7 +45,7 @@ class SeedTest {
     }
 
     @Test
-    fun previousGuideOnlyInstallGetsPaperOnceWithoutRestoringDeletedGuide() {
+    fun previousInitializedInstallNeverGetsSampleDocumentsAddedByUpgrade() {
         store.writableDatabase.execSQL("INSERT INTO flags(key,value) VALUES('seed','1')")
         val existing = store.newNote("My notes", "lines", "white")
         existing.pages[0]
@@ -54,9 +54,8 @@ class SeedTest {
         store.commit(existing)
         val oldState = store.book(existing.id).state()
         store.seed()
-        assertEquals(setOf(existing.id, "attention"), store.books().map { it.id }.toSet())
+        assertEquals(setOf(existing.id), store.books().map { it.id }.toSet())
         assertEquals(oldState, store.book(existing.id).state())
-        store.writableDatabase.delete("books", "id=?", arrayOf("attention"))
         store.seed()
         assertEquals(listOf(existing.id), store.books().map { it.id })
     }

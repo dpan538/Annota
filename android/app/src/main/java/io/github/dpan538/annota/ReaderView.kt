@@ -5,7 +5,10 @@ import android.graphics.*
 import android.os.Build
 import android.util.LruCache
 import android.view.*
-import java.util.concurrent.Executors
+import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.RejectedExecutionException
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 import kotlin.math.*
 
 class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var book: Book) :
@@ -45,18 +48,77 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     var onError: (Throwable) -> Unit = {}
     var onActivePage: (Int) -> Unit = {}
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val memory = RenderMemory.from(context)
     private val cache =
-        object : LruCache<String, Bitmap>(36 * 1024 * 1024) {
+        object : LruCache<String, Bitmap>(memory.pages) {
             override fun sizeOf(key: String, value: Bitmap) = value.allocationByteCount
         }
     private val imageCache =
-        object : LruCache<String, Bitmap>(16 * 1024 * 1024) {
+        object : LruCache<String, Bitmap>(memory.images) {
             override fun sizeOf(key: String, value: Bitmap) = value.allocationByteCount
         }
     private val pending = mutableSetOf<String>()
-    private val executor = Executors.newFixedThreadPool(2)
-    private val words = mutableMapOf<String, List<Word>>()
+    private val executor =
+        ThreadPoolExecutor(2, 2, 0L, TimeUnit.MILLISECONDS, ArrayBlockingQueue<Runnable>(4))
+    private val words =
+        object : LruCache<String, List<Word>>(memory.words) {
+            override fun sizeOf(key: String, value: List<Word>) =
+                16 + value.sumOf { 64 + it.text.length * 2 }
+        }
+    private val pendingWords = mutableSetOf<String>()
+    private var epoch = 0
+    private var suspended = false
+    private var constrained = false
     private var closed = false
+
+    data class MemoryStats(
+        val pageBytes: Int,
+        val imageBytes: Int,
+        val wordBytes: Int,
+        val pageLimit: Int,
+        val imageLimit: Int,
+        val wordLimit: Int,
+        val queued: Int,
+    )
+
+    fun memoryStats() =
+        MemoryStats(
+            cache.size(),
+            imageCache.size(),
+            words.size(),
+            cache.maxSize(),
+            imageCache.maxSize(),
+            words.maxSize(),
+            executor.queue.size,
+        )
+
+    fun trimMemory(background: Boolean) {
+        epoch++
+        suspended = background
+        constrained = true
+        executor.queue.clear()
+        pending.clear()
+        pendingWords.clear()
+        selected = emptyList()
+        selectionStart = null
+        cache.evictAll()
+        imageCache.evictAll()
+        words.evictAll()
+        cache.resize(max(1024 * 1024, memory.pages / 2))
+        imageCache.resize(max(1024 * 1024, memory.images / 2))
+        words.resize(max(512 * 1024, memory.words / 2))
+        invalidate()
+    }
+
+    fun resumeMemory() {
+        if (closed) return
+        suspended = false
+        constrained = false
+        cache.resize(memory.pages)
+        imageCache.resize(memory.images)
+        words.resize(memory.words)
+        invalidate()
+    }
 
     private data class Placement(
         val index: Int,
@@ -102,8 +164,12 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         cancelStroke()
         closed = true
         executor.shutdownNow()
+        epoch++
         cache.evictAll()
         imageCache.evictAll()
+        words.evictAll()
+        pending.clear()
+        pendingWords.clear()
     }
 
     fun refresh() {
@@ -141,47 +207,77 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     private fun request(p: Sheet, width: Int) {
+        if (closed || suspended) return
         val key = "${book.source}:${p.id}:${p.style}:${p.paper}:$width"
         if (cache.get(key) != null || !pending.add(key)) return
-        executor.execute {
-            try {
-                val bitmap = pdf.render(book, p, width)
-                post {
-                    pending.remove(key)
-                    if (!closed) {
-                        cache.put(key, bitmap)
-                        invalidate()
-                    } else bitmap.recycle()
-                }
-            } catch (t: Throwable) {
-                post {
-                    pending.remove(key)
-                    if (!closed) onError(t)
+        val generation = epoch
+        try {
+            executor.execute {
+                try {
+                    val bitmap = pdf.render(book, p, width)
+                    post {
+                        if (generation == epoch) pending.remove(key)
+                        if (!closed && !suspended && generation == epoch) {
+                            cache.put(key, bitmap)
+                            invalidate()
+                        } else bitmap.recycle()
+                    }
+                } catch (t: Throwable) {
+                    post {
+                        if (generation == epoch) pending.remove(key)
+                        if (!closed && generation == epoch) onError(t)
+                    }
                 }
             }
+        } catch (_: RejectedExecutionException) {
+            pending.remove(key)
+            postInvalidateDelayed(100)
         }
     }
 
     private fun requestWords(p: Sheet) {
-        if (p.source < 0 || words.containsKey(p.id)) return
-        words[p.id] = emptyList()
-        executor.execute {
-            try {
-                val result = pdf.words(book, p)
-                post {
-                    words[p.id] = result
-                    invalidate()
+        if (
+            closed ||
+                suspended ||
+                p.source < 0 ||
+                words.get(p.id) != null ||
+                !pendingWords.add(p.id)
+        )
+            return
+        val generation = epoch
+        try {
+            executor.execute {
+                try {
+                    val result = pdf.words(book, p)
+                    post {
+                        if (generation == epoch) pendingWords.remove(p.id)
+                        if (!closed && !suspended && generation == epoch) {
+                            val bytes = 16 + result.sumOf { 64 + it.text.length * 2 }
+                            if (bytes <= words.maxSize()) words.put(p.id, result)
+                            else {
+                                words.put(p.id, emptyList())
+                                onError(IllegalArgumentException("本页文字量超过本机缓存限额，仍可阅读与批注"))
+                            }
+                            invalidate()
+                        }
+                    }
+                } catch (t: Throwable) {
+                    post {
+                        if (generation == epoch) pendingWords.remove(p.id)
+                        if (!closed && generation == epoch) onError(t)
+                    }
                 }
-            } catch (t: Throwable) {
-                post { if (!closed) onError(t) }
             }
+        } catch (_: RejectedExecutionException) {
+            pendingWords.remove(p.id)
+            postInvalidateDelayed(100)
         }
     }
 
     override fun onDraw(canvas: Canvas) {
         canvas.drawColor(0xfff4f4f4.toInt())
         placements.clear()
-        if (book.pages.isEmpty()) return
+        if (book.pages.isEmpty() || suspended) return
         val first = book.current
         val count = if (spread && first < book.pages.lastIndex) 2 else 1
         val availableW = width - 32 * scale
@@ -222,7 +318,10 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             val inv = Matrix()
             m.invert(inv)
             placements.add(Placement(i, m, inv, RectF(x, y, x + dw, y + dh)))
-            val bw = if (zoom > 1.4f) 2200 else 1400
+            val requestedWidth = if (constrained) 1000 else if (zoom > 1.4f) 2200 else 1400
+            val bw =
+                min(requestedWidth, sqrt(cache.maxSize() / 8f * p.w / p.h).toInt())
+                    .coerceAtLeast(100)
             val key = "${book.source}:${p.id}:${p.style}:${p.paper}:$bw"
             val bitmap = cache.get(key)
             request(p, bw)
@@ -246,10 +345,6 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 selected.forEach { canvas.drawRect(it.box, paint) }
             }
             canvas.restore()
-            paint.color = 0xff999999.toInt()
-            paint.textSize = 12 * scale
-            paint.style = Paint.Style.FILL
-            canvas.drawText("${i+1} / ${book.pages.size}", x, y + dh + 14 * scale, paint)
             if (tool == "hand") requestWords(p)
             x += dw + 16 * scale
         }
@@ -285,7 +380,12 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 var bm = imageCache.get(m.image)
                 if (bm == null) {
                     try {
-                        bm = PdfEngine.decodeImage(store.file(m.image), 1800)
+                        bm =
+                            PdfEngine.decodeImage(
+                                store.file(m.image),
+                                min(1800, sqrt(imageCache.maxSize() / 8f).toInt())
+                                    .coerceAtLeast(128),
+                            )
                         imageCache.put(m.image, bm)
                     } catch (_: Throwable) {
                         return
@@ -590,7 +690,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 ) {
                     val p = point(active!!, e.x, e.y, 1f)
                     val page = book.pages[active!!.index]
-                    val ws = words[page.id].orEmpty()
+                    val ws = words.get(page.id).orEmpty()
                     if (selectionStart == null)
                         selectionStart =
                             ws.minByOrNull { hypot(it.box.centerX() - p.x, it.box.centerY() - p.y) }
@@ -646,7 +746,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                         if (selected.isEmpty() && !moved) {
                             val p = point(active!!, e.x, e.y, 1f)
                             selected =
-                                words[page.id].orEmpty().filter {
+                                words.get(page.id).orEmpty().filter {
                                     RectF(it.box).apply { inset(-6f, -6f) }.contains(p.x, p.y)
                                 }
                             selectionPage = page.id

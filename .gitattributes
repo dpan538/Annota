@@ -1,2 +1,5 @@
 # Keep the bundled upstream OFL text byte-for-byte, including its original spacing.
 android/app/src/main/assets/OUTFIT-OFL.txt whitespace=-blank-at-eol
+
+# PDF streams and byte offsets must not undergo text diff or line-ending conversion.
+*.pdf binary

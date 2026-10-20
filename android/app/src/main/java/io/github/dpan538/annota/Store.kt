@@ -210,14 +210,19 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
             put("state", writeState(b.state()))
         }
 
-    private fun decode(c: android.database.Cursor): Book {
+    private fun decode(c: android.database.Cursor, preview: Boolean = false): Book {
         fun s(k: String): String {
             return c.getString(c.getColumnIndexOrThrow(k))
         }
         fun n(k: String): Long {
             return c.getLong(c.getColumnIndexOrThrow(k))
         }
-        val a = JSONArray(readState(s("state")))
+        val sheets =
+            if (preview) mutableListOf(firstSheet(s("state")))
+            else {
+                val a = JSONArray(readState(s("state")))
+                MutableList(a.length()) { Sheet.from(a.getJSONObject(it)) }
+            }
         return Book(
             s("id"),
             s("title"),
@@ -229,9 +234,41 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
             n("current").toInt(),
             n("revision"),
             n("cursor"),
-            MutableList(a.length()) { Sheet.from(a.getJSONObject(it)) },
+            sheets,
         )
     }
+
+    /** Library summaries stream only first-page metadata, never all documents' ink. */
+    private fun firstSheet(reference: String): Sheet {
+        val input =
+            if (reference.startsWith("[")) java.io.StringReader(reference)
+            else {
+                require(reference.matches(Regex("[a-f0-9]{64}\\.json\\.gz")))
+                GZIPInputStream(File(statesDir, reference).inputStream()).reader()
+            }
+        return android.util.JsonReader(input).use { reader ->
+            reader.beginArray()
+            reader.beginObject()
+            val data = Sheet().json()
+            while (reader.hasNext()) {
+                val name = reader.nextName()
+                if (name == "marks")
+                    break // Last field: do not inflate even a large first-page stroke list.
+                when (reader.peek()) {
+                    android.util.JsonToken.STRING -> data.put(name, reader.nextString())
+                    android.util.JsonToken.NUMBER -> data.put(name, reader.nextDouble())
+                    else -> reader.skipValue()
+                }
+            }
+            Sheet.from(data)
+        }
+    }
+
+    @Synchronized
+    fun libraryBooks(): List<Book> =
+        readableDatabase.rawQuery("SELECT * FROM books ORDER BY opened DESC,title", null).use { c ->
+            buildList { while (c.moveToNext()) add(decode(c, preview = true)) }
+        }
 
     @Synchronized
     fun books(): List<Book> =
@@ -433,9 +470,10 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
             readableDatabase.rawQuery("SELECT value FROM flags WHERE key=?", arrayOf(key)).use {
                 it.moveToFirst()
             }
-        val guideDone = seeded("seed") // Retain the original marker after upgrades/deletion.
-        val paperDone = seeded("seed-attention-v1")
-        if (guideDone && paperDone) return
+        // Any earlier initialization marker is final, including guide-only builds.
+        // Deleted seed documents must never be reintroduced by a later upgrade.
+        if (seeded("seed") || seeded("seed-attention-v1") || seeded("library-initialized-v1"))
+            return
         val manifest =
             JSONObject(context.assets.open("seed.json").bufferedReader().use { it.readText() })
         fun prepare(
@@ -477,27 +515,33 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
         // Prepare and validate every resource before publishing any library rows or flags.
         // If copying fails, a retry reuses valid files; it cannot leave a half-seeded library.
         val pending = mutableListOf<Pair<String, Book>>()
-        if (!guideDone)
-            pending +=
-                "seed" to
-                    prepare(
-                        "guide",
-                        "Annota 使用指南",
-                        "guide.pdf",
-                        "00000000-0000-0000-0000-000000000001.pdf",
-                        "guide",
-                    )
-        if (!paperDone)
-            pending +=
-                "seed-attention-v1" to
-                    prepare(
-                        "attention",
-                        "Attention Is All You Need",
-                        "attention-is-all-you-need.pdf",
-                        "00000000-0000-0000-0000-000000000002.pdf",
-                        "attention",
-                    )
+        pending +=
+            "seed" to
+                prepare(
+                    "guide",
+                    "Annota 使用指南",
+                    "guide.pdf",
+                    "00000000-0000-0000-0000-000000000001.pdf",
+                    "guide",
+                )
+        pending +=
+            "seed-attention-v1" to
+                prepare(
+                    "attention",
+                    "Attention Is All You Need",
+                    "attention-is-all-you-need.pdf",
+                    "00000000-0000-0000-0000-000000000002.pdf",
+                    "attention",
+                )
         transaction {
+            insertOrThrow(
+                "flags",
+                null,
+                ContentValues().apply {
+                    put("key", "library-initialized-v1")
+                    put("value", "1")
+                },
+            )
             pending.forEach { (marker, book) ->
                 insertOrThrow("books", null, values(book))
                 insertOrThrow(
