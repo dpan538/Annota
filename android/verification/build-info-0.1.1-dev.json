@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "packageName": "io.github.dpan538.annota",
+  "versionCode": 2,
+  "versionName": "0.1.1-dev",
+  "apk": "Annota-0.1.1-dev-debug.apk",
+  "sha256": "63b3f30093327d2706f73ac9b5f92780f29f497b619a6afd4933b3f3f34702a9",
+  "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18",
+  "artifact": "android/dist/Annota-0.1.1-dev-debug.apk",
+  "bytes": 75229716,
+  "buildType": "debug",
+  "clientTime": "2026-10-20T23:12:12.124355+10:00",
+  "api36EmulatorTests": 16,
+  "feedbackServiceTests": 5,
+  "designSourceSha256": "f7675050f8549e929d9defab72e954c742ebe566a21cd1f49610564fb80718db",
+  "lintErrors": 0,
+  "lintWarnings": 50,
+  "publishedRelease": false,
+  "productionSigned": false,
+  "xiaomiHardwareValidated": false,
+  "uiEvidence": [
+    "design-library-blue.png",
+    "design-library-blue-portrait.png",
+    "design-settings-blue.png",
+    "design-settings-blue-portrait.png",
+    "design-feedback-blue.png",
+    "design-feedback-blue-portrait.png",
+    "design-reader-blue.png",
+    "design-reader-blue-portrait.png"
+  ]
+}

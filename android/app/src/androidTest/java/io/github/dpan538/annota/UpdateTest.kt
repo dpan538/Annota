@@ -15,7 +15,7 @@ class UpdateTest {
 
     private fun fixture() =
         File(context.cacheDir, "update-test.apk").also {
-            Assume.assumeTrue("Host must stage the signed versionCode=3 fixture", it.exists())
+            Assume.assumeTrue("Host must stage the signed versionCode=4 fixture", it.exists())
         }
 
     @Suppress("DEPRECATION")
@@ -32,7 +32,7 @@ class UpdateTest {
     }
 
     private fun info(file: File) =
-        Network.Update(3, "0.1.2-update-fixture", "", "", sha256(file), certificate())
+        Network.Update(4, "0.1.3-update-fixture", "", "", sha256(file), certificate())
 
     @Test
     fun cryptographicSignatureHashPackageAndVersion() {
@@ -43,7 +43,7 @@ class UpdateTest {
             fail("Wrong hash accepted")
         } catch (_: IllegalArgumentException) {}
         try {
-            Network(context).verify(file, info(file).copy(versionCode = 4))
+            Network(context).verify(file, info(file).copy(versionCode = 5))
             fail("Wrong version accepted")
         } catch (_: IllegalArgumentException) {}
         try {

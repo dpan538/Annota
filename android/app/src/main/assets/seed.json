@@ -2,6 +2,14 @@
   "guide": {
     "sha256": "4d0a1ef7475f09a5e11b09c9bf42f35e5e67167eaf97e82899a002a6ff3edbe9",
     "pages": 5,
-    "source": "Authored five-page guide exported by design window; no full paper PDF bundled"
+    "source": "Authored five-page landscape guide, exported from the approved design source."
+  },
+  "attention": {
+    "sha256": "d87d482d5ae7960e2e43d7dd6d21377e60e73e8fce1bf2a01aff7aca8a08c537",
+    "pages": 11,
+    "source": "User-provided unmodified NeurIPS 2017 PDF; see SAMPLE-PAPER-NOTICE.md",
+    "title": "Attention Is All You Need",
+    "authors": "Ashish Vaswani et al.",
+    "year": 2017
   }
 }

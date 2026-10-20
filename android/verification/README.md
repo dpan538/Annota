@@ -10,8 +10,15 @@ All Android evidence here is from a local API 36 ARM64 emulator configured as a 
 - `feedback-gunicorn.json`: actual temporary loopback Gunicorn 25.3.0, two workers; 201 receipt then idempotent 200 receipt. No public HTTPS endpoint was deployed.
 - `lint-summary.txt`: Android lint with 0 errors; warnings remain for KTX suggestions, custom View constructors, explicit left/right placement, draw-time allocations, SharedPreferences commit used for durable drafts, dependency update suggestions and unused third-party TLS helper classes. Network code uses the platform's default HTTPS trust and hostname verification.
 - PNGs show actual native emulator UI: first launch, system-picked imported PDF, landscape/portrait reader/library and a complete offline dictionary entry. The imported test PDF is a generated fixture with a rotated first page, not the sample paper.
-- `build-info.json`: exact debug artifact SHA-256, signer fingerprint and build identity. These records describe the previous debug build. Final 3B branding is integrated by the design window and receives separate regression evidence.
+- `build-info-0.1.1-dev.json`: previous debug artifact identity; `build-info.json` now records the integrated 0.1.2-dev build. Final 3B branding has its own integration evidence below.
 
 Hardware acceptance, system installer interaction on Xiaomi, offline handwriting IME, real Release download, production certificate continuity and public feedback HTTPS remain separate checks.
 
 Public logs use repository-relative paths; private SDK caches, local keys, feedback databases and APK binaries are excluded from Git. Screenshot fixtures contain generated test content.
+
+## 0.1.2-dev integration
+
+- `integration-instrumentation-api36.txt`: all 19 tests passed, including three first-launch/retry/deletion/guide-only upgrade tests and the staged same-key v4 APK signature fixture.
+- `integration-upgrade.json`: an actual `install -r` from 0.1.1-dev (2) to 0.1.2-dev (3) preserved all 8 existing emulator fixture file hashes before first new-version launch. This is a different sample from the earlier 29-file check.
+- `integration-library-*.png` and `integration-paper.png`: final branding, two bundled initial documents and actual paper rendering in airplane mode. These do not establish Xiaomi hardware acceptance.
+- `integration-build.json`: current development artifact identity, source hashes and validation limits. APK binaries remain local; no production Release exists.

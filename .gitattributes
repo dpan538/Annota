@@ -1,0 +1,2 @@
+# Keep the bundled upstream OFL text byte-for-byte, including its original spacing.
+android/app/src/main/assets/OUTFIT-OFL.txt whitespace=-blank-at-eol

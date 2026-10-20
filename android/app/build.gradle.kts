@@ -10,8 +10,8 @@ android {
         applicationId = "io.github.dpan538.annota"
         minSdk = 29
         targetSdk = 36
-        versionCode = providers.gradleProperty("annotaVersionCode").orElse("2").get().toInt()
-        versionName = providers.gradleProperty("annotaVersionName").orElse("0.1.1-dev").get()
+        versionCode = providers.gradleProperty("annotaVersionCode").orElse("3").get().toInt()
+        versionName = providers.gradleProperty("annotaVersionName").orElse("0.1.2-dev").get()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField(
             "String",

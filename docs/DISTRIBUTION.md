@@ -21,7 +21,7 @@
 ## GitHub 端
 
 - 正式标签：`vX.Y.Z`，附清晰的版本说明。
-- 附件：签名 `Annota-X.Y.Z.apk`、`SHA256SUMS.txt`，以及版本元数据（如使用独立 manifest）。
+- 附件：签名 `Annota-X.Y.Z.apk`、`SHA256SUMS.txt`，以及客户端必需的 `annota-update.json`（由 `android/scripts/make-update-manifest.py` 从真实签名 APK 生成）。
 - 使用公开 Releases API：`GET https://api.github.com/repos/dpan538/Annota/releases/latest`，没有 Token 也能读取公开发布信息，但需处理限流。
 - `latest` 用于正式版本；预览版另设明确 opt-in 渠道，不能把 prerelease 误推给默认用户。
 - 只接受白名单仓库的 HTTPS 下载资源。GitHub 可能使用受控资源跳转，下载器要明确处理跳转和超时。
@@ -31,7 +31,7 @@
 
 ## 签名与构建
 
-固定应用 ID 与发布签名；密钥由维护者保管并备份。签名密钥、密码、GitHub Token 不进仓库或 APK。不在首次源码上传时制造空的 Release，也不把 debug APK 标为正式版。
+固定应用 ID 与发布签名；密钥由维护者保管并备份。签名密钥、密码、GitHub Token 不进仓库或 APK。不为源码备份制造空的 Release，也不把 debug APK 标为正式版。
 
 后续由 Gradle 生成 release APK，在上传前运行检查、校验签名和迁移测试。若使用 GitHub Actions，签名材料仅通过受保护的 Secrets/Environment 提供，发布需要人工确认。签名密钥的交接与恢复方式是首个正式版本前必须完成的事项。
 
@@ -41,7 +41,9 @@
 
 应用内匿名反馈需要单独的最小 HTTPS 接口：校验正文、限制滥用、保存或转交开发者，并返回真实回执。联系方式不得公开写入 GitHub Issue，客户端不得内置仓库写入 Token。接口尚未配置时保留草稿。
 
-## 发布前闭环
+## 当前验证与发布前闭环
+
+原生下载/校验/安装入口已有实现；签名验证、篡改拒绝与本地同签名覆盖升级有模拟器记录。真实 GitHub Release → 目标平板系统安装器的全流程尚未验收。反馈服务已有源码和本地回执测试，尚未部署公网 HTTPS。
 
 - 同一签名的旧版 → 新版覆盖更新，已有笔记完整。
 - 下载损坏、取消、空间不足、安装权限拒绝、签名不符都能退出或重试。

@@ -1493,6 +1493,8 @@ class MainActivity : Activity() {
                 "LUCIDE-LICENSE.txt",
                 "BOUNCY-CASTLE-LICENSE.html",
                 "THIRD-PARTY.txt",
+                "SAMPLE-PAPER-NOTICE.md",
+                "OUTFIT-OFL.txt",
             )
         val content =
             files.joinToString("\n\n") { path ->

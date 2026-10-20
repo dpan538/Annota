@@ -429,63 +429,95 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
     @Synchronized
     fun seed() {
         cleanupStates()
-        if (
-            readableDatabase.rawQuery("SELECT value FROM flags WHERE key='seed'", null).use {
+        fun seeded(key: String) =
+            readableDatabase.rawQuery("SELECT value FROM flags WHERE key=?", arrayOf(key)).use {
                 it.moveToFirst()
             }
-        )
-            return
-        val guideFile = file("00000000-0000-0000-0000-000000000001.pdf")
-        val expected =
+        val guideDone = seeded("seed") // Retain the original marker after upgrades/deletion.
+        val paperDone = seeded("seed-attention-v1")
+        if (guideDone && paperDone) return
+        val manifest =
             JSONObject(context.assets.open("seed.json").bufferedReader().use { it.readText() })
-                .getJSONObject("guide")
-                .getString("sha256")
-        if (!guideFile.exists() || sha256(guideFile) != expected)
-            atomicWrite(guideFile) { out ->
-                context.assets.open("guide.pdf").use { it.copyTo(out) }
-            }
-        check(sha256(guideFile) == expected) { "指南校验失败" }
-        val guide =
-            android.os.ParcelFileDescriptor.open(
-                    guideFile,
-                    android.os.ParcelFileDescriptor.MODE_READ_ONLY,
-                )
-                .use { fd ->
-                    android.graphics.pdf.PdfRenderer(fd).use { r ->
-                        MutableList(r.pageCount) { i ->
-                            r.openPage(i).use { p ->
-                                Sheet(source = i, w = p.width.toFloat(), h = p.height.toFloat())
+        fun prepare(
+            id: String,
+            title: String,
+            asset: String,
+            filename: String,
+            entry: String,
+        ): Book {
+            val metadata = manifest.getJSONObject(entry)
+            val target = file(filename)
+            val expected = metadata.getString("sha256")
+            if (!target.exists() || sha256(target) != expected)
+                atomicWrite(target) { out -> context.assets.open(asset).use { it.copyTo(out) } }
+            check(sha256(target) == expected) { "初始文档校验失败: $title" }
+            val pages =
+                android.os.ParcelFileDescriptor.open(
+                        target,
+                        android.os.ParcelFileDescriptor.MODE_READ_ONLY,
+                    )
+                    .use { fd ->
+                        android.graphics.pdf.PdfRenderer(fd).use { renderer ->
+                            check(renderer.pageCount == metadata.getInt("pages")) {
+                                "初始文档页数不符: $title"
+                            }
+                            MutableList(renderer.pageCount) { i ->
+                                renderer.openPage(i).use { page ->
+                                    Sheet(
+                                        source = i,
+                                        w = page.width.toFloat(),
+                                        h = page.height.toFloat(),
+                                    )
+                                }
                             }
                         }
                     }
-                }
+            return Book(id, title, target.name, opened = System.currentTimeMillis(), pages = pages)
+        }
+        // Prepare and validate every resource before publishing any library rows or flags.
+        // If copying fails, a retry reuses valid files; it cannot leave a half-seeded library.
+        val pending = mutableListOf<Pair<String, Book>>()
+        if (!guideDone)
+            pending +=
+                "seed" to
+                    prepare(
+                        "guide",
+                        "Annota 使用指南",
+                        "guide.pdf",
+                        "00000000-0000-0000-0000-000000000001.pdf",
+                        "guide",
+                    )
+        if (!paperDone)
+            pending +=
+                "seed-attention-v1" to
+                    prepare(
+                        "attention",
+                        "Attention Is All You Need",
+                        "attention-is-all-you-need.pdf",
+                        "00000000-0000-0000-0000-000000000002.pdf",
+                        "attention",
+                    )
         transaction {
-            val b =
-                Book(
-                    "guide",
-                    "Annota 使用指南",
-                    guideFile.name,
-                    opened = System.currentTimeMillis(),
-                    pages = guide,
+            pending.forEach { (marker, book) ->
+                insertOrThrow("books", null, values(book))
+                insertOrThrow(
+                    "history",
+                    null,
+                    ContentValues().apply {
+                        put("book", book.id)
+                        put("version", 0)
+                        put("state", writeState(book.state()))
+                    },
                 )
-            insertOrThrow("books", null, values(b))
-            insertOrThrow(
-                "history",
-                null,
-                ContentValues().apply {
-                    put("book", b.id)
-                    put("version", 0)
-                    put("state", writeState(b.state()))
-                },
-            )
-            insertOrThrow(
-                "flags",
-                null,
-                ContentValues().apply {
-                    put("key", "seed")
-                    put("value", "1")
-                },
-            )
+                insertOrThrow(
+                    "flags",
+                    null,
+                    ContentValues().apply {
+                        put("key", marker)
+                        put("value", "1")
+                    },
+                )
+            }
         }
     }
 

@@ -181,7 +181,7 @@ class CoreTest {
         assertEquals(1, loaded.pages.size)
         assertTrue(store.undo(loaded, true))
         store.copy(loaded)
-        assertEquals(3, store.books().size)
+        assertEquals(4, store.books().size)
         assertNotEquals(store.books().first().id, loaded.id)
     }
 

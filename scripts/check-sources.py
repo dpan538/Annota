@@ -1,4 +1,4 @@
-"""Validate the publishable prototype sources without private PDF fixtures."""
+"""Validate repository sources, approved branding and bundled seed resources."""
 from pathlib import Path
 import hashlib
 import json
@@ -34,6 +34,11 @@ assert logo['selection']=='3B' and logo['inkCenter']==[512,512]
 assert logo['accent']['hex']=='#4460CE'
 assert [p.name for p in (root/'branding').rglob('*.svg')]==['annota-logo.svg']
 assert (root/'branding/annota-logo.png').is_file()
+seed=json.loads((root/'android/app/src/main/assets/seed.json').read_text())
+for key,filename in [('guide','guide.pdf'),('attention','attention-is-all-you-need.pdf')]:
+    assert hashlib.sha256((root/'android/app/src/main/assets'/filename).read_bytes()).hexdigest()==seed[key]['sha256']
+assert seed['guide']['pages']==5 and seed['attention']['pages']==11
+
 for item in json.loads((root/'branding/fonts/sources.json').read_text()):
     for filename,source in item['files'].items():
         if filename.endswith('.txt'):

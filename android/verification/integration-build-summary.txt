@@ -1,0 +1,6 @@
+Clean Gradle build: assembleDebug + assembleDebugAndroidTest + lintDebug
+BUILD SUCCESSFUL
+Lint: 0 errors, 51 warnings
+API36 ARM64 instrumentation: 19 passed, 0 skipped
+Feedback receiver: 5 passed
+APK cryptographic signature: apksigner verified (development certificate)

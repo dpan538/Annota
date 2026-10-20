@@ -204,7 +204,7 @@ open class DesignScreen(
     fun icon(name: String, color: Int = palette.ink) =
         LucideIcon(context, name).apply { tint = color }
 
-    fun action(label: String, onClick: () -> Unit):FrameLayout =
+    fun action(label: String, onClick: () -> Unit): FrameLayout =
         UiButton(context).apply {
             isClickable = true
             isFocusable = true

@@ -11,3 +11,5 @@ npm run logos:render
 无需安装字体即可使用或渲染母版。字体来源、固定版本及原文件哈希见 `fonts/sources.json`；原字体软件使用 OFL，原创标识使用根目录 [CC BY-NC 4.0](../LICENSE-VISUALS.md)。Android 资源只是同一标识的尺寸与系统遮罩适配。
 
 未采用的候选已从当前项目移出；历史提交中仍可追溯早期设计。
+
+安卓派生资源：`python3 android/scripts/prepare-branding.py`。启动图标留出系统安全区；Android 系统控制遮罩形状。Android 13+ 单色图标沿用同一字形，按用户系统主题着色。母版 PNG 本身始终是圆角白底和钴蓝 t。

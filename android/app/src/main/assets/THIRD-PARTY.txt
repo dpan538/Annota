@@ -14,7 +14,8 @@ Dictionary data and its source files have separate licenses described in
 dictionary/ATTRIBUTION.md. CC-CEDICT data and conversion remain CC BY-SA 4.0.
 Bouncy Castle Java 1.86 — The Legion of the Bouncy Castle Inc., MIT-style license.
 Complete license: BOUNCY-CASTLE-LICENSE.html.
-The full third party paper PDF is excluded from this development package.
+The user-supplied, unmodified NeurIPS 2017 paper is bundled as a sample.
+See SAMPLE-PAPER-NOTICE.md; it is not relicensed as MIT or CC BY-NC.
 The authored guide contains design-window content and embedded fonts;
 GUIDE-FONT-OFL.txt and MiSans-License.pdf retain their separate licenses.
 UI fonts are the unmodified official MiSans variable TTF (runtime wght 400/500).
@@ -22,3 +23,6 @@ Official archive: https://hyperos.mi.com/font-download/MiSans.zip
 Exact hashes and archive entries: verification/design-source.json in the source tree.
 MiSans-License.pdf preserves the font license. No external fonts are fetched.
 Lucide icons — Lucide contributors, ISC license, LUCIDE-LICENSE.txt.
+
+Approved Annota wordmark: Outfit 600 outlines, black with cobalt t.
+Font software: SIL OFL 1.1 (OUTFIT-OFL.txt); original logo: CC BY-NC 4.0.

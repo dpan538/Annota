@@ -1,0 +1,18 @@
+{
+  "from": "0.1.1-dev (2)",
+  "to": "0.1.2-dev (3)",
+  "device": "API36 ARM64 dedicated emulator",
+  "stage": "after install -r, before first new-version launch",
+  "fileCount": 8,
+  "allExistingFilesUnchanged": true,
+  "hashes": {
+    "files/documents/00000000-0000-0000-0000-000000000001.pdf": "4d0a1ef7475f09a5e11b09c9bf42f35e5e67167eaf97e82899a002a6ff3edbe9",
+    "files/states/28d12d8c8ff990026f10d37f5f5a537f9349a0e8fa5b740610b11b79dd95dc9a.json.gz": "f40646cc3d5734a29071d0fa624a0e98211a58935cf3e20f265a388373834d1f",
+    "files/dictionary/en-zh.sqlite": "d557d408e0470f046dbedf85b4f82d89871e52e413b3098a8ca9c697d39acb44",
+    "files/dictionary/zh-en.sqlite": "82b987a224ab0e67fb3035eb6c71a4e3b7517d4cf112ed0f2ce3c5589b65de0d",
+    "files/profileInstalled": "601a3469ed210bd6a6c54ec567714f83e0ec3d26f71ddd1386495f3f24b263af",
+    "databases/library.sqlite": "34f1faac5a1159c2f04d49abc789655421b9aba7c5a2551c61f6c021fccc35fa",
+    "databases/library.sqlite-journal": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "shared_prefs/settings.xml": "46f245af87d4e08ef38e0fc453bd66535455a9f5ade95aa11d30c0c8f99c5a7d"
+  }
+}
