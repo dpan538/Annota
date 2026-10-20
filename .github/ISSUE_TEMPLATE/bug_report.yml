@@ -1,0 +1,23 @@
+name: 问题反馈
+description: 描述可公开讨论的问题，请勿填写联系方式或私人文件。
+body:
+  - type: markdown
+    attributes:
+      value: "这里是公开 Issue。请勿提交联系方式、私人 PDF、笔记或含个人信息的日志。当前项目尚处于原型与原生实现阶段。"
+  - type: input
+    id: version
+    attributes:
+      label: 版本或提交号
+      placeholder: 原型 / APK 版本 / commit
+  - type: textarea
+    id: steps
+    attributes:
+      label: 怎样复现
+      description: 当时做了什么，预期怎样，实际发生什么。
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: 设备与系统（选填）
+      placeholder: 平板型号 / HyperOS / Android / 手写笔型号

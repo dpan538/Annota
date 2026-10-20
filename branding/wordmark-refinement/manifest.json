@@ -1,0 +1,55 @@
+[
+  {
+    "id": "annota-misans-medium",
+    "label": "MiSans 轻字重",
+    "family": "MiSans",
+    "axes": {
+      "wght": 500
+    },
+    "trackingFontUnits": -12,
+    "width": 690,
+    "canvas": [
+      1024,
+      1024
+    ],
+    "note": "保留原来的清爽字形，减轻字重，略收字距。",
+    "status": "proposal",
+    "artworkLicense": "CC-BY-NC-4.0"
+  },
+  {
+    "id": "annota-manrope",
+    "label": "Manrope 紧凑",
+    "family": "Manrope",
+    "axes": {
+      "wght": 600
+    },
+    "trackingFontUnits": -22,
+    "width": 690,
+    "canvas": [
+      1024,
+      1024
+    ],
+    "note": "几何感更整齐，双层 a 保留清楚的阅读感。",
+    "status": "proposal",
+    "artworkLicense": "CC-BY-NC-4.0"
+  },
+  {
+    "id": "annota-bricolage-narrow",
+    "label": "Bricolage 窄体",
+    "family": "Bricolage Grotesque",
+    "axes": {
+      "wght": 550,
+      "wdth": 85,
+      "opsz": 96
+    },
+    "trackingFontUnits": -12,
+    "width": 690,
+    "canvas": [
+      1024,
+      1024
+    ],
+    "note": "用字体本身的窄体轴收紧比例，字形更有个性。",
+    "status": "proposal",
+    "artworkLicense": "CC-BY-NC-4.0"
+  }
+]

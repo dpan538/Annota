@@ -1,0 +1,22 @@
+name: Source and offline data checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  sources:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: '3.12'
+      - run: npm run test:static
+      - name: Build dictionaries without network access
+        run: python3 design/dictionary/build.py
+      - run: python3 design/dictionary/test_lookup.py

@@ -1,0 +1,679 @@
+<div id="o3-home-concept" data-palette="pine" aria-label="Annota 平板主页设计">
+  <style>
+    #o3-home-concept{--o3-paper:#FAFAFA;--o3-panel:#FFFFFF;--o3-blue:#BFD4E9;--o3-orange:#1C614C;--o3-action-ink:#FFFFFF;--o3-import-ink:#262A2D;--o3-accent:#1C614C;--o3-ink:#262A2D;--o3-muted:#62676B;--o3-rule:#DDDEE0;--o3-side:#EBEBEB;--o3-side-ink:#444A4D;--o3-side-active:#D9E8E1;--o3-side-rule:#D0D3D5;--o3-side-hover:#DDDEE0;--o3-thumb:#F0F1F2;--o3-sheet:#FFFFFF;--o3-note-cover:#1C614C;--o3-mark:#CB4544;--o3-button:68px;--o3-icon:26px;--o3-label:16px;color-scheme:light}
+    #o3-home-concept{--o3-reserve-annotation:#D8B45C;--o3-reserve-translation:#A99BC9}
+    #o3-home-concept[data-palette="graphite-yellow"]{--o3-paper:#FAFBFA;--o3-panel:#FFFFFF;--o3-blue:#5D6769;--o3-orange:#FFDA4C;--o3-action-ink:#454233;--o3-import-ink:#FFFFFF;--o3-accent:#575C4F;--o3-ink:#363B37;--o3-muted:#69716D;--o3-rule:#DFE3DF;--o3-side:#EFF2EF;--o3-side-ink:#505C56;--o3-side-active:#FFF0B3;--o3-side-rule:#D4DBD5;--o3-side-hover:#E3E8E2;--o3-thumb:#F0F3F0;--o3-sheet:#FFFFFF;--o3-note-cover:#FFDA4C;--o3-mark:#C0F2E6}
+    #o3-home-concept[data-palette="graphite-yellow"]{--o3-reserve-annotation:#D39783;--o3-reserve-translation:#91AFC7}
+    #o3-home-concept[data-palette="cobalt-sage"]{--o3-paper:#F7F8F6;--o3-panel:#FFFFFF;--o3-blue:#6D785F;--o3-orange:#4460CE;--o3-action-ink:#FFFFFF;--o3-import-ink:#FFFFFF;--o3-accent:#4460CE;--o3-ink:#16181B;--o3-muted:#666B62;--o3-rule:#D9DDD3;--o3-side:#E9ECE6;--o3-side-ink:#464D40;--o3-side-active:#DCE3FC;--o3-side-rule:#CED3C7;--o3-side-hover:#DDE1D6;--o3-thumb:#EEF1EB;--o3-sheet:#FFFFFF;--o3-note-cover:#4460CE;--o3-mark:#D15129;--o3-reserve-annotation:#D9C66C;--o3-reserve-translation:#B19BBF}
+    #o3-home-concept[data-palette="lunar-blue"]{--o3-paper:#F7F6F2;--o3-panel:#FFFFFF;--o3-blue:#D4CAC4;--o3-orange:#8EB1C6;--o3-action-ink:#25272D;--o3-import-ink:#34312F;--o3-accent:#466678;--o3-ink:#25272D;--o3-muted:#666A70;--o3-rule:#C7CBD0;--o3-side:#E5EBEE;--o3-side-ink:#475963;--o3-side-active:#CADDE7;--o3-side-rule:#CBD5DB;--o3-side-hover:#D8E1E6;--o3-thumb:#EEF0EF;--o3-sheet:#FFFFFF;--o3-note-cover:#718491;--o3-mark:#718491;--o3-reserve-annotation:#C9A16B;--o3-reserve-translation:#A393B9}
+    #o3-home-concept[data-palette="butter-periwinkle"]{--o3-paper:#FCFBEF;--o3-panel:#FFFFFB;--o3-blue:#8CA8CF;--o3-orange:#F5F48C;--o3-action-ink:#171A21;--o3-import-ink:#232D3D;--o3-accent:#4E6590;--o3-ink:#171A21;--o3-muted:#666A62;--o3-rule:#DDDDBB;--o3-side:#F4F2D5;--o3-side-ink:#545742;--o3-side-active:#E2E9F7;--o3-side-rule:#DAD9B2;--o3-side-hover:#E9E7C5;--o3-thumb:#F1F1E5;--o3-sheet:#FFFFFB;--o3-note-cover:#8CA8CF;--o3-mark:#BAB467;--o3-reserve-annotation:#D99678;--o3-reserve-translation:#6D9E98}
+    #o3-home-concept[data-palette="black-kraft"]{--o3-paper:#FAFAFC;--o3-panel:#FFFFFF;--o3-blue:#98CAED;--o3-orange:#F75F1B;--o3-action-ink:#27282A;--o3-import-ink:#253B4A;--o3-accent:#27282A;--o3-ink:#27282A;--o3-muted:#65625D;--o3-rule:#DDD8D0;--o3-side:#A28D70;--o3-side-ink:#252321;--o3-side-active:#FAFAFC;--o3-side-rule:#79664B;--o3-side-hover:#B3A083;--o3-thumb:#F1EEE9;--o3-sheet:#FFFFFF;--o3-note-cover:#27282A;--o3-mark:#A28D70;--o3-reserve-annotation:#8A9C79;--o3-reserve-translation:#B3A3C8}
+    #o3-home-concept[data-palette="black-kraft"] .o3-side-footer{color:var(--o3-side-ink)}
+    #o3-home-concept:is([data-palette="cobalt-sage"],[data-palette="lunar-blue"],[data-palette="butter-periwinkle"],[data-palette="black-kraft"]) .o3-create-copy small{opacity:1}
+    #o3-home-concept .o3-frame{position:relative;width:100%;margin:0 auto}
+    #o3-home-concept .o3-frame-portrait{max-width:682.6667px}
+    #o3-home-concept .o3-app{position:absolute;left:0;top:0;transform-origin:top left;display:grid;grid-template-columns:176px minmax(0,1fr);width:1024px;height:682.6667px;background:var(--o3-paper);color:var(--o3-ink);font:400 16px/1.5 "MiSans VF","MiSans",sans-serif;overflow:hidden;border-radius:20px;text-align:left}
+    #o3-home-concept .o3-app.o3-portrait{width:682.6667px;height:1024px;grid-template-columns:104px minmax(0,1fr)}
+    #o3-home-concept .o3-app *{box-sizing:border-box}
+    #o3-home-concept .o3-app [hidden]{display:none!important}
+    #o3-home-concept .o3-app button,#o3-home-concept .o3-app input,#o3-home-concept .o3-app textarea,#o3-home-concept .o3-app select{font:inherit;color:inherit}
+    #o3-home-concept .o3-app button{background:transparent;border:0;padding:0;display:flex;align-items:center;justify-content:center;gap:10px;min-height:var(--o3-button);border-radius:14px;font-size:var(--o3-label);font-weight:500}
+    #o3-home-concept .o3-app button:focus-visible,#o3-home-concept .o3-app input:focus-visible,#o3-home-concept .o3-app select:focus-visible,#o3-home-concept .o3-app textarea:focus-visible{outline:3px solid var(--o3-blue);outline-offset:3px}
+    #o3-home-concept .o3-app svg{width:var(--o3-icon);height:var(--o3-icon);stroke-width:2;flex-shrink:0}
+    #o3-home-concept .o3-side{background:var(--o3-side);color:var(--o3-side-ink);display:flex;flex-direction:column;padding:48px 14px 16px;gap:0;border-right:1px solid var(--o3-rule)}
+    #o3-home-concept .o3-brand{padding:0 12px 12px;display:flex;align-items:center;min-height:55px;margin-bottom:26px}
+    #o3-home-concept .o3-brand strong{font-size:30px;font-weight:500;letter-spacing:-1.2px;line-height:1;color:var(--o3-ink);transform:translateY(-2.25px)}
+    #o3-home-concept .o3-nav-primary,#o3-home-concept .o3-nav-bottom{display:grid;gap:10px}
+    #o3-home-concept .o3-nav-bottom{margin-top:auto;gap:0}
+    #o3-home-concept .o3-side button{justify-content:flex-start;padding:0 16px;white-space:nowrap}
+    #o3-home-concept .o3-side button:hover{background:var(--o3-side-hover)}
+    #o3-home-concept .o3-side button[aria-current="page"]{background:var(--o3-side-active);color:var(--o3-accent)}
+    #o3-home-concept .o3-side .o3-search-button{border:1px solid var(--o3-side-rule)}
+    #o3-home-concept .o3-side-footer{padding:0 14px;margin-top:8px;font-size:11px;letter-spacing:2px;color:var(--o3-muted)}
+    #o3-home-concept .o3-main{padding:calc(56px - var(--o3-button) / 2) 24px 16px;min-width:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--o3-rule) transparent}
+    #o3-home-concept .o3-header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;min-height:var(--o3-button)}
+    #o3-home-concept .o3-heading{display:flex;flex-direction:column;gap:2px;flex-shrink:0}
+    #o3-home-concept .o3-eyebrow{font-size:10px;letter-spacing:2px;color:var(--o3-muted)}
+    #o3-home-concept .o3-heading h1{font-size:32px;font-weight:500;line-height:1.25;margin:0;letter-spacing:-1px}
+    #o3-home-concept .o3-utilities{--o3-utility-size:max(60px,calc(var(--o3-button) - 8px));display:flex;gap:0;flex-shrink:0;margin-right:calc((var(--o3-icon) - var(--o3-utility-size)) / 2)}
+    #o3-home-concept .o3-utilities button{padding:0;border:0;border-radius:14px;width:var(--o3-utility-size);height:var(--o3-utility-size);min-width:var(--o3-utility-size);min-height:var(--o3-utility-size);flex-shrink:0}
+    #o3-home-concept .o3-utilities button:hover{background:var(--o3-thumb)}
+    #o3-home-concept .o3-utilities button[aria-pressed="true"]{background:var(--o3-side-active);color:var(--o3-accent)}
+    #o3-home-concept .o3-create{display:grid;grid-template-columns:1.12fr 1.12fr .86fr;gap:12px;margin-bottom:28px}
+    #o3-home-concept .o3-create button{position:relative;isolation:isolate;overflow:hidden;min-height:94px;padding:18px;justify-content:flex-start;text-align:left;gap:14px;background:var(--o3-panel);border-radius:14px}
+    #o3-home-concept .o3-create button:hover{filter:brightness(.97)}
+    #o3-home-concept .o3-create .o3-create-note{background:var(--o3-orange);color:var(--o3-action-ink)}
+    #o3-home-concept .o3-create .o3-create-import{background:var(--o3-blue);color:var(--o3-import-ink)}
+    #o3-home-concept .o3-create .o3-create-folder{border:1px solid var(--o3-rule)}
+    #o3-home-concept .o3-create-copy{display:grid;gap:3px;position:relative;z-index:1}
+    #o3-home-concept .o3-create-copy strong{font-weight:500;font-size:18px;white-space:nowrap}
+    #o3-home-concept .o3-create-copy small{font-size:11px;font-weight:400;opacity:.8;white-space:nowrap}
+    #o3-home-concept .o3-action-texture{display:none}
+    #o3-home-concept .o3-section-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+    #o3-home-concept .o3-section-header h2{font-size:17px;line-height:1.4;font-weight:500;margin:0}
+    #o3-home-concept .o3-section-header span{font-size:12px;color:var(--o3-muted)}
+    #o3-home-concept .o3-folder-section{margin-bottom:26px}
+    #o3-home-concept .o3-folders{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    #o3-home-concept .o3-folders button{background:var(--o3-panel);border:1px solid var(--o3-rule);min-height:var(--o3-button);padding:9px 14px;justify-content:flex-start;border-radius:11px;gap:12px;font-size:14px}
+    #o3-home-concept .o3-folders svg{color:var(--o3-accent)}
+    #o3-home-concept .o3-folders button[aria-pressed="true"]{border-color:var(--o3-accent);background:var(--o3-side-active)}
+    #o3-home-concept .o3-folder-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    #o3-home-concept .o3-folders small{margin-left:auto;color:var(--o3-muted);font-size:12px;white-space:nowrap;font-weight:400}
+    #o3-home-concept .o3-doc-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px 16px}
+    #o3-home-concept .o3-doc-grid .o3-doc{display:block;min-width:0;text-align:left;border-radius:12px;padding:0;align-self:start;font-weight:400}
+    #o3-home-concept .o3-guide-cover{width:120px;height:154px;background:#FFFFFF;color:#242932;border-left:5px solid var(--o3-accent);box-shadow:0 2px 6px #262A2D12;transform:rotate(1deg);padding:15px 12px;text-align:left}
+    #o3-home-concept .o3-guide-cover small{display:block;font-size:7px;letter-spacing:1.2px;color:var(--o3-accent);margin-bottom:15px}
+    #o3-home-concept .o3-guide-cover strong{display:block;font-size:17px;font-weight:500;line-height:1.4}
+    #o3-home-concept .o3-guide-cover span{display:block;font-size:8px;color:#727B87;border-top:1px solid #E4E7EB;padding-top:8px;margin-top:14px}
+    #o3-home-concept .o3-thumb{position:relative;display:flex;align-items:center;justify-content:center;height:182px;background:var(--o3-thumb);border-radius:11px;overflow:hidden;border:2px solid transparent}
+    #o3-home-concept .o3-doc[aria-pressed="true"] .o3-thumb{border-color:var(--o3-ink)}
+    #o3-home-concept .o3-doc:hover .o3-thumb{border-color:var(--o3-accent)}
+    #o3-home-concept .o3-doc-name{font-size:16px;font-weight:500;display:block;margin-top:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.5}
+    #o3-home-concept .o3-doc-date{font-size:12px;display:block;margin-top:3px;color:var(--o3-muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+    #o3-home-concept .o3-page-preview{height:150px;width:112px;background:var(--o3-sheet);padding:15px 12px;box-shadow:0 2px 6px #262A2D12;transform:rotate(-2deg)}
+    #o3-home-concept .o3-page-preview::before{content:"";display:block;width:80px;height:5px;background:var(--o3-ink);margin-bottom:5px;opacity:.8}
+    #o3-home-concept .o3-page-preview::after{content:"";display:block;width:48px;height:2px;background:var(--o3-ink);opacity:.22;margin-top:8px}
+    #o3-home-concept .o3-paper-columns{display:grid;grid-template-columns:1fr 1fr;gap:7px;height:94px;margin-top:9px}
+    #o3-home-concept .o3-paper-columns span{background:repeating-linear-gradient(to bottom,var(--o3-ink) 0 1px,transparent 1px 5px);opacity:.28}
+    #o3-home-concept .o3-paper-columns span:last-child{background:linear-gradient(var(--o3-blue),var(--o3-blue)) 0 0/100% 34px no-repeat,repeating-linear-gradient(to bottom,var(--o3-ink) 0 1px,transparent 1px 5px);opacity:.65}
+    #o3-home-concept .o3-hand-sheet{position:relative;width:132px;height:150px;padding:42px 13px 12px;background:var(--o3-sheet);transform:rotate(1deg);font:400 13px/1.6 "Kaiti SC","STKaiti","KaiTi",cursive;box-shadow:0 2px 6px #262A2D12;border-left:5px solid var(--o3-note-cover)}
+    #o3-home-concept .o3-hand-sheet::before{content:"";position:absolute;inset:0 0 auto;height:27px;background:var(--o3-note-cover)}
+    #o3-home-concept .o3-hand-sheet strong{font:500 9px/1.5 "MiSans VF",sans-serif;display:block;letter-spacing:.7px;margin-bottom:5px}
+    #o3-home-concept .o3-hand-sheet em{display:block;text-decoration:underline;text-decoration-color:var(--o3-mark);text-underline-offset:3px;font-style:normal}
+    #o3-home-concept .o3-thumb-formula .o3-page-preview{transform:rotate(1deg);border-top:6px solid var(--o3-blue);padding-top:12px}
+    #o3-home-concept .o3-formula-line{font:400 17px/1.4 Georgia,serif;margin:12px 0;text-align:center}
+    #o3-home-concept .o3-idea-sheet{width:132px;height:150px;padding:27px 12px 12px;background:var(--o3-sheet);transform:rotate(-1deg);font:400 14px/1.8 "Kaiti SC","STKaiti","KaiTi",cursive;background-image:radial-gradient(var(--o3-rule) .7px,transparent .8px);background-size:8px 8px;box-shadow:0 2px 6px #262A2D12;border-top:6px solid var(--o3-mark)}
+    #o3-home-concept .o3-idea-sheet span{border-bottom:2px solid var(--o3-mark);display:inline-block;margin-bottom:10px}
+    #o3-home-concept .o3-generic-file{display:grid;justify-items:center;gap:6px;color:var(--o3-muted);font-size:12px;letter-spacing:1px}
+    #o3-home-concept .o3-generic-file svg{width:38px;height:38px}
+    #o3-home-concept .o3-search-field{margin-bottom:16px;display:flex;align-items:center;gap:12px;background:var(--o3-panel);border-radius:12px;padding:0 16px;min-height:var(--o3-button)}
+    #o3-home-concept .o3-search-field input{width:100%;background:transparent;border:0;padding:12px 0;min-width:0;font-size:16px}
+    #o3-home-concept .o3-empty{grid-column:1/-1;padding:44px 12px;color:var(--o3-muted);text-align:center;font-size:16px}
+    #o3-home-concept .o3-toast{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);padding:10px 18px;border-radius:12px;background:var(--o3-ink);color:var(--o3-paper);font-size:13px;max-width:80%;z-index:5;box-shadow:0 4px 15px #11171520;white-space:normal}
+    #o3-home-concept .o3-overlay{position:absolute;inset:0;background:#1117155C;z-index:10;display:flex;align-items:center;justify-content:center;padding:26px}
+    #o3-home-concept .o3-dialog{width:420px;max-width:100%;max-height:100%;overflow-y:auto;background:var(--o3-paper);padding:24px;border-radius:20px;box-shadow:0 12px 60px #11171530}
+    #o3-home-concept .o3-dialog-header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}
+    #o3-home-concept .o3-dialog-header h2{font-size:24px;font-weight:500;margin:0}
+    #o3-home-concept .o3-dialog .o3-close{min-width:var(--o3-button);min-height:var(--o3-button);background:var(--o3-panel);font-size:14px}
+    #o3-home-concept .o3-dialog label{display:block;font-size:16px;margin-bottom:12px}
+    #o3-home-concept .o3-dialog input[type="text"],#o3-home-concept .o3-dialog textarea,#o3-home-concept .o3-dialog select{display:block;width:100%;min-height:60px;margin-top:8px;padding:12px;border:1px solid var(--o3-rule);border-radius:12px;background:var(--o3-paper);font-size:16px}
+    #o3-home-concept .o3-dialog textarea{resize:vertical;min-height:160px}
+    #o3-home-concept .o3-dialog .o3-confirm{width:100%;background:var(--o3-blue);margin-top:20px}
+    #o3-home-concept .o3-dialog[data-modal="feedback"]{width:540px;padding:22px 28px 28px;border-radius:22px;background:var(--o3-panel)}
+    #o3-home-concept .o3-dialog[data-modal="feedback"] .o3-dialog-header{display:grid;grid-template-columns:80px minmax(0,1fr) 80px;gap:12px;margin-bottom:20px}
+    #o3-home-concept .o3-dialog[data-modal="feedback"] .o3-dialog-header h2{text-align:center;font-size:23px}
+    #o3-home-concept .o3-dialog[data-modal="feedback"] .o3-close{background:transparent;font-size:16px;font-weight:400;justify-content:flex-start;color:var(--o3-muted)}
+    #o3-home-concept .o3-dialog[data-modal="feedback"] .o3-feedback-submit{width:100%;margin-top:20px;background:var(--o3-orange);color:var(--o3-action-ink);font-size:16px}
+    #o3-home-concept .o3-dialog[data-modal="feedback"] label{font-size:17px;font-weight:500;margin:0 0 24px}
+    #o3-home-concept .o3-dialog[data-modal="feedback"] label:last-of-type{margin-bottom:0}
+    #o3-home-concept .o3-dialog[data-modal="feedback"] textarea{height:180px;min-height:180px;resize:none;margin-top:12px;padding:18px;font-weight:400;line-height:1.7;background:var(--o3-paper)}
+    #o3-home-concept .o3-dialog[data-modal="feedback"] input{min-height:var(--o3-button);margin-top:12px;padding:16px 18px;font-weight:400;background:var(--o3-paper)}
+    #o3-home-concept .o3-dialog[data-modal="feedback"] :is(input,textarea)::placeholder{color:var(--o3-muted);opacity:.85}
+    #o3-home-concept .o3-feedback-optional{font-size:13px;font-weight:400;color:var(--o3-muted);margin-left:9px}
+    #o3-home-concept .o3-feedback-error{font-size:13px;margin:10px 0 0;color:var(--o3-ink)}
+    #o3-home-concept .o3-dialog .o3-size-options{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+    #o3-home-concept .o3-size-options button{border:1px solid var(--o3-rule);display:grid;gap:0;padding:8px 0}
+    #o3-home-concept .o3-size-options button[aria-pressed="true"]{background:var(--o3-blue);border-color:var(--o3-ink)}
+    #o3-home-concept .o3-size-options small{font-size:11px;font-weight:400}
+    #o3-home-concept .o3-help{font-size:13px;color:var(--o3-muted);margin:14px 0 0}
+    #o3-home-concept .o3-error{color:#9A2D16;font-size:14px;min-height:21px;margin:12px 0 0}
+    #o3-home-concept .o3-import-label{display:flex!important;align-items:center;justify-content:center;gap:12px;min-height:110px;border:1px dashed var(--o3-muted);border-radius:12px;padding:20px;text-align:center;background:var(--o3-panel)}
+    #o3-home-concept .o3-import-label input{display:block;max-width:100%;font-size:14px;margin-top:10px}
+    #o3-home-concept .o3-import-label input::file-selector-button{font:inherit;min-height:var(--o3-button);padding:10px 14px;border:1px solid var(--o3-rule);border-radius:12px;background:var(--o3-paper);color:var(--o3-ink);margin-right:10px}
+    #o3-home-concept .o3-settings-content{padding-top:6px}
+    #o3-home-concept .o3-settings-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding-bottom:16px;margin-bottom:20px;border-bottom:1px solid var(--o3-rule)}
+    #o3-home-concept .o3-settings-tabs button{display:flex;align-items:center;justify-content:center;gap:10px;min-height:var(--o3-button);border-radius:12px;color:var(--o3-muted);font-size:16px;font-weight:500}
+    #o3-home-concept .o3-settings-tabs button svg{width:22px;height:22px}
+    #o3-home-concept .o3-settings-tabs button[aria-pressed="true"]{background:var(--o3-side-active);color:var(--o3-accent)}
+    #o3-home-concept .o3-preference-list{display:grid;gap:14px}
+    #o3-home-concept .o3-preference-row{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:112px;padding:20px 24px;background:var(--o3-panel);border:1px solid var(--o3-rule);border-radius:14px}
+    #o3-home-concept .o3-preference-copy strong{display:block;font-size:18px;font-weight:500;line-height:1.5}
+    #o3-home-concept .o3-preference-copy small{display:block;font-size:13px;line-height:1.6;color:var(--o3-muted);margin-top:6px}
+    #o3-home-concept .o3-preference-row select{font:inherit;font-size:15px;min-height:var(--o3-button);width:224px;flex-shrink:0;border:1px solid var(--o3-rule);border-radius:10px;padding:0 16px;background:var(--o3-paper);color:var(--o3-ink)}
+    #o3-home-concept .o3-switch{appearance:none;position:relative;margin:0;width:68px;height:var(--o3-button);flex-shrink:0;border:0;background:transparent}
+    #o3-home-concept .o3-switch::before{content:"";position:absolute;width:52px;height:30px;left:8px;top:50%;transform:translateY(-50%);border-radius:30px;background:var(--o3-rule)}
+    #o3-home-concept .o3-switch::after{content:"";position:absolute;width:22px;height:22px;left:12px;top:50%;transform:translateY(-50%);border-radius:50%;background:var(--o3-panel);box-shadow:0 1px 3px #262A2D22}
+    #o3-home-concept .o3-switch:checked::before{background:var(--o3-accent)}
+    #o3-home-concept .o3-switch:checked::after{left:34px}
+    #o3-home-concept .o3-about{padding:28px 0}
+    #o3-home-concept .o3-about-wordmark{display:block;font-size:52px;line-height:1.2;font-weight:500;letter-spacing:-2px}
+    #o3-home-concept .o3-about-origin{font-size:14px;color:var(--o3-muted);margin:12px 0 0}
+    #o3-home-concept .o3-about-purpose{font-size:22px;line-height:1.7;margin:32px 0 40px;max-width:560px}
+    #o3-home-concept .o3-about .o3-settings-font{padding-top:22px;border-top:1px solid var(--o3-rule)}
+    #o3-home-concept .o3-update-row{margin:24px 0}
+    #o3-home-concept .o3-update-row button{padding:0 20px;background:var(--o3-side-active);color:var(--o3-accent);white-space:nowrap}
+    #o3-home-concept .o3-portrait .o3-update-row{align-items:flex-start;flex-direction:column;gap:14px}
+    #o3-home-concept .o3-settings-intro{margin-bottom:18px}
+    #o3-home-concept .o3-settings-intro h2{font-size:22px;font-weight:500;line-height:1.4;margin:0}
+    #o3-home-concept .o3-settings-intro p{font-size:13px;color:var(--o3-muted);margin:7px 0 0}
+    #o3-home-concept .o3-theme-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+    #o3-home-concept .o3-app .o3-theme-option{display:block;text-align:left;min-width:0;width:100%;border-radius:14px}
+    #o3-home-concept .o3-theme-preview{display:flex;aspect-ratio:1.4;overflow:hidden;border:2px solid var(--o3-rule);border-radius:12px;background:var(--preview-paper);transition:none}
+    #o3-home-concept .o3-theme-option[aria-pressed="true"] .o3-theme-preview{border-color:var(--o3-accent);outline:2px solid var(--o3-accent);outline-offset:3px}
+    #o3-home-concept .o3-theme-option:hover .o3-theme-preview{border-color:var(--o3-accent)}
+    #o3-home-concept .o3-mini-side{width:22%;flex-shrink:0;background:var(--preview-side);padding:15px 6px 8px;display:flex;flex-direction:column;gap:7px}
+    #o3-home-concept .o3-mini-side b{height:4px;width:90%;background:var(--preview-ink);border-radius:1px;margin-bottom:11px}
+    #o3-home-concept .o3-mini-side i{height:3px;width:65%;background:var(--preview-ink);opacity:.35;border-radius:1px}
+    #o3-home-concept .o3-mini-side i:last-child{margin-top:auto}
+    #o3-home-concept .o3-mini-main{min-width:0;flex:1;padding:13px 9px 9px;display:flex;flex-direction:column;gap:9px}
+    #o3-home-concept .o3-mini-title{height:5px;width:28%;background:var(--preview-ink);border-radius:1px}
+    #o3-home-concept .o3-mini-actions{display:grid;grid-template-columns:1fr 1fr .8fr;gap:4px;height:19px}
+    #o3-home-concept .o3-mini-actions i{border-radius:3px;background:var(--preview-primary)}
+    #o3-home-concept .o3-mini-actions i:nth-child(2){background:var(--preview-secondary)}
+    #o3-home-concept .o3-mini-actions i:nth-child(3){background:var(--preview-panel);border:1px solid var(--preview-rule)}
+    #o3-home-concept .o3-mini-folders{display:flex;gap:4px;height:12px}
+    #o3-home-concept .o3-mini-folders i{flex:1;border:1px solid var(--preview-rule);border-radius:2px;background:var(--preview-panel)}
+    #o3-home-concept .o3-mini-notes{display:flex;flex:1;gap:5px;min-height:24px}
+    #o3-home-concept .o3-mini-notes i{flex:1;background:var(--preview-panel);border-top:4px solid var(--preview-primary);box-shadow:0 1px 3px #262A2D12}
+    #o3-home-concept .o3-mini-notes i:nth-child(2){border-top-color:var(--preview-secondary)}
+    #o3-home-concept .o3-mini-notes i:nth-child(3){border-top-color:var(--preview-ink)}
+    #o3-home-concept .o3-theme-caption{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:16px}
+    #o3-home-concept .o3-theme-caption strong{display:block;font-size:19px;font-weight:500;line-height:1.4}
+    #o3-home-concept .o3-theme-caption small{display:block;font-size:11px;font-weight:400;color:var(--o3-muted);margin-top:5px}
+    #o3-home-concept .o3-theme-check{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:23px;height:23px;border-radius:50%;border:1.5px solid var(--o3-rule);color:var(--o3-paper)}
+    #o3-home-concept .o3-theme-check svg{width:15px;height:15px;opacity:0;stroke-width:2.5}
+    #o3-home-concept .o3-theme-option[aria-pressed="true"] .o3-theme-check{background:var(--o3-accent);border-color:var(--o3-accent)}
+    #o3-home-concept .o3-theme-option[aria-pressed="true"] .o3-theme-check svg{opacity:1}
+    #o3-home-concept .o3-size-setting{display:flex;align-items:center;justify-content:space-between;gap:30px;border-top:1px solid var(--o3-rule);margin-top:26px;padding-top:22px}
+    #o3-home-concept .o3-size-setting .o3-settings-intro{margin:0}
+    #o3-home-concept .o3-size-setting h2{font-size:19px}
+    #o3-home-concept .o3-settings-content .o3-size-options{display:grid;grid-template-columns:repeat(3,86px);gap:10px;flex-shrink:0}
+    #o3-home-concept .o3-settings-content .o3-size-options button{display:flex;flex-direction:column;justify-content:center;gap:3px;min-height:var(--o3-button);padding:9px 0;background:var(--o3-panel)}
+    #o3-home-concept .o3-settings-content .o3-size-options button[aria-pressed="true"]{background:var(--o3-side-active);border-color:var(--o3-accent);color:var(--o3-accent)}
+    #o3-home-concept .o3-settings-font{display:flex;align-items:center;gap:9px;margin-top:18px;color:var(--o3-muted);font-size:12px}
+    #o3-home-concept .o3-settings-font svg{width:18px;height:18px}
+    #o3-home-concept .o3-portrait .o3-side{padding:48px 10px 20px}
+    #o3-home-concept .o3-portrait .o3-brand{padding:0 5px 10px;justify-content:center;margin-bottom:32px}
+    #o3-home-concept .o3-portrait .o3-brand strong{font-size:21px;letter-spacing:-.7px;transform:translateY(-3.75px)}
+    #o3-home-concept .o3-portrait .o3-side button{flex-direction:column;justify-content:center;padding:8px 2px;gap:4px;font-size:13px;min-height:calc(var(--o3-button) + 8px);line-height:1.4}
+    #o3-home-concept .o3-portrait .o3-side-footer{text-align:center;padding:0;font-size:10px;letter-spacing:1px}
+    #o3-home-concept .o3-portrait .o3-main{padding:calc(50px - max(62px,var(--o3-button)) / 2) 24px 24px}
+    #o3-home-concept .o3-portrait .o3-header{flex-direction:row;align-items:center;gap:14px;margin-bottom:22px}
+    #o3-home-concept .o3-portrait .o3-heading h1{font-size:36px}
+    #o3-home-concept .o3-portrait .o3-utilities{gap:0}
+    #o3-home-concept .o3-portrait .o3-create{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:26px}
+    #o3-home-concept .o3-portrait .o3-create button{flex-direction:column;align-items:flex-start;justify-content:space-between;min-height:120px;padding:15px;gap:12px}
+    #o3-home-concept .o3-portrait .o3-create-copy strong{font-size:16px}
+    #o3-home-concept .o3-portrait .o3-create-copy small{font-size:10px}
+    #o3-home-concept .o3-portrait .o3-action-texture{width:85px;height:85px;right:-36px;bottom:-30px}
+    #o3-home-concept .o3-portrait .o3-create-import .o3-action-texture{height:42px;width:19px;right:10px;bottom:12px}
+    #o3-home-concept .o3-portrait .o3-folder-section{margin-bottom:28px}
+    #o3-home-concept .o3-portrait .o3-folders{gap:10px}
+    #o3-home-concept .o3-portrait .o3-folders button{min-height:var(--o3-button);padding:12px;font-size:15px;gap:10px}
+    #o3-home-concept .o3-portrait .o3-doc-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 18px}
+    #o3-home-concept .o3-portrait .o3-thumb{height:182px}
+    #o3-home-concept .o3-portrait .o3-page-preview{transform:rotate(-2deg) scale(1.02)}
+    #o3-home-concept .o3-portrait .o3-thumb-formula .o3-page-preview{transform:rotate(1deg) scale(1.02)}
+    #o3-home-concept .o3-portrait .o3-hand-sheet{transform:rotate(1deg) scale(1.02)}
+    #o3-home-concept .o3-portrait .o3-idea-sheet{transform:rotate(-1deg) scale(1.02)}
+    #o3-home-concept .o3-portrait .o3-doc-name{font-size:17px;margin-top:12px}
+    #o3-home-concept .o3-portrait .o3-doc-date{font-size:13px;margin-top:4px}
+    #o3-home-concept .o3-portrait .o3-theme-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 22px}
+    #o3-home-concept .o3-portrait .o3-theme-preview{aspect-ratio:1.8}
+    #o3-home-concept .o3-portrait .o3-mini-main{padding:16px 12px 12px;gap:10px}
+    #o3-home-concept .o3-portrait .o3-mini-actions{height:24px}
+    #o3-home-concept .o3-portrait .o3-size-setting{flex-direction:column;align-items:stretch;gap:20px;margin-top:22px;padding-top:20px}
+    #o3-home-concept .o3-portrait .o3-settings-content .o3-size-options{grid-template-columns:repeat(3,1fr)}
+    #o3-home-concept .o3-portrait .o3-settings-tabs button{flex-direction:column;gap:5px;font-size:14px;padding:8px 2px;min-height:calc(var(--o3-button) + 8px)}
+    #o3-home-concept .o3-portrait .o3-preference-row{padding:20px;gap:16px}
+    #o3-home-concept .o3-portrait .o3-preference-row:has(select){align-items:stretch;flex-direction:column}
+    #o3-home-concept .o3-portrait .o3-preference-row select{width:100%}
+    @media(prefers-reduced-motion:no-preference){#o3-home-concept .o3-app button{transition:background-color .15s,border-color .15s}#o3-home-concept .o3-thumb{transition:border-color .15s}}
+  </style>
+  <div class="viz-carousel" aria-label="Annota 的两个屏幕方向" data-previous-label="上一个方向" data-next-label="下一个方向">
+    <section data-variant="横屏" aria-label="3比2横屏"><div class="o3-frame"><div class="o3-app" data-view="landscape"></div></div></section>
+    <section data-variant="竖屏" aria-label="2比3竖屏" hidden><div class="o3-frame o3-frame-portrait"><div class="o3-app o3-portrait" data-view="portrait"></div></div></section>
+  </div>
+  <template id="o3-home-template">
+    <aside class="o3-side" aria-label="主导航">
+      <div class="o3-brand" aria-label="Annota"><strong>Annota</strong></div>
+      <nav class="o3-nav-primary" aria-label="书库导航">
+        <button type="button" class="o3-search-button cursor-interaction" data-action="search"><i data-lucide="search" aria-hidden="true"></i><span data-i18n="search">搜索</span></button>
+        <button type="button" class="cursor-interaction" data-action="home" aria-current="page"><i data-lucide="house" aria-hidden="true"></i><span data-i18n="home">主页</span></button>
+        <button type="button" class="cursor-interaction" data-action="favorites" aria-current="false" aria-pressed="false"><i data-lucide="star" aria-hidden="true"></i><span data-i18n="favorites">收藏</span></button>
+      </nav>
+      <nav class="o3-nav-bottom" aria-label="应用选项">
+        <button type="button" class="cursor-interaction" data-action="settings"><i data-lucide="settings-2" aria-hidden="true"></i><span data-i18n="settings">设置</span></button>
+        <button type="button" class="cursor-interaction" data-action="feedback"><i data-lucide="message-square" aria-hidden="true"></i><span data-i18n="feedback">意见反馈</span></button>
+      </nav>
+      <span class="o3-side-footer" data-i18n="local">本地书库</span>
+    </aside>
+    <main class="o3-main">
+      <header class="o3-header">
+        <div class="o3-heading"><span class="o3-eyebrow">LIBRARY</span><h1>主页</h1></div>
+        <div class="o3-utilities" role="group" aria-label="书库管理">
+          <button type="button" class="cursor-interaction" data-action="filter" data-i18n-label="filter" aria-label="筛选" data-tooltip="筛选"><i data-lucide="funnel" aria-hidden="true"></i></button>
+          <button type="button" class="cursor-interaction" data-action="trash" data-i18n-label="trash" aria-label="废纸篓" data-tooltip="废纸篓" aria-pressed="false"><i data-lucide="trash-2" aria-hidden="true"></i></button>
+          <button type="button" class="cursor-interaction" data-action="language" aria-label="Switch to English" data-tooltip="Switch to English" aria-pressed="false"><i data-lucide="languages" aria-hidden="true"></i></button>
+        </div>
+      </header>
+      <div class="o3-library-content">
+      <label class="o3-search-field" hidden><i data-lucide="search" aria-hidden="true"></i><input type="search" maxlength="80" aria-label="搜索笔记与文件名" placeholder="搜索笔记与文件名"></label>
+      <div class="o3-create" role="group" aria-label="新建和导入">
+        <button type="button" class="o3-create-note cursor-interaction" data-action="new-note"><i data-lucide="plus" aria-hidden="true"></i><span class="o3-create-copy"><strong data-i18n="newNote">新建笔记</strong><small data-i18n="blankNotebook">空白手写本</small></span><span class="o3-action-texture" aria-hidden="true"></span></button>
+        <button type="button" class="o3-create-import cursor-interaction" data-action="import"><i data-lucide="file-up" aria-hidden="true"></i><span class="o3-create-copy"><strong data-i18n="import">导入文件</strong><small data-i18n="localPdf">PDF · 本地文件</small></span><span class="o3-action-texture" aria-hidden="true"></span></button>
+        <button type="button" class="o3-create-folder cursor-interaction" data-action="new-folder"><i data-lucide="folder-plus" aria-hidden="true"></i><span class="o3-create-copy"><strong data-i18n="newFolder">新建文件夹</strong><small data-i18n="organize">分类与整理</small></span></button>
+      </div>
+      <section class="o3-folder-section" aria-label="文件夹">
+        <div class="o3-section-header"><h2 data-i18n="folders">文件夹</h2><span class="o3-folder-count">2 个</span></div>
+        <div class="o3-folders"></div>
+      </section>
+      <section class="o3-note-section" aria-label="我的笔记">
+        <div class="o3-section-header"><h2 class="o3-note-title">我的笔记</h2><span class="o3-sort-label">最近打开</span></div>
+        <div class="o3-doc-grid"></div>
+      </section>
+      </div>
+      <section class="o3-settings-content" aria-label="设置" hidden>
+        <nav class="o3-settings-tabs" aria-label="设置分类">
+          <button type="button" class="cursor-interaction" data-settings-tab="appearance" aria-pressed="true"><i data-lucide="palette" aria-hidden="true"></i><span data-i18n="appearance">外观</span></button>
+          <button type="button" class="cursor-interaction" data-settings-tab="stylus" aria-pressed="false"><i data-lucide="pen-tool" aria-hidden="true"></i><span data-i18n="stylus">手写笔</span></button>
+          <button type="button" class="cursor-interaction" data-settings-tab="gestures" aria-pressed="false"><i data-lucide="hand" aria-hidden="true"></i><span data-i18n="gestures">手势</span></button>
+          <button type="button" class="cursor-interaction" data-settings-tab="about" aria-pressed="false"><i data-lucide="info" aria-hidden="true"></i><span data-i18n="about">关于</span></button>
+        </nav>
+        <div class="o3-settings-panel" data-settings-panel="appearance">
+        <div class="o3-settings-intro">
+          <h2 data-i18n="appearance">外观</h2>
+          <p data-i18n="appearanceHelp">选择喜欢的配色，点选即应用。</p>
+        </div>
+        <div class="o3-theme-grid" role="group" aria-label="外观配色"></div>
+        <section class="o3-size-setting">
+          <div class="o3-settings-intro"><h2 data-i18n="buttonSize">按键大小</h2><p data-i18n="sizeHelp">图标、文字和点击区域一起放大。</p></div>
+          <div class="o3-size-options" role="group" aria-label="按键大小">
+            <button type="button" class="cursor-interaction" data-size="60" aria-pressed="false"><span>60</span><small data-i18n="standard">标准</small></button>
+            <button type="button" class="cursor-interaction" data-size="68" aria-pressed="true"><span>68</span><small data-i18n="larger">放大</small></button>
+            <button type="button" class="cursor-interaction" data-size="76" aria-pressed="false"><span>76</span><small data-i18n="largest">大号</small></button>
+          </div>
+        </section>
+        <div class="o3-settings-font"><i data-lucide="type" aria-hidden="true"></i><span data-i18n="fontCredit">本界面使用 MiSans 字体</span></div>
+        </div>
+        <div class="o3-settings-panel" data-settings-panel="stylus" hidden>
+          <div class="o3-settings-intro"><h2 data-i18n="stylus">手写笔</h2><p data-i18n="stylusHelp">让手写和工具切换更顺手。</p></div>
+          <div class="o3-preference-list">
+            <label class="o3-preference-row cursor-interaction"><span class="o3-preference-copy"><strong data-i18n="haptics">震动反馈</strong><small data-i18n="hapticsHelp">切换工具时，提供轻微震动提示。</small></span><input class="o3-switch cursor-interaction" type="checkbox" role="switch" data-preference="haptics" aria-label="震动反馈" checked></label>
+            <label class="o3-preference-row"><span class="o3-preference-copy"><strong data-i18n="doubleTap">轻点两下切换</strong><small data-i18n="doubleTapHelp">轻点笔身两下时执行的操作。</small></span><select class="cursor-interaction" data-preference="doubleTap" aria-label="轻点两下切换"><option value="pen-eraser" data-i18n="penEraser">画笔 / 橡皮擦</option><option value="previous-tool" data-i18n="previousTool">上一个工具</option><option value="none" data-i18n="noAction">无操作</option></select></label>
+          </div>
+        </div>
+        <div class="o3-settings-panel" data-settings-panel="gestures" hidden>
+          <div class="o3-settings-intro"><h2 data-i18n="gestures">手势</h2><p data-i18n="gesturesHelp">用指尖完成常用操作。</p></div>
+          <div class="o3-preference-list">
+            <label class="o3-preference-row"><span class="o3-preference-copy"><strong data-i18n="twoFinger">双指点击</strong><small data-i18n="twoFingerHelp">两根手指同时轻点页面。</small></span><select class="cursor-interaction" data-preference="twoFinger" aria-label="双指点击"><option value="undo" data-i18n="undo">撤销</option><option value="redo" data-i18n="redo">重做</option><option value="toolbar" data-i18n="toggleToolbar">显示 / 隐藏工具栏</option><option value="none" data-i18n="noAction">无操作</option></select></label>
+            <label class="o3-preference-row"><span class="o3-preference-copy"><strong data-i18n="threeFinger">三指点击</strong><small data-i18n="threeFingerHelp">三根手指同时轻点页面。</small></span><select class="cursor-interaction" data-preference="threeFinger" aria-label="三指点击"><option value="undo" data-i18n="undo">撤销</option><option value="redo" data-i18n="redo" selected>重做</option><option value="toolbar" data-i18n="toggleToolbar">显示 / 隐藏工具栏</option><option value="none" data-i18n="noAction">无操作</option></select></label>
+          </div>
+        </div>
+        <div class="o3-settings-panel" data-settings-panel="about" hidden>
+          <div class="o3-about">
+            <strong class="o3-about-wordmark">Annota</strong>
+            <p class="o3-about-origin" data-i18n="aboutOrigin">源自 Annotation · 批注</p>
+            <p class="o3-about-purpose" data-i18n="aboutPurpose">专注论文阅读，让思考落在笔尖。</p>
+            <div class="o3-preference-row o3-update-row">
+              <span class="o3-preference-copy"><strong data-i18n="appUpdate">应用更新</strong><small data-i18n="updateVersion">当前版本 · 设计预览</small></span>
+              <button type="button" class="cursor-interaction" data-action="check-update"><i data-lucide="refresh-cw" aria-hidden="true"></i><span data-i18n="checkUpdate">检查更新</span></button>
+            </div>
+            <div class="o3-settings-font"><i data-lucide="type" aria-hidden="true"></i><span data-i18n="fontCredit">本界面使用 MiSans 字体</span></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <div class="o3-toast" role="status" aria-live="polite" hidden></div>
+    <div class="o3-overlay" hidden><section class="o3-dialog" role="dialog" aria-modal="true" aria-label="主页选项"><div class="o3-dialog-header"><h2></h2><button type="button" class="o3-close cursor-interaction" data-action="close" data-i18n="close">关闭</button></div><div class="o3-dialog-body"></div></section></div>
+  </template>
+  <script>
+    (()=>{
+      const root=document.getElementById('o3-home-concept');
+      // ANNOTA_LOCAL_SEARCH_START
+      const normalizeSearch=value=>String(value).normalize('NFKC').toLowerCase().replace(/[‐‑–—_-]/g,' ').replace(/\s+/g,' ').trim();
+      function editDistance(a,b){
+        const rows=Array.from({length:a.length+1},()=>Array(b.length+1).fill(0));
+        for(let i=0;i<=a.length;i++)rows[i][0]=i;for(let j=0;j<=b.length;j++)rows[0][j]=j;
+        for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++){
+          rows[i][j]=Math.min(rows[i-1][j]+1,rows[i][j-1]+1,rows[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+          if(i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1])rows[i][j]=Math.min(rows[i][j],rows[i-2][j-2]+1);
+        }return rows[a.length][b.length];
+      }
+      root.annotaSearch=(items,query,fields)=>{
+        const q=normalizeSearch(query).slice(0,80);if(!q)return items.map(item=>({item,score:0}));
+        const compact=q.replace(/\s/g,''),tokens=q.split(' ');
+        return items.map((item,index)=>{
+          const scores=fields(item).map(value=>{
+            const text=normalizeSearch(value),flat=text.replace(/\s/g,'');
+            if(text===q||flat===compact)return 0;
+            if(text.startsWith(q))return 1;
+            if(text.includes(q)||flat.includes(compact))return 2;
+            if(tokens.length>1&&tokens.every(token=>text.includes(token)))return 3;
+            if(!/^[a-z]{3,40}$/.test(compact))return Infinity;
+            const allowance=compact.length<=5?1:2;
+            const candidates=[flat,...text.matchAll(/[a-z]+/g)].map(x=>typeof x==='string'?x:x[0]).filter(x=>Math.abs(x.length-compact.length)<=allowance);
+            const distance=Math.min(...candidates.map(x=>editDistance(compact,x)));
+            return distance<=allowance?4+distance:Infinity;
+          });
+          return {item,score:Math.min(...scores),index};
+        }).filter(r=>Number.isFinite(r.score)).sort((a,b)=>a.score-b.score||a.index-b.index);
+      };
+      // ANNOTA_LOCAL_SEARCH_END
+      const template=document.getElementById('o3-home-template');
+      const views=Array.from(root.querySelectorAll('[data-view]'));
+      views.forEach(view=>view.appendChild(template.content.cloneNode(true)));
+      const localTimestamp=()=>{const d=new Date(),pad=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());};
+      root.annotaProject=/*ANNOTA_PROJECT_CONFIG*/{"repository":null,"updateProvider":"github-releases","feedbackProvider":"in-app","feedbackEndpoint":null}/*ANNOTA_PROJECT_CONFIG_END*/;
+      const initialDocs=[
+        {id:'p1',name:'Attention Is All You Need',kind:'pdf',cover:'article',folder:null,favorite:false,trash:false,date:localTimestamp()},
+        {id:'guide',name:'Annota 使用指南',kind:'note',cover:'guide',folder:null,favorite:false,trash:false,date:localTimestamp()}
+      ];
+      const initialFolders=[];
+      const themes=[
+        {id:'pine',key:'themePine',detail:'themePineDetail',colors:['#FAFAFA','#EBEBEB','#262A2D','#1C614C','#BFD4E9','#FFFFFF','#DDDEE0']},
+        {id:'graphite-yellow',key:'themeDaylight',detail:'themeDaylightDetail',colors:['#FAFBFA','#EFF2EF','#363B37','#FFDA4C','#5D6769','#FFFFFF','#DFE3DF']},
+        {id:'cobalt-sage',key:'themeBlue',detail:'themeBlueDetail',colors:['#F7F8F6','#E9ECE6','#16181B','#4460CE','#6D785F','#FFFFFF','#D9DDD3']},
+        {id:'black-kraft',key:'themeTerrain',detail:'themeTerrainDetail',colors:['#FAFAFC','#A28D70','#27282A','#F75F1B','#98CAED','#FFFFFF','#DDD8D0']}
+      ];
+      const design={palette:'pine'};
+      const preferenceOptions={doubleTap:['pen-eraser','previous-tool','none'],twoFinger:['undo','redo','toolbar','none'],threeFinger:['undo','redo','toolbar','none']};
+      const state={librarySeedVersion:2,screen:'library',settingsTab:'appearance',preferences:{haptics:true,doubleTap:'pen-eraser',twoFinger:'undo',threeFinger:'redo'},language:'zh',buttonSize:68,collection:'all',kind:'all',sort:'recent',folder:null,searchOpen:false,search:'',selected:null,feedback:'',feedbackContact:'',docs:initialDocs.map(v=>({...v})),folders:initialFolders.map(v=>({...v}))};
+      const messages={
+        zh:{search:'搜索',home:'主页',settings:'设置',feedback:'意见反馈',trash:'废纸篓',favorites:'收藏',filter:'筛选',newNote:'新建笔记',import:'导入文件',newFolder:'新建文件夹',blankNotebook:'空白手写本',localPdf:'PDF · 本地文件',organize:'分类与整理',folders:'文件夹',myNotes:'我的笔记',recent:'最近打开',byName:'按名称',local:'本地书库',folderCount:'{n} 个',fileCount:'{n} 份',lastOpened:'上次打开 · {date}',empty:'没有符合条件的笔记',searchPlaceholder:'搜索笔记与文件名',removed:'已删除的笔记',selected:'已选中：{name}',close:'关闭',buttonSize:'按键大小',standard:'标准',larger:'放大',largest:'大号',sizeHelp:'图标、文字和点击区域一起放大。',fontCredit:'本界面使用 MiSans 字体',feedbackPrompt:'想改进的地方',feedbackPlaceholder:'写下你的建议…',saveDraft:'保存草稿',feedbackSaved:'反馈草稿已保留在当前预览',contentType:'内容类型',allContent:'全部内容',pdfFiles:'PDF 文件',handwrittenNotes:'手写笔记',sortBy:'排列方式',apply:'应用筛选',noteName:'笔记名称',folderName:'文件夹名称',untitled:'未命名笔记',newFolderName:'新文件夹',createNote:'创建笔记',createFolder:'创建文件夹',nameRequired:'请填写名称',duplicateFolder:'已有同名文件夹',maxFolders:'当前预览最多保留 12 个文件夹',maxFiles:'当前预览最多保留 20 个文件',created:'已创建：{name}',choosePdf:'选择 PDF 文件',importHelp:'本次预览仅添加文件名与占位封面。',importAdded:'已添加 {n} 张文件卡片',importError:'请选择 PDF 文件；当前预览最多保留 20 项',navigation:'主导航',libraryNavigation:'书库导航',appOptions:'应用选项',libraryManagement:'书库管理',createActions:'新建和导入'},
+        en:{search:'Search',home:'Home',settings:'Settings',feedback:'Feedback',trash:'Trash',favorites:'Favorites',filter:'Filter',newNote:'New note',import:'Import',newFolder:'New folder',blankNotebook:'Handwriting',localPdf:'PDF · Local files',organize:'Organize files',folders:'Folders',myNotes:'My notes',recent:'Recent',byName:'Name',local:'Local library',folderCount:'{n} folders',fileCount:'{n} files',lastOpened:'Last opened · {date}',empty:'No matching notes',searchPlaceholder:'Search notes and files',removed:'Deleted notes',selected:'Selected: {name}',close:'Close',buttonSize:'Button size',standard:'Standard',larger:'Larger',largest:'Largest',sizeHelp:'Icons, labels and touch targets scale together.',fontCredit:'This interface uses MiSans.',feedbackPrompt:'What could be better?',feedbackPlaceholder:'Share your suggestions…',saveDraft:'Save draft',feedbackSaved:'Draft saved in this preview',contentType:'Content type',allContent:'All content',pdfFiles:'PDF files',handwrittenNotes:'Handwritten notes',sortBy:'Sort by',apply:'Apply filter',noteName:'Note name',folderName:'Folder name',untitled:'Untitled note',newFolderName:'New folder',createNote:'Create note',createFolder:'Create folder',nameRequired:'Enter a name',duplicateFolder:'A folder already uses this name',maxFolders:'This preview holds up to 12 folders',maxFiles:'This preview holds up to 20 files',created:'Created: {name}',choosePdf:'Choose PDF files',importHelp:'This preview adds filenames and placeholder covers.',importAdded:'Added {n} file cards',importError:'Choose PDF files; this preview holds up to 20 items',navigation:'Main navigation',libraryNavigation:'Library navigation',appOptions:'App options',libraryManagement:'Library management',createActions:'Create and import'}
+      };
+      Object.assign(messages.zh,{appearance:'外观',appearanceHelp:'选择喜欢的配色，点选即应用。',themePine:'松间',themePineDetail:'松绿 · 雾蓝',themeDaylight:'晴昼',themeDaylightDetail:'明黄 · 石墨',themeBlue:'蓝调',themeBlueDetail:'钴蓝 · 鼠尾草',themeTerrain:'原野',themeTerrainDetail:'暖棕 · 橙蓝',themeApplied:'已切换为{name}'});
+      Object.assign(messages.en,{appearance:'Appearance',appearanceHelp:'Choose a palette. Changes apply instantly.',themePine:'Pine',themePineDetail:'Pine · Mist blue',themeDaylight:'Daylight',themeDaylightDetail:'Yellow · Graphite',themeBlue:'Blue Note',themeBlueDetail:'Cobalt · Sage',themeTerrain:'Terrain',themeTerrainDetail:'Kraft · Orange · Sky',themeApplied:'Applied {name}'});
+      Object.assign(messages.zh,{settingsCategories:'设置分类',stylus:'手写笔',gestures:'手势',about:'关于',stylusHelp:'支持小米手写笔，具体功能随型号和系统而异。',haptics:'震动反馈',hapticsHelp:'支持的手写笔切换工具时，提供轻微震动提示。',doubleTap:'轻点两下切换',doubleTapHelp:'轻点笔身两下时执行的操作。',penEraser:'画笔 / 橡皮擦',previousTool:'上一个工具',noAction:'无操作',gesturesHelp:'用指尖完成常用操作。',twoFinger:'双指点击',twoFingerHelp:'两根手指同时轻点页面。',threeFinger:'三指点击',threeFingerHelp:'三根手指同时轻点页面。',undo:'撤销',redo:'重做',toggleToolbar:'显示 / 隐藏工具栏',aboutOrigin:'源自 Annotation · 批注',aboutPurpose:'专注论文阅读，让思考落在笔尖。'});
+      Object.assign(messages.en,{settingsCategories:'Settings categories',stylus:'Stylus',gestures:'Gestures',about:'About',stylusHelp:'Xiaomi pen features depend on the model and system.',haptics:'Haptic feedback',hapticsHelp:'A gentle vibration on supported pens when switching tools.',doubleTap:'Double tap',doubleTapHelp:'Choose what happens when you tap the pen twice.',penEraser:'Pen / Eraser',previousTool:'Previous tool',noAction:'No action',gesturesHelp:'Keep everyday actions at your fingertips.',twoFinger:'Two-finger tap',twoFingerHelp:'Tap the page with two fingers at once.',threeFinger:'Three-finger tap',threeFingerHelp:'Tap the page with three fingers at once.',undo:'Undo',redo:'Redo',toggleToolbar:'Show / Hide toolbar',aboutOrigin:'From Annotation',aboutPurpose:'Read closely. Let your thoughts flow through your pen.'});
+      Object.assign(messages.zh,{cancel:'取消',submitFeedback:'提交反馈',feedbackPrompt:'问题和建议',feedbackPlaceholder:'请描述遇到的问题，或告诉我们你的建议。',contact:'联系方式',optional:'选填',contactPlaceholder:'邮箱、微信或 QQ',feedbackRequired:'请先填写问题或建议。',feedbackSaved:'反馈草稿已保留，当前预览尚未发送。'});
+      Object.assign(messages.en,{cancel:'Cancel',submitFeedback:'Send feedback',feedbackPrompt:'Issues and suggestions',feedbackPlaceholder:'Describe an issue or share an idea with us.',contact:'Contact details',optional:'Optional',contactPlaceholder:'Email or another way to reach you',feedbackRequired:'Please enter an issue or suggestion.',feedbackSaved:'Draft saved. Nothing was sent from this preview.'});
+      Object.assign(messages.zh,{appUpdate:'应用更新',updateVersion:'当前版本 · 设计预览',checkUpdate:'检查更新',updatePending:'已预留更新入口，更新服务尚未接入。'});
+      Object.assign(messages.en,{appUpdate:'App updates',updateVersion:'Current version · Design preview',checkUpdate:'Check for updates',updatePending:'Update entry reserved. The update service is not connected yet.'});
+      const t=(key,values={})=>(messages[state.language][key]||key).replace(/\{(\w+)\}/g,(_,name)=>values[name]??'');
+      let modal=null,modalView=null,toastTimer=null,lastFocused=null;
+      let readerSnapshot=window.openai?.widgetState?.privateContent?.reader||null;
+      const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      const prettyDate=s=>s.slice(0,10).replace(/-/g,'/')+' '+(s.slice(11,16)||'--:--');
+      const restoredDate=doc=>{
+        if(typeof doc.date==='string'&&/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2})?$/.test(doc.date)&&!Number.isNaN(Date.parse(doc.date))){
+          if(doc.date.length>10)return doc.date;
+          return initialDocs.find(sample=>sample.id===doc.id&&sample.date.startsWith(doc.date))?.date||doc.date;
+        }
+        return '2026-10-20';
+      };
+      function icons(){if(globalThis.lucide)lucide.createIcons({attrs:{width:24,height:24}});}
+      function persist(){
+        if(window.openai?.setWidgetState)window.openai.setWidgetState({modelContent:{homePalette:design.palette,appearanceName:t(themes.find(theme=>theme.id===design.palette).key),screen:readerSnapshot?.open?'reader':state.screen,document:readerSnapshot?.documentId,settingsTab:state.settingsTab,preferences:state.preferences,buttonSizeDp:state.buttonSize,interfaceLanguage:state.language},privateContent:{version:'o3-home-v1',librarySeedVersion:2,reader:readerSnapshot,screen:state.screen,settingsTab:state.settingsTab,preferences:{...state.preferences},palette:design.palette,language:state.language,buttonSize:state.buttonSize,collection:state.collection,kind:state.kind,sort:state.sort,folder:state.folder,search:state.search,searchOpen:state.searchOpen,feedback:state.feedback,feedbackContact:state.feedbackContact,docs:state.docs,folders:state.folders}}).catch(()=>{});
+      }
+      function restore(saved){
+        const p=saved?.privateContent;if(p?.version!=='o3-home-v1')return;
+        readerSnapshot=p.reader||null;
+        design.palette=['pine','graphite-yellow','cobalt-sage','black-kraft'].includes(p.palette)?p.palette:'pine';
+        state.screen=p.screen==='settings'?'settings':'library';
+        state.settingsTab=['appearance','stylus','gestures','about'].includes(p.settingsTab)?p.settingsTab:'appearance';
+        state.preferences={haptics:p.preferences?.haptics!==false,doubleTap:'pen-eraser',twoFinger:'undo',threeFinger:'redo'};
+        for(const [key,options] of Object.entries(preferenceOptions))if(options.includes(p.preferences?.[key]))state.preferences[key]=p.preferences[key];
+        state.language=p.language==='en'?'en':'zh';
+        state.buttonSize=[60,68,76].includes(p.buttonSize)?p.buttonSize:68;
+        state.collection=['all','favorites','trash'].includes(p.collection)?p.collection:'all';
+        state.kind=['all','pdf','note'].includes(p.kind)?p.kind:'all';state.sort=p.sort==='name'?'name':'recent';
+        state.search=typeof p.search==='string'?p.search.slice(0,80):'';state.searchOpen=p.searchOpen===true;
+        state.feedback=typeof p.feedback==='string'?p.feedback.slice(0,1000):'';
+        state.feedbackContact=typeof p.feedbackContact==='string'?p.feedbackContact.slice(0,120):'';
+        if(Array.isArray(p.folders))state.folders=p.folders.slice(0,12).filter(v=>v&&typeof v.id==='string'&&typeof v.name==='string').map(v=>({id:v.id.slice(0,50),name:v.name.slice(0,36)}));
+        if(Array.isArray(p.docs))state.docs=p.docs.slice(0,20).filter(v=>v&&typeof v.id==='string'&&typeof v.name==='string').map(v=>({id:v.id.slice(0,50),name:v.name.slice(0,120),kind:v.kind==='pdf'?'pdf':'note',cover:['article','note','formula','ideas','generic','guide'].includes(v.cover)?v.cover:'generic',folder:typeof v.folder==='string'?v.folder.slice(0,50):null,favorite:v.favorite===true,trash:v.trash===true,date:restoredDate(v),sourceId:['p1','guide'].includes(v.sourceId)?v.sourceId:null,paperStyle:['blank','dots','grid','lined'].includes(v.paperStyle)?v.paperStyle:'blank',paperColor:['white','gray','black'].includes(v.paperColor)?v.paperColor:'white'}));
+        if(p.librarySeedVersion!==2){
+          const legacy={n1:'论文精读 · 手写摘记',p2:'方法与公式参考',n2:'研究问题与想法',n0:'上周阅读草稿'};
+          state.docs=state.docs.filter(d=>legacy[d.id]!==d.name);
+          if(!state.docs.some(d=>d.id==='guide'))state.docs.push({...initialDocs[1]});
+          state.folders=state.folders.filter(f=>!(['reading','notes'].includes(f.id)&&['待读论文','手写笔记'].includes(f.name)&&!state.docs.some(d=>d.id!=='p1'&&d.folder===f.id)));
+          state.docs.forEach(d=>{if(!state.folders.some(f=>f.id===d.folder))d.folder=null;});
+        }
+        state.folder=state.folders.some(f=>f.id===p.folder)?p.folder:null;
+      }
+      function thumbnail(doc){
+        if(doc.cover==='guide')return '<div class="o3-guide-cover"><small>ANNOTA · GUIDE</small><strong>读进去，<br>记下来。</strong><span>Annota 使用指南</span></div>';
+        if(doc.cover==='article')return '<div class="o3-page-preview"><div class="o3-paper-columns"><span></span><span></span></div></div>';
+        if(doc.cover==='formula')return '<div class="o3-page-preview"><div class="o3-formula-line">E = mc²</div><div class="o3-paper-columns" style="height:44px"><span></span><span></span></div></div>';
+        if(doc.cover==='note')return '<div class="o3-hand-sheet"><strong>READING NOTES</strong>问题 → 方法<em>为什么成立？</em>证据与结论</div>';
+        if(doc.cover==='ideas')return '<div class="o3-idea-sheet"><span>下一步想法</span><br>① 回到原文<br>② 补充证据</div>';
+        return '<div class="o3-generic-file"><i data-lucide="'+(doc.kind==='pdf'?'file-text':'notebook-pen')+'" aria-hidden="true"></i><span>'+(doc.kind==='pdf'?'PDF':t('handwrittenNotes'))+'</span></div>';
+      }
+      function filteredDocs(){
+        const items=state.docs.filter(d=>(state.collection==='trash'?d.trash:!d.trash)&&(state.collection!=='favorites'||d.favorite)&&(state.kind==='all'||d.kind===state.kind)&&(!state.folder||d.folder===state.folder));
+        items.sort((a,b)=>state.sort==='name'?a.name.localeCompare(b.name,'zh'):b.date.localeCompare(a.date));
+        return root.annotaSearch(items,state.search,d=>[d.name]).map(r=>r.item);
+      }
+      function themeMarkup(theme){
+        const tokens=['paper','side','ink','primary','secondary','panel','rule'];
+        const style=tokens.map((token,i)=>'--preview-'+token+':'+theme.colors[i]).join(';');
+        return '<button type="button" class="o3-theme-option cursor-interaction" data-theme="'+theme.id+'" style="'+style+'" aria-pressed="false"><span class="o3-theme-preview" aria-hidden="true"><span class="o3-mini-side"><b></b><i></i><i></i><i></i><i></i></span><span class="o3-mini-main"><b class="o3-mini-title"></b><span class="o3-mini-actions"><i></i><i></i><i></i></span><span class="o3-mini-folders"><i></i><i></i></span><span class="o3-mini-notes"><i></i><i></i><i></i></span></span></span><span class="o3-theme-caption"><span><strong data-i18n="'+theme.key+'"></strong><small data-i18n="'+theme.detail+'"></small></span><span class="o3-theme-check" aria-hidden="true"><i data-lucide="check"></i></span></span></button>';
+      }
+      function render(){
+        root.dataset.palette=design.palette;root.style.setProperty('--o3-button',state.buttonSize+'px');root.style.setProperty('--o3-icon',(state.buttonSize===76?28:26)+'px');root.style.setProperty('--o3-label',(state.buttonSize===76?17:16)+'px');
+        const docs=filteredDocs(),folder=state.folders.find(f=>f.id===state.folder);
+        for(const view of views){
+          const settings=state.screen==='settings';
+          if(!view.querySelector('.o3-theme-grid').children.length)view.querySelector('.o3-theme-grid').innerHTML=themes.map(themeMarkup).join('');
+          view.dataset.screen=state.screen;
+          view.querySelector('.o3-library-content').hidden=settings;
+          view.querySelector('.o3-settings-content').hidden=!settings;
+          view.querySelector('.o3-settings-content').setAttribute('aria-label',t('settings'));
+          view.querySelector('.o3-settings-tabs').setAttribute('aria-label',t('settingsCategories'));
+          view.querySelectorAll('[data-settings-tab]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.settingsTab===state.settingsTab)));
+          view.querySelectorAll('[data-settings-panel]').forEach(panel=>panel.hidden=panel.dataset.settingsPanel!==state.settingsTab);
+          view.querySelectorAll('[data-preference]').forEach(control=>{
+            const key=control.dataset.preference;
+            control.setAttribute('aria-label',t(key));
+            if(control.type==='checkbox')control.checked=state.preferences[key];else control.value=state.preferences[key];
+          });
+          view.querySelector('.o3-theme-grid').setAttribute('aria-label',t('appearance'));
+          view.querySelector('.o3-settings-content .o3-size-options').setAttribute('aria-label',t('buttonSize'));
+          view.querySelector('.o3-eyebrow').textContent=settings?'SETTINGS':'LIBRARY';
+          view.querySelector('[data-action="filter"]').hidden=settings;
+          view.querySelector('[data-action="trash"]').hidden=settings;
+          view.querySelectorAll('[data-theme]').forEach(button=>{
+            const theme=themes.find(theme=>theme.id===button.dataset.theme);
+            button.setAttribute('aria-pressed',String(design.palette===theme.id));
+            button.setAttribute('aria-label',t(theme.key)+' · '+t(theme.detail));
+          });
+          view.querySelectorAll('[data-size]').forEach(button=>button.setAttribute('aria-pressed',String(Number(button.dataset.size)===state.buttonSize)));
+          view.lang=state.language==='zh'?'zh-CN':'en';view.querySelectorAll('[data-i18n]').forEach(e=>e.textContent=t(e.dataset.i18n));
+          view.querySelectorAll('[data-i18n-label]').forEach(e=>{const label=t(e.dataset.i18nLabel);e.setAttribute('aria-label',label);e.dataset.tooltip=label;});
+          view.querySelector('.o3-side').setAttribute('aria-label',t('navigation'));view.querySelector('.o3-nav-primary').setAttribute('aria-label',t('libraryNavigation'));view.querySelector('.o3-nav-bottom').setAttribute('aria-label',t('appOptions'));view.querySelector('.o3-utilities').setAttribute('aria-label',t('libraryManagement'));view.querySelector('.o3-create').setAttribute('aria-label',t('createActions'));
+          view.querySelector('h1').textContent=t(settings?'settings':state.collection==='favorites'?'favorites':state.collection==='trash'?'trash':'home');
+          view.querySelector('[data-action="language"]').setAttribute('aria-label',state.language==='zh'?'Switch to English':'切换为中文');view.querySelector('[data-action="language"]').setAttribute('aria-pressed',String(state.language==='en'));
+          view.querySelector('[data-action="language"]').dataset.tooltip=state.language==='zh'?'Switch to English':'切换为中文';
+          view.querySelector('[data-action="home"]').setAttribute('aria-current',!settings&&state.collection==='all'&&!state.folder?'page':'false');
+          view.querySelector('[data-action="settings"]').setAttribute('aria-current',settings?'page':'false');
+          view.querySelector('[data-action="trash"]').setAttribute('aria-pressed',String(state.collection==='trash'));
+          view.querySelector('[data-action="favorites"]').setAttribute('aria-pressed',String(!settings&&state.collection==='favorites'));
+          view.querySelector('[data-action="favorites"]').setAttribute('aria-current',!settings&&state.collection==='favorites'?'page':'false');
+          view.querySelector('.o3-search-field').hidden=!state.searchOpen;
+          const field=view.querySelector('input[type="search"]');if(field.value!==state.search)field.value=state.search;field.placeholder=t('searchPlaceholder');field.setAttribute('aria-label',t('searchPlaceholder'));
+          view.querySelector('.o3-folder-count').textContent=t('folderCount',{n:state.folders.length});
+          view.querySelector('.o3-folder-section').hidden=state.collection==='trash'||!state.folders.length;
+          view.querySelector('.o3-create').hidden=state.collection==='trash';
+          view.querySelector('.o3-folders').innerHTML=state.folders.map(f=>'<button type="button" class="cursor-interaction" data-folder="'+esc(f.id)+'" aria-pressed="'+String(state.folder===f.id)+'"><i data-lucide="folder" aria-hidden="true"></i><span class="o3-folder-name" data-tooltip="'+esc(f.name)+'">'+esc(f.name)+'</span><small>'+t('fileCount',{n:state.docs.filter(d=>!d.trash&&d.folder===f.id).length})+'</small></button>').join('');
+          view.querySelector('.o3-note-title').textContent=state.collection==='trash'?t('removed'):t('myNotes')+(folder?' · '+folder.name:'');
+          view.querySelector('.o3-sort-label').textContent=t(state.sort==='name'?'byName':'recent');
+          view.querySelector('.o3-doc-grid').innerHTML=docs.length?docs.map(d=>'<button type="button" class="o3-doc cursor-interaction" data-doc="'+esc(d.id)+'" aria-pressed="'+String(state.selected===d.id)+'" aria-label="'+esc(d.name+', '+t('lastOpened',{date:prettyDate(d.date)}))+'"><span class="o3-thumb o3-thumb-'+esc(d.cover)+'" aria-hidden="true">'+thumbnail(d)+'</span><span class="o3-doc-name" data-tooltip="'+esc(d.name)+'">'+esc(d.name)+'</span><time class="o3-doc-date" datetime="'+esc(d.date)+'">'+prettyDate(d.date)+'</time></button>').join(''):'<div class="o3-empty" role="status">'+t('empty')+'</div>';
+        }
+        icons();scaleFrames();root.dispatchEvent(new CustomEvent('annota:home-render'));
+      }
+      function scaleFrames(){
+        for(const view of views){const frame=view.parentElement;const portrait=view.dataset.view==='portrait';const base=portrait?682.6667:1024;const width=frame.clientWidth||Math.min(root.clientWidth||1024,base);const scale=width/base;view.style.transform='scale('+scale+')';frame.style.height=((portrait?1024:682.6667)*scale)+'px';}
+      }
+      function toast(message){
+        clearTimeout(toastTimer);views.forEach(v=>{const t=v.querySelector('.o3-toast');t.textContent=message;t.hidden=false;});
+        toastTimer=setTimeout(()=>views.forEach(v=>v.querySelector('.o3-toast').hidden=true),3200);
+      }
+      function openModal(view,name){
+        modal=name;modalView=view;lastFocused=document.activeElement;
+        const overlay=view.querySelector('.o3-overlay'),dialog=view.querySelector('.o3-dialog'),body=view.querySelector('.o3-dialog-body');
+        const titles={feedback:t('feedback'),filter:t('filter'),note:t('newNote'),folder:t('newFolder'),import:t('import')};
+        dialog.dataset.modal=name;
+        const header=view.querySelector('.o3-dialog-header');
+        if(name==='feedback')header.innerHTML='<button type="button" class="o3-close cursor-interaction" data-action="close">'+t('cancel')+'</button><h2>'+titles[name]+'</h2>';
+        else header.innerHTML='<h2>'+titles[name]+'</h2><button type="button" class="o3-close cursor-interaction" data-action="close">'+t('close')+'</button>';
+        dialog.setAttribute('aria-label',titles[name]);
+        if(name==='feedback')body.innerHTML='<label><span>'+t('feedbackPrompt')+'</span><textarea maxlength="1000" name="feedback" placeholder="'+t('feedbackPlaceholder')+'">'+esc(state.feedback)+'</textarea></label><label><span>'+t('contact')+'</span><small class="o3-feedback-optional">'+t('optional')+'</small><input type="text" maxlength="120" name="feedback-contact" autocomplete="off" autocapitalize="off" placeholder="'+t('contactPlaceholder')+'" value="'+esc(state.feedbackContact)+'"></label><p class="o3-feedback-error" role="alert" hidden></p><button type="button" class="o3-feedback-submit cursor-interaction" data-action="save-feedback">'+t('submitFeedback')+'</button>';
+        if(name==='filter')body.innerHTML='<label>'+t('contentType')+'<select name="kind"><option value="all">'+t('allContent')+'</option><option value="pdf">'+t('pdfFiles')+'</option><option value="note">'+t('handwrittenNotes')+'</option></select></label><label>'+t('sortBy')+'<select name="sort"><option value="recent">'+t('recent')+'</option><option value="name">'+t('byName')+'</option></select></label><button type="button" class="o3-confirm cursor-interaction" data-action="apply-filter">'+t('apply')+'</button>';
+        if(name==='note'||name==='folder')body.innerHTML='<label>'+t(name==='note'?'noteName':'folderName')+'<input type="text" name="name" maxlength="36" placeholder="'+t(name==='note'?'untitled':'newFolderName')+'"></label><p class="o3-error" role="alert"></p><button type="button" class="o3-confirm cursor-interaction" data-action="create">'+t(name==='note'?'createNote':'createFolder')+'</button>';
+        if(name==='import')body.innerHTML='<label class="o3-import-label"><span><i data-lucide="file-up" aria-hidden="true"></i><br>'+t('choosePdf')+'<input type="file" accept=".pdf,application/pdf" multiple name="files"></span></label><p class="o3-help">'+t('importHelp')+'</p>';
+        if(name==='filter'){body.querySelector('[name="kind"]').value=state.kind;body.querySelector('[name="sort"]').value=state.sort;}
+        overlay.hidden=false;view.querySelector('.o3-side').inert=true;view.querySelector('.o3-main').inert=true;icons();
+        (name==='feedback'?header.querySelector('[data-action="close"]'):(body.querySelector('input:not([type="file"]),textarea,select,button')||header.querySelector('[data-action="close"]'))).focus();
+      }
+      function closeModal(){
+        if(modalView){modalView.querySelector('.o3-overlay').hidden=true;modalView.querySelector('.o3-side').inert=false;modalView.querySelector('.o3-main').inert=false;}modal=null;modalView=null;
+        if(lastFocused?.isConnected)lastFocused.focus();lastFocused=null;
+      }
+      root.addEventListener('click',event=>{
+        if(modal==='feedback'&&event.target===modalView.querySelector('.o3-overlay')){closeModal();return;}
+        const b=event.target.closest('button');if(!b||!root.contains(b))return;
+        const view=b.closest('[data-view]');if(!view)return;
+        if(b.dataset.settingsTab){state.settingsTab=b.dataset.settingsTab;render();persist();return;}
+        if(b.dataset.theme){const theme=themes.find(theme=>theme.id===b.dataset.theme);if(!theme)return;design.palette=theme.id;render();persist();return;}
+        if(b.dataset.size){state.buttonSize=Number(b.dataset.size);render();view.querySelectorAll('[data-size]').forEach(e=>e.setAttribute('aria-pressed',String(Number(e.dataset.size)===state.buttonSize)));persist();return;}
+        if(b.dataset.folder){state.folder=state.folder===b.dataset.folder?null:b.dataset.folder;state.collection='all';state.selected=null;render();persist();return;}
+        if(b.dataset.doc){
+          state.selected=b.dataset.doc;const doc=state.docs.find(d=>d.id===state.selected);
+          if(!doc.trash&&(doc.kind==='note'||['p1','guide'].includes(doc.id)||doc.sourceId)){doc.date=localTimestamp();render();root.dispatchEvent(new CustomEvent('annota:open-reader',{detail:{documentId:doc.id,favorite:doc.favorite}}));return;}
+          render();persist();toast(t('selected',{name:doc.name}));return;
+        }
+        switch(b.dataset.action){
+          case'home':state.screen='library';state.collection='all';state.folder=null;state.search='';state.searchOpen=false;state.kind='all';state.selected=null;render();persist();break;
+          case'search':state.screen='library';state.searchOpen=!state.searchOpen;if(!state.searchOpen)state.search='';render();if(state.searchOpen)view.querySelector('input[type="search"]').focus();persist();break;
+          case'favorites':state.collection=state.screen==='library'&&state.collection==='favorites'?'all':'favorites';state.screen='library';state.folder=null;state.selected=null;render();persist();break;
+          case'trash':state.collection=state.collection==='trash'?'all':'trash';state.folder=null;state.selected=null;render();persist();break;
+          case'language':state.language=state.language==='zh'?'en':'zh';render();persist();break;
+          case'settings':state.screen='settings';render();persist();break;
+          case'check-update':if(root.dispatchEvent(new CustomEvent('annota:check-update',{cancelable:true,detail:{source:'about',provider:'github-releases',repository:root.annotaProject.repository,userInitiated:true}})))toast(t('updatePending'));break;
+          case'feedback':openModal(view,'feedback');break;
+          case'filter':openModal(view,'filter');break;
+          case'new-note':openModal(view,'note');break;
+          case'new-folder':openModal(view,'folder');break;
+          case'import':openModal(view,'import');break;
+          case'close':closeModal();break;
+          case'save-feedback':{
+            const field=view.querySelector('[name="feedback"]');
+            if(!field.value.trim()){const error=view.querySelector('.o3-feedback-error');error.textContent=t('feedbackRequired');error.hidden=false;field.setAttribute('aria-invalid','true');field.focus();break;}
+            state.feedback=field.value;state.feedbackContact=view.querySelector('[name="feedback-contact"]').value;
+            closeModal();persist();
+            const request=new CustomEvent('annota:submit-feedback',{cancelable:true,detail:{provider:root.annotaProject.feedbackProvider,endpoint:root.annotaProject.feedbackEndpoint,body:state.feedback,contact:state.feedbackContact,userInitiated:true}});
+            if(root.dispatchEvent(request))toast(t('feedbackSaved'));
+            break;
+          }
+          case'apply-filter':state.kind=view.querySelector('[name="kind"]').value;state.sort=view.querySelector('[name="sort"]').value;closeModal();render();persist();break;
+          case'create':{
+            const name=view.querySelector('[name="name"]').value.trim();const error=view.querySelector('.o3-error');
+            if(!name){error.textContent=t('nameRequired');break;}
+            if(modal==='folder'){
+              if(state.folders.some(f=>f.name===name)){error.textContent=t('duplicateFolder');break;}
+              if(state.folders.length>=12){error.textContent=t('maxFolders');break;}
+              state.folders.push({id:'f-'+Date.now(),name});
+            }else{
+              if(state.docs.length>=20){error.textContent=t('maxFiles');break;}
+              state.docs.unshift({id:'n-'+Date.now(),name,kind:'note',cover:'generic',folder:state.folder,favorite:false,trash:false,date:localTimestamp()});state.collection='all';state.kind='all';state.search='';
+            }
+            closeModal();render();persist();toast(t('created',{name}));break;
+          }
+        }
+      });
+      root.addEventListener('input',event=>{
+        if(event.target.matches('.o3-search-field input[type="search"]')){state.search=event.target.value;render();persist();}
+        if(event.target.matches('[name="feedback"]')){event.target.removeAttribute('aria-invalid');event.target.closest('.o3-dialog').querySelector('.o3-feedback-error').hidden=true;}
+      });
+      root.addEventListener('change',event=>{
+        const key=event.target.dataset.preference;
+        if(key){
+          if(key==='haptics')state.preferences.haptics=event.target.checked;
+          else if(preferenceOptions[key]?.includes(event.target.value))state.preferences[key]=event.target.value;
+          render();persist();return;
+        }
+        if(!event.target.matches('input[type="file"][name="files"]'))return;
+        const files=Array.from(event.target.files||[]).filter(f=>/\.pdf$/i.test(f.name)).slice(0,Math.max(0,20-state.docs.length));
+        files.forEach((f,i)=>state.docs.unshift({id:'p-'+Date.now()+'-'+i,name:f.name.slice(0,120),kind:'pdf',cover:'generic',folder:state.folder,favorite:false,trash:false,date:localTimestamp()}));
+        closeModal();state.collection='all';state.kind='all';state.search='';render();persist();toast(files.length?t('importAdded',{n:files.length}):t('importError'));
+      });
+      root.addEventListener('keydown',event=>{
+        if(event.key==='Escape'&&modal){event.preventDefault();closeModal();return;}
+        if(event.key==='Tab'&&modalView){
+          const focusable=Array.from(modalView.querySelector('.o3-dialog').querySelectorAll('button,input,textarea,select')).filter(e=>!e.disabled);
+          const first=focusable[0],last=focusable[focusable.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+        }
+      });
+      root.addEventListener('annota:reader-change',event=>{readerSnapshot=event.detail;persist();});
+      root.addEventListener('annota:document-opened',event=>{const doc=state.docs.find(d=>d.id===event.detail?.documentId);if(doc){doc.date=localTimestamp();render();persist();root.dispatchEvent(new CustomEvent('annota:document-meta',{detail:{documentId:doc.id,favorite:doc.favorite}}));}});
+      root.addEventListener('annota:toggle-favorite',event=>{const doc=state.docs.find(d=>d.id===event.detail?.documentId);if(doc&&!doc.trash){doc.favorite=!doc.favorite;render();persist();root.dispatchEvent(new CustomEvent('annota:document-meta',{detail:{documentId:doc.id,favorite:doc.favorite}}));}});
+      root.addEventListener('annota:navigate',event=>{const d=event.detail||{},view=views.find(v=>v.dataset.view===d.view)||views[0];state.screen=d.screen==='feedback'?'library':'settings';state.settingsTab=d.tab==='about'?'about':'appearance';render();persist();if(d.screen==='feedback')openModal(view,'feedback');});
+      function openExternal(url,source){const request=new CustomEvent('annota:open-external',{cancelable:true,detail:{url,source,userInitiated:true}});if(root.dispatchEvent(request))window.open(url,'_blank','noopener,noreferrer');}
+      root.addEventListener('annota:open-project',event=>{const repo=root.annotaProject.repository;if(!repo){toast(state.language==='en'?'The GitHub project address will be announced soon.':'GitHub 项目地址即将公布。');return;}openExternal('https://github.com/'+repo,'guide');});
+      root.annotaLibrary={
+        document:id=>state.docs.find(d=>d.id===id),
+        documents:()=>state.docs,
+        folders:()=>state.folders,
+        language:()=>state.language,
+        message:toast,
+        createNote(options){
+          if(state.docs.length>=20){toast(t('maxFiles'));return null;}
+          const doc={id:'n-'+Date.now(),name:t('untitled'),kind:'note',cover:'generic',folder:state.folder,favorite:false,trash:false,date:localTimestamp(),paperStyle:options.paperStyle,paperColor:options.paperColor};
+          state.docs.unshift(doc);state.collection='all';state.kind='all';state.search='';render();persist();
+          root.dispatchEvent(new CustomEvent('annota:open-reader',{detail:{documentId:doc.id,favorite:false}}));return doc.id;
+        },
+        action(action,id,value){
+          const doc=state.docs.find(d=>d.id===id);if(!doc)return false;
+          if(action==='favorite')doc.favorite=!doc.favorite;
+          if(action==='rename'){if(!String(value).trim())return false;doc.name=String(value).trim().slice(0,120);}
+          if(action==='move')doc.folder=state.folders.some(f=>f.id===value)?value:null;
+          if(action==='paper-color'&&['white','gray','black'].includes(value))doc.paperColor=value;
+          if(action==='trash')doc.trash=true;
+          if(action==='restore')doc.trash=false;
+          if(action==='duplicate'){
+            if(state.docs.length>=20){toast(t('maxFiles'));return false;}
+            const copy={...doc,id:'d-'+Date.now(),name:doc.name+(state.language==='zh'?' 副本':' copy'),sourceId:doc.sourceId||(['p1','guide'].includes(doc.id)?doc.id:null),favorite:false,date:localTimestamp()};
+            state.docs.unshift(copy);root.dispatchEvent(new CustomEvent('annota:clone-document',{detail:{from:id,to:copy.id}}));
+          }
+          render();persist();root.dispatchEvent(new CustomEvent('annota:document-meta',{detail:{documentId:id,favorite:doc.favorite}}));return true;
+        }
+      };
+      restore(window.openai?.widgetState);render();
+      window.addEventListener('openai:set_globals',event=>{if(event.detail?.globals?.widgetState){restore(event.detail.globals.widgetState);render();}});
+      new ResizeObserver(scaleFrames).observe(root);
+      new MutationObserver(scaleFrames).observe(root.querySelector('.viz-carousel'),{attributes:true,subtree:true,attributeFilter:['hidden']});
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>

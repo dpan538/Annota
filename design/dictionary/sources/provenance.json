@@ -1,0 +1,12 @@
+{
+  "retrieved": "2026-10-20",
+  "ecdict": {
+    "url": "https://raw.githubusercontent.com/skywind3000/ECDICT/master/ecdict.csv",
+    "sha256": "1a6947e04785db63613a92e14903cdae7954f7e84860b10e68e5c7cbb3f9c3cf",
+    "transformation": "Chinese definitions present and (exam tag present or min positive BNC/FRQ rank <= 50000). Save five fields into ecdict-core.csv.gz."
+  },
+  "cedict": {
+    "url": "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.txt.gz",
+    "version": "2026-10-19T05:01:26Z"
+  }
+}

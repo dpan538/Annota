@@ -1,0 +1,19 @@
+{
+  "name": "annota-design-prototype",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Annota is a note app specifically designed for the Xiaomi Pad 9 Pro Max.",
+  "license": "MIT",
+  "repository": "github:dpan538/Annota",
+  "engines": {"node": ">=22"},
+  "scripts": {
+    "test:static": "python3 scripts/check-sources.py",
+    "test:reader": "node design/export-reader-v8.cjs",
+    "test:guide": "ANNOTA_GUIDE_ONLY=1 node design/export-reader-v8.cjs",
+    "test:library": "ANNOTA_LIBRARY_ONLY=1 node design/export-reader-v8.cjs",
+    "preview:build": "node scripts/build-preview.cjs",
+    "guide:export": "node design/export-guide.cjs",
+    "logos:render": "node scripts/render-logo-concepts.cjs"
+  },
+  "devDependencies": {"lucide": "1.8.0", "playwright": "1.62.1"}
+}

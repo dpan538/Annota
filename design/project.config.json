@@ -1,0 +1,6 @@
+{
+  "repository": "dpan538/Annota",
+  "updateProvider": "github-releases",
+  "feedbackProvider": "in-app",
+  "feedbackEndpoint": null
+}

@@ -1,0 +1,100 @@
+<style>
+  #o3-home-concept .al-layer{position:absolute;inset:0;z-index:12;background:#15181B22}
+  #o3-home-concept .al-layer[data-kind="paper"]{background:transparent}
+  #o3-home-concept .al-panel{position:absolute;width:262px;max-width:calc(100% - 24px);padding:9px;background:var(--o3-panel);color:var(--o3-ink);border:1px solid var(--o3-rule);box-shadow:0 10px 35px #16181B24;border-radius:16px;line-height:1.5}
+  #o3-home-concept .al-panel button{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:9px 14px;border-radius:9px;font:400 14px/1.5 "MiSans VF",sans-serif;text-align:left;background:transparent;color:var(--o3-ink)}
+  #o3-home-concept .al-panel button:hover{background:var(--o3-side-hover)}
+  #o3-home-concept .al-panel button svg{width:20px;height:20px;flex-shrink:0;stroke-width:1.8}
+  #o3-home-concept .al-panel .al-danger{color:#C94A3D;border-top:1px solid var(--o3-rule);border-radius:0 0 9px 9px;margin-top:5px;padding-top:12px}
+  #o3-home-concept .al-panel h2{font-size:17px;font-weight:500;margin:8px 12px 15px}
+  #o3-home-concept .al-panel label{display:block;margin:12px;font-size:12px;color:var(--o3-muted)}
+  #o3-home-concept .al-panel input{display:block;margin-top:7px;width:100%;min-height:44px;background:var(--o3-paper);border:1px solid var(--o3-rule);border-radius:8px;padding:8px 10px;font:400 16px/1.5 "MiSans VF",sans-serif;color:var(--o3-ink)}
+  #o3-home-concept .al-panel .al-primary{background:var(--o3-orange);color:var(--o3-action-ink);justify-content:center;margin-top:12px}
+  #o3-home-concept .al-panel .al-back{font-size:12px;min-height:36px;color:var(--o3-muted)}
+  #o3-home-concept .al-panel.al-paper{width:352px;padding:18px}
+  #o3-home-concept .al-paper h2{margin:0 0 16px}
+  #o3-home-concept .al-paper p{font-size:12px;color:var(--o3-muted);margin:12px 0 8px}
+  #o3-home-concept .al-paper-options{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  #o3-home-concept .al-paper-options button{display:block;padding:5px;border:1px solid var(--o3-rule);border-radius:9px;text-align:center;min-width:0;font-size:12px}
+  #o3-home-concept .al-paper-options button[aria-pressed="true"]{border-color:var(--o3-accent);background:var(--o3-side-active);color:var(--o3-accent)}
+  #o3-home-concept .al-sheet{display:block;height:71px;margin-bottom:7px;border-radius:3px;background-color:var(--al-paper,#FFFFFF);background-size:10px 10px;box-shadow:0 1px 3px #16181B13}
+  #o3-home-concept .al-sheet[data-pattern="dots"]{background-image:radial-gradient(var(--al-line,#444444) .6px,transparent .85px)}
+  #o3-home-concept .al-sheet[data-pattern="grid"]{background-image:linear-gradient(var(--al-line,#D8D8D8) .5px,transparent .5px),linear-gradient(90deg,var(--al-line,#D8D8D8) .5px,transparent .5px)}
+  #o3-home-concept .al-sheet[data-pattern="lined"]{background-image:linear-gradient(var(--al-line,#D8D8D8) .6px,transparent .6px);background-size:100% 13px}
+  #o3-home-concept .al-colors{display:flex;gap:6px}
+  #o3-home-concept .al-colors button{width:auto;min-width:82px;padding:6px 10px;gap:7px;font-size:12px;border:1px solid var(--o3-rule)}
+  #o3-home-concept .al-colors button[aria-pressed="true"]{border-color:var(--o3-accent);background:var(--o3-side-active)}
+  #o3-home-concept .al-color-dot{width:17px;height:17px;border-radius:50%;background:var(--al-swatch);box-shadow:inset 0 0 0 1px #16181B28}
+  #o3-home-concept .al-note-thumbnail{width:112px;height:150px;transform:rotate(-2deg);background-size:12px 12px}
+  #o3-home-concept .o3-doc{-webkit-touch-callout:none;touch-action:pan-y;user-select:none}
+</style>
+<script>
+(()=>{
+  const root=document.getElementById('o3-home-concept'),api=root.annotaLibrary,views=[...root.querySelectorAll('[data-view]')];
+  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const zh=()=>api.language()==='zh',label=(a,b)=>zh()?a:b;
+  const paperColors={white:['#FFFFFF','#D7D7D7'],gray:['#E5E5E3','#A9A9A5'],black:['#232426','#64666B']};
+  let current=null,hold=null,suppress=null,paperStyle='blank',paperColor='white';
+  function icon(name){return '<i data-lucide="'+name+'" aria-hidden="true"></i>';}
+  function button(action,name,nameEn,graphic,extra=''){return '<button type="button" role="menuitem" class="cursor-interaction '+extra+'" data-library-op="'+action+'">'+icon(graphic)+'<span>'+label(name,nameEn)+'</span></button>';}
+  function close(){if(!current)return;const c=current;current=null;c.layer.remove();c.view.querySelector('.o3-main').inert=false;c.view.querySelector('.o3-side').inert=false;if(c.trigger?.isConnected)c.trigger.focus();}
+  function position(){if(!current)return;const c=current,w=c.view.clientWidth,h=c.view.clientHeight;c.panel.style.left=Math.max(12,Math.min(w-c.panel.offsetWidth-12,c.x))+'px';c.panel.style.top=Math.max(12,Math.min(h-c.panel.offsetHeight-12,c.y))+'px';}
+  function show(view,trigger,kind,id,x,y){
+    close();const layer=document.createElement('div');layer.className='al-layer';layer.dataset.kind=kind;
+    const panel=document.createElement('section');panel.className='al-panel';panel.setAttribute('aria-label',label(kind==='paper'?'快速笔记':'文件操作',kind==='paper'?'Quick note':'File actions'));layer.append(panel);view.append(layer);
+    current={view,trigger,layer,panel,id,x,y,kind};view.querySelector('.o3-main').inert=true;view.querySelector('.o3-side').inert=true;
+    if(kind==='paper')renderPaper();else renderMenu();
+    layer.addEventListener('pointerdown',e=>{if(e.target===layer)close();});
+  }
+  function renderMenu(){
+    const d=api.document(current.id);if(!d){close();return;}
+    current.panel.className='al-panel';current.panel.setAttribute('role','menu');
+    current.panel.innerHTML=d.trash?button('restore','恢复文件','Restore file','rotate-ccw'):button('favorite',d.favorite?'取消收藏':'收藏',d.favorite?'Unfavorite':'Favorite','star')+button('rename','重命名','Rename','pencil')+button('duplicate','复制','Duplicate','copy-plus')+button('move','移动','Move','folder-input')+button('export','导出为 PDF','Export as PDF','file-up')+button('trash','移到废纸篓','Move to trash','trash-2','al-danger');
+    finish();
+  }
+  function finish(){lucide?.createIcons({attrs:{width:20,height:20}});position();current?.panel.querySelector('input,button')?.focus();}
+  function renderPaper(){
+    const p=current.panel;p.className='al-panel al-paper';p.setAttribute('role','dialog');
+    p.innerHTML='<h2>'+label('快速笔记','Quick note')+'</h2><div class="al-paper-options">'+[['blank','空白','Blank'],['dots','点阵','Dots'],['grid','格子','Grid'],['lined','横线','Lined']].map(([id,cn,en])=>'<button type="button" class="cursor-interaction" data-paper-style="'+id+'" aria-pressed="'+(paperStyle===id)+'"><span class="al-sheet" data-pattern="'+id+'"></span>'+label(cn,en)+'</button>').join('')+'</div><p>'+label('纸张底色','Paper color')+'</p><div class="al-colors">'+[['white','白','White'],['gray','灰','Gray'],['black','黑','Black']].map(([id,cn,en])=>'<button type="button" class="cursor-interaction" data-paper-color="'+id+'" aria-pressed="'+(paperColor===id)+'"><span class="al-color-dot" style="--al-swatch:'+paperColors[id][0]+'"></span>'+label(cn,en)+'</button>').join('')+'</div><button type="button" class="al-primary cursor-interaction" data-library-op="create-note">'+label('开始记笔记','Start writing')+icon('arrow-right')+'</button>';
+    p.style.setProperty('--al-paper',paperColors[paperColor][0]);p.style.setProperty('--al-line',paperColors[paperColor][1]);finish();
+  }
+  function context(trigger,x,y){const view=trigger.closest('[data-view]'),r=view.getBoundingClientRect(),scale=r.width/view.offsetWidth,b=trigger.getBoundingClientRect();show(view,trigger,'file',trigger.dataset.doc,(x??b.right)/scale-r.left/scale,(y??b.top+40)/scale-r.top/scale);}
+  root.addEventListener('pointerdown',e=>{
+    const doc=e.target.closest('.o3-doc[data-doc]');if(!doc||e.button!==0)return;
+    const pending={trigger:doc,x:e.clientX,y:e.clientY,id:e.pointerId};hold=pending;
+    pending.timer=setTimeout(()=>{if(hold!==pending)return;suppress={id:doc.dataset.doc,until:Date.now()+1000};hold=null;context(doc,pending.x+8,pending.y+8);},500);
+  },true);
+  root.addEventListener('pointermove',e=>{if(hold&&Math.hypot(e.clientX-hold.x,e.clientY-hold.y)>10){clearTimeout(hold.timer);hold=null;}},true);
+  for(const name of ['pointerup','pointercancel'])root.addEventListener(name,()=>{if(hold)clearTimeout(hold.timer);hold=null;},true);
+  root.addEventListener('contextmenu',e=>{const doc=e.target.closest('.o3-doc[data-doc]');if(doc){e.preventDefault();if(hold)clearTimeout(hold.timer);hold=null;context(doc,e.clientX,e.clientY);}},true);
+  root.addEventListener('click',e=>{
+    const doc=e.target.closest('.o3-doc[data-doc]');if(doc&&suppress?.id===doc.dataset.doc&&Date.now()<suppress.until){e.preventDefault();e.stopImmediatePropagation();suppress=null;return;}
+    const note=e.target.closest('[data-action="new-note"]');if(note){e.preventDefault();e.stopImmediatePropagation();const view=note.closest('[data-view]'),b=note.getBoundingClientRect(),r=view.getBoundingClientRect(),scale=r.width/view.offsetWidth;show(view,note,'paper',null,(b.left-r.left)/scale,(b.bottom-r.top)/scale+8);return;}
+    const b=e.target.closest('.al-panel button');if(!b||!current)return;e.stopImmediatePropagation();suppress=null;
+    if(b.dataset.paperStyle){paperStyle=b.dataset.paperStyle;renderPaper();return;}
+    if(b.dataset.paperColor){paperColor=b.dataset.paperColor;renderPaper();return;}
+    const op=b.dataset.libraryOp,id=current.id,p=current.panel;
+    if(op==='create-note'){close();api.createNote({paperStyle,paperColor});return;}
+    if(op==='rename'){p.setAttribute('role','dialog');p.innerHTML='<h2>'+label('重命名','Rename')+'</h2><label>'+label('文件名称','File name')+'<input name="document-name" maxlength="120" value="'+esc(api.document(id).name)+'"></label><button type="button" class="al-primary cursor-interaction" data-library-op="save-name">'+label('保存','Save')+'</button>';finish();p.querySelector('input').select();return;}
+    if(op==='save-name'){const value=p.querySelector('input').value.trim();if(!value){p.querySelector('input').setAttribute('aria-invalid','true');return;}close();api.action('rename',id,value);return;}
+    if(op==='move'){p.innerHTML='<h2>'+label('移动到','Move to')+'</h2>'+button('move-root','本地书库','Local library','library')+api.folders().map(f=>'<button type="button" class="cursor-interaction" data-move-folder="'+esc(f.id)+'">'+icon('folder')+esc(f.name)+'</button>').join('');finish();return;}
+    if(op==='move-root'||b.dataset.moveFolder){const folder=b.dataset.moveFolder||null;close();api.action('move',id,folder);return;}
+    if(op==='export'){
+      const detail={documentId:id,name:api.document(id).name,format:'pdf',includeAnnotations:true,userInitiated:true};close();
+      if(root.dispatchEvent(new CustomEvent('annota:export-document',{cancelable:true,detail})))root.dispatchEvent(new CustomEvent('annota:export-preview',{detail}));return;
+    }
+    if(['favorite','duplicate','trash','restore'].includes(op)){close();api.action(op,id);}
+  },true);
+  root.addEventListener('keydown',e=>{
+    if(current&&e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();close();return;}
+    if(current&&e.key==='Enter'&&e.target.matches('[name="document-name"]')){e.preventDefault();current.panel.querySelector('[data-library-op="save-name"]').click();return;}
+    if(current&&current.panel.getAttribute('role')==='menu'&&['ArrowDown','ArrowUp','Home','End'].includes(e.key)){
+      e.preventDefault();const bs=[...current.panel.querySelectorAll('button')],index=bs.indexOf(document.activeElement);bs[e.key==='Home'?0:e.key==='End'?bs.length-1:(index+(e.key==='ArrowDown'?1:-1)+bs.length)%bs.length].focus();return;
+    }
+    const doc=e.target.closest('.o3-doc[data-doc]');if(doc&&(e.key==='ContextMenu'||(e.shiftKey&&e.key==='F10'))){e.preventDefault();context(doc);}
+  },true);
+  function thumbnails(){views.forEach(view=>view.querySelectorAll('.o3-doc[data-doc]').forEach(b=>{b.setAttribute('aria-haspopup','menu');const d=api.document(b.dataset.doc);if(d?.kind==='note'&&d.cover==='generic'){const thumb=b.querySelector('.o3-thumb'),sheet=document.createElement('span');sheet.className='al-sheet al-note-thumbnail';sheet.dataset.pattern=d.paperStyle||'blank';sheet.style.setProperty('--al-paper',paperColors[d.paperColor||'white'][0]);sheet.style.setProperty('--al-line',paperColors[d.paperColor||'white'][1]);thumb.replaceChildren(sheet);}}));}
+  root.addEventListener('annota:home-render',thumbnails);thumbnails();
+  window.addEventListener('openai:set_globals',close);
+})();
+</script>

@@ -1,0 +1,141 @@
+{
+  "description": "Each palette has eight core colors plus two reserved colors. Tonal UI derivatives are not counted as additional core colors.",
+  "palettes": [
+    {
+      "number": "01",
+      "id": "pine",
+      "selected": true,
+      "name": "松间",
+      "previousName": "浅灰松绿",
+      "nameEn": "Pine",
+      "title": "PINE / SKY",
+      "source": "保留上一轮第一组",
+      "background": "#FAFAFA",
+      "retainedSha256": "8691c2fa08a7a8839fa80e53f8938e989e002ccf6af7a941c6e0faa8b8a68116",
+      "colors": [
+        {"role": "SURFACE", "hex": "#FAFAFA", "token": "--o3-paper", "use": "主背景"},
+        {"role": "PAPER", "hex": "#FFFFFF", "token": "--o3-panel", "use": "文件夹、纸张"},
+        {"role": "SIDEBAR", "hex": "#EBEBEB", "token": "--o3-side", "use": "侧栏"},
+        {"role": "INK", "hex": "#262A2D", "token": "--o3-ink", "use": "正文与图标"},
+        {"role": "NEW NOTE", "hex": "#1C614C", "token": "--o3-orange", "use": "新建与主选中态"},
+        {"role": "IMPORT", "hex": "#BFD4E9", "token": "--o3-blue", "use": "导入与辅助强调"},
+        {"role": "MARK", "hex": "#CB4544", "token": "--o3-mark", "use": "手写标记、笔记细条"},
+        {"role": "BORDER", "hex": "#DDDEE0", "token": "--o3-rule", "use": "边界"},
+        {"role": "RESERVE A", "hex": "#D8B45C", "token": "--o3-reserve-annotation", "use": "阅读高亮预留", "reserved": true},
+        {"role": "RESERVE B", "hex": "#A99BC9", "token": "--o3-reserve-translation", "use": "翻译与词典预留", "reserved": true}
+      ]
+    },
+    {
+      "number": "02",
+      "id": "graphite-yellow",
+      "selected": true,
+      "name": "晴昼",
+      "previousName": "石墨灰黄",
+      "nameEn": "Daylight",
+      "title": "GRAPHITE / YELLOW",
+      "source": "保留上一轮第四组，改为第二组",
+      "background": "#FAFBFA",
+      "retainedSha256": "012be97a282854a3ad00d8036e3b1fb31656532e14d11bc9e4f9807600ba9335",
+      "colors": [
+        {"role": "SURFACE", "hex": "#FAFBFA", "token": "--o3-paper", "use": "主背景"},
+        {"role": "PAPER", "hex": "#FFFFFF", "token": "--o3-panel", "use": "文件夹、纸张"},
+        {"role": "SIDEBAR", "hex": "#EFF2EF", "token": "--o3-side", "use": "侧栏"},
+        {"role": "INK", "hex": "#363B37", "token": "--o3-ink", "use": "正文与图标"},
+        {"role": "NEW NOTE", "hex": "#FFDA4C", "token": "--o3-orange", "use": "新建与主选中态"},
+        {"role": "IMPORT", "hex": "#5D6769", "token": "--o3-blue", "use": "导入"},
+        {"role": "MARK", "hex": "#C0F2E6", "token": "--o3-mark", "use": "笔记标记"},
+        {"role": "BORDER", "hex": "#DFE3DF", "token": "--o3-rule", "use": "边界"},
+        {"role": "RESERVE A", "hex": "#D39783", "token": "--o3-reserve-annotation", "use": "阅读高亮预留", "reserved": true},
+        {"role": "RESERVE B", "hex": "#91AFC7", "token": "--o3-reserve-translation", "use": "翻译与词典预留", "reserved": true}
+      ]
+    },
+    {
+      "number": "03",
+      "id": "cobalt-sage",
+      "selected": true,
+      "name": "蓝调",
+      "previousName": "钴蓝鼠尾草",
+      "nameEn": "Blue Note",
+      "title": "COBALT / SAGE",
+      "source": "本轮图一：钴蓝、鼠尾草绿、锈橙与黑色",
+      "background": "#F7F8F6",
+      "colors": [
+        {"role": "SURFACE", "hex": "#F7F8F6", "token": "--o3-paper", "use": "主背景"},
+        {"role": "PAPER", "hex": "#FFFFFF", "token": "--o3-panel", "use": "文件夹、纸张"},
+        {"role": "SIDEBAR", "hex": "#E9ECE6", "token": "--o3-side", "use": "侧栏"},
+        {"role": "INK", "hex": "#16181B", "token": "--o3-ink", "use": "正文与独立工具图标"},
+        {"role": "NEW NOTE", "hex": "#4460CE", "token": "--o3-orange", "use": "新建与主选中态"},
+        {"role": "IMPORT", "hex": "#6D785F", "token": "--o3-blue", "use": "导入；在参考色基础上微调明度以保证白字对比"},
+        {"role": "MARK", "hex": "#D15129", "token": "--o3-mark", "use": "笔记标记"},
+        {"role": "BORDER", "hex": "#D9DDD3", "token": "--o3-rule", "use": "边界"},
+        {"role": "RESERVE A", "hex": "#D9C66C", "token": "--o3-reserve-annotation", "use": "阅读高亮预留", "reserved": true},
+        {"role": "RESERVE B", "hex": "#B19BBF", "token": "--o3-reserve-translation", "use": "翻译与词典预留", "reserved": true}
+      ]
+    },
+    {
+      "number": "04",
+      "id": "lunar-blue",
+      "selected": false,
+      "name": "月面蓝灰",
+      "title": "LUNAR / BLUE",
+      "source": "本轮图二：航天蓝、银灰、暖纸色与近黑",
+      "background": "#F7F6F2",
+      "colors": [
+        {"role": "SURFACE", "hex": "#F7F6F2", "token": "--o3-paper", "use": "主背景"},
+        {"role": "PAPER", "hex": "#FFFFFF", "token": "--o3-panel", "use": "文件夹、纸张"},
+        {"role": "SIDEBAR", "hex": "#E5EBEE", "token": "--o3-side", "use": "银灰侧栏"},
+        {"role": "INK", "hex": "#25272D", "token": "--o3-ink", "use": "正文与图标"},
+        {"role": "NEW NOTE", "hex": "#8EB1C6", "token": "--o3-orange", "use": "新建"},
+        {"role": "IMPORT", "hex": "#D4CAC4", "token": "--o3-blue", "use": "导入"},
+        {"role": "MARK", "hex": "#718491", "token": "--o3-mark", "use": "手写封面与标记"},
+        {"role": "BORDER", "hex": "#C7CBD0", "token": "--o3-rule", "use": "边界"},
+        {"role": "RESERVE A", "hex": "#C9A16B", "token": "--o3-reserve-annotation", "use": "阅读高亮预留", "reserved": true},
+        {"role": "RESERVE B", "hex": "#A393B9", "token": "--o3-reserve-translation", "use": "翻译与词典预留", "reserved": true}
+      ]
+    },
+    {
+      "number": "05",
+      "id": "butter-periwinkle",
+      "selected": false,
+      "name": "奶油黄蓝",
+      "title": "BUTTER / PERIWINKLE",
+      "source": "本轮图三：奶油黄、浅钴蓝、油墨黑与橄榄色",
+      "background": "#FCFBEF",
+      "colors": [
+        {"role": "SURFACE", "hex": "#FCFBEF", "token": "--o3-paper", "use": "主背景"},
+        {"role": "PAPER", "hex": "#FFFFFB", "token": "--o3-panel", "use": "文件夹、纸张"},
+        {"role": "SIDEBAR", "hex": "#F4F2D5", "token": "--o3-side", "use": "侧栏"},
+        {"role": "INK", "hex": "#171A21", "token": "--o3-ink", "use": "正文与图标"},
+        {"role": "NEW NOTE", "hex": "#F5F48C", "token": "--o3-orange", "use": "新建"},
+        {"role": "IMPORT", "hex": "#8CA8CF", "token": "--o3-blue", "use": "导入与手写封面"},
+        {"role": "MARK", "hex": "#BAB467", "token": "--o3-mark", "use": "笔记标记"},
+        {"role": "BORDER", "hex": "#DDDDBB", "token": "--o3-rule", "use": "边界"},
+        {"role": "RESERVE A", "hex": "#D99678", "token": "--o3-reserve-annotation", "use": "阅读高亮预留", "reserved": true},
+        {"role": "RESERVE B", "hex": "#6D9E98", "token": "--o3-reserve-translation", "use": "翻译与词典预留", "reserved": true}
+      ]
+    },
+    {
+      "number": "06",
+      "id": "black-kraft",
+      "selected": true,
+      "name": "原野",
+      "previousName": "黑棕橙蓝",
+      "nameEn": "Terrain",
+      "title": "BLACK / KRAFT",
+      "source": "本轮图四重做：黑与棕必须成为明确的界面色块",
+      "background": "#FAFAFC",
+      "colors": [
+        {"role": "SURFACE", "hex": "#FAFAFC", "token": "--o3-paper", "use": "主背景与侧栏选中态"},
+        {"role": "PAPER", "hex": "#FFFFFF", "token": "--o3-panel", "use": "文件夹、纸张"},
+        {"role": "SIDEBAR", "hex": "#A28D70", "token": "--o3-side", "use": "整块棕色侧栏"},
+        {"role": "INK", "hex": "#27282A", "token": "--o3-ink", "use": "独立工具图标、手写封面与正文"},
+        {"role": "NEW NOTE", "hex": "#F75F1B", "token": "--o3-orange", "use": "新建"},
+        {"role": "IMPORT", "hex": "#98CAED", "token": "--o3-blue", "use": "导入"},
+        {"role": "BROWN LINE", "hex": "#79664B", "token": "--o3-side-rule", "use": "侧栏边界"},
+        {"role": "THUMB", "hex": "#F1EEE9", "token": "--o3-thumb", "use": "笔记缩略图底色"},
+        {"role": "RESERVE A", "hex": "#8A9C79", "token": "--o3-reserve-annotation", "use": "阅读高亮预留", "reserved": true},
+        {"role": "RESERVE B", "hex": "#B3A3C8", "token": "--o3-reserve-translation", "use": "翻译与词典预留", "reserved": true}
+      ]
+    }
+  ]
+}
