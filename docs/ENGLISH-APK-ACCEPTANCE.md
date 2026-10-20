@@ -44,3 +44,13 @@
 - 持续测试 **602 秒、316 轮、31 次 Activity 重开**，保存状态一致；候选包与最终包哈希分别记录，没有把此记录标为最终包的重复实测。
 - 全部采样及重开日志观测到的进程 PSS 为 **127,030–226,946 KiB**；常规采样的 Java 已用堆峰值 76,172,288 bytes、页面缓存峰值 20,283,200 bytes。重开时有短时峰值，随后可下降；不能写成“整个进程恒定 120 MB”或“没有任何泄漏”。完整曲线与原始输出见上述 log。
 - 英文主页/设置横竖屏、工具菜单、字典、反馈失败和中英文更新入口的实际截图见 `android/verification/english-*.png`。
+
+## 公开交付回执
+
+已发布 [v0.1.4-dev 开发测试 Pre-release](https://github.com/dpan538/Annota/releases/tag/v0.1.4-dev)，源码目标提交 `02c95fa`。APK 74,591,506 bytes，SHA-256 为 `2ab09c1d4d3a15396cd9a503b2cd5de7cf5cc4ca4b322f4af0fabe401f92707f`。
+
+从公开 URL 不带凭据下载完整 APK 与校验文件，核对哈希、归档 CRC、资源、包名/版本和数字签名后，安装下载副本并冷启动成功，无 AndroidRuntime 崩溃。系统 `am start -W` 观测为 1,864 ms，这是模拟器/debug 的单次操作记录，不是 Xiaomi 冷启动基准或 ≤800 ms 目标的达标证明。
+
+回执：`android/verification/english-apk-public-check.json`、`english-release-public.json`。稳定 `releases/latest` 实际返回 404，符合仅有 Pre-release 的状态；没有把预览冒充正式更新成功。
+
+实际在英文界面点击 Check update，应用访问 GitHub 后显示 `No stable APK release yet (GitHub 404). Try again later.`，没有提供预览覆盖或伪报最新版；见 `english-update-live.json` 与 `english-update-no-stable.png`。此测试不代表更高正式版安装权限往返已经通过。

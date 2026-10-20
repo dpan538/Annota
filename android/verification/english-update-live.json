@@ -1,0 +1,12 @@
+{
+  "route": "Settings > About > App update > Check update",
+  "actualGithubRequest": true,
+  "observedMessages": [
+    "Operation incomplete",
+    "No stable APK release yet (GitHub 404). Try again later.",
+    "OK"
+  ],
+  "noStableReleaseErrorVisible": true,
+  "prereleaseWasNotOffered": true,
+  "hardware": "API36 ARM64 emulator"
+}

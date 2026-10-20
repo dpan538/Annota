@@ -56,7 +56,7 @@
 | --- | --- |
 | 墨迹 | 标准 MotionEvent 压感与历史采样；抬笔提交矢量笔迹；最近 50 步撤销状态可跨进程恢复 |
 | 词典 | 随包英汉、汉英 SQLite 索引词库；安装校验后本地只读查询，支持词形和拼写候选 |
-| 更新 | 计划经 GitHub Releases 分发，校验哈希、包名、版本和签名后交系统安装器；正式发布链路待验收 |
+| 更新 | 开发包经 GitHub Releases 分发；应用内更新校验哈希、包名、版本和签名后交系统安装器，正式链路待验收 |
 | 存储 | 私有本地文件与原子状态快照；同签名覆盖升级保留数据，支持导出备份与合并恢复 |
 | 内存 | 首页只读封面元数据；位图与文字缓存按堆预算限额，后台回收、前台重建 |
 
@@ -128,4 +128,4 @@ python3 design/dictionary/test_lookup.py
 
 A local-first PDF reader and handwriting notebook for the Xiaomi Pad 9 Pro Max. Files, strokes, reading position and settings stay on the device. No account, cloud or sync. Offline ECDICT/CC-CEDICT lookup; networking only for requested updates and feedback.
 
-Development APK; Xiaomi hardware, production signing and the published-update flow remain pending. Planned distribution: GitHub Releases and the system installer. MIT for code; CC BY-NC 4.0 for original artwork and the guide.
+Development APK available through [GitHub Releases](https://github.com/dpan538/Annota/releases/tag/v0.1.4-dev); Xiaomi hardware, production signing and the stable-update flow remain pending. MIT for code; CC BY-NC 4.0 for original artwork and the guide.

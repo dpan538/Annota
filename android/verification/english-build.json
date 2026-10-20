@@ -47,12 +47,14 @@
   "productionSigned": false,
   "xiaomiHardwareValidated": false,
   "publicFeedbackDeployed": false,
-  "publishedRelease": false,
+  "publishedRelease": true,
   "prerelease": true,
-  "anonymousGithubDownloadVerified": false,
+  "anonymousGithubDownloadVerified": true,
   "releaseTag": "v0.1.4-dev",
   "publicDownloadUrl": "https://github.com/dpan538/Annota/releases/download/v0.1.4-dev/Annota-0.1.4-dev.apk",
   "selectedOutlineLayoutCases": 6,
   "soakEvidence": "log/2026-10-21-emulator-soak/",
-  "soakOnFinalApk": false
+  "soakOnFinalApk": false,
+  "sourceCommit": "02c95fa4c86ad247e5e40c9b960decabe64270c5",
+  "releasePublishedAtUtc": "2026-10-20T15:29:05Z"
 }

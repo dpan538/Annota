@@ -12,7 +12,7 @@ All Android evidence here is from a local API 36 ARM64 emulator configured as a 
 - PNGs show actual native emulator UI: first launch, system-picked imported PDF, landscape/portrait reader/library and a complete offline dictionary entry. The imported test PDF is a generated fixture with a rotated first page, not the sample paper.
 - `build-info-0.1.1-dev.json`, `build-info-0.1.2-dev.json`: previous debug artifact identities; `build-info-0.1.3-dev.json` records the prior reader build; `build-info.json` records the current 0.1.4-dev artifact. Final 3B branding has its original integration evidence below.
 
-Hardware acceptance, system installer interaction on Xiaomi, offline handwriting IME, real Release download, production certificate continuity and public feedback HTTPS remain separate checks.
+Hardware acceptance, system installer interaction on Xiaomi, offline handwriting IME, stable Release installation, production certificate continuity and public feedback HTTPS remain separate checks.
 
 Public logs use repository-relative paths; private SDK caches, local keys, feedback databases and APK binaries are excluded from Git. Screenshot fixtures contain generated test content.
 
@@ -46,3 +46,8 @@ The attached reader's page cache held 10,141,600 bytes and word cache an estimat
 - The **602-second / 316-cycle / 31 Activity-recreation** candidate-build record moved to [log](../../log/2026-10-21-emulator-soak/README.md), including raw output, CSV, PNG/SVG curves and tested artifact/source hashes. Subsequent SettingsContent outline/tagline edits change the final APK hash; reader/storage/cache code is unchanged. This is not a second final-artifact soak or Xiaomi hardware evidence.
 
 See [acceptance and download checks](../../docs/ENGLISH-APK-ACCEPTANCE.md) for what the stable updater does and what remains unverified.
+
+- `english-apk-local-check.json`: final artifact loopback transfer/archive/assets/signature/install/cold-start check.
+- `english-apk-public-check.json`: anonymous public GitHub APK download of the same SHA-256, then installation and successful cold launch of that downloaded copy. Single debug-emulator `am start -W` time is an operational observation, not a performance benchmark.
+- `english-release-public.json`: uploaded development Pre-release assets, GitHub digests, public checksum match and actual stable-latest 404. Production signing and real higher-version stable in-app installation remain pending.
+- `english-update-live.json` / `english-update-no-stable.png`: actual in-app GitHub check after publication shows the English no-stable-release error; this does not test a production installer upgrade.

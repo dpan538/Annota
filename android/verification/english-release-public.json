@@ -1,0 +1,29 @@
+{
+  "verifiedAtUtc": "2026-10-20T15:31:21.959908+00:00",
+  "tag": "v0.1.4-dev",
+  "releaseUrl": "https://github.com/dpan538/Annota/releases/tag/v0.1.4-dev",
+  "publishedAtUtc": "2026-10-20T15:29:05Z",
+  "isDraft": false,
+  "isPrerelease": true,
+  "releaseTargetCommit": "02c95fa4c86ad247e5e40c9b960decabe64270c5",
+  "assets": [
+    {
+      "name": "Annota-0.1.4-dev.apk",
+      "bytes": 74591506,
+      "digest": "sha256:2ab09c1d4d3a15396cd9a503b2cd5de7cf5cc4ca4b322f4af0fabe401f92707f",
+      "url": "https://github.com/dpan538/Annota/releases/download/v0.1.4-dev/Annota-0.1.4-dev.apk"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "bytes": 87,
+      "digest": "sha256:d6e4ed3d0fbb7c56977a7ce8b52126efa9128141a5a33f70bf4b9508355d899a",
+      "url": "https://github.com/dpan538/Annota/releases/download/v0.1.4-dev/SHA256SUMS.txt"
+    }
+  ],
+  "checksumAssetMatches": true,
+  "anonymousStableLatestHttpStatus": 404,
+  "prereleaseExcludedFromStable": true,
+  "anonymousApkDownloadAndInstallVerified": true,
+  "productionSigned": false,
+  "xiaomiHardwareValidated": false
+}
