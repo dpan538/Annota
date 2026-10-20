@@ -1,81 +1,111 @@
 # Annota
 
-Annota is a note app specifically designed for the Xiaomi Pad 9 Pro Max.
-
 **纯本地，极简阅读，顺手记。**
 
-Annota 围绕 PDF 阅读和手写笔记设计。没有账号、云空间或跨端同步；文件、笔迹、阅读进度和设置留在设备上。日常阅读、书写与查词不联网，只有用户主动获取更新或提交反馈时使用应用网络功能。
+面向小米平板 9 Pro Max 的 PDF 阅读器和手写批注本。没有账号、云空间和跨端同步，文件、笔迹、阅读进度和设置都放在本机。断网也能读、能写、能查词。
 
-> 当前是 **Android 原生开发测试版**，源码、离线资源与验收记录已入库。已有可构建的 debug APK，尚未发布正式签名 APK。模拟器验证通过不等于小米真机已验收；公网反馈服务尚未部署。
+[![APK](https://img.shields.io/badge/APK-开发测试版-2f6f4e)](https://github.com/dpan538/Annota/releases)
+![license](https://img.shields.io/badge/code-MIT-blue)
 
-## 设计
+<img src="android/verification/integration-library-landscape.png" width="62%" alt="主页，松间主题，横屏">
+<img src="android/verification/integration-paper.png" width="36%" alt="阅读器，松间主题，单页阅读">
 
-- 单行紧凑顶栏，左侧页面导航、中间批注工具、右侧阅读选项分区。
-- 单页或相邻两页并排阅读；缩略图侧栏按需打开。
-- 笔、铅笔、钢笔、荧光笔、橡皮、直尺、图片、图形和手形工具。
-- 离线英汉、汉英查词，支持选字后复制与查词，不承诺整句翻译。
-- 快速笔记提供空白、点阵、格子、横线，以及白、灰、黑三种底色。
-- 文件长按后收藏、重命名、复制、移动、导出 PDF 或移到废纸篓。
-- 松间、晴昼、蓝调、原野四套外观，以及手写笔、手势和关于设置。
-- 横版五页使用指南。首次初始化为指南和 Attention Is All You Need 两份真实 PDF，完全离线复制；已删除的文档不会在重启时补回。
+当前为 `0.1.2-dev` 开发测试版，尚未发布正式签名 APK。日常使用不联网；只有主动检查/下载更新、提交反馈时使用应用网络功能。
 
-已选定唯一初始标识 **3B**：Outfit 600，钴蓝 t，圆角白底，字标在正方形内居中。
+## 界面
 
-<img src="branding/annota-logo.png" alt="Annota 标识" width="240">
-
-矢量母版、尺寸与字体出处见 [品牌资源](branding/README.md)。未采用的候选已从当前项目移出。
-
-## 目前完成到哪里
-
-| 部分 | 已有实现 / 验收边界 |
+| 区域 | 内容 |
 | --- | --- |
-| 本地书库与恢复 | SQLite、原子笔迹快照、50 步历史、文件整理、备份合并恢复；无云备份 |
-| 通用 PDF | PdfRenderer 渲染、PDFBox 文字坐标与向量导出，系统导入/保存/分享 |
-| 原生读写工具 | 单/双页、缩略图、四种笔、橡皮、图形、图片、贴边直尺；小米真机待测 |
-| 离线词典 | 随包 57,841 条英汉、125,301 条汉英；键盘/系统手写 IME，整句翻译不在范围内 |
-| 反馈 | 接收服务及 5 项测试通过；线上地址未配置，草稿保留且不伪报成功 |
-| 更新 | GitHub 下载、SHA-256 / 签名 / 包名 / 版本校验与系统安装入口；生产签名及真实 Release 尚待完成 |
+| 主页左侧 | 搜索、主页、收藏，以及设置和意见反馈 |
+| 主页上方 | 新建笔记、导入文件、新建文件夹；右上角筛选、废纸篓、中英文切换 |
+| 阅读器顶部 | 左侧页面导航、中间批注工具、右侧阅读选项 |
 
-本次干净构建与 API 36 模拟器 **19 项测试通过**，反馈接收端 **5 项测试通过**；lint 0 errors / 51 warnings。小米笔和系统手写 IME 仍待真机验证。
+阅读区单页或相邻两页并排，缩略图侧栏按需拉出。四套外观：松间、晴昼、蓝调、原野。快速笔记有空白、点阵、格子、横线四种纸，白、灰、黑三种底色。文件长按可收藏、重命名、复制、移动、导出 PDF、移进废纸篓。
 
-核对记录见 [Android 实现状态](docs/IMPLEMENTATION-STATUS.md)，剩余工作与优先级见 [流程审计](docs/FLOW-AUDIT.md)。
+首次启动预置两个文件：横版五页的使用指南，以及 11 页的 *Attention Is All You Need* 示例论文。两份 PDF 随包离线初始化，删除后不会在重启时补回。
 
-## 构建 Android 测试包
+## 顶栏
 
-需要完整 JDK 17/21、Android SDK platform 36 / build-tools 35.0.0。词典和初始 PDF 均已随源码保存，应用运行不下载资源。
+横屏原型以 3408 × 2272 展示，设计坐标为 1024 × 682⅔。阅读器是一行顶栏，分成三块：
 
-```sh
-cd android
-./gradlew assembleDebug assembleDebugAndroidTest lintDebug
-# 仅对没有用户数据的模拟器运行自动化测试：
-./gradlew connectedDebugAndroidTest
+| 区 | 内容 | 图标数 |
+| --- | --- | --- |
+| 左 | 返回书库、缩略图侧栏、单/双页切换 | 3 |
+| 中 | 笔、橡皮、直尺、图片、图形、手形 | 6 |
+| 右 | 新增页面、阅读模式、离线词典、更多 | 4 |
+
+四种笔收在笔菜单里，颜色和粗细在同一处选择。主页与设置的按键尺寸有 60 / 68 / 76 三档；阅读器保留紧凑的三分区布局。
+
+## 实现
+
+| 环节 | 做法 |
+| --- | --- |
+| 墨迹 | 读取标准 MotionEvent 压感与历史采样；当前笔画单独绘制，抬笔提交；撤销保存页序与矢量笔迹的压缩状态，最近 50 步可跨进程恢复，不存整页位图 |
+| 词典 | 英汉、汉英各一份带索引的 SQLite 词库随包安装，SHA-256 校验后在本机只读查询，支持词形和拼写候选 |
+| 更新 | 计划通过 GitHub Releases 分发；应用内检查、下载并校验 SHA-256、签名、包名和版本，再交系统安装器；正式发布流程尚待验收 |
+| 存储 | 文件、笔迹、阅读进度、设置全在本机；同签名覆盖升级有模拟器数据保留记录，支持本地备份与合并恢复 |
+
+标准笔输入和多指手势已有模拟器回归；小米真机、系统手写输入法仍待验收，专有笔身双击、轻捏和震动尚未启用。遇到问题请带上机型、手写笔型号和固件版本提 issue。
+
+## 数字
+
+以下是目标预算，尚未在目标小米平板上完成性能实测，不代表当前版本已经达到。
+
+| 指标 | 目标预算 |
+| --- | --- |
+| 冷启动到书库可点 | ≤ 800 ms |
+| 落笔到出墨 | ≤ 1 帧 |
+| 翻页（相邻页已解码） | ≤ 100 ms |
+| 词典查询 | ≤ 20 ms |
+| 空载常驻内存 | ≤ 120 MB |
+| APK | 单包，不分 ABI |
+
+后续发版在 Release 说明里记录设备、测试条件与实测值。
+
+## 不做
+
+- 云同步、账号、协作。笔记留在本机，不设笔记上传通道。
+- 整句翻译。保留离线查词，不引入联网翻译或额外的大模型包。
+- OCR。扫描件不进文字层，也不假装能选中。
+- 手机版和 iPad 版。首期围绕这块平板设计，其他屏幕与设备不在当前验收范围。
+- 接管系统文件关联。PDF 从应用里导入，不让系统把所有 PDF 都交给它。
+
+## 设计原型
+
+`design/` 里是能跑的 HTML 原型，不是静态稿。布局坐标、四套配色、按键尺寸从这里出，Android 侧的 dp 按它换算；横竖屏切换、长按菜单、手势分配先在浏览器里定稿。Playwright 脚本检查布局边界、交互和状态，并导出截图供视觉复核；原生测试另外对照原型测量关键控件的位置与尺寸。
+
+原型嵌的是 MiSans 官方原始分片，构建时直接嵌入，不重新子集化；Android 使用官方原始可变字体。两端共用字体来源，字形渲染和行高仍要在真机复核。
+
+## 仓库
+
+```text
+android/           原生工程：阅读器、墨迹、词典接入、更新
+design/            界面源码、五页指南、原生事件协议、词典构建
+branding/          标识与图标
+docs/              架构、流程审计、隐私边界、分发方案
+scripts/           环境检查、预览构建、视觉导出
+feedback-service/  匿名反馈的协议与实现
 ```
 
-输出为 `android/app/build/outputs/apk/debug/app-debug.apk`。这是开发签名，不能当作正式版；不同机器的 debug 密钥通常不同。两个更新校验测试需要预先放入同签名 APK 夹具；未放入时会跳过。完整构建、测试夹具、签名说明见 [Android 工程](android/README.md)。
+## 构建
 
-第一次打开会得到横版五页《Annota 使用指南》和你可直接批注的 11 页示例论文。论文使用项目所有者提供的原始文件，独立权利说明见 [示例论文说明](android/app/src/main/assets/SAMPLE-PAPER-NOTICE.md)；项目许可不覆盖论文，正式广泛分发前仍需完成权利复核。
+需要完整 JDK 17/21、Android SDK platform 36 和 build-tools 35.0.0。`design/` 的脚本另需 Node.js 22+、Python 3.11+ 与 Chromium。
 
-## 下载与更新
+```sh
+git clone https://github.com/dpan538/Annota.git
+cd Annota/android
+./gradlew :app:assembleDebug
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
 
-首个可用版本完成后，签名 APK 会发布在 [GitHub Releases](https://github.com/dpan538/Annota/releases)。请下载 Release 附件中的 APK；GitHub 自动生成的 Source code ZIP 不是安装包。
+开发包使用本机 debug 签名。正式发布使用固定的 keystore，通过 `ANNOTA_KEYSTORE`、`ANNOTA_STORE_PASSWORD`、`ANNOTA_KEY_ALIAS`、`ANNOTA_KEY_PASSWORD` 环境变量配置；密钥和密码不入库。详见 [Android 构建与签名](android/README.md)。
 
-首次从 GitHub 下载并安装，后续在「设置 → 关于 → 检查更新」查看版本说明，确认后下载 APK，由 Android 系统安装器完成更新。应用不会静默安装。更新使用固定包名与签名，并验证下载文件；覆盖升级需要保留原有本地笔记。
-
-更新分发不需要另建业务后端。匿名反馈需要独立的小型服务，不能把 GitHub Token 放入 APK，也不会把联系方式直接公开到 Issue。详见 [APK 与更新分发](docs/DISTRIBUTION.md)。
-
-## 本地查看设计原型
-
-需要 Node.js 22+、Python 3.11+ 和 Chromium。安装开发依赖属于开发环境准备，不属于应用运行时联网。
+仓库已随包保存上述原始示例论文；生成的页图、文字坐标和浏览器预览不另行入库。在仓库根目录准备原型依赖并构建：
 
 ```sh
 npm ci
 npx playwright install chromium
 python3 -m pip install -r requirements-dev.txt
-```
-
-公开仓库保留可编辑源码。可用随包的 11 页示例生成浏览器阅读测试夹具（页图与预览输出不另行入库）：
-
-```sh
 python3 design/render-reader-pdf.py android/app/src/main/assets/attention-is-all-you-need.pdf
 python3 design/extract-reader-text.py
 python3 design/embed-fonts.py
@@ -83,43 +113,43 @@ python3 design/build-reader.py
 npm run preview:build
 ```
 
-打开生成的 `preview/index.html`。当前文字选取测试以原设计使用的 Attention Is All You Need 示例为基准；Android 的通用 PDF 引擎独立实现，不把浏览器测试夹具当作正式引擎。示例来源与分发边界见 [第三方说明](THIRD_PARTY_NOTICES.md)。
+产物在 `preview/index.html`。浏览器原型用于设计与交互验证，不用于保存重要笔记。
 
-本地字体资源为官方原始 MiSans 切片，构建时直接嵌入，不修改字形或重新子集化；软件使用声明与原许可随项目保留。指南手写字体使用 OFL 授权的小赖字体子集。
+## 测试
 
-```sh
-npm run test:static
-python3 design/dictionary/build.py
-python3 design/dictionary/test_lookup.py
-# 准备本地示例并构建后：
-npm run test:reader
-npm run test:guide
-npm run test:library
-```
+| 命令 | 覆盖 |
+| --- | --- |
+| `cd android && ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug` | 构建、测试 APK 编译与 Android lint |
+| `cd android && ./gradlew :app:connectedDebugAndroidTest` | 专用模拟器上的原生仪器测试 |
+| `npm run test:static` | 源码与许可检查 |
+| `npm run test:reader` / `test:guide` / `test:library` | 视觉与交互 |
+| `python3 design/dictionary/build.py && python3 design/dictionary/test_lookup.py` | 词典构建与查询回归 |
+| `cd feedback-service && python3 -m unittest -v` | 反馈接收服务 |
 
-原型状态容量受限，图片仅保留当前会话，请勿拿它存储重要笔记。
-
-自动检查的配置模板见 [CI 配置](docs/ci/)。当前上传凭据没有工作流写入权限，模板尚未启用；上述检查均可在本地运行。
-
-## 目录
-
-```text
-design/          界面源码、指南、原生事件协议与词典工具
-branding/        已选定的唯一标识、字体出处与导出
-docs/            流程审计、原生分工、隐私边界和分发方案
-scripts/         开发环境检查、预览构建与视觉导出工具
-android/         Kotlin 原生工程、离线资产、测试与模拟器验收记录
-feedback-service/ 已实现但尚未部署的匿名反馈接收服务
-```
+当前记录：API 36 ARM64 模拟器 19 项通过，反馈接收端 5 项通过，lint 0 errors / 51 warnings。仪器测试会重置测试书库，只对无用户数据的专用模拟器运行；两个更新校验用例需要先放入同签名 APK 夹具，未放入时会跳过。浏览器测试需先完成上面的原型构建，自动断言与截图复核共同验收。记录与剩余工作见 [实现状态](docs/IMPLEMENTATION-STATUS.md) 和 [流程审计](docs/FLOW-AUDIT.md)。
 
 ## 反馈
 
-功能建议和公开问题可在 [GitHub Issues](https://github.com/dpan538/Annota/issues) 提出。不要把私人文件、联系方式或敏感日志发到公开 Issue。应用内反馈是独立匿名通道；未配置线上地址时只保留草稿，不显示虚假的提交成功。
+功能建议和公开问题走 [GitHub Issues](https://github.com/dpan538/Annota/issues)，按模板填，别贴私人文件、联系方式或完整日志。
+
+应用内的「意见反馈」是另一条路：无需账号，只发送你输入的正文、选填联系方式和用于重试去重的请求 ID，不自动附带设备标识、笔记、PDF、截图或日志。接收服务已有实现，公网地址尚未配置；未收到真实成功回执就保留本地草稿。细节见 [隐私说明](docs/PRIVACY.md)。
 
 ## 许可
 
-- 原创源代码与工程文档：[MIT](LICENSE)。
-- 原创 Logo、插图、指南正文及其图文版式：[CC BY-NC 4.0](LICENSE-VISUALS.md)，署名后仅限非商业使用。
-- MiSans、小赖字体、Lucide、ECDICT、CC-CEDICT 及第三方论文：各自许可独立适用，详见 [第三方说明](THIRD_PARTY_NOTICES.md)。
+- 原创源代码与工程文档：[MIT](LICENSE)
+- 原创标识、插图、指南正文及版式：[CC BY-NC 4.0](LICENSE-VISUALS.md)，需署名，仅限非商业
+- Outfit、MiSans、小赖字体、Lucide、ECDICT、CC-CEDICT、第三方论文：各自许可，见 [第三方说明](THIRD_PARTY_NOTICES.md)
 
-本项目独立开发，与 Xiaomi 没有隶属或官方合作关系。设备名用于说明设计目标。
+示例论文使用项目所有者提供的原始文件，不适用本项目的 MIT 或 CC BY-NC；来源及正式分发前的权利复核见 [随包说明](android/app/src/main/assets/SAMPLE-PAPER-NOTICE.md)。
+
+本项目独立开发，与 Xiaomi 没有隶属或官方合作关系，设备名只用于说明设计目标。
+
+## English
+
+Annota is a local-first PDF reader and handwriting notebook for the Xiaomi Pad 9 Pro Max. Reading, inking and dictionary lookup happen on the same page; files, strokes, reading position and settings stay on the device.
+
+No account, no cloud, no sync. The dictionary is an offline ECDICT/CC-CEDICT pack. GitHub Releases and the system installer are the planned distribution route; in-app feedback is opt-in and requires no account.
+
+The current build is a development APK. Xiaomi hardware validation, production signing, a public feedback endpoint and the complete published-update flow are still pending.
+
+MIT for code, CC BY-NC 4.0 for original artwork and the guide.
