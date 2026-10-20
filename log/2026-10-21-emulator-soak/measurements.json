@@ -1,0 +1,1127 @@
+{
+  "device": "API36 ARM64 emulator, debug/instrumented build",
+  "elapsedSeconds": 602,
+  "cycles": 316,
+  "activityRecreations": 31,
+  "addedStrokes": 316,
+  "samples": [
+    {
+      "seconds": 2,
+      "cycles": 1,
+      "pssKiB": 160170,
+      "javaUsedBytes": 64515536,
+      "pageCacheBytes": 20283200,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 78282
+    },
+    {
+      "seconds": 7,
+      "cycles": 4,
+      "pssKiB": 175238,
+      "javaUsedBytes": 70601712,
+      "pageCacheBytes": 20283200,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 97448
+    },
+    {
+      "seconds": 12,
+      "cycles": 7,
+      "pssKiB": 155450,
+      "javaUsedBytes": 69114768,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 38584
+    },
+    {
+      "seconds": 17,
+      "cycles": 10,
+      "pssKiB": 152142,
+      "javaUsedBytes": 58514320,
+      "pageCacheBytes": 20283200,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 143008
+    },
+    {
+      "seconds": 23,
+      "cycles": 13,
+      "pssKiB": 127030,
+      "javaUsedBytes": 48610736,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 28,
+      "cycles": 16,
+      "pssKiB": 152158,
+      "javaUsedBytes": 64036272,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 32,
+      "cycles": 19,
+      "pssKiB": 137202,
+      "javaUsedBytes": 47016928,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 38,
+      "cycles": 22,
+      "pssKiB": 132426,
+      "javaUsedBytes": 53603808,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 43,
+      "cycles": 25,
+      "pssKiB": 142806,
+      "javaUsedBytes": 63847904,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 48,
+      "cycles": 28,
+      "pssKiB": 135782,
+      "javaUsedBytes": 56458240,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 54,
+      "cycles": 31,
+      "pssKiB": 154282,
+      "javaUsedBytes": 49880480,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 59,
+      "cycles": 34,
+      "pssKiB": 143887,
+      "javaUsedBytes": 64249248,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 64,
+      "cycles": 37,
+      "pssKiB": 140671,
+      "javaUsedBytes": 61017088,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 68,
+      "cycles": 40,
+      "pssKiB": 131511,
+      "javaUsedBytes": 51248128,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 75,
+      "cycles": 43,
+      "pssKiB": 158515,
+      "javaUsedBytes": 68808192,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 80,
+      "cycles": 46,
+      "pssKiB": 160819,
+      "javaUsedBytes": 71285792,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 85,
+      "cycles": 49,
+      "pssKiB": 144295,
+      "javaUsedBytes": 64396320,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 90,
+      "cycles": 52,
+      "pssKiB": 142563,
+      "javaUsedBytes": 62225936,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 96,
+      "cycles": 55,
+      "pssKiB": 135835,
+      "javaUsedBytes": 54991904,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 102,
+      "cycles": 58,
+      "pssKiB": 142855,
+      "javaUsedBytes": 62143520,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 109,
+      "cycles": 61,
+      "pssKiB": 149647,
+      "javaUsedBytes": 58215856,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 114,
+      "cycles": 64,
+      "pssKiB": 138527,
+      "javaUsedBytes": 57785328,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 119,
+      "cycles": 67,
+      "pssKiB": 158815,
+      "javaUsedBytes": 68795376,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 124,
+      "cycles": 70,
+      "pssKiB": 152463,
+      "javaUsedBytes": 46509040,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 130,
+      "cycles": 73,
+      "pssKiB": 135555,
+      "javaUsedBytes": 54209536,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 135,
+      "cycles": 76,
+      "pssKiB": 160517,
+      "javaUsedBytes": 69118976,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 141,
+      "cycles": 79,
+      "pssKiB": 157351,
+      "javaUsedBytes": 76172288,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 147,
+      "cycles": 82,
+      "pssKiB": 166011,
+      "javaUsedBytes": 74300928,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 152,
+      "cycles": 85,
+      "pssKiB": 136691,
+      "javaUsedBytes": 53804064,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 158,
+      "cycles": 88,
+      "pssKiB": 155783,
+      "javaUsedBytes": 73940000,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 164,
+      "cycles": 91,
+      "pssKiB": 157971,
+      "javaUsedBytes": 65330704,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 169,
+      "cycles": 94,
+      "pssKiB": 155123,
+      "javaUsedBytes": 72473632,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 174,
+      "cycles": 97,
+      "pssKiB": 130559,
+      "javaUsedBytes": 47508512,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 179,
+      "cycles": 100,
+      "pssKiB": 143831,
+      "javaUsedBytes": 60902432,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 185,
+      "cycles": 103,
+      "pssKiB": 151278,
+      "javaUsedBytes": 68160544,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 190,
+      "cycles": 106,
+      "pssKiB": 161946,
+      "javaUsedBytes": 68045856,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 195,
+      "cycles": 109,
+      "pssKiB": 141126,
+      "javaUsedBytes": 57236512,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 202,
+      "cycles": 112,
+      "pssKiB": 141966,
+      "javaUsedBytes": 57707504,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 207,
+      "cycles": 115,
+      "pssKiB": 134734,
+      "javaUsedBytes": 49466352,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 212,
+      "cycles": 118,
+      "pssKiB": 140426,
+      "javaUsedBytes": 55593968,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 218,
+      "cycles": 121,
+      "pssKiB": 133222,
+      "javaUsedBytes": 49224688,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 224,
+      "cycles": 124,
+      "pssKiB": 154194,
+      "javaUsedBytes": 69987312,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 229,
+      "cycles": 127,
+      "pssKiB": 137262,
+      "javaUsedBytes": 53730288,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 234,
+      "cycles": 130,
+      "pssKiB": 133866,
+      "javaUsedBytes": 48364528,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 241,
+      "cycles": 133,
+      "pssKiB": 143106,
+      "javaUsedBytes": 58248192,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 246,
+      "cycles": 136,
+      "pssKiB": 136070,
+      "javaUsedBytes": 49490944,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 251,
+      "cycles": 139,
+      "pssKiB": 137586,
+      "javaUsedBytes": 51899392,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 257,
+      "cycles": 142,
+      "pssKiB": 135530,
+      "javaUsedBytes": 47782912,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 262,
+      "cycles": 145,
+      "pssKiB": 141106,
+      "javaUsedBytes": 55065600,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 268,
+      "cycles": 148,
+      "pssKiB": 138946,
+      "javaUsedBytes": 52878336,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 274,
+      "cycles": 151,
+      "pssKiB": 142290,
+      "javaUsedBytes": 57531376,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 279,
+      "cycles": 154,
+      "pssKiB": 151054,
+      "javaUsedBytes": 65371120,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 285,
+      "cycles": 157,
+      "pssKiB": 149142,
+      "javaUsedBytes": 63491056,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 290,
+      "cycles": 160,
+      "pssKiB": 135634,
+      "javaUsedBytes": 48286704,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 296,
+      "cycles": 163,
+      "pssKiB": 136058,
+      "javaUsedBytes": 48569344,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 302,
+      "cycles": 166,
+      "pssKiB": 138878,
+      "javaUsedBytes": 52878336,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 307,
+      "cycles": 169,
+      "pssKiB": 150994,
+      "javaUsedBytes": 64023552,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 313,
+      "cycles": 172,
+      "pssKiB": 143990,
+      "javaUsedBytes": 56323056,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 318,
+      "cycles": 175,
+      "pssKiB": 160210,
+      "javaUsedBytes": 72678384,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 324,
+      "cycles": 178,
+      "pssKiB": 138502,
+      "javaUsedBytes": 49871856,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 330,
+      "cycles": 181,
+      "pssKiB": 149382,
+      "javaUsedBytes": 62135280,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 335,
+      "cycles": 184,
+      "pssKiB": 145038,
+      "javaUsedBytes": 56765424,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 341,
+      "cycles": 187,
+      "pssKiB": 153898,
+      "javaUsedBytes": 66546672,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 346,
+      "cycles": 190,
+      "pssKiB": 150718,
+      "javaUsedBytes": 62323696,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 353,
+      "cycles": 193,
+      "pssKiB": 147608,
+      "javaUsedBytes": 58780656,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 358,
+      "cycles": 196,
+      "pssKiB": 137196,
+      "javaUsedBytes": 49626096,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 364,
+      "cycles": 199,
+      "pssKiB": 162860,
+      "javaUsedBytes": 47758320,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 371,
+      "cycles": 202,
+      "pssKiB": 154922,
+      "javaUsedBytes": 66563072,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 377,
+      "cycles": 205,
+      "pssKiB": 152858,
+      "javaUsedBytes": 63527936,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 383,
+      "cycles": 208,
+      "pssKiB": 144574,
+      "javaUsedBytes": 54664192,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 389,
+      "cycles": 211,
+      "pssKiB": 168206,
+      "javaUsedBytes": 68426752,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 394,
+      "cycles": 214,
+      "pssKiB": 163266,
+      "javaUsedBytes": 73427968,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 401,
+      "cycles": 217,
+      "pssKiB": 158238,
+      "javaUsedBytes": 69270528,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 406,
+      "cycles": 220,
+      "pssKiB": 140746,
+      "javaUsedBytes": 50031616,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 415,
+      "cycles": 223,
+      "pssKiB": 165307,
+      "javaUsedBytes": 68750336,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 420,
+      "cycles": 226,
+      "pssKiB": 176971,
+      "javaUsedBytes": 75148288,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 425,
+      "cycles": 229,
+      "pssKiB": 146879,
+      "javaUsedBytes": 55454720,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 432,
+      "cycles": 232,
+      "pssKiB": 141211,
+      "javaUsedBytes": 50613264,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 438,
+      "cycles": 235,
+      "pssKiB": 150207,
+      "javaUsedBytes": 58702864,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 443,
+      "cycles": 238,
+      "pssKiB": 151655,
+      "javaUsedBytes": 60378128,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 450,
+      "cycles": 241,
+      "pssKiB": 140408,
+      "javaUsedBytes": 49957888,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 455,
+      "cycles": 244,
+      "pssKiB": 153232,
+      "javaUsedBytes": 61037568,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 461,
+      "cycles": 247,
+      "pssKiB": 160472,
+      "javaUsedBytes": 69643264,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 466,
+      "cycles": 250,
+      "pssKiB": 154116,
+      "javaUsedBytes": 61643776,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 473,
+      "cycles": 253,
+      "pssKiB": 153656,
+      "javaUsedBytes": 61422608,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 479,
+      "cycles": 256,
+      "pssKiB": 141128,
+      "javaUsedBytes": 50490384,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 485,
+      "cycles": 259,
+      "pssKiB": 162604,
+      "javaUsedBytes": 70597648,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 492,
+      "cycles": 262,
+      "pssKiB": 160484,
+      "javaUsedBytes": 69196800,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 497,
+      "cycles": 265,
+      "pssKiB": 158156,
+      "javaUsedBytes": 65563648,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 503,
+      "cycles": 268,
+      "pssKiB": 154752,
+      "javaUsedBytes": 61881344,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 510,
+      "cycles": 271,
+      "pssKiB": 152348,
+      "javaUsedBytes": 61934576,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 515,
+      "cycles": 274,
+      "pssKiB": 162108,
+      "javaUsedBytes": 69610480,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 521,
+      "cycles": 277,
+      "pssKiB": 162472,
+      "javaUsedBytes": 71003120,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 526,
+      "cycles": 280,
+      "pssKiB": 174488,
+      "javaUsedBytes": 48552944,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 534,
+      "cycles": 283,
+      "pssKiB": 157690,
+      "javaUsedBytes": 63937552,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 540,
+      "cycles": 286,
+      "pssKiB": 176934,
+      "javaUsedBytes": 71801872,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 546,
+      "cycles": 289,
+      "pssKiB": 150850,
+      "javaUsedBytes": 56564752,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 553,
+      "cycles": 292,
+      "pssKiB": 164802,
+      "javaUsedBytes": 72375312,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 558,
+      "cycles": 295,
+      "pssKiB": 155110,
+      "javaUsedBytes": 59247632,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 564,
+      "cycles": 298,
+      "pssKiB": 162502,
+      "javaUsedBytes": 68246544,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 571,
+      "cycles": 301,
+      "pssKiB": 178138,
+      "javaUsedBytes": 72870912,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 576,
+      "cycles": 304,
+      "pssKiB": 154998,
+      "javaUsedBytes": 59509760,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 582,
+      "cycles": 307,
+      "pssKiB": 158674,
+      "javaUsedBytes": 64334848,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 587,
+      "cycles": 310,
+      "pssKiB": 156298,
+      "javaUsedBytes": 59128832,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 594,
+      "cycles": 313,
+      "pssKiB": 162918,
+      "javaUsedBytes": 67607552,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    },
+    {
+      "seconds": 600,
+      "cycles": 316,
+      "pssKiB": 154398,
+      "javaUsedBytes": 61369344,
+      "pageCacheBytes": 10141600,
+      "pageCacheLimit": 25165824,
+      "wordCacheBytes": 24260
+    }
+  ],
+  "passed": true,
+  "hardwareAcceptance": false,
+  "installedApkSha256": "68f6174498a5c2803b731343f54def7368b242d51f8b01a2c6eca225d6ff0bcf",
+  "matchesFinalApk": false,
+  "activityReopenPssSamples": [
+    {
+      "cycles": 10,
+      "seconds": 18,
+      "pssKiB": 153310
+    },
+    {
+      "cycles": 20,
+      "seconds": 35,
+      "pssKiB": 155462
+    },
+    {
+      "cycles": 30,
+      "seconds": 52,
+      "pssKiB": 156030
+    },
+    {
+      "cycles": 40,
+      "seconds": 70,
+      "pssKiB": 161903
+    },
+    {
+      "cycles": 50,
+      "seconds": 87,
+      "pssKiB": 158351
+    },
+    {
+      "cycles": 60,
+      "seconds": 107,
+      "pssKiB": 160467
+    },
+    {
+      "cycles": 70,
+      "seconds": 125,
+      "pssKiB": 162959
+    },
+    {
+      "cycles": 80,
+      "seconds": 144,
+      "pssKiB": 165019
+    },
+    {
+      "cycles": 90,
+      "seconds": 162,
+      "pssKiB": 169415
+    },
+    {
+      "cycles": 100,
+      "seconds": 180,
+      "pssKiB": 175226
+    },
+    {
+      "cycles": 110,
+      "seconds": 198,
+      "pssKiB": 173250
+    },
+    {
+      "cycles": 120,
+      "seconds": 216,
+      "pssKiB": 179810
+    },
+    {
+      "cycles": 130,
+      "seconds": 235,
+      "pssKiB": 186102
+    },
+    {
+      "cycles": 140,
+      "seconds": 254,
+      "pssKiB": 186002
+    },
+    {
+      "cycles": 150,
+      "seconds": 272,
+      "pssKiB": 189582
+    },
+    {
+      "cycles": 160,
+      "seconds": 291,
+      "pssKiB": 172162
+    },
+    {
+      "cycles": 170,
+      "seconds": 310,
+      "pssKiB": 171730
+    },
+    {
+      "cycles": 180,
+      "seconds": 328,
+      "pssKiB": 173514
+    },
+    {
+      "cycles": 190,
+      "seconds": 347,
+      "pssKiB": 176904
+    },
+    {
+      "cycles": 200,
+      "seconds": 368,
+      "pssKiB": 184598
+    },
+    {
+      "cycles": 210,
+      "seconds": 387,
+      "pssKiB": 182130
+    },
+    {
+      "cycles": 220,
+      "seconds": 408,
+      "pssKiB": 184371
+    },
+    {
+      "cycles": 230,
+      "seconds": 428,
+      "pssKiB": 186075
+    },
+    {
+      "cycles": 240,
+      "seconds": 448,
+      "pssKiB": 187444
+    },
+    {
+      "cycles": 250,
+      "seconds": 468,
+      "pssKiB": 188744
+    },
+    {
+      "cycles": 260,
+      "seconds": 488,
+      "pssKiB": 151316
+    },
+    {
+      "cycles": 270,
+      "seconds": 508,
+      "pssKiB": 196836
+    },
+    {
+      "cycles": 280,
+      "seconds": 528,
+      "pssKiB": 154618
+    },
+    {
+      "cycles": 290,
+      "seconds": 549,
+      "pssKiB": 226946
+    },
+    {
+      "cycles": 300,
+      "seconds": 569,
+      "pssKiB": 157546
+    },
+    {
+      "cycles": 310,
+      "seconds": 588,
+      "pssKiB": 181722
+    }
+  ],
+  "observedPssMinKiB": 127030,
+  "observedPssMaxKiB": 226946,
+  "subsequentChanges": "SettingsContent only: selected theme outline bounds/radius and Chinese About tagline. Reader/storage/cache/dictionary code unchanged."
+}

@@ -13,9 +13,14 @@ import org.junit.runner.RunWith
 class UpdateTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
+    private val nextVersion = BuildConfig.VERSION_CODE.toLong() + 1
+
     private fun fixture() =
         File(context.cacheDir, "update-test.apk").also {
-            Assume.assumeTrue("Host must stage the signed versionCode=5 fixture", it.exists())
+            Assume.assumeTrue(
+                "Host must stage the signed versionCode=$nextVersion fixture",
+                it.exists(),
+            )
         }
 
     @Suppress("DEPRECATION")
@@ -32,7 +37,7 @@ class UpdateTest {
     }
 
     private fun info(file: File) =
-        Network.Update(5, "0.1.4-update-fixture", "", "", sha256(file), certificate())
+        Network.Update(nextVersion, "0.1.5-update-fixture", "", "", sha256(file), certificate())
 
     @Test
     fun cryptographicSignatureHashPackageAndVersion() {
@@ -43,7 +48,11 @@ class UpdateTest {
             fail("Wrong hash accepted")
         } catch (_: IllegalArgumentException) {}
         try {
-            Network(context).verify(file, info(file).copy(versionCode = 6))
+            Network(context).verify(file, info(file).copy(versionName = "unexpected-name"))
+            fail("Wrong version name accepted")
+        } catch (_: IllegalArgumentException) {}
+        try {
+            Network(context).verify(file, info(file).copy(versionCode = nextVersion + 1))
             fail("Wrong version accepted")
         } catch (_: IllegalArgumentException) {}
         try {

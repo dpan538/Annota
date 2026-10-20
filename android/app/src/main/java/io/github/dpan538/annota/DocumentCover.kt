@@ -152,7 +152,11 @@ class DocumentCoverView(
     private val visible = Rect()
 
     init {
-        contentDescription = "${book.title} · 首页封面"
+        val english =
+            context
+                .getSharedPreferences("settings", Context.MODE_PRIVATE)
+                .getBoolean("english", false)
+        contentDescription = "${book.title} · ${if (english) "First-page cover" else "首页封面"}"
     }
 
     override fun onWindowVisibilityChanged(visibility: Int) {

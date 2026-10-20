@@ -389,7 +389,14 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
         insert(
             Book(
                 uid(),
-                b.title + " 副本",
+                b.title +
+                    if (
+                        context
+                            .getSharedPreferences("settings", Context.MODE_PRIVATE)
+                            .getBoolean("english", false)
+                    )
+                        " copy"
+                    else " 副本",
                 b.source,
                 b.folder,
                 b.favorite,

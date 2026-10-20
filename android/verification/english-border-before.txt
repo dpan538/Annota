@@ -1,0 +1,51 @@
+
+io.github.dpan538.annota.EnglishUiTest:
+Error in selectedThemeOutlineIsVisibleOnAllFourSides(io.github.dpan538.annota.EnglishUiTest):
+java.lang.AssertionError: false/60 selected border clipped on right
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at io.github.dpan538.annota.EnglishUiTest.selectedThemeOutlineIsVisibleOnAllFourSides$lambda$35(EnglishUiTest.kt:231)
+	at io.github.dpan538.annota.EnglishUiTest.$r8$lambda$EKYpc0PL-bwkXPcHEEd3cf6JhUQ(Unknown Source:0)
+	at io.github.dpan538.annota.EnglishUiTest$$ExternalSyntheticLambda25.invoke(D8$$SyntheticClass:0)
+	at io.github.dpan538.annota.EnglishUiTest.ui$lambda$1(EnglishUiTest.kt:29)
+	at io.github.dpan538.annota.EnglishUiTest.$r8$lambda$ixDCUsHmMzI8UdljLEXbhevUoZw(Unknown Source:0)
+	at io.github.dpan538.annota.EnglishUiTest$$ExternalSyntheticLambda5.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2616)
+	at android.os.Handler.handleCallback(Handler.java:995)
+	at android.os.Handler.dispatchMessage(Handler.java:103)
+	at android.os.Looper.loopOnce(Looper.java:248)
+	at android.os.Looper.loop(Looper.java:338)
+	at android.app.ActivityThread.main(ActivityThread.java:9067)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+
+
+Time: 1.294
+There was 1 failure:
+1) selectedThemeOutlineIsVisibleOnAllFourSides(io.github.dpan538.annota.EnglishUiTest)
+java.lang.AssertionError: false/60 selected border clipped on right
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at io.github.dpan538.annota.EnglishUiTest.selectedThemeOutlineIsVisibleOnAllFourSides$lambda$35(EnglishUiTest.kt:231)
+	at io.github.dpan538.annota.EnglishUiTest.$r8$lambda$EKYpc0PL-bwkXPcHEEd3cf6JhUQ(Unknown Source:0)
+	at io.github.dpan538.annota.EnglishUiTest$$ExternalSyntheticLambda25.invoke(D8$$SyntheticClass:0)
+	at io.github.dpan538.annota.EnglishUiTest.ui$lambda$1(EnglishUiTest.kt:29)
+	at io.github.dpan538.annota.EnglishUiTest.$r8$lambda$ixDCUsHmMzI8UdljLEXbhevUoZw(Unknown Source:0)
+	at io.github.dpan538.annota.EnglishUiTest$$ExternalSyntheticLambda5.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2616)
+	at android.os.Handler.handleCallback(Handler.java:995)
+	at android.os.Handler.dispatchMessage(Handler.java:103)
+	at android.os.Looper.loopOnce(Looper.java:248)
+	at android.os.Looper.loop(Looper.java:338)
+	at android.app.ActivityThread.main(ActivityThread.java:9067)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1

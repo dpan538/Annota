@@ -10,7 +10,7 @@ All Android evidence here is from a local API 36 ARM64 emulator configured as a 
 - `feedback-gunicorn.json`: actual temporary loopback Gunicorn 25.3.0, two workers; 201 receipt then idempotent 200 receipt. No public HTTPS endpoint was deployed.
 - `lint-summary.txt`: Android lint with 0 errors; warnings remain for KTX suggestions, custom View constructors, explicit left/right placement, draw-time allocations, SharedPreferences commit used for durable drafts, dependency update suggestions and unused third-party TLS helper classes. Network code uses the platform's default HTTPS trust and hostname verification.
 - PNGs show actual native emulator UI: first launch, system-picked imported PDF, landscape/portrait reader/library and a complete offline dictionary entry. The imported test PDF is a generated fixture with a rotated first page, not the sample paper.
-- `build-info-0.1.1-dev.json`, `build-info-0.1.2-dev.json`: previous debug artifact identities; `build-info.json` records the current 0.1.3-dev build. Final 3B branding has its original integration evidence below.
+- `build-info-0.1.1-dev.json`, `build-info-0.1.2-dev.json`: previous debug artifact identities; `build-info-0.1.3-dev.json` records the prior reader build; `build-info.json` records the current 0.1.4-dev artifact. Final 3B branding has its original integration evidence below.
 
 Hardware acceptance, system installer interaction on Xiaomi, offline handwriting IME, real Release download, production certificate continuity and public feedback HTTPS remain separate checks.
 
@@ -35,3 +35,14 @@ Public logs use repository-relative paths; private SDK caches, local keys, feedb
 - `reader-polish-lint-summary.txt`: 0 errors / 54 warnings, repository-relative paths. Local feedback service tests also passed (5); this does not establish public HTTPS availability.
 
 The attached reader's page cache held 10,141,600 bytes and word cache an estimated 30,760 bytes, both zero after trim and rebuilt on resume. Short UI-flow PSS samples were 135,094 KiB foreground and 135,496 KiB background: cache release does not prove an immediate fall in total process PSS. Xiaomi hardware, long-running large-file pressure and production update installation remain pending; see [acceptance notes](../../docs/READER-ACCEPTANCE.md).
+
+## 0.1.4-dev English UI and delivery
+
+- `english-build.json`: final development APK identity and production-source hashes; same debug certificate as prior builds, not production signed.
+- `english-instrumentation-api36.txt`: 28 tests passed, no skips. Includes the higher same-key v6 fixture, English language/draft persistence, 30 measured text-layout cases and six rendered selected-theme outline cases.
+- `english-border-before.txt` / `english-border-after.txt`: the rendered-pixel regression fails on the original clipped right outline and passes after containing the outline within the preview bounds.
+- `english-*.png`: actual final landscape/portrait English screens, tools/dictionary/error and Chinese update entry. Document names and the authored Chinese guide retain their original languages.
+- `english-lint-summary.txt`: 0 errors / 54 warnings.
+- The **602-second / 316-cycle / 31 Activity-recreation** candidate-build record moved to [log](../../log/2026-10-21-emulator-soak/README.md), including raw output, CSV, PNG/SVG curves and tested artifact/source hashes. Subsequent SettingsContent outline/tagline edits change the final APK hash; reader/storage/cache code is unchanged. This is not a second final-artifact soak or Xiaomi hardware evidence.
+
+See [acceptance and download checks](../../docs/ENGLISH-APK-ACCEPTANCE.md) for what the stable updater does and what remains unverified.

@@ -43,7 +43,7 @@ class MainActivity : Activity() {
     private var activePage = 0
     private var updateApk: File? = null
     private var liveTask: Network.Task? = null
-    private var inputInfo = "尚未收到真实触控笔事件"
+    private var inputInfo = ""
     private val palettes =
         listOf(
             intArrayOf(
@@ -82,6 +82,9 @@ class MainActivity : Activity() {
         get() = prefs.getBoolean("english", false)
 
     private fun tr(zh: String, en: String) = if (english) en else zh
+
+    private fun translatedMessage(message: String) =
+        if (english) UiMessages.english(message) else message
 
     private fun dp(n: Int) = (n * resources.displayMetrics.density).roundToInt()
 
@@ -122,7 +125,7 @@ class MainActivity : Activity() {
             v.setPadding(system.left, if (book == null) 0 else system.top, system.right, 0)
             insets
         }
-        text("正在准备本地书库…").also { root.addView(it) }
+        text(tr("正在准备本地书库…", "Preparing your local library…")).also { root.addView(it) }
         io.execute {
             try {
                 store.seed()
@@ -248,7 +251,7 @@ class MainActivity : Activity() {
         if (!isFinishing && !isDestroyed)
             AlertDialog.Builder(this)
                 .setTitle(tr("操作未完成", "Operation incomplete"))
-                .setMessage(t.message ?: t.javaClass.simpleName)
+                .setMessage(translatedMessage(t.message ?: t.javaClass.simpleName))
                 .setPositiveButton("OK", null)
                 .show()
     }
@@ -414,10 +417,19 @@ class MainActivity : Activity() {
     }
 
     private fun newNote() {
-        choose(tr("纸张模板", "Paper"), listOf("空白 / Blank", "点阵 / Dots", "格子 / Grid", "横线 / Lined")) {
-            style ->
-            choose(tr("纸张颜色", "Paper color"), listOf("白 / White", "灰 / Gray", "黑 / Black")) { paper
-                ->
+        choose(
+            tr("纸张模板", "Paper"),
+            listOf(
+                tr("空白 / Blank", "Blank"),
+                tr("点阵 / Dots", "Dots"),
+                tr("格子 / Grid", "Grid"),
+                tr("横线 / Lined", "Lined"),
+            ),
+        ) { style ->
+            choose(
+                tr("纸张颜色", "Paper color"),
+                listOf(tr("白 / White", "White"), tr("灰 / Gray", "Gray"), tr("黑 / Black", "Black")),
+            ) { paper ->
                 prompt(tr("笔记名称", "Note name"), tr("新笔记", "New note")) {
                     val b =
                         store.newNote(
@@ -634,12 +646,12 @@ class MainActivity : Activity() {
         choose(
             tr("画笔", "Pen"),
             listOf(
-                "笔 / Pen",
-                "铅笔 / Pencil",
-                "钢笔 / Fountain",
-                "荧光笔 / Highlighter",
-                "颜色 / Color",
-                "粗细 / Width",
+                tr("笔 / Pen", "Pen"),
+                tr("铅笔 / Pencil", "Pencil"),
+                tr("钢笔 / Fountain", "Fountain pen"),
+                tr("荧光笔 / Highlighter", "Highlighter"),
+                tr("颜色 / Color", "Color"),
+                tr("粗细 / Width", "Width"),
             ),
         ) { i ->
             when (i) {
@@ -651,12 +663,12 @@ class MainActivity : Activity() {
                     choose(
                         tr("墨迹颜色", "Ink color"),
                         listOf(
-                            "黑 / Black",
-                            "白 / White",
-                            "红 / Red",
-                            "蓝 / Blue",
-                            "绿 / Green",
-                            "黄 / Yellow",
+                            tr("黑 / Black", "Black"),
+                            tr("白 / White", "White"),
+                            tr("红 / Red", "Red"),
+                            tr("蓝 / Blue", "Blue"),
+                            tr("绿 / Green", "Green"),
+                            tr("黄 / Yellow", "Yellow"),
                         ),
                     ) {
                         r.color =
@@ -684,9 +696,10 @@ class MainActivity : Activity() {
         choose(
             tr("橡皮", "Eraser"),
             listOf(
-                "整笔 / Whole stroke",
-                "局部 / Partial",
-                if (r.onlyHighlight) "全部笔迹 / All ink" else "仅荧光笔 / Highlighter only",
+                tr("整笔 / Whole stroke", "Whole stroke"),
+                tr("局部 / Partial", "Partial"),
+                if (r.onlyHighlight) tr("全部笔迹 / All ink", "All ink")
+                else tr("仅荧光笔 / Highlighter only", "Highlighter only"),
             ),
         ) {
             when (it) {
@@ -702,12 +715,12 @@ class MainActivity : Activity() {
         choose(
             tr("图形", "Shapes"),
             listOf(
-                "直线 / Line",
-                "矩形 / Rectangle",
-                "椭圆 / Ellipse",
-                "箭头 / Arrow",
-                "三角形 / Triangle",
-                if (r.filled) "取消填充 / No fill" else "填充 / Fill",
+                tr("直线 / Line", "Line"),
+                tr("矩形 / Rectangle", "Rectangle"),
+                tr("椭圆 / Ellipse", "Ellipse"),
+                tr("箭头 / Arrow", "Arrow"),
+                tr("三角形 / Triangle", "Triangle"),
+                if (r.filled) tr("取消填充 / No fill", "No fill") else tr("填充 / Fill", "Fill"),
             ),
         ) {
             if (it < 5) r.tool = listOf("line", "rectangle", "ellipse", "arrow", "triangle")[it]
@@ -823,10 +836,19 @@ class MainActivity : Activity() {
 
     private fun addPage() {
         val b = book ?: return
-        choose(tr("纸张模板", "Paper"), listOf("空白 / Blank", "点阵 / Dots", "格子 / Grid", "横线 / Lined")) {
-            style ->
-            choose(tr("纸张颜色", "Paper color"), listOf("白 / White", "灰 / Gray", "黑 / Black")) { paper
-                ->
+        choose(
+            tr("纸张模板", "Paper"),
+            listOf(
+                tr("空白 / Blank", "Blank"),
+                tr("点阵 / Dots", "Dots"),
+                tr("格子 / Grid", "Grid"),
+                tr("横线 / Lined", "Lined"),
+            ),
+        ) { style ->
+            choose(
+                tr("纸张颜色", "Paper color"),
+                listOf(tr("白 / White", "White"), tr("灰 / Gray", "Gray"), tr("黑 / Black", "Black")),
+            ) { paper ->
                 b.pages.add(
                     b.current + 1,
                     Sheet(
@@ -870,9 +892,23 @@ class MainActivity : Activity() {
                         toast(tr("原始内容页不覆盖底色", "Original pages keep their background"))
                         return@choose
                     }
-                    choose("Paper", listOf("空白 / Blank", "点阵 / Dots", "格子 / Grid", "横线 / Lined")) {
-                        s ->
-                        choose("Color", listOf("白 / White", "灰 / Gray", "黑 / Black")) { c ->
+                    choose(
+                        tr("纸张模板", "Paper"),
+                        listOf(
+                            tr("空白 / Blank", "Blank"),
+                            tr("点阵 / Dots", "Dots"),
+                            tr("格子 / Grid", "Grid"),
+                            tr("横线 / Lined", "Lined"),
+                        ),
+                    ) { s ->
+                        choose(
+                            tr("纸张颜色", "Paper color"),
+                            listOf(
+                                tr("白 / White", "White"),
+                                tr("灰 / Gray", "Gray"),
+                                tr("黑 / Black", "Black"),
+                            ),
+                        ) { c ->
                             p.style = listOf("blank", "dots", "grid", "lined")[s]
                             p.paper = listOf("white", "gray", "black")[c]
                             store.commit(b)
@@ -1010,7 +1046,14 @@ class MainActivity : Activity() {
                     runOnUiThread {
                         if (open && dictionaryRequest == id) {
                             results.removeAllViews()
-                            results.addView(text(t.message ?: "词库查询失败", 15f))
+                            results.addView(
+                                text(
+                                    translatedMessage(
+                                        t.message ?: tr("词库查询失败", "Dictionary lookup failed")
+                                    ),
+                                    15f,
+                                )
+                            )
                         }
                     }
                 }
@@ -1147,7 +1190,7 @@ class MainActivity : Activity() {
                                     bounds.outHeight > 0 &&
                                     bounds.outWidth.toLong() * bounds.outHeight <= 100_000_000
                             ) {
-                                "图片过大或格式无效"
+                                tr("图片过大或格式无效", "Image is too large or the format is invalid")
                             }
                             val w = p.w * .6f
                             val h = min(p.h * .6f, w * bounds.outHeight / bounds.outWidth)
@@ -1469,7 +1512,7 @@ class MainActivity : Activity() {
         val dm = resources.displayMetrics
         val info =
             StringBuilder(
-                "${Build.MANUFACTURER} ${Build.MODEL}\nAndroid ${Build.VERSION.RELEASE} / API ${Build.VERSION.SDK_INT}\n${dm.widthPixels} × ${dm.heightPixels}, density ${dm.density}\n$inputInfo\n\n"
+                "${Build.MANUFACTURER} ${Build.MODEL}\nAndroid ${Build.VERSION.RELEASE} / API ${Build.VERSION.SDK_INT}\n${dm.widthPixels} × ${dm.heightPixels}, density ${dm.density}\n${inputInfo.ifEmpty { tr("尚未收到真实触控笔事件", "No stylus events received yet") }}\n\n"
             )
         InputDevice.getDeviceIds().forEach { id ->
             val d = InputDevice.getDevice(id) ?: return@forEach
@@ -1514,7 +1557,7 @@ class MainActivity : Activity() {
                 reader != null
         ) {
             reader?.let { it.tool = if (it.tool == "eraser") "pen" else "eraser" }
-            inputInfo = "真实系统笔按键 keyCode=$keyCode"
+            inputInfo = "${tr("真实系统笔按键", "System stylus button")} keyCode=$keyCode"
             return true
         }
         return super.onKeyDown(keyCode, event)
@@ -1649,7 +1692,7 @@ class MainActivity : Activity() {
         ui.box(card, submit, pad, submitTop, inner, size)
         var baseHeight = submitTop + size + 28f
         fun showError(message: String) {
-            error.text = message
+            error.text = translatedMessage(message)
             error.visibility = View.VISIBLE
             submit.layoutParams =
                 (submit.layoutParams as FrameLayout.LayoutParams).apply {

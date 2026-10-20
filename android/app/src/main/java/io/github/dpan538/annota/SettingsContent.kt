@@ -34,28 +34,39 @@ class SettingsContent(
                     val tint = if (selected) palette.accent else palette.color("muted")
                     if (selected) b.background = background(palette.color("side-active"), 12f)
                     if (portrait) {
-                        box(b, icon(item.second, tint), (tabWidth - 22f) / 2, 11f, 22f, 22f)
+                        val iconSize = if (english) 20f else 22f
                         box(
                             b,
-                            label(item.third, 14f, tint, 500).apply { gravity = Gravity.CENTER },
+                            icon(item.second, tint),
+                            (tabWidth - iconSize) / 2,
+                            11f,
+                            iconSize,
+                            iconSize,
+                        )
+                        box(
+                            b,
+                            label(item.third, if (english) 13f else 14f, tint, 500).apply {
+                                gravity = Gravity.CENTER
+                            },
                             0f,
                             38f,
                             tabWidth,
                             22f,
                         )
                     } else {
-                        val textWidth =
-                            if (english) item.third.length * 8f else item.third.length * 16f
-                        val start = (tabWidth - 22f - 10f - textWidth) / 2
-                        box(b, icon(item.second, tint), start, (tabHeight - 22f) / 2, 22f, 22f)
+                        val iconSize = if (english) 20f else 22f
+                        val caption = label(item.third, if (english) 15f else 16f, tint, 500)
+                        val textWidth = caption.paint.measureText(item.third) / unit + 2f
+                        val start = (tabWidth - iconSize - 10f - textWidth) / 2
                         box(
                             b,
-                            label(item.third, 16f, tint, 500),
-                            start + 32f,
-                            0f,
-                            textWidth,
-                            tabHeight,
+                            icon(item.second, tint),
+                            start,
+                            (tabHeight - iconSize) / 2,
+                            iconSize,
+                            iconSize,
                         )
+                        box(b, caption, start + iconSize + 10f, 0f, textWidth, tabHeight)
                     }
                     box(parent, b, i * (tabWidth + gap), 6f, tabWidth, tabHeight)
                 }
@@ -175,11 +186,11 @@ class SettingsContent(
                                     background =
                                         background(
                                             android.graphics.Color.TRANSPARENT,
-                                            13f,
+                                            12f,
                                             palette.accent,
                                         )
                                 }
-                            box(card, outline, -3f, -3f, cw + 6f, ph + 6f)
+                            box(card, outline, 0f, 0f, cw, ph)
                         }
                         box(
                             card,
@@ -379,7 +390,7 @@ class SettingsContent(
                         parent,
                         label(
                                 tr(
-                                    "专注论文阅读，让思考落在笔尖。",
+                                    "专为阅读，让思考落在笔尖。",
                                     "Read with focus. Put your thoughts on the page.",
                                 ),
                                 22f,

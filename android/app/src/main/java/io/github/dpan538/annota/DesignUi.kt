@@ -359,9 +359,13 @@ class LibraryScreen(
         nav("feedback", "MessageSquare", tr("意见反馈", "Feedback"), bottomTop + navHeight)
         box(
             side,
-            label(tr("本地书库", "LOCAL LIBRARY"), if (portrait) 10f else 11f, palette.color("muted"))
+            label(
+                    tr("本地书库", "LOCAL LIBRARY"),
+                    if (portrait && english) 9f else if (portrait) 10f else 11f,
+                    palette.color("muted"),
+                )
                 .apply {
-                    letterSpacing = .12f
+                    letterSpacing = if (portrait && english) .08f else .12f
                     gravity = if (portrait) Gravity.CENTER else Gravity.CENTER_VERTICAL
                 },
             if (portrait) 10f else 28f,

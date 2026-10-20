@@ -1,0 +1,6 @@
+
+io.github.dpan538.annota.EnglishUiTest:.
+
+Time: 0.722
+
+OK (1 test)

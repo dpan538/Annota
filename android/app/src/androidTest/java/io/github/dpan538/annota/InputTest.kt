@@ -108,6 +108,57 @@ class InputTest {
     }
 
     @Test
+    fun batchedHistoryAndPressureExtremesArePreservedAndNormalized() {
+        event(MotionEvent.ACTION_DOWN, pressure = .05f)
+        val properties =
+            arrayOf(
+                MotionEvent.PointerProperties().apply {
+                    id = 0
+                    toolType = MotionEvent.TOOL_TYPE_STYLUS
+                }
+            )
+        fun coordinates(x: Float, pressure: Float) =
+            arrayOf(
+                MotionEvent.PointerCoords().apply {
+                    this.x = x
+                    y = 420f
+                    this.pressure = pressure
+                    size = .1f
+                }
+            )
+        time += 16
+        val move =
+            MotionEvent.obtain(
+                time - 100,
+                time,
+                MotionEvent.ACTION_MOVE,
+                1,
+                properties,
+                coordinates(420f, .2f),
+                0,
+                0,
+                1f,
+                1f,
+                1,
+                0,
+                InputDevice.SOURCE_STYLUS,
+                0,
+            )
+        move.addBatch(time + 8, coordinates(440f, .6f), 0)
+        move.addBatch(time + 16, coordinates(460f, 1.3f), 0)
+        assertEquals(2, move.historySize)
+        instrumentation.runOnMainSync { view.onTouchEvent(move) }
+        move.recycle()
+        time += 16
+        event(MotionEvent.ACTION_UP, x = 460f, pressure = .5f)
+        val points = store.book(book.id).pages[0].marks.single().points
+        assertTrue(points.any { kotlin.math.abs(it.p - .2f) < .001f })
+        assertTrue(points.any { kotlin.math.abs(it.p - .6f) < .001f })
+        assertEquals(1f, points.maxOf { it.p }, .001f)
+        assertTrue(points.all { it.p in 0f..1f })
+    }
+
+    @Test
     fun cancellationDoesNotCommit() {
         event(MotionEvent.ACTION_DOWN)
         event(MotionEvent.ACTION_MOVE, x = 500f)

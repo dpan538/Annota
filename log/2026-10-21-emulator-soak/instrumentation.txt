@@ -1,0 +1,69 @@
+io.github.dpan538.annota.SoakTest:
+Soak: 10 cycles, 18s, PSS 153310 KiB
+
+Soak: 20 cycles, 35s, PSS 155462 KiB
+
+Soak: 30 cycles, 52s, PSS 156030 KiB
+
+Soak: 40 cycles, 70s, PSS 161903 KiB
+
+Soak: 50 cycles, 87s, PSS 158351 KiB
+
+Soak: 60 cycles, 107s, PSS 160467 KiB
+
+Soak: 70 cycles, 125s, PSS 162959 KiB
+
+Soak: 80 cycles, 144s, PSS 165019 KiB
+
+Soak: 90 cycles, 162s, PSS 169415 KiB
+
+Soak: 100 cycles, 180s, PSS 175226 KiB
+
+Soak: 110 cycles, 198s, PSS 173250 KiB
+
+Soak: 120 cycles, 216s, PSS 179810 KiB
+
+Soak: 130 cycles, 235s, PSS 186102 KiB
+
+Soak: 140 cycles, 254s, PSS 186002 KiB
+
+Soak: 150 cycles, 272s, PSS 189582 KiB
+
+Soak: 160 cycles, 291s, PSS 172162 KiB
+
+Soak: 170 cycles, 310s, PSS 171730 KiB
+
+Soak: 180 cycles, 328s, PSS 173514 KiB
+
+Soak: 190 cycles, 347s, PSS 176904 KiB
+
+Soak: 200 cycles, 368s, PSS 184598 KiB
+
+Soak: 210 cycles, 387s, PSS 182130 KiB
+
+Soak: 220 cycles, 408s, PSS 184371 KiB
+
+Soak: 230 cycles, 428s, PSS 186075 KiB
+
+Soak: 240 cycles, 448s, PSS 187444 KiB
+
+Soak: 250 cycles, 468s, PSS 188744 KiB
+
+Soak: 260 cycles, 488s, PSS 151316 KiB
+
+Soak: 270 cycles, 508s, PSS 196836 KiB
+
+Soak: 280 cycles, 528s, PSS 154618 KiB
+
+Soak: 290 cycles, 549s, PSS 226946 KiB
+
+Soak: 300 cycles, 569s, PSS 157546 KiB
+
+Soak: 310 cycles, 588s, PSS 181722 KiB
+
+Soak passed: 316 cycles. Report: cache/english-soak.json
+.
+
+Time: 603.327
+
+OK (1 test)

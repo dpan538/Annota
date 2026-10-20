@@ -47,6 +47,11 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     var onSelection: (String) -> Unit = {}
     var onError: (Throwable) -> Unit = {}
     var onActivePage: (Int) -> Unit = {}
+    private val english =
+        context.getSharedPreferences("settings", Context.MODE_PRIVATE).getBoolean("english", false)
+
+    private fun tr(zh: String, en: String) = if (english) en else zh
+
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val memory = RenderMemory.from(context)
     private val cache =
@@ -156,7 +161,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     init {
         isFocusable = true
         isFocusableInTouchMode = true
-        contentDescription = "PDF 阅读与批注画布"
+        contentDescription = tr("PDF 阅读与批注画布", "PDF reading and annotation canvas")
         setLayerType(LAYER_TYPE_HARDWARE, null)
     }
 
@@ -256,7 +261,14 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                             if (bytes <= words.maxSize()) words.put(p.id, result)
                             else {
                                 words.put(p.id, emptyList())
-                                onError(IllegalArgumentException("本页文字量超过本机缓存限额，仍可阅读与批注"))
+                                onError(
+                                    IllegalArgumentException(
+                                        tr(
+                                            "本页文字量超过本机缓存限额，仍可阅读与批注",
+                                            "This page exceeds the text cache limit. Reading and annotation remain available.",
+                                        )
+                                    )
+                                )
                             }
                             invalidate()
                         }
@@ -335,7 +347,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             } else {
                 paint.color = 0xffa0a0a0.toInt()
                 paint.textSize = 15f
-                canvas.drawText("正在渲染…", 30f, 40f, paint)
+                canvas.drawText(tr("正在渲染…", "Rendering…"), 30f, 40f, paint)
             }
             p.marks.forEach { drawMark(canvas, it) }
             if (active?.index == i) stroke?.let { drawMark(canvas, it) }
@@ -465,7 +477,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             paint,
         )
         paint.textSize = 10 * scale
-        c.drawText("拖动 · 双指旋转", -40 * scale, 14 * scale, paint)
+        c.drawText(tr("拖动 · 双指旋转", "Drag · two-finger rotate"), -40 * scale, 14 * scale, paint)
         c.restore()
     }
 
@@ -559,7 +571,12 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             book.pages.addAll(saved.pages)
             book.cursor = saved.cursor
             book.revision = saved.revision
-            onError(java.io.IOException("本次笔迹未保存：${t.message}", t))
+            onError(
+                java.io.IOException(
+                    "${tr("本次笔迹未保存", "Stroke could not be saved")}: ${t.message}",
+                    t,
+                )
+            )
         }
     }
 
