@@ -1,0 +1,6 @@
+__pycache__/
+.env
+*.sqlite*
+
+.venv/
+.build-check.log

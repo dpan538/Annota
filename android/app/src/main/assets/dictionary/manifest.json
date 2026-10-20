@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 2,
+  "networkRequired": false,
+  "en-zh": {
+    "entries": 57841,
+    "source": "ECDICT, frequency/exam core subset",
+    "license": "MIT",
+    "url": "https://github.com/skywind3000/ECDICT"
+  },
+  "zh-en": {
+    "entries": 125301,
+    "source": "CC-CEDICT",
+    "license": "CC-BY-SA-4.0",
+    "url": "https://www.mdbg.net/chinese/dictionary?page=cc-cedict"
+  },
+  "files": {
+    "en-zh.sqlite": {
+      "bytes": 15724544,
+      "sha256": "d557d408e0470f046dbedf85b4f82d89871e52e413b3098a8ca9c697d39acb44"
+    },
+    "zh-en.sqlite": {
+      "bytes": 14618624,
+      "sha256": "82b987a224ab0e67fb3035eb6c71a4e3b7517d4cf112ed0f2ce3c5589b65de0d"
+    }
+  },
+  "sources": {
+    "cedict.txt.gz": "2d42d41f75df8708d9d9b236d8ae15ecf1cef525aef8ebb8499a74cb09e1b096",
+    "ecdict-core.csv.gz": "6bfc246aecfb1284a73e3d09b3f6be6279c99afb6e08e51bcd2cc080e483f895"
+  }
+}

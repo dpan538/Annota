@@ -27,5 +27,4 @@ design/assets/guide-hand/*.ttf
 design/dictionary/bundle/*.sqlite
 design/onboarding/bundle/
 docs/NATIVE-HANDOFF.md
-docs/IMPLEMENTATION-STATUS.md
 branding/fonts/*.ttf

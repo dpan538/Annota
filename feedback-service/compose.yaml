@@ -1,0 +1,27 @@
+services:
+  feedback:
+    build: .
+    environment:
+      FEEDBACK_SECRET: ${FEEDBACK_SECRET:?Set a random secret of at least 32 characters}
+      FEEDBACK_RETENTION_DAYS: 90
+    volumes:
+      - feedback_data:/data
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+  caddy:
+    image: caddy:2.11.7-alpine
+    environment:
+      FEEDBACK_HOST: ${FEEDBACK_HOST:?Set your HTTPS hostname}
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+volumes:
+  feedback_data:
+  caddy_data:
+  caddy_config:

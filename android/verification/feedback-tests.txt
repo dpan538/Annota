@@ -1,0 +1,10 @@
+test_actual_http_receipt (test_server.Tests.test_actual_http_receipt) ... ok
+test_rate_limit_and_retention (test_server.Tests.test_rate_limit_and_retention) ... ok
+test_receipt_idempotency_and_private_contact (test_server.Tests.test_receipt_idempotency_and_private_contact) ... ok
+test_storage_permissions (test_server.Tests.test_storage_permissions) ... ok
+test_validation_and_no_read_endpoint (test_server.Tests.test_validation_and_no_read_endpoint) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.592s
+
+OK

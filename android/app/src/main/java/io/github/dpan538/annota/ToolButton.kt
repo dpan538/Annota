@@ -1,0 +1,82 @@
+package io.github.dpan538.annota
+
+import android.content.Context
+import android.graphics.*
+import android.view.View
+
+/** The same Lucide glyphs used by the approved reader, in its 34-unit icon slots. */
+class ToolButton(context: Context, val name: String) : View(context) {
+    var tint = 0xff262a2d.toInt()
+    var selectedFill = 0x33ffffff
+    var selectedTint = 0xff262a2d.toInt()
+    var dotColor = 0xff262a2d.toInt()
+    var unit = resources.displayMetrics.density
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val glyph =
+        LucideIcon(
+            context,
+            when (name) {
+                "back" -> "ChevronLeft"
+                "list" -> "LayoutList"
+                "spread" -> "Columns2"
+                "hand" -> "Hand"
+                "pen" -> "PenLine"
+                "eraser" -> "Eraser"
+                "shape" -> "Shapes"
+                "image" -> "Image"
+                "ruler" -> "Ruler"
+                "undo" -> "Undo2"
+                "redo" -> "Redo2"
+                "book" -> "BookOpenText"
+                "dictionary" -> "BookA"
+                "more" -> "Ellipsis"
+                "filter" -> "Funnel"
+                "trash" -> "Trash2"
+                "language" -> "Languages"
+                "keyboard" -> "Keyboard"
+                "add" -> "FilePlus2"
+                else -> error("Unknown local tool icon")
+            },
+        )
+
+    init {
+        isClickable = true
+        isFocusable = true
+        setBackgroundResource(android.R.drawable.list_selector_background)
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        if (isSelected) {
+            paint.color = selectedFill
+            val s = 28 * unit
+            canvas.drawRoundRect(
+                RectF((width - s) / 2, (height - s) / 2, (width + s) / 2, (height + s) / 2),
+                8 * unit,
+                8 * unit,
+                paint,
+            )
+        }
+        val s = (20 * unit).toInt()
+        glyph.tint = if (isSelected) selectedTint else tint
+        glyph.layout(0, 0, s, s)
+        canvas.save()
+        canvas.translate((width - s) / 2f, (height - s) / 2f)
+        glyph.draw(canvas)
+        canvas.restore()
+        if (name == "pen" && isSelected) {
+            paint.color = dotColor
+            canvas.drawRoundRect(
+                RectF(
+                    width / 2f - 4 * unit,
+                    height / 2f + 10 * unit,
+                    width / 2f + 4 * unit,
+                    height / 2f + 12 * unit,
+                ),
+                unit,
+                unit,
+                paint,
+            )
+        }
+    }
+}

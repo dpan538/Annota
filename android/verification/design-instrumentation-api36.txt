@@ -1,0 +1,8 @@
+io.github.dpan538.annota.CoreTest:........
+io.github.dpan538.annota.DesignUiTest:..
+io.github.dpan538.annota.InputTest:....
+io.github.dpan538.annota.UpdateTest:..
+
+Time: 6.421
+
+OK (16 tests)

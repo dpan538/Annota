@@ -1,0 +1,20 @@
+{
+  "source": "Annota/design/home-ui.fragment.html",
+  "sha256": "f7675050f8549e929d9defab72e954c742ebe566a21cd1f49610564fb80718db",
+  "fontArchive": "https://hyperos.mi.com/font-download/MiSans.zip",
+  "fonts": [
+    {
+      "file": "fonts/MiSansVF.ttf",
+      "runtimeWeights": [
+        400,
+        500
+      ],
+      "archiveEntry": "MiSans/可变字体/MiSansVF.ttf",
+      "crc32": "df58e866",
+      "bytes": 20093424,
+      "sha256": "0ddef90648998900175cfdca9a6f087a2544c182f130b0ad4f7e94a03a115e79"
+    }
+  ],
+  "fontModification": false,
+  "layout": "Native port of approved 1024×682⅔ / 682⅔×1024 design coordinates; no placeholder documents seeded"
+}

@@ -1,0 +1,11 @@
+{
+  "firstLaunchOnlyGuide": true,
+  "systemSafPdfImport": true,
+  "importedPdfPages": 3,
+  "readerToolbarIcons": 13,
+  "landscapeAndPortrait": true,
+  "nativeOfflineLookup": "attention",
+  "unconfiguredFeedbackShowsFailure": true,
+  "draftAfterForceStop": "Synthetic test draft",
+  "hardware": "API36 emulator"
+}

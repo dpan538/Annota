@@ -1,0 +1,7 @@
+{
+  "server": "gunicorn 25.3.0, two workers",
+  "firstHttpStatus": 201,
+  "retryHttpStatus": 200,
+  "sameReceipt": true,
+  "publicHttpsDeployment": false
+}

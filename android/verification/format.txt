@@ -1,0 +1,10 @@
+Done formatting app/src/androidTest/java/io/github/dpan538/annota/InputTest.kt
+Done formatting app/src/main/java/io/github/dpan538/annota/ToolButton.kt
+Done formatting app/src/main/java/io/github/dpan538/annota/Dictionary.kt
+Done formatting app/src/main/java/io/github/dpan538/annota/Network.kt
+Done formatting app/src/androidTest/java/io/github/dpan538/annota/UpdateTest.kt
+Done formatting app/src/main/java/io/github/dpan538/annota/PdfEngine.kt
+Done formatting app/src/main/java/io/github/dpan538/annota/Store.kt
+Done formatting app/src/androidTest/java/io/github/dpan538/annota/CoreTest.kt
+Done formatting app/src/main/java/io/github/dpan538/annota/ReaderView.kt
+Done formatting app/src/main/java/io/github/dpan538/annota/MainActivity.kt
