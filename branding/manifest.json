@@ -1,0 +1,28 @@
+{
+  "id": "annota-logo",
+  "status": "approved",
+  "selection": "3B",
+  "text": "Annota",
+  "family": "Outfit",
+  "weight": 600,
+  "tracking": "-0.03em",
+  "canvas": [
+    1024,
+    1024
+  ],
+  "inkCenter": [
+    512,
+    512
+  ],
+  "inkWidth": 800,
+  "cornerRadius": 192,
+  "background": "#FFFFFF",
+  "ink": "#000000",
+  "accent": {
+    "letter": "t",
+    "palette": "cobalt-sage",
+    "hex": "#4460CE"
+  },
+  "artworkLicense": "CC-BY-NC-4.0",
+  "fontLicense": "SIL-OFL-1.1"
+}

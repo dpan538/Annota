@@ -1,31 +1,16 @@
 [
   {
-    "family": "Manrope",
+    "family": "Outfit",
     "license": "SIL-OFL-1.1",
     "commit": "47d54ca1ebb14fd864695f1d39dc734f39017c33",
     "files": {
-      "Manrope[wght].ttf": {
-        "url": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/manrope/Manrope%5Bwght%5D.ttf",
-        "sha256": "3ae11c49db0455a3cc33e37d380f20fdb8c7f8b41dc07625c177e3d87a9d6ae6"
+      "Outfit[wght].ttf": {
+        "url": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/outfit/Outfit%5Bwght%5D.ttf",
+        "sha256": "fc7287273e66929776e2ba54f144fe699080bec29f61bf649d70d871468aeade"
       },
-      "manrope-OFL.txt": {
-        "url": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/manrope/OFL.txt",
-        "sha256": "58172e0c0fac2cda8a37b348164bb55e44b0e69051e557e92b1d3f6910141f7b"
-      }
-    }
-  },
-  {
-    "family": "Bricolage Grotesque",
-    "license": "SIL-OFL-1.1",
-    "commit": "47d54ca1ebb14fd864695f1d39dc734f39017c33",
-    "files": {
-      "BricolageGrotesque[opsz,wdth,wght].ttf": {
-        "url": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/bricolagegrotesque/BricolageGrotesque%5Bopsz%2Cwdth%2Cwght%5D.ttf",
-        "sha256": "413e7357809ddd12fd80a96a8a396de0e401638d4acd3cb3e37532f0472ac682"
-      },
-      "bricolagegrotesque-OFL.txt": {
-        "url": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/bricolagegrotesque/OFL.txt",
-        "sha256": "4b5a7d8f37f5602621c8a8d7358a6a2e71317e6c231c661e15aef0275d3e07ba"
+      "outfit-OFL.txt": {
+        "url": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/outfit/OFL.txt",
+        "sha256": "c676351bf8576b9aba743cd5eaa8c0e7ee0d51f805d720447b4df4ddb6a2e416"
       }
     }
   }

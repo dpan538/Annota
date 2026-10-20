@@ -24,15 +24,16 @@ for folder in ['design','scripts']:
         elif p.name.endswith('.fragment.html'):
             for script in re.findall(r'<script[^>]*>([\s\S]*?)</script>',p.read_text()):
                 subprocess.run([node,'--check'],input=script,text=True,check=True,capture_output=True);checked+=1
-for p in [root/'design/project.config.json',root/'package.json',root/'branding/logo-concepts/manifest.json']:
+for p in [root/'design/project.config.json',root/'package.json',root/'branding/manifest.json']:
     json.loads(p.read_text())
 manifest=json.loads((root/'design/dictionary/bundle/manifest.json').read_text())
 for name,digest in manifest['sources'].items():
     assert hashlib.sha256((root/'design/dictionary/sources'/name).read_bytes()).hexdigest()==digest
-for name in ['annota-wordmark-misans','annota-notebook-misans','annota-notebook-hand']:
-    assert (root/'branding/logo-concepts'/f'{name}.svg').is_file()
-for item in json.loads((root/'branding/wordmark-refinement/manifest.json').read_text()):
-    assert (root/'branding/wordmark-refinement'/(item['id']+'.svg')).is_file()
+logo=json.loads((root/'branding/manifest.json').read_text())
+assert logo['selection']=='3B' and logo['inkCenter']==[512,512]
+assert logo['accent']['hex']=='#4460CE'
+assert [p.name for p in (root/'branding').rglob('*.svg')]==['annota-logo.svg']
+assert (root/'branding/annota-logo.png').is_file()
 for item in json.loads((root/'branding/fonts/sources.json').read_text()):
     for filename,source in item['files'].items():
         if filename.endswith('.txt'):

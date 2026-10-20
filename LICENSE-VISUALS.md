@@ -4,7 +4,7 @@ Copyright © 2026 Dai Pan / Annota.
 
 在维护者有权许可的范围内，以下原创内容使用 **Creative Commons Attribution-NonCommercial 4.0 International（CC BY-NC 4.0）**：
 
-- `branding/` 中的 Logo 候选、原创标志图形和视觉稿。
+- `branding/annota-logo.svg` 及其导出：已选定的 3B 字标，黑色 Annota、钴蓝 t、圆角白底。
 - 使用指南的原创正文、插图及图文版式，包括相应的图像、SVG 和 PDF 导出。
 
 许可摘要：你可以复制、分享和改编这些原创视觉内容，但必须合理署名、链接许可、标明修改，且不得用于商业目的。完整条件以 [CC BY-NC 4.0 法律文本](https://creativecommons.org/licenses/by-nc/4.0/legalcode) 为准；本摘要不替代法律文本。
@@ -19,4 +19,4 @@ Copyright © 2026 Dai Pan / Annota.
 
 本许可不授予商标或官方身份授权。署名不得暗示维护者认可你的修改或产品。拟将这些视觉资产用于商业产品时，请先通过仓库联系维护者取得另行授权。
 
-标记为候选的设计仍处于评审阶段，不代表已确定的最终应用标志。
+当前项目只保留这一套已确定的标识。Android 启动图标及界面字标均由同一矢量源派生。

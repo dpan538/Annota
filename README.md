@@ -19,11 +19,11 @@ Annota 围绕 PDF 阅读和手写笔记设计。没有账号、云空间或跨�
 - 松间、晴昼、蓝调、原野四套外观，以及手写笔、手势和关于设置。
 - 横版五页使用指南。首次初始化目标为指南和示例论文两份文件；示例论文的随包分发授权仍是发布前待办。
 
-黑白字标继续比较 MiSans 轻字重、Manrope 与 Bricolage 窄体，尚未确定最终标识：
+已选定唯一初始标识 **3B**：Outfit 600，钴蓝 t，圆角白底，字标在正方形内居中。
 
-![Annota 居中字标候选](branding/wordmark-refinement/comparison.png)
+<img src="branding/annota-logo.png" alt="Annota 标识" width="240">
 
-可编辑矢量与字体出处见 [字标候选](branding/wordmark-refinement/)。前一轮笔记本图标方案保存在 `branding/logo-concepts/`。
+矢量母版、尺寸与字体出处见 [品牌资源](branding/README.md)。未采用的候选已从当前项目移出。
 
 ## 目前完成到哪里
 
@@ -88,7 +88,7 @@ npm run test:library
 
 ```text
 design/          界面源码、指南、原生事件协议与词典工具
-branding/        待评审的原创 Logo 候选
+branding/        已选定的唯一标识、字体出处与导出
 docs/            流程审计、原生分工、隐私边界和分发方案
 scripts/         开发环境检查、预览构建与视觉导出工具
 android/         独立任务推进的原生工程，未完成代码不混入本次初始上传
