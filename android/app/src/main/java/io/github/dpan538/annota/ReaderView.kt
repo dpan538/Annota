@@ -47,13 +47,27 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             invalidate()
         }
 
+    var searching = false
+        set(value) {
+            if (field == value) return
+            cancelStroke()
+            clearSelection()
+            field = value
+            onToolChanged()
+            onNavigationChanged(backLocations.isNotEmpty())
+            invalidate()
+        }
+
+    val readOnly
+        get() = reading || searching
+
     private val browsing
-        get() = reading || tool == "hand"
+        get() = readOnly || tool == "hand"
 
     var lastPenTool = displaySaved?.optString("lastPen", "pen") ?: "pen"
     var tool = displaySaved?.optString("tool", "hand") ?: "hand"
         set(value) {
-            if (reading) return
+            if (readOnly) return
             field = value
             if (value in setOf("pen", "pencil", "fountain", "highlight")) lastPenTool = value
             onToolChanged()
@@ -129,6 +143,12 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 16 + value.sumOf { 64 + it.text.length * 2 }
         }
     private val pendingWords = mutableSetOf<String>()
+    private val links = LruCache<String, List<PageLink>>(64)
+    private var searchHits = emptyList<SearchHit>()
+    private var currentSearchHit = -1
+    var onSelectionAdjust: () -> Unit = {}
+    var onNavigationChanged: (Boolean) -> Unit = {}
+    private val backLocations = ArrayDeque<Viewport>()
     private var epoch = 0
     private var suspended = false
     private var constrained = false
@@ -158,6 +178,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                         RectF(it.box).apply { inset(-6f, -6f) }.contains(p.x, p.y)
                     }
                 selected = listOfNotNull(selectionStart)
+                selectionText = PageText(words.get(page.id).orEmpty())
                 selectionPage = page.id
                 invalidate()
             }
@@ -196,6 +217,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         pendingWords.clear()
         selected = emptyList()
         selectionStart = null
+        magnifier?.dismiss()
+        links.evictAll()
         cache.evictAll()
         tiles.evictAll()
         wantedTiles = emptySet()
@@ -245,6 +268,9 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private var selectionStart: Word? = null
     private var selected = emptyList<Word>()
     private var selectionPage = ""
+    private var selectionText: PageText? = null
+    private var dragHandle = -1
+    private var magnifier: android.widget.Magnifier? = null
     private var rulerX = 0f
     private var rulerY = 0f
     private var rulerAngle = 0f
@@ -283,6 +309,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         closed = true
         executor.shutdownNow()
         epoch++
+        magnifier?.dismiss()
+        links.evictAll()
         cache.evictAll()
         tiles.evictAll()
         imageCache.evictAll()
@@ -469,6 +497,89 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             viewportChanged()
             persistPosition()
         }
+    }
+
+    data class Viewport(
+        val pageId: String,
+        val fraction: Float,
+        val zoom: Float,
+        val panRatio: Float,
+        val fitWidth: Boolean,
+        val spread: Boolean,
+    )
+
+    fun viewport(): Viewport? {
+        ensureGeometry()
+        val a = captureAnchor() ?: return null
+        return Viewport(a.page, a.fraction, zoom, panX / max(1, width), fitToWidth, spread)
+    }
+
+    fun restoreViewport(value: Viewport) {
+        stopMotion()
+        clearSelection()
+        zoom = value.zoom
+        fitToWidth = value.fitWidth
+        spread = value.spread
+        geometry = null
+        pendingAnchor = Anchor(value.pageId, value.fraction)
+        restorePan = value.panRatio
+        ensureGeometry()
+        viewportChanged()
+        persistPosition()
+    }
+
+    fun navigatePage(pageId: String, box: RectF? = null, remember: Boolean = true): Boolean {
+        val index = book.pages.indexOfFirst { it.id == pageId }
+        if (index < 0) return false
+        if (remember)
+            viewport()?.let { if (backLocations.lastOrNull() != it) backLocations.addLast(it) }
+        while (backLocations.size > 20) backLocations.removeFirst()
+        clearSelection()
+        goToPage(index, false)
+        box?.let {
+            val bounds = pageBounds(index) ?: return@let
+            val screen = RectF(it)
+            pageMatrix(book.pages[index], bounds).mapRect(screen)
+            panY += height * .32f - screen.centerY()
+            if (screen.left < 24 * scale || screen.right > width - 24 * scale)
+                panX += width / 2f - screen.centerX()
+            viewportChanged()
+            persistPosition()
+        }
+        onNavigationChanged(backLocations.isNotEmpty())
+        return true
+    }
+
+    fun navigate(target: PdfTarget): Boolean {
+        val p = book.pages.firstOrNull { it.source == target.source } ?: return false
+        return navigatePage(p.id, target.point?.let { RectF(it.x, it.y, it.x + 1, it.y + 1) })
+    }
+
+    fun navigationHistory() = backLocations.toList()
+
+    fun restoreNavigationHistory(history: List<Viewport>) {
+        backLocations.clear()
+        backLocations.addAll(history.takeLast(20))
+        onNavigationChanged(backLocations.isNotEmpty())
+    }
+
+    fun returnFromNavigation(): Boolean {
+        val v = backLocations.removeLastOrNull() ?: return false
+        restoreViewport(v)
+        onNavigationChanged(backLocations.isNotEmpty())
+        return true
+    }
+
+    fun setSearchResults(hits: List<SearchHit>, selected: Int = -1, reveal: Boolean = false) {
+        searchHits = hits
+        currentSearchHit = selected
+        if (reveal)
+            hits.getOrNull(selected)?.let { hit ->
+                val bounds = RectF(hit.words.first().box)
+                hit.words.drop(1).forEach { bounds.union(it.box) }
+                navigatePage(hit.pageId, bounds, false)
+            }
+        invalidate()
     }
 
     fun goToPage(index: Int, animated: Boolean = true) {
@@ -719,9 +830,61 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     fun lookupContext(): LookupContext? =
         LookupContext.fromWords(words.get(selectionPage).orEmpty(), selected)
 
+    fun selectedText() = PageText.join(selected)
+
+    fun selectionHandles(): List<PointF> {
+        if (selected.isEmpty()) return emptyList()
+        val index = book.pages.indexOfFirst { it.id == selectionPage }
+        if (index < 0) return emptyList()
+        val bounds = pageBounds(index) ?: return emptyList()
+        val points =
+            floatArrayOf(
+                selected.first().box.left,
+                selected.first().box.bottom,
+                selected.last().box.right,
+                selected.last().box.bottom,
+            )
+        pageMatrix(book.pages[index], bounds).mapPoints(points)
+        return listOf(
+            PointF(points[0], points[1] + 7 * scale),
+            PointF(points[2], points[3] + 7 * scale),
+        )
+    }
+
+    private fun adjustSelection(x: Float, y: Float) {
+        val place = active ?: return
+        val page = book.pages[place.index]
+        val ws = words.get(page.id).orEmpty()
+        val anchor = selected.firstOrNull() ?: return
+        val layout = selectionText ?: PageText(ws).also { selectionText = it }
+        val p = point(place, x, y, 1f)
+        val nearest = layout.nearest(anchor, p.x, p.y) ?: return
+        val other = if (dragHandle == 0) selected.last() else selected.first()
+        val flow = layout.flow(anchor)
+        dragHandle = if (flow.indexOf(nearest) < flow.indexOf(other)) 0 else 1
+        selected = layout.range(other, nearest)
+        if (y < 40 * scale) panY += 12 * scale else if (y > height - 40 * scale) panY -= 12 * scale
+        viewportChanged()
+        magnifier?.show(x.coerceIn(0f, width.toFloat()), y.coerceIn(0f, height.toFloat()))
+        invalidate()
+    }
+
+    private fun followLink(x: Float, y: Float): Boolean {
+        val place = active ?: return false
+        val p = point(place, x, y, 1f)
+        val link =
+            links.get(book.pages[place.index].id).orEmpty().firstOrNull {
+                it.box.contains(p.x, p.y)
+            } ?: return false
+        return navigate(link.target)
+    }
+
     fun clearSelection() {
         selected = emptyList()
         selectionStart = null
+        selectionText = null
+        dragHandle = -1
+        magnifier?.dismiss()
         invalidate()
     }
 
@@ -738,13 +901,16 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         try {
             executor.execute {
                 try {
-                    val result = pdf.words(book, p)
+                    val content = pdf.pageContent(book, p)
+                    val result = content.words
                     post {
                         if (generation == epoch) pendingWords.remove(p.id)
                         if (!closed && !suspended && generation == epoch) {
                             val bytes = 16 + result.sumOf { 64 + it.text.length * 2 }
-                            if (bytes <= words.maxSize()) words.put(p.id, result)
-                            else {
+                            if (bytes <= words.maxSize()) {
+                                words.put(p.id, result)
+                                links.put(p.id, content.links)
+                            } else {
                                 words.put(p.id, emptyList())
                                 onError(
                                     IllegalArgumentException(
@@ -875,6 +1041,13 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             }
             p.marks.forEach { drawMark(canvas, it) }
             if (active?.index == i) stroke?.let { drawMark(canvas, it) }
+            searchHits.forEachIndexed { n, hit ->
+                if (hit.pageId == p.id) {
+                    paint.color = if (n == currentSearchHit) 0xaaffc44c.toInt() else 0x55f4d572
+                    paint.style = Paint.Style.FILL
+                    hit.words.forEach { canvas.drawRect(it.box, paint) }
+                }
+            }
             if (selectionPage == p.id) {
                 paint.color = 0x556784db
                 paint.style = Paint.Style.FILL
@@ -887,7 +1060,14 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             if (book.pages[it.index].source >= 0)
                 request(book.pages[it.index], bitmapWidth(it.index))
         }
-        if (ruler && !reading) drawRuler(canvas)
+        if (ruler && !readOnly) drawRuler(canvas)
+        paint.color = 0xff435dc2.toInt()
+        paint.style = Paint.Style.FILL
+        selectionHandles().forEach { p ->
+            paint.strokeWidth = 2 * scale
+            canvas.drawLine(p.x, p.y - 7 * scale, p.x, p.y, paint)
+            canvas.drawCircle(p.x, p.y, 5 * scale, paint)
+        }
     }
 
     private fun pageMatrix(p: Sheet, bounds: RectF): Matrix {
@@ -1233,7 +1413,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         val stylus =
             e.getToolType(e.actionIndex) in
                 setOf(MotionEvent.TOOL_TYPE_STYLUS, MotionEvent.TOOL_TYPE_ERASER)
-        if (stylus && !reading) stylusSeen = true
+        if (stylus && !readOnly) stylusSeen = true
         if (
             e.actionMasked == MotionEvent.ACTION_CANCEL ||
                 (Build.VERSION.SDK_INT >= 33 && e.flags and MotionEvent.FLAG_CANCELED != 0)
@@ -1243,6 +1423,9 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             stopMotion()
             velocity?.recycle()
             velocity = null
+            dragHandle = -1
+            magnifier?.dismiss()
+            magnifier = null
             cancelStroke()
             return true
         }
@@ -1260,20 +1443,44 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 maxPointers = 1
                 moved = false
                 cancelled = false
+                if (browsing && e.pointerCount == 1) {
+                    val handles = selectionHandles()
+                    val hit =
+                        handles.indices.minByOrNull {
+                            hypot(handles[it].x - e.x, handles[it].y - e.y)
+                        }
+                    if (
+                        hit != null &&
+                            hypot(handles[hit].x - e.x, handles[hit].y - e.y) < 24 * scale
+                    ) {
+                        active = placements.firstOrNull { book.pages[it.index].id == selectionPage }
+                        if (active != null) {
+                            dragHandle = hit
+                            onSelectionAdjust()
+                            if (!stylus)
+                                magnifier =
+                                    android.widget.Magnifier.Builder(this)
+                                        .setInitialZoom(1.6f)
+                                        .build()
+                            return true
+                        }
+                    }
+                }
                 selected = emptyList()
+                selectionText = null
                 selectionStart = null
                 active = placements.firstOrNull { it.bounds.contains(e.x, e.y) }
                 active?.let { onActivePage(it.index) }
                 val r = rulerLocal(e.x, e.y)
                 draggingRuler =
-                    !reading &&
+                    !readOnly &&
                         ruler &&
                         !stylus &&
                         abs(r.x) < rulerHalfWidth &&
                         abs(r.y) < rulerHalfHeight
                 rulerEdge =
                     if (
-                        !reading &&
+                        !readOnly &&
                             ruler &&
                             tool in setOf("pen", "pencil", "fountain", "highlight", "line") &&
                             abs(r.x) < rulerHalfWidth + 24 * scale &&
@@ -1281,7 +1488,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                     )
                         (if (r.y > 0) rulerHalfHeight else -rulerHalfHeight)
                     else null
-                val draw = !reading && (stylus || !stylusSeen)
+                val draw = !readOnly && (stylus || !stylusSeen)
                 val temporaryEraser =
                     e.getToolType(0) == MotionEvent.TOOL_TYPE_ERASER ||
                         (stylus && e.buttonState and MotionEvent.BUTTON_STYLUS_PRIMARY != 0)
@@ -1303,11 +1510,14 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                 filled = filled,
                             )
                 }
-                if (browsing && (!stylus || reading))
+                if (browsing && (!stylus || readOnly))
                     postDelayed(longPress, ViewConfiguration.getLongPressTimeout().toLong())
                 return true
             }
             MotionEvent.ACTION_POINTER_DOWN -> {
+                dragHandle = -1
+                magnifier?.dismiss()
+                if (browsing) clearSelection()
                 if (
                     (stroke != null || beforeErase != null) &&
                         e.getToolType(0) in
@@ -1330,6 +1540,11 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
+                if (dragHandle >= 0 && e.pointerCount == 1) {
+                    moved = true
+                    adjustSelection(e.x, e.y)
+                    return true
+                }
                 velocity?.addMovement(e)
                 if (
                     hypot(e.x - downX, e.y - downY) > ViewConfiguration.get(context).scaledTouchSlop
@@ -1387,14 +1602,11 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 } else if (browsing && active != null && selectionStart != null) {
                     val p = point(active!!, e.x, e.y, 1f)
                     val page = book.pages[active!!.index]
-                    val ws = words.get(page.id).orEmpty()
-                    val start = ws.indexOf(selectionStart)
-                    val end =
-                        ws.indexOf(
-                            ws.minByOrNull { hypot(it.box.centerX() - p.x, it.box.centerY() - p.y) }
-                        )
-                    if (start >= 0 && end >= 0) {
-                        selected = ws.subList(min(start, end), max(start, end) + 1)
+                    val layout =
+                        selectionText
+                            ?: PageText(words.get(page.id).orEmpty()).also { selectionText = it }
+                    layout.nearest(selectionStart!!, p.x, p.y)?.let {
+                        selected = layout.range(selectionStart!!, it)
                         selectionPage = page.id
                     }
                 } else if ((browsing || !stylus) && moved) {
@@ -1416,6 +1628,17 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 return true
             }
             MotionEvent.ACTION_UP -> {
+                if (dragHandle >= 0) {
+                    dragHandle = -1
+                    magnifier?.dismiss()
+                    magnifier = null
+                    if (selected.isNotEmpty()) onSelection(selectedText())
+                    velocity?.recycle()
+                    velocity = null
+                    active = null
+                    persistPosition()
+                    return true
+                }
                 val writing = stroke != null || beforeErase != null
                 removeCallbacks(longPress)
                 velocity?.addMovement(e)
@@ -1457,14 +1680,24 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                 if (maxPointers == 2) "undo" else "redo",
                             )
                         when (action) {
-                            "undo" -> if (!reading) store.undo(book, false)
-                            "redo" -> if (!reading) store.undo(book, true)
+                            "undo" -> if (!readOnly) store.undo(book, false)
+                            "redo" -> if (!readOnly) store.undo(book, true)
                             "toolbar" -> onToolbarToggle()
                         }
-                        if (!reading) onChanged()
+                        if (!readOnly) onChanged()
+                    } else if (
+                        browsing &&
+                            !moved &&
+                            maxPointers == 1 &&
+                            selected.isEmpty() &&
+                            e.eventTime - downTime < ViewConfiguration.getLongPressTimeout() &&
+                            followLink(e.x, e.y)
+                    ) {
+                        // Internal PDF destination; the temporary return chip restores this
+                        // viewport.
                     } else if (browsing && active != null && !draggingRuler) {
                         val page = book.pages[active!!.index]
-                        if (!reading && selected.isEmpty() && !moved) {
+                        if (!readOnly && selected.isEmpty() && !moved) {
                             val p = point(active!!, e.x, e.y, 1f)
                             selected =
                                 words.get(page.id).orEmpty().filter {
@@ -1472,9 +1705,14 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                 }
                             selectionPage = page.id
                         }
-                        if (selected.isNotEmpty())
-                            onSelection(selected.joinToString(" ") { it.text })
-                        else if (reading && !moved && maxPointers == 1) onToolbarToggle()
+                        if (selected.isNotEmpty()) onSelection(selectedText())
+                        else if (
+                            reading &&
+                                !moved &&
+                                maxPointers == 1 &&
+                                e.eventTime - downTime < ViewConfiguration.getLongPressTimeout()
+                        )
+                            onToolbarToggle()
                     } else if (reading && !moved && maxPointers == 1) {
                         onToolbarToggle()
                     }
@@ -1483,7 +1721,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                     !writing &&
                         moved &&
                         maxPointers == 1 &&
-                        (!stylus || reading) &&
+                        (!stylus || readOnly) &&
                         !draggingRuler &&
                         selectionStart == null
                 ) {

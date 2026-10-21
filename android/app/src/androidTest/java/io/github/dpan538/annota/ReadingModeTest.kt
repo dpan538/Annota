@@ -561,6 +561,21 @@ class ReadingModeTest {
                             IntArray(2).also(right::getLocationOnScreen)[0] + 1
                     )
                 }
+                val bar = all(a.window.decorView).first { it.tag == "reader-toolbar" }
+                assertTrue(
+                    "Reading toolbar has no central control or label",
+                    all(bar).none {
+                        it !== bar &&
+                            it.isShown &&
+                            (it is TextView || it.isClickable) &&
+                            Rect()
+                                .also { rect -> it.getGlobalVisibleRect(rect) }
+                                .let { rect ->
+                                    rect.left < bar.width * .65f && rect.right > bar.width * .35f
+                                }
+                    },
+                )
+                assertTrue(visible.first { it.name == "book" }.annotationAction)
                 a.onKeyDown(
                     KeyEvent.KEYCODE_STYLUS_BUTTON_PRIMARY,
                     KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_STYLUS_BUTTON_PRIMARY),
@@ -578,6 +593,7 @@ class ReadingModeTest {
                     .invoke(a, false)
             }
             capture("reading-$size-${if(portrait)"portrait" else "landscape"}")
+            tap("更多")
             tap("阅读显示")
             ui {
                 assertEquals(
@@ -608,9 +624,17 @@ class ReadingModeTest {
             }
             if (size == 68 && !portrait) capture("reading-three-presets")
             for (style in ReadingStyle.entries) {
-                if (popup()?.isShowing != true) tap("阅读显示")
+                if (popup()?.isShowing != true) {
+                    tap("更多")
+                    tap("阅读显示")
+                }
                 tap(style.zh)
-                assertEquals(style, r.readingStyle)
+                if (style != r.readingStyle) capture("reading-preset-click-failure")
+                assertEquals(
+                    "$size portrait=$portrait sameReader=${r === reader()}",
+                    style,
+                    r.readingStyle,
+                )
                 assertSame(r, reader())
                 if (size == 68 && !portrait) capture("reading-preset-${style.key}")
             }
@@ -627,6 +651,7 @@ class ReadingModeTest {
         prefs.edit().putBoolean("english", true).putInt("buttonSize", 76).commit()
         open(b)
         tap("Read")
+        tap("More")
         tap("Reading display")
         ui {
             assertEquals(

@@ -395,17 +395,49 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
         return true
     }
 
+    /** Page IDs, not page numbers: reorder and undo cannot silently move a bookmark. */
+    @Synchronized
+    fun bookmarks(b: Book): Set<String> {
+        val raw =
+            readableDatabase
+                .rawQuery("SELECT value FROM flags WHERE key=?", arrayOf("bookmarks:${b.id}"))
+                .use { if (it.moveToFirst()) it.getString(0) else "[]" }
+        val a = runCatching { JSONArray(raw) }.getOrElse { JSONArray() }
+        val ids = b.pages.map { it.id }.toSet()
+        return (0 until a.length()).map { a.optString(it) }.filter { it in ids }.toSet()
+    }
+
+    @Synchronized
+    fun setBookmarks(b: Book, ids: Set<String>) {
+        val valid = b.pages.map { it.id }.filter { it in ids }
+        writableDatabase.insertWithOnConflict(
+            "flags",
+            null,
+            ContentValues().apply {
+                put("key", "bookmarks:${b.id}")
+                put("value", JSONArray(valid).toString())
+            },
+            SQLiteDatabase.CONFLICT_REPLACE,
+        )
+    }
+
+    fun toggleBookmark(b: Book, pageId: String) {
+        val saved = bookmarks(b).toMutableSet()
+        if (!saved.remove(pageId)) saved.add(pageId)
+        setBookmarks(b, saved)
+    }
+
     @Synchronized
     fun copy(b: Book) {
-        insert(
+        val pages =
+            JSONArray(b.state()).let { a ->
+                MutableList(a.length()) { Sheet.from(a.getJSONObject(it).put("id", uid())) }
+            }
+        val copy =
             Book(
                 uid(),
                 b.title +
-                    if (
-                        context
-                            .getSharedPreferences("settings", Context.MODE_PRIVATE)
-                            .getBoolean("english", false)
-                    )
+                    if (context.getSharedPreferences("settings", 0).getBoolean("english", false))
                         " copy"
                     else " 副本",
                 b.source,
@@ -414,11 +446,13 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
                 false,
                 System.currentTimeMillis(),
                 b.current,
-                pages =
-                    JSONArray(b.state()).let { a ->
-                        MutableList(a.length()) { Sheet.from(a.getJSONObject(it).put("id", uid())) }
-                    },
+                pages = pages,
             )
+        insert(copy)
+        val saved = bookmarks(b)
+        setBookmarks(
+            copy,
+            b.pages.indices.filter { b.pages[it].id in saved }.map { pages[it].id }.toSet(),
         )
     }
 
@@ -604,6 +638,7 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
                                     .put("opened", b.opened)
                                     .put("current", b.current)
                                     .put("pages", JSONArray(b.state()))
+                                    .put("bookmarks", JSONArray(bookmarks(b).toList()))
                             )
                         }
                     },
@@ -703,7 +738,10 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
                     require(ps.length() in 1..10000)
                     val pages =
                         MutableList(ps.length()) { i ->
-                            val p = Sheet.from(ps.getJSONObject(i).put("id", uid()))
+                            val p =
+                                Sheet.from(
+                                    JSONObject(ps.getJSONObject(i).toString()).put("id", uid())
+                                )
                             p.marks.forEach { mark ->
                                 if (mark.image.isNotEmpty()) require(remap.containsKey(mark.image))
                             }
@@ -731,6 +769,16 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
                             j.optInt("current").coerceIn(0, pages.lastIndex),
                             pages = pages,
                         )
+                    val bookmarked = j.optJSONArray("bookmarks") ?: JSONArray()
+                    val oldIds =
+                        (0 until bookmarked.length()).map { bookmarked.getString(it) }.toSet()
+                    setBookmarks(
+                        b,
+                        (0 until ps.length())
+                            .filter { ps.getJSONObject(it).getString("id") in oldIds }
+                            .map { pages[it].id }
+                            .toSet(),
+                    )
                     insertOrThrow("books", null, values(b))
                     insertOrThrow(
                         "history",

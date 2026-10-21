@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.9-dev — 文档搜索与导航 / Document search and navigation
+
+- 新增文内搜索、原页匹配高亮和前后结果切换；退出恢复阅读位置与笔型，旋转保留查询。Added in-document search with original-page highlights, Previous/Next, viewport/tool restoration and rotation retention.
+- 选区加入首尾拖动手柄与触摸放大镜，支持同页跨行并隔离常规双栏；小菜单收为纯文字「复制｜查词」。Added selection handles and a touch magnifier for same-page multi-line selection, ordinary column isolation and a text-only Copy / Dictionary menu.
+- 现有页面侧栏加入 PDF 目录与页书签，文内链接/目录跳转后可返回原处；书签支持复制、备份与恢复。Added embedded PDF outline, page bookmarks, internal-link return navigation and bookmark copy/backup/restore.
+- 阅读顶栏中央留空、两侧纯图标，显示预设移入右侧更多；统一相关面板间距、选中反馈和搜索空态。异步搜索取消过期查询并限制为 1,000 条。Reading controls use side icons only, with presets under More; related surfaces share spacing and feedback, and stale searches cancel with a 1,000-result cap.
+
 ## 0.1.8-dev — 极简纯阅读 / Minimal reading mode
 
 - 阅读模式独立于手形工具：隐藏批注和页面编辑入口，笔尾、侧键、撤销手势均不能修改文档；「批注」恢复原工具、颜色、粗细与尺子。

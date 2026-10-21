@@ -1,6 +1,6 @@
 # Annota Android development build
 
-Native Kotlin application ID: `io.github.dpan538.annota`. Minimum Android 10 / API 29, compile / target API 36. Debug version 0.1.5-dev (6). The earlier 0.1.0-dev build used a simplified functional-test interface and did not meet the approved design. This folder contains the native implementation; it does not publish GitHub Releases or change the design sources.
+Native Kotlin application ID: `io.github.dpan538.annota`. Minimum Android 10 / API 29, compile / target API 36. Debug version 0.1.9-dev (10). The earlier 0.1.0-dev build used a simplified functional-test interface and did not meet the approved design. This folder contains the native implementation; it does not publish GitHub Releases or change the design sources.
 
 ## Build
 
@@ -13,7 +13,7 @@ adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
 adb shell am instrument -w -e class io.github.dpan538.annota.CoreTest,io.github.dpan538.annota.DesignUiTest,io.github.dpan538.annota.EnglishUiTest,io.github.dpan538.annota.InputTest,io.github.dpan538.annota.ReaderPolishTest,io.github.dpan538.annota.RenderLifecycleTest,io.github.dpan538.annota.SeedTest,io.github.dpan538.annota.UpdateTest,io.github.dpan538.annota.ContinuousReaderTest,io.github.dpan538.annota.MotionTest io.github.dpan538.annota.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
-The two `UpdateTest` cases require a local same-signed APK built with `-PannotaVersionCode=9 -PannotaVersionName=update-test-fixture`, staged in the target application's `cache/update-test.apk` (push to `/data/local/tmp/` then copy using `adb shell run-as io.github.dpan538.annota`). Keep the installed target at versionCode 8. Without the fixture these two tests explicitly skip. Run instrumentation only on a disposable emulator because storage fixtures reset its library.
+The two `UpdateTest` cases require a local same-signed APK built with `-PannotaVersionCode=11 -PannotaVersionName=update-test-fixture`, staged in the target application's `cache/update-test.apk` (push to `/data/local/tmp/` then copy using `adb shell run-as io.github.dpan538.annota`). Keep the installed target at versionCode 10. Without the fixture these two tests explicitly skip. Run instrumentation only on a disposable emulator because storage fixtures reset its library.
 
 The checked-in wrapper pins Gradle 8.13 and verifies its distribution SHA-256. `.tooling/` holds only ignored local downloads and SDK/emulator files. No SDK, build cache or private key should be committed. `scripts/sync-assets.py` can re-copy the dictionaries from the read-only `../design/dictionary/` source. The actual database SHA-256 values are checked again at installation. The original authored five-page guide is bundled as `assets/guide.pdf`; the owner-supplied original paper is bundled as a second initial document with an independent rights notice.
 
@@ -21,7 +21,7 @@ The checked-in wrapper pins Gradle 8.13 and verifies its distribution SHA-256. `
 
 The library uses private SQLite transactions. Immutable source PDFs/images and compressed, content-addressed annotation snapshots are committed with AtomicFile before database references change. A bounded 50-action history survives restart; unreferenced state snapshots are collected periodically and at startup. Library progress, favorites, folders and trash live in the private database. Source files are immutable and safely shared by duplicates. Deleting an application or clearing its data removes these files. Android cloud backup and device transfer are disabled.
 
-Settings → Export backup writes `.annota.zip` with complete current library documents, folders, page order, rotation, ink, images and SHA-256. Undo history, theme preferences and feedback contact drafts are not included. Restore verifies assets and merges with new IDs; it does not overwrite existing documents. The SAF provider is responsible for the final destination; interrupted output is deleted where its provider supports deletion. This is not a cloud backup.
+Settings → Export backup writes `.annota.zip` with complete current library documents, folders, page order, rotation, ink, images, page bookmarks and SHA-256. Undo history, theme preferences and feedback contact drafts are not included. Restore verifies assets and merges with new IDs; it does not overwrite existing documents. The SAF provider is responsible for the final destination; interrupted output is deleted where its provider supports deletion. This is not a cloud backup.
 
 PDF rendering uses Android PdfRenderer. PDFBox-Android extracts text and composes exports while retaining source vector pages/text. New paper backgrounds are rendered locally; ink/images are overlaid into the export. Scanned pages need OCR outside this version. A source PDF is capped at 512 MiB / 10,000 pages; render bitmaps are capped to 2,500 pixels. These limits do not guarantee every PDF feature, font or color space. PDF parsing is cancellable between pages and operations; a currently running native render or PDFBox parse must return before cancellation can complete.
 
@@ -63,9 +63,9 @@ See `../docs/IMPLEMENTATION-STATUS.md` for actual build/test evidence, artifact 
 
 ## Onboarding and regression fixtures
 
-Current development build: `0.1.8-dev` / versionCode 9. Both seed PDFs are bundled and verified by SHA-256 and page count. They publish together in a database transaction. Any earlier initialization marker is final, including the old guide-only development build. No sample is added back on restart or upgrade, even after removal. Paper rights are separate: see `app/src/main/assets/SAMPLE-PAPER-NOTICE.md`; redistribution clearance remains a public-release checklist item.
+Current development build: `0.1.9-dev` / versionCode 10. Both seed PDFs are bundled and verified by SHA-256 and page count. They publish together in a database transaction. Any earlier initialization marker is final, including the old guide-only development build. No sample is added back on restart or upgrade, even after removal. Paper rights are separate: see `app/src/main/assets/SAMPLE-PAPER-NOTICE.md`; redistribution clearance remains a public-release checklist item.
 
-The update tests require a same-development-key versionCode 10 / versionName `update-test-fixture` APK at the target app's `cache/update-test.apk`. Build it with Gradle property overrides, keep it outside Git and stage it with `adb shell run-as io.github.dpan538.annota ...` on the dedicated emulator. Without it, those two tests are explicitly skipped; do not report them as passed. No fixture is a published update. Test APKs reset library data and must never run on a user's tablet.
+The update tests require a same-development-key versionCode 11 / versionName `update-test-fixture` APK at the target app's `cache/update-test.apk`. Build it with Gradle property overrides, keep it outside Git and stage it with `adb shell run-as io.github.dpan538.annota ...` on the dedicated emulator. Without it, those two tests are explicitly skipped; do not report them as passed. No fixture is a published update. Test APKs reset library data and must never run on a user's tablet.
 
 ## Reader design, lifecycle and memory acceptance
 
@@ -105,4 +105,12 @@ Development/preview builds list the latest 30 GitHub releases and accept non-dra
 
 Read is a per-document, read-only workspace, distinct from the Hand tool in annotation. It hides editing controls and blocks stylus erasing/buttons, undo/redo and page editing. Tap the document to toggle chrome without resizing its viewport; long press still opens local lookup. Annotate restores the previous nib, width, color and ruler.
 
-Only Original / Soft / Clear display presets are exposed. A cached color matrix is applied to both base PDF previews and resident detail tiles, without invalidating render caches or modifying source/export/ink. This is a whole-page transform, including embedded images, not text segmentation. Black notebook backgrounds are preserved. See [reading acceptance](../docs/READING-MODE-ACCEPTANCE.md) for the native tests, large-keyboard checks and research sources.
+Reading controls sit at the two sides of the toolbar, with the center left empty. The annotation action is an icon without a caption; More → Reading display contains the three presets. Only Original / Soft / Clear display presets are exposed. A cached color matrix is applied to both base PDF previews and resident detail tiles, without invalidating render caches or modifying source/export/ink. This is a whole-page transform, including embedded images, not text segmentation. Black notebook backgrounds are preserved. See [reading acceptance](../docs/READING-MODE-ACCEPTANCE.md) for the native tests, large-keyboard checks and research sources.
+
+## Document search, selection and navigation (0.1.9-dev)
+
+More → Find in document opens the existing left pane in a temporary read-only search state. Results stream by current page order, highlight on the original page and wrap with Previous/Next; close restores the original viewport and annotation tool. Searches normalize case/Unicode and support line-wrapped phrases and Chinese text. There is no OCR; results stop at 1,000 matches. Query, result index and return position survive rotation.
+
+Long-press selection has draggable start/end handles and a touch magnifier. Geometric text flows keep ordinary double-column paragraphs separate; handles extend across lines on the same page. Copy / Dictionary is a compact text-only menu, without icons. This is a layout heuristic rather than semantic document reconstruction.
+
+The existing Pages pane now also contains embedded Outline and Bookmarks. Page-ID bookmarks survive reorder, duplicate and local backup/restore, without adding ink history. Internal PDF links and outline jumps expose a temporary Back to reading control; external URLs and executable actions are not launched. See [navigation acceptance](../docs/DOCUMENT-NAVIGATION-ACCEPTANCE.md).

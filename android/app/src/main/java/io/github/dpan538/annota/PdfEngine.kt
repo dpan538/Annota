@@ -152,68 +152,85 @@ class PdfEngine(val context: Context, val store: Store) {
     fun words(book: Book, page: Sheet): List<Word> {
         if (page.source < 0) return emptyList()
         PDDocument.load(store.file(book.source), memory()).use { doc ->
-            val words = mutableListOf<Word>()
-            val original = doc.getPage(page.source)
-            val crop = original.cropBox
-            val rotation = (original.rotation % 360 + 360) % 360
-            fun displayed(x: Float, y: Float): Pair<Float, Float> =
-                when (rotation) {
-                    90 -> y to x
-                    180 -> (crop.width - x) to y
-                    270 -> (crop.height - y) to (crop.width - x)
-                    else -> x to (crop.height - y)
-                }
-            val stripper =
-                object : PDFTextStripper() {
-                    override fun writeString(text: String, positions: MutableList<TextPosition>) {
-                        var s = StringBuilder()
-                        var rect: RectF? = null
-                        fun flush() {
-                            if (s.isNotBlank() && rect != null)
-                                words.add(Word(s.toString(), RectF(rect!!)))
-                            s = StringBuilder()
-                            rect = null
-                        }
-                        positions.forEach { p ->
-                            val u = p.unicode ?: ""
-                            if (u.isBlank()) {
-                                flush()
-                            } else {
-                                s.append(u)
-                                val tm = p.textMatrix
-                                val angle = atan2(tm.shearY, tm.scaleX)
-                                val dx = p.widthDirAdj * cos(angle)
-                                val dy = p.widthDirAdj * sin(angle)
-                                val hx = -p.heightDir * sin(angle)
-                                val hy = p.heightDir * cos(angle)
-                                val tx = tm.translateX
-                                val ty = tm.translateY
-                                val corners =
-                                    listOf(
-                                        displayed(tx, ty),
-                                        displayed(tx + dx, ty + dy),
-                                        displayed(tx + hx, ty + hy),
-                                        displayed(tx + dx + hx, ty + dy + hy),
-                                    )
-                                val b =
-                                    RectF(
-                                        corners.minOf { it.first },
-                                        corners.minOf { it.second },
-                                        corners.maxOf { it.first },
-                                        corners.maxOf { it.second },
-                                    )
-                                if (rect == null) rect = b else rect!!.union(b)
-                            }
-                        }
-                        flush()
-                    }
-                }
-            stripper.startPage = page.source + 1
-            stripper.endPage = page.source + 1
-            stripper.sortByPosition = true
-            stripper.getText(doc)
-            return words
+            return words(doc, page)
         }
+    }
+
+    internal fun words(
+        doc: PDDocument,
+        page: Sheet,
+        cancelled: () -> Boolean = { false },
+    ): List<Word> {
+        val words = mutableListOf<Word>()
+        val original = doc.getPage(page.source)
+        val crop = original.cropBox
+        val rotation = (original.rotation % 360 + 360) % 360
+        fun displayed(x: Float, y: Float): Pair<Float, Float> =
+            when (rotation) {
+                90 -> y to x
+                180 -> (crop.width - x) to y
+                270 -> (crop.height - y) to (crop.width - x)
+                else -> x to (crop.height - y)
+            }
+        val stripper =
+            object : PDFTextStripper() {
+                override fun processPages(pages: PDPageTree) {
+                    processPage(original)
+                }
+
+                override fun writeString(text: String, positions: MutableList<TextPosition>) {
+                    if (cancelled()) throw InterruptedIOException("Cancelled")
+                    var s = StringBuilder()
+                    var rect: RectF? = null
+                    fun flush() {
+                        if (s.isNotBlank() && rect != null)
+                            words.add(Word(s.toString(), RectF(rect!!)))
+                        s = StringBuilder()
+                        rect = null
+                    }
+                    positions.forEach { p ->
+                        val u = p.unicode ?: ""
+                        if (u.isBlank()) {
+                            flush()
+                        } else {
+                            val cjk = u.any { it in '\u3400'..'\u9fff' || it in '\u3040'..'\u30ff' }
+                            if (cjk) flush()
+                            s.append(u)
+                            val tm = p.textMatrix
+                            val angle = atan2(tm.shearY, tm.scaleX)
+                            val dx = p.widthDirAdj * cos(angle)
+                            val dy = p.widthDirAdj * sin(angle)
+                            val hx = -p.heightDir * sin(angle)
+                            val hy = p.heightDir * cos(angle)
+                            val tx = tm.translateX
+                            val ty = tm.translateY
+                            val corners =
+                                listOf(
+                                    displayed(tx, ty),
+                                    displayed(tx + dx, ty + dy),
+                                    displayed(tx + hx, ty + hy),
+                                    displayed(tx + dx + hx, ty + dy + hy),
+                                )
+                            val b =
+                                RectF(
+                                    corners.minOf { it.first },
+                                    corners.minOf { it.second },
+                                    corners.maxOf { it.first },
+                                    corners.maxOf { it.second },
+                                )
+                            if (rect == null) rect = b else rect!!.union(b)
+                            if (cjk) flush()
+                        }
+                    }
+                    flush()
+                }
+            }
+        // The overridden page loop processes only this page; its local counter starts at zero.
+        stripper.startPage = 0
+        stripper.endPage = 0
+        stripper.sortByPosition = true
+        stripper.getText(doc)
+        return words
     }
 
     fun export(book: Book, target: File, cancelled: () -> Boolean = { false }) {

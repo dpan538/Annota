@@ -1,0 +1,8 @@
+
+io.github.dpan538.annota.ReaderVisualTest:.
+
+Time: 44.862
+
+OK (1 test)
+
+

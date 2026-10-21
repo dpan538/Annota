@@ -14,7 +14,7 @@ All Android evidence here is from a local API 36 ARM64 emulator configured as a 
 
 Hardware acceptance, system installer interaction on Xiaomi, offline handwriting IME, stable Release installation, production certificate continuity and public feedback HTTPS remain separate checks.
 
-Public logs use repository-relative paths; private SDK caches, local keys, feedback databases and APK binaries are excluded from Git. Screenshot fixtures contain generated test content.
+Public logs use repository-relative paths; private SDK caches, local keys, feedback databases and APK binaries are excluded from Git. Screenshots are identified by version and fixture; the current `navigation-paper-*` demonstration uses the bundled original Attention Is All You Need PDF.
 
 ## 0.1.2-dev integration
 
@@ -97,3 +97,13 @@ Context dictionary continuation: `dictionary-context-*.png` shows the native PDF
 本轮 `reading-build.json` / `build-info.json` 指向公开 0.1.8。`reading-apk-public-check.json` 为匿名完整下载、资源/签名、下载副本安装与冷启动；`reading-release-public.json` 为公开三附件与先前 0.1.7 原件保留校验。`reading-large-regression-*` 另记录 76 档 / 420 dpi 的完整原有视觉流程，并归档三个关键截图。
 
 `reading-update-install.json` / `reading-update-*.png` 保存原始公开 0.1.7 → 0.1.8 的原生下载/校验、实际 Android 安装器与数据保留。ADB 仅建立旧版起点，安装来源权限已授予，未宣称本轮重测权限拒绝/进程死亡分支。
+
+## 0.1.9-dev document navigation
+
+- `navigation-build.json`: exact development APK, production/test source hashes and environment; canonical `build-info.json` changes only after public delivery is verified.
+- `navigation-instrumentation-api36.txt`: 78 native regressions, including current-file search/cancellation/limits, Chinese glyph joins, ordinary-column selection handles, outline/internal-link destinations, page-ID bookmark history/copy/backup, exact return viewport, temporary read-only search, rotation retention and all three control sizes.
+- `navigation-paper-*.png`: real bundled Attention Is All You Need PDF reading, search, selection, lookup and bookmark/page navigation demonstrations. Synthetic PDFs in the other navigation captures are boundary fixtures.
+- `navigation-reading-*`: the revised side-only icon toolbar with an empty center and display presets reached through More. `navigation-large-*` records 420 dpi actual-keyboard/control-size conditions separately from the default 240 dpi suite.
+- `navigation-*-public*.json` and `navigation-update-install.json`: public delivery and the actual Android installer upgrade, recorded after publication.
+
+Local same-key versionCode 11 is only a signature-validation fixture. No physical Xiaomi/Samsung pen or long-duration score is claimed for this version.

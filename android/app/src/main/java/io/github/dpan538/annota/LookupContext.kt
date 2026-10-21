@@ -74,7 +74,7 @@ data class LookupContext(val selected: String, val before: List<String>, val aft
             val sentenceEnd =
                 afterWords.indexOfFirst { Regex("[.!?。！？]$").containsMatchIn(it.text) }
             return LookupContext(
-                selected.joinToString(" ") { it.text },
+                PageText.join(selected),
                 tokens(beforeWords.drop(sentenceStart).joinToString(" ") { it.text }).takeLast(22),
                 tokens(
                         afterWords

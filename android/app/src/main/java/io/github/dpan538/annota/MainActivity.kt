@@ -44,6 +44,7 @@ class MainActivity : Activity() {
     private val readerTools = mutableMapOf<String, ToolButton>()
     private var readerHost: FrameLayout? = null
     private var pageSidebar: View? = null
+    private var navigationPanel: ReaderNavigator? = null
     private var activePage = 0
     private var updateApk: File? = null
     private var verifiedUpdate: Network.Update? = null
@@ -157,6 +158,8 @@ class MainActivity : Activity() {
     }
 
     override fun onDestroy() {
+        navigationPanel?.dispose()
+        navigationPanel = null
         readerPopup?.dismiss()
         paperPopup?.dismiss()
         reader?.dispose()
@@ -342,6 +345,7 @@ class MainActivity : Activity() {
     private var searchVisible = false
 
     private fun library() {
+        closeNavigation()
         readerPopup?.dismiss()
         pageCovers?.close()
         pageCovers = null
@@ -553,6 +557,10 @@ class MainActivity : Activity() {
 
     private fun showReader() {
         val b = book ?: return
+        val navigationState = if (reader?.book?.id == b.id) navigationPanel?.snapshot() else null
+        val backHistory =
+            if (reader?.book?.id == b.id) reader?.navigationHistory().orEmpty() else emptyList()
+        closeNavigation()
         updateNavigationBars()
         root.requestApplyInsets()
         readerPopup?.dismiss()
@@ -577,48 +585,12 @@ class MainActivity : Activity() {
         val center = row()
         val right = row()
         var chromeHidden = false
-        val readingLabel =
-            TextView(this).apply {
-                typeface = UiFonts.get(this@MainActivity, 500)
-                setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, 14f * ru * controls)
-                setTextColor(if (prefs.getInt("theme", 0) == 3) colors[2] else Color.WHITE)
-                gravity = Gravity.CENTER
-                setSingleLine()
-            }
-        val readingDisplay =
-            UiButton(this).apply {
-                tag = "reading-display"
-                contentDescription = tr("阅读显示", "Reading display")
-                tooltipText = contentDescription
-                isClickable = true
-                isFocusable = true
-                addView(
-                    readingLabel,
-                    FrameLayout.LayoutParams(-1, -1).apply { rightMargin = rp(17f * controls) },
-                )
-                addView(
-                    LucideIcon(this@MainActivity, "ChevronRight").apply {
-                        rotation = 90f
-                        tint = if (prefs.getInt("theme", 0) == 3) colors[2] else Color.WHITE
-                    },
-                    FrameLayout.LayoutParams(
-                        rp(12f * controls),
-                        rp(12f * controls),
-                        Gravity.END or Gravity.CENTER_VERTICAL,
-                    ),
-                )
-                setOnClickListener { readingOptions(this) }
-            }
         readerTools.clear()
         pageSidebar = null
         val toolButtons = readerTools
         bar.addView(left, android.widget.FrameLayout.LayoutParams(-2, -1, Gravity.START))
         bar.addView(center, android.widget.FrameLayout.LayoutParams(-2, -1, Gravity.CENTER))
         bar.addView(right, android.widget.FrameLayout.LayoutParams(-2, -1, Gravity.END))
-        bar.addView(
-            readingDisplay,
-            FrameLayout.LayoutParams(rp(144f * controls), -1, Gravity.CENTER),
-        )
         fun add(group: LinearLayout, n: String, label: String, action: () -> Unit) {
             group.addView(
                 icon(n, label, action).apply {
@@ -707,6 +679,7 @@ class MainActivity : Activity() {
         add(right, "book", tr("阅读模式", "Read")) {
             readerPopup?.dismiss()
             paperPopup?.dismiss()
+            closeNavigation()
             reader?.let { it.reading = !it.reading }
         }
         add(right, "dictionary", tr("离线词典", "Offline dictionary")) { dictionaryDialog() }
@@ -728,25 +701,13 @@ class MainActivity : Activity() {
             view.color = if (b.pages[b.current].paper == "black") Color.WHITE else colors[2]
         view.onToolChanged = {
             if (!view.reading) chromeHidden = false
-            center.visibility = if (view.reading) View.GONE else View.VISIBLE
-            readingDisplay.visibility = if (view.reading) View.VISIBLE else View.GONE
-            toolButtons["add"]?.visibility = if (view.reading) View.GONE else View.VISIBLE
-            readingLabel.text =
-                "${tr("阅读", "Read")} · ${if (english) view.readingStyle.en else view.readingStyle.zh}"
+            center.visibility = if (view.readOnly) View.GONE else View.VISIBLE
+            toolButtons["add"]?.visibility = if (view.readOnly) View.GONE else View.VISIBLE
             toolButtons["book"]?.let { button ->
-                button.caption = if (view.reading) tr("批注", "Annotate") else ""
+                button.annotationAction = view.reading
                 button.contentDescription =
                     if (view.reading) tr("开始批注", "Annotate") else tr("阅读模式", "Read")
                 button.tooltipText = button.contentDescription
-                button.layoutParams =
-                    button.layoutParams.apply {
-                        width =
-                            rp(
-                                (if (view.reading) {
-                                    if (english) 102f else 74f
-                                } else 34f) * controls
-                            )
-                    }
             }
             bar.visibility = if (chromeHidden) View.INVISIBLE else View.VISIBLE
             androidx.core.view.WindowCompat.getInsetsController(window, root)
@@ -773,7 +734,11 @@ class MainActivity : Activity() {
         view.onToolChanged()
         view.onChanged = {}
         view.onError = { error(it) }
-        view.onActivePage = { activePage = it }
+        view.onActivePage = {
+            activePage = it
+            navigationPanel?.updateCurrent()
+        }
+        view.onSelectionAdjust = { readerPopup?.dismiss() }
         view.onSelection = { selection(it) }
         view.onToolbarToggle = {
             if (view.reading) {
@@ -786,12 +751,66 @@ class MainActivity : Activity() {
         }
         val canvas = FrameLayout(this).apply { setBackgroundColor(0xfff4f4f4.toInt()) }
         canvas.addView(view, FrameLayout.LayoutParams(-1, -1))
+        val returnUi =
+            DesignScreen(this, prefs.getInt("theme", 0), prefs.getInt("buttonSize", 68), english)
+                .apply {
+                    configure(
+                        resources.displayMetrics.widthPixels,
+                        resources.displayMetrics.heightPixels,
+                        controls,
+                    )
+                }
+        val returnChip =
+            returnUi
+                .action(tr("返回原处", "Back to reading")) { view.returnFromNavigation() }
+                .apply {
+                    visibility = View.GONE
+                    elevation = returnUi.px(4f).toFloat()
+                    background =
+                        returnUi.background(
+                            returnUi.palette.color("panel"),
+                            12f,
+                            returnUi.palette.color("rule"),
+                        )
+                    addView(
+                        returnUi
+                            .label(
+                                "‹  ${tr("返回原处","Back to reading")}",
+                                13f,
+                                returnUi.palette.accent,
+                                500,
+                            )
+                            .apply { gravity = Gravity.CENTER },
+                        FrameLayout.LayoutParams(-1, -1),
+                    )
+                }
+        canvas.addView(
+            returnChip,
+            FrameLayout.LayoutParams(
+                    returnUi.px(if (english) 150f else 108f),
+                    returnUi.px(36f),
+                    Gravity.BOTTOM or Gravity.END,
+                )
+                .apply {
+                    bottomMargin = returnUi.px(16f)
+                    rightMargin = returnUi.px(16f)
+                },
+        )
+        view.onNavigationChanged = { hasBack ->
+            returnChip.visibility = if (hasBack && !view.searching) View.VISIBLE else View.GONE
+        }
+        view.restoreNavigationHistory(backHistory)
+
         readerHost = canvas
         root.addView(canvas, LinearLayout.LayoutParams(-1, 0, 1f))
+        if (navigationState != null)
+            canvas.post {
+                if (reader === view) showNavigation(navigationState.searching, navigationState)
+            }
     }
 
     private fun undo(redo: Boolean) {
-        if (reader?.reading == true) return
+        if (reader?.readOnly == true) return
         book?.let {
             if (!store.undo(it, redo)) toast(tr("没有更多历史", "No more history"))
             reader?.refresh()
@@ -913,7 +932,7 @@ class MainActivity : Activity() {
 
     private fun penOptions() {
         val r = reader ?: return
-        if (r.reading) return
+        if (r.readOnly) return
         if (r.tool !in setOf("pen", "pencil", "fountain", "highlight")) r.tool = "pen"
         val menu = readerPanel("pen", 508f)
         menu.centerOn = r
@@ -1066,7 +1085,7 @@ class MainActivity : Activity() {
 
     private fun eraserOptions() {
         val r = reader ?: return
-        if (r.reading) return
+        if (r.readOnly) return
         r.tool = "eraser"
         val menu = readerPanel("eraser", 220f)
         menu.header(tr("橡皮", "Eraser"))
@@ -1084,7 +1103,7 @@ class MainActivity : Activity() {
 
     private fun shapeOptions() {
         val r = reader ?: return
-        if (r.reading) return
+        if (r.readOnly) return
         val menu = readerPanel("shape", 256f)
         menu.header(tr("图形", "Shapes"))
         val labels =
@@ -1157,101 +1176,72 @@ class MainActivity : Activity() {
                 "undo",
                 "redo",
             )
+        menu.item("search", tr("文内搜索", "Find in document")) { showNavigation(true) }
+        if (reader?.reading == true)
+            menu.item("fit", tr("阅读显示", "Reading display")) {
+                readingOptions(readerTools["more"] ?: root)
+            }
         titles.forEachIndexed { i, title ->
-            if (reader?.reading != true || i !in setOf(8, 9))
+            if (reader?.readOnly != true || i !in setOf(8, 9))
                 menu.item(icons[i], title) { action(i) }
         }
         showPanel(menu)
     }
 
+    private fun closeNavigation() {
+        navigationPanel?.dispose()
+        navigationPanel = null
+        pageSidebar?.let { readerHost?.removeView(it) }
+        pageSidebar = null
+        reader?.layoutParams = FrameLayout.LayoutParams(-1, -1)
+        pageCovers?.close()
+        pageCovers = null
+        readerTools["list"]?.isSelected = false
+    }
+
     private fun pages() {
-        val host = readerHost ?: return
-        pageSidebar?.let {
-            host.removeView(it)
-            pageSidebar = null
-            reader?.layoutParams = FrameLayout.LayoutParams(-1, -1)
-            pageCovers?.close()
-            pageCovers = null
-            readerTools["list"]?.isSelected = false
+        if (pageSidebar != null) closeNavigation() else showNavigation()
+    }
+
+    private fun showNavigation(search: Boolean = false, restored: ReaderNavigator.State? = null) {
+        val r = reader ?: return
+        readerPopup?.dismiss()
+        navigationPanel?.let {
+            if (search) it.beginSearch()
             return
         }
-        val b = book ?: return
-        readerPopup?.dismiss()
+        val origin = if (search) r.viewport() else null
         val menu = readerPanel("list")
-        val panel =
-            column().apply {
-                setBackgroundColor(menu.palette.color("panel"))
-                setPadding(menu.ui.px(12f), menu.ui.px(10f), menu.ui.px(12f), 0)
-            }
         val covers = CoverRepository(this, pdf)
-        pageCovers?.close()
         pageCovers = covers
-        panel.addView(menu.label(tr("缩略图", "Pages"), 16f, true))
-        val list =
-            ListView(this).apply {
-                divider = null
-                isVerticalScrollBarEnabled = false
-            }
-        list.adapter =
-            object : BaseAdapter() {
-                override fun getCount() = b.pages.size
-
-                override fun getItem(position: Int) = b.pages[position]
-
-                override fun getItemId(position: Int) = position.toLong()
-
-                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View =
-                    column().apply {
-                        contentDescription = "${tr("页面", "Page")} ${position + 1}"
-                        gravity = Gravity.CENTER_HORIZONTAL
-                        setPadding(menu.ui.px(8f), menu.ui.px(8f), menu.ui.px(8f), menu.ui.px(12f))
-                        addView(
-                            DocumentCoverView(
-                                    this@MainActivity,
-                                    b.copy(pages = mutableListOf(b.pages[position])),
-                                    covers,
-                                )
-                                .apply {
-                                    background =
-                                        menu.ui.background(
-                                            Color.WHITE,
-                                            4f,
-                                            if (position == b.current) menu.palette.accent
-                                            else menu.palette.color("rule"),
-                                        )
-                                },
-                            LinearLayout.LayoutParams(-1, menu.ui.px(128f)),
-                        )
-                        addView(
-                            menu.label("${position + 1}", 14f).apply { gravity = Gravity.CENTER }
-                        )
-                    }
-            }
-        list.setOnItemClickListener { _, _, position, _ ->
-            reader?.goToPage(position)
-            (list.adapter as BaseAdapter).notifyDataSetChanged()
-        }
-        list.setOnItemLongClickListener { _, view, position, _ ->
-            if (reader?.reading == true) false
-            else {
-                pageMenu(position, view)
-                true
-            }
-        }
-        panel.addView(list, LinearLayout.LayoutParams(-1, 0, 1f))
-        val width = menu.ui.px(150f)
-        host.addView(panel, FrameLayout.LayoutParams(width, -1, Gravity.START))
-        reader?.layoutParams = FrameLayout.LayoutParams(-1, -1).apply { leftMargin = width }
-        pageSidebar = panel
+        val panel =
+            ReaderNavigator(
+                this,
+                r,
+                pdf,
+                store,
+                menu.ui,
+                covers,
+                ::closeNavigation,
+                { index, anchor -> pageMenu(index, anchor) },
+                search,
+                origin,
+                restored,
+            )
+        navigationPanel = panel
+        pageSidebar = panel.view
+        val width =
+            menu.ui.px(264f).coerceAtMost((resources.displayMetrics.widthPixels * .46f).toInt())
+        readerHost?.addView(panel.view, FrameLayout.LayoutParams(width, -1, Gravity.START))
+        r.layoutParams = FrameLayout.LayoutParams(-1, -1).apply { leftMargin = width }
         readerTools["list"]?.isSelected = true
-        list.setSelection(b.current)
     }
 
     private fun addPage() {
-        if (reader?.reading == true) return
+        if (reader?.readOnly == true) return
         val b = book ?: return
         paperMenu(tr("新增纸页", "Add page"), tr("新增纸页", "Add page")) { style, paper, _ ->
-            if (reader?.reading == true) return@paperMenu
+            if (reader?.readOnly == true) return@paperMenu
             b.pages.add(b.current + 1, Sheet(style = style, paper = paper))
             b.current++
             activePage = b.current
@@ -1261,13 +1251,13 @@ class MainActivity : Activity() {
     }
 
     private fun pageMenu(i: Int, anchor: View? = null) {
-        if (reader?.reading == true) return
+        if (reader?.readOnly == true) return
         val b = book ?: return
         val p = b.pages[i]
         val menu = readerPanel("list", 224f, anchor)
         menu.content.addView(menu.label("${tr("第", "Page")} ${i + 1} ${tr("页", "")}", 14f, true))
         val action: (Int) -> Unit = action@{
-            if (reader?.reading == true) return@action
+            if (reader?.readOnly == true) return@action
             when (it) {
                 0 -> {
                     b.pages.add(i + 1, Sheet.from(p.json().put("id", uid())))
@@ -1347,11 +1337,20 @@ class MainActivity : Activity() {
 
     private fun selection(value: String) {
         val r = reader ?: return
-        val menu = readerPanel("hand", 240f, r)
+        val menu = readerPanel("hand", if (english) 176f else 132f, r)
+        menu.content.setPadding(menu.ui.px(6f), menu.ui.px(4f), menu.ui.px(6f), menu.ui.px(4f))
+        menu.popup.contentView.background =
+            menu.ui.background(menu.palette.color("panel"), 12f, menu.palette.color("rule"))
+        menu.popup.elevation = menu.ui.px(8f).toFloat()
         val controls = row()
-        listOf("copy" to tr("复制", "Copy"), "dictionary" to tr("查词", "Dictionary")).forEachIndexed {
-            i,
-            (glyph, title) ->
+        listOf(tr("复制", "Copy"), tr("查词", "Dictionary")).forEachIndexed { i, title ->
+            if (i > 0)
+                controls.addView(
+                    View(this).apply { setBackgroundColor(menu.palette.color("rule")) },
+                    LinearLayout.LayoutParams(menu.ui.px(1f), menu.ui.px(16f)).apply {
+                        gravity = Gravity.CENTER_VERTICAL
+                    },
+                )
             val action =
                 menu.ui.action(title) {
                     menu.popup.dismiss()
@@ -1362,13 +1361,8 @@ class MainActivity : Activity() {
                     } else dictionaryDialog(value)
                 }
             action.addView(
-                ReaderGlyph(this, glyph).apply { tint = menu.palette.ink },
-                FrameLayout.LayoutParams(menu.ui.px(20f), menu.ui.px(20f), Gravity.CENTER_VERTICAL)
-                    .apply { leftMargin = menu.ui.px(7f) },
-            )
-            action.addView(
-                menu.ui.label(title, 14f),
-                FrameLayout.LayoutParams(-1, -1).apply { leftMargin = menu.ui.px(34f) },
+                menu.ui.label(title, 14f).apply { gravity = Gravity.CENTER },
+                FrameLayout.LayoutParams(-1, -1),
             )
             controls.addView(action, LinearLayout.LayoutParams(0, menu.ui.px(36f), 1f))
         }
@@ -1397,7 +1391,7 @@ class MainActivity : Activity() {
     }
 
     private fun pickImage() {
-        if (reader?.reading == true) return
+        if (reader?.readOnly == true) return
         val intent =
             if (Build.VERSION.SDK_INT >= 33)
                 Intent(android.provider.MediaStore.ACTION_PICK_IMAGES).apply { type = "image/*" }
@@ -1482,7 +1476,7 @@ class MainActivity : Activity() {
                 }
             }
             11 -> {
-                if (reader?.reading == true) return
+                if (reader?.readOnly == true) return
                 val b = book ?: return
                 val p = b.pages[activePage.coerceIn(0, b.pages.lastIndex)]
                 var mark: Mark? = null
@@ -1520,7 +1514,7 @@ class MainActivity : Activity() {
                     },
                 ) {
                     mark?.let {
-                        if (reader?.reading == true) store.file(it.image).delete()
+                        if (reader?.readOnly == true) store.file(it.image).delete()
                         else {
                             p.marks.add(it)
                             store.commit(b)
@@ -1901,7 +1895,7 @@ class MainActivity : Activity() {
                 reader != null
         ) {
             reader?.let {
-                if (!it.reading && event.repeatCount == 0)
+                if (!it.readOnly && event.repeatCount == 0)
                     it.tool = if (it.tool == "eraser") it.lastPenTool else "eraser"
             }
             inputInfo = "${tr("真实系统笔按键", "System stylus button")} keyCode=$keyCode"
