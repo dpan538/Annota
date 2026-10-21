@@ -37,7 +37,95 @@ class UpdateTest {
     }
 
     private fun info(file: File) =
-        Network.Update(nextVersion, "0.1.5-update-fixture", "", "", sha256(file), certificate())
+        Network.Update(nextVersion, "0.1.6-update-fixture", "", "", sha256(file), certificate())
+
+    private fun release(
+        tag: String,
+        preview: Boolean,
+        draft: Boolean = false,
+        withManifest: Boolean = true,
+    ) =
+        org.json
+            .JSONObject()
+            .put("tag_name", tag)
+            .put("prerelease", preview)
+            .put("draft", draft)
+            .put(
+                "assets",
+                org.json.JSONArray().also { assets ->
+                    for (name in
+                        listOfNotNull(
+                            if (withManifest) "annota-update.json" else null,
+                            "Annota.apk",
+                        )) assets.put(
+                        org.json
+                            .JSONObject()
+                            .put("name", name)
+                            .put(
+                                "browser_download_url",
+                                "https://github.com/dpan538/Annota/releases/download/$tag/$name",
+                            )
+                    )
+                },
+            )
+
+    @Test
+    fun previewBuildsCanDiscoverPrereleasesButProductionAndDraftBoundariesRemain() {
+        val network = Network(context)
+        val releases =
+            org.json
+                .JSONArray()
+                .put(release("v0.1.5-dev", true))
+                .put(release("v1.0.0", false))
+                .put(release("v2.0.0-dev", true, draft = true))
+                .put(release("v0.1.4-dev", true, withManifest = false))
+        assertTrue(Network.previewUpdates("0.1.5-dev", false))
+        assertTrue(Network.previewUpdates("1.0.0-beta", false))
+        assertFalse(Network.previewUpdates("1.0.0", false))
+        assertEquals(
+            listOf("v0.1.5-dev", "v1.0.0"),
+            network.releaseCandidates(releases, true).map { it.getString("tag_name") },
+        )
+        assertEquals(
+            listOf("v1.0.0"),
+            network.releaseCandidates(releases, false).map { it.getString("tag_name") },
+        )
+    }
+
+    @Test
+    fun manifestUsesIntegerVersionAndRequiresTheActualApkAssetAndIdentity() {
+        val network = Network(context)
+        val release = release("v0.1.5-dev", true)
+        val manifest =
+            org.json
+                .JSONObject()
+                .put("schemaVersion", 1)
+                .put("packageName", context.packageName)
+                .put("versionCode", nextVersion)
+                .put("versionName", "0.1.6-dev")
+                .put("apk", "Annota.apk")
+                .put("sha256", "a".repeat(64))
+                .put("certificateSha256", certificate())
+        assertEquals(nextVersion, network.updateFromManifest(release, manifest)!!.versionCode)
+        assertNull(
+            network.updateFromManifest(
+                release,
+                org.json
+                    .JSONObject(manifest.toString())
+                    .put("versionCode", BuildConfig.VERSION_CODE),
+            )
+        )
+        for ((key, value) in
+            listOf("packageName" to "another.app", "apk" to "missing.apk", "sha256" to "invalid")) {
+            try {
+                network.updateFromManifest(
+                    release,
+                    org.json.JSONObject(manifest.toString()).put(key, value),
+                )
+                fail("Invalid $key accepted")
+            } catch (_: IllegalArgumentException) {} catch (_: IllegalStateException) {}
+        }
+    }
 
     @Test
     fun cryptographicSignatureHashPackageAndVersion() {

@@ -1,0 +1,17 @@
+{
+  "device": "API36 ARM64 emulator",
+  "notePaper": "black/grid",
+  "inkPoints": 19,
+  "inkStateEqualAfterColdRestart": true,
+  "readingPositionEqualAfterColdRestart": true,
+  "readingPosition": {
+    "page": "47aa5683-22d5-4e4d-89ae-a90810b4a12c",
+    "fraction": 0.12728844583034515,
+    "zoom": 1,
+    "panRatio": 0,
+    "fitWidth": true,
+    "spread": true
+  },
+  "continuousScrollVideo": "continuous-reader-motion.mp4",
+  "physicalXiaomiEvidence": false
+}

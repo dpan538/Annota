@@ -6,6 +6,47 @@ import android.view.View
 
 /** The same Lucide glyphs used by the approved reader, in its 34-unit icon slots. */
 class ToolButton(context: Context, val name: String) : View(context) {
+    private var wasPressed = false
+    private var selectionProgress = 0f
+    private var selectionAnimator: android.animation.ValueAnimator? = null
+
+    override fun drawableStateChanged() {
+        super.drawableStateChanged()
+        if (wasPressed != isPressed) {
+            wasPressed = isPressed
+            UiMotion.press(this, isPressed)
+        }
+    }
+
+    override fun setSelected(selected: Boolean) {
+        val changed = selected != isSelected
+        super.setSelected(selected)
+        if (!changed) return
+        selectionAnimator?.cancel()
+        val target = if (selected) 1f else 0f
+        if (isAttachedToWindow && UiMotion.enabled()) {
+            selectionAnimator =
+                android.animation.ValueAnimator.ofFloat(selectionProgress, target).apply {
+                    duration = UiMotion.PANEL
+                    interpolator = UiMotion.linear
+                    addUpdateListener {
+                        selectionProgress = it.animatedValue as Float
+                        invalidate()
+                    }
+                    start()
+                }
+        } else {
+            selectionProgress = target
+            invalidate()
+        }
+    }
+
+    override fun onDetachedFromWindow() {
+        selectionAnimator?.cancel()
+        animate().cancel()
+        super.onDetachedFromWindow()
+    }
+
     var tint = 0xff262a2d.toInt()
     var selectedFill = 0x33ffffff
     var selectedTint = 0xff262a2d.toInt()
@@ -47,8 +88,9 @@ class ToolButton(context: Context, val name: String) : View(context) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        if (isSelected) {
+        if (selectionProgress > 0) {
             paint.color = selectedFill
+            paint.alpha = (Color.alpha(selectedFill) * selectionProgress).toInt()
             val s = 28 * unit
             canvas.drawRoundRect(
                 RectF((width - s) / 2, (height - s) / 2, (width + s) / 2, (height + s) / 2),
@@ -56,6 +98,7 @@ class ToolButton(context: Context, val name: String) : View(context) {
                 8 * unit,
                 paint,
             )
+            paint.alpha = 255
         }
         val s = (20 * unit).toInt()
         glyph.tint = if (isSelected) selectedTint else tint

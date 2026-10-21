@@ -16,6 +16,8 @@ object UiMessages {
             "），草稿已保留" to "). Draft kept.",
             "尚无正式发布的 APK（GitHub 404），可稍后重试" to
                 "No stable APK release yet (GitHub 404). Try again later.",
+            "未找到更新资源（GitHub 404），请稍后重试" to
+                "Update resource not found (GitHub 404). Try again later.",
             "GitHub 限流或拒绝访问，请稍后重试" to "GitHub rate limit or access denied. Try again later.",
             "服务响应 HTTP " to "Server returned HTTP ",
             "，请重试" to ". Please retry.",

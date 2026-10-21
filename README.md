@@ -22,7 +22,7 @@
 
 ## 下载
 
-[下载安装包 ↗](https://github.com/dpan538/Annota/releases/download/v0.1.4-dev/Annota-0.1.4-dev.apk) · [固定下载页](DOWNLOAD.md)
+[下载安装包 ↗](https://github.com/dpan538/Annota/releases/download/v0.1.5-dev/Annota-0.1.5-dev.apk) · [固定下载页](DOWNLOAD.md)
 
 直接点击，或复制下载页中的链接到平板浏览器。下载完成后按系统提示安装。当前为开发测试包，尚非正式版。
 
@@ -34,7 +34,7 @@
 | 主页上方 | 新建笔记、导入文件、新建文件夹；右上角筛选、废纸篓、中英文切换 |
 | 阅读器顶部 | 页面导航、批注工具、阅读选项 |
 
-单页阅读或相邻两页并排，缩略图列表按需打开。四套外观：松间、晴昼、蓝调、原野。笔记有空白、点阵、格子、横线四种纸，白、灰、黑三种底色。文件长按可收藏、重命名、复制、移动、导出 PDF、移进废纸篓。
+默认适宽，单页或相邻双页连续上下滚动；支持惯性滑动、双指缩放与阅读位置恢复，缩略图列表按需打开。四套外观：松间、晴昼、蓝调、原野。圆角新建面板直接预览空白、点阵、格子、横线四种纸，选择白、灰、黑底色并命名。文件长按可收藏、重命名、复制、移动、导出 PDF、移进废纸篓。
 
 首次启动只有横版五页指南和 11 页 *Attention Is All You Need* 示例论文；封面读取真实首页。删除后重启或升级都不补回。
 
@@ -56,7 +56,7 @@
 | --- | --- |
 | 墨迹 | 标准 MotionEvent 压感与历史采样；抬笔提交矢量笔迹；最近 50 步撤销状态可跨进程恢复 |
 | 词典 | 随包英汉、汉英 SQLite 索引词库；安装校验后本地只读查询，支持词形和拼写候选 |
-| 更新 | 开发包经 GitHub Releases 分发；应用内更新校验哈希、包名、版本和签名后交系统安装器，正式链路待验收 |
+| 更新 | 测试包支持 GitHub 测试更新；校验哈希、包名、版本和签名后交系统安装器，生产签名与真机安装仍待验收 |
 | 存储 | 私有本地文件与原子状态快照；同签名覆盖升级保留数据，支持导出备份与合并恢复 |
 | 内存 | 首页只读封面元数据；位图与文字缓存按堆预算限额，后台回收、前台重建 |
 
@@ -110,7 +110,7 @@ npm run test:reader && npm run test:guide && npm run test:library
 python3 design/dictionary/test_lookup.py
 ```
 
-仪器测试会重置书库，仅在专用模拟器运行；更新校验需先放入同签名夹具。浏览器测试需先构建原型，自动断言与截图复核共同验收。实际结果、性能边界与剩余工作见 [验收记录](docs/ENGLISH-APK-ACCEPTANCE.md)、[测试 log](log/README.md) 和 [流程审计](docs/FLOW-AUDIT.md)。
+仪器测试会重置书库，仅在专用模拟器运行；更新校验需先放入同签名夹具。浏览器测试需先构建原型，自动断言与截图复核共同验收。实际结果、性能边界与剩余工作见 [验收记录](docs/CONTINUOUS-READER-ACCEPTANCE.md)、[测试 log](log/README.md) 和 [流程审计](docs/FLOW-AUDIT.md)。
 
 ## 反馈
 
@@ -128,4 +128,4 @@ python3 design/dictionary/test_lookup.py
 
 A local-first PDF reader and handwriting notebook for the Xiaomi Pad 9 Pro Max. Files, strokes, reading position and settings stay on the device. No account, cloud or sync. Offline ECDICT/CC-CEDICT lookup; networking only for requested updates and feedback.
 
-Development APK available through [GitHub Releases](https://github.com/dpan538/Annota/releases/tag/v0.1.4-dev); Xiaomi hardware, production signing and the stable-update flow remain pending. MIT for code; CC BY-NC 4.0 for original artwork and the guide.
+Development APK available through [GitHub Releases](https://github.com/dpan538/Annota/releases/tag/v0.1.5-dev); Xiaomi hardware, production signing and the stable-update flow remain pending. MIT for code; CC BY-NC 4.0 for original artwork and the guide.

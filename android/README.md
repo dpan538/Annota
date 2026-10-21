@@ -1,6 +1,6 @@
 # Annota Android development build
 
-Native Kotlin application ID: `io.github.dpan538.annota`. Minimum Android 10 / API 29, compile / target API 36. Debug version 0.1.4-dev (5). The earlier 0.1.0-dev build used a simplified functional-test interface and did not meet the approved design. This folder contains the native implementation; it does not publish GitHub Releases or change the design sources.
+Native Kotlin application ID: `io.github.dpan538.annota`. Minimum Android 10 / API 29, compile / target API 36. Debug version 0.1.5-dev (6). The earlier 0.1.0-dev build used a simplified functional-test interface and did not meet the approved design. This folder contains the native implementation; it does not publish GitHub Releases or change the design sources.
 
 ## Build
 
@@ -10,10 +10,10 @@ Install a **full JDK 17 or 21**, Android SDK platform 36 and build-tools 35.0.0.
 ./gradlew assembleDebug assembleDebugAndroidTest lintDebug
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
-adb shell am instrument -w -e class io.github.dpan538.annota.CoreTest,io.github.dpan538.annota.DesignUiTest,io.github.dpan538.annota.EnglishUiTest,io.github.dpan538.annota.InputTest,io.github.dpan538.annota.ReaderPolishTest,io.github.dpan538.annota.RenderLifecycleTest,io.github.dpan538.annota.SeedTest,io.github.dpan538.annota.UpdateTest io.github.dpan538.annota.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class io.github.dpan538.annota.CoreTest,io.github.dpan538.annota.DesignUiTest,io.github.dpan538.annota.EnglishUiTest,io.github.dpan538.annota.InputTest,io.github.dpan538.annota.ReaderPolishTest,io.github.dpan538.annota.RenderLifecycleTest,io.github.dpan538.annota.SeedTest,io.github.dpan538.annota.UpdateTest,io.github.dpan538.annota.ContinuousReaderTest,io.github.dpan538.annota.MotionTest io.github.dpan538.annota.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
-The two `UpdateTest` cases require a local same-signed APK built with `-PannotaVersionCode=6 -PannotaVersionName=0.1.5-update-fixture`, staged in the target application's `cache/update-test.apk` (push to `/data/local/tmp/` then copy using `adb shell run-as io.github.dpan538.annota`). Keep the installed target at versionCode 5. Without the fixture these two tests explicitly skip. Run instrumentation only on a disposable emulator because storage fixtures reset its library.
+The two `UpdateTest` cases require a local same-signed APK built with `-PannotaVersionCode=7 -PannotaVersionName=0.1.6-update-fixture`, staged in the target application's `cache/update-test.apk` (push to `/data/local/tmp/` then copy using `adb shell run-as io.github.dpan538.annota`). Keep the installed target at versionCode 6. Without the fixture these two tests explicitly skip. Run instrumentation only on a disposable emulator because storage fixtures reset its library.
 
 The checked-in wrapper pins Gradle 8.13 and verifies its distribution SHA-256. `.tooling/` holds only ignored local downloads and SDK/emulator files. No SDK, build cache or private key should be committed. `scripts/sync-assets.py` can re-copy the dictionaries from the read-only `../design/dictionary/` source. The actual database SHA-256 values are checked again at installation. The original authored five-page guide is bundled as `assets/guide.pdf`; the owner-supplied original paper is bundled as a second initial document with an independent rights notice.
 
@@ -63,7 +63,7 @@ See `../docs/IMPLEMENTATION-STATUS.md` for actual build/test evidence, artifact 
 
 ## Onboarding and regression fixtures
 
-Current development build: `0.1.4-dev` / versionCode 5. Both seed PDFs are bundled and verified by SHA-256 and page count. They publish together in a database transaction. Any earlier initialization marker is final, including the old guide-only development build. No sample is added back on restart or upgrade, even after removal. Paper rights are separate: see `app/src/main/assets/SAMPLE-PAPER-NOTICE.md`; redistribution clearance remains a public-release checklist item.
+Current development build: `0.1.4-dev` / versionCode 6. Both seed PDFs are bundled and verified by SHA-256 and page count. They publish together in a database transaction. Any earlier initialization marker is final, including the old guide-only development build. No sample is added back on restart or upgrade, even after removal. Paper rights are separate: see `app/src/main/assets/SAMPLE-PAPER-NOTICE.md`; redistribution clearance remains a public-release checklist item.
 
 The update tests require a same-development-key versionCode 6 / versionName `0.1.5-update-fixture` APK at the target app's `cache/update-test.apk`. Build it with Gradle property overrides, keep it outside Git and stage it with `adb shell run-as io.github.dpan538.annota ...` on the dedicated emulator. Without it, those two tests are explicitly skipped; do not report them as passed. No fixture is a published update. Test APKs reset library data and must never run on a user's tablet.
 
@@ -86,3 +86,13 @@ adb exec-out run-as io.github.dpan538.annota cat cache/english-soak.json > engli
 `SoakTest` is excluded from the short suite above. Its report describes emulator/debug behavior, not Xiaomi hardware or an hours-long device session. `scripts/verify-apk.py` checks a real download copy, ZIP/assets, APK signature, install and cold launch. Without `--download-url` it uses loopback HTTP and explicitly does not claim public GitHub validation. Use a real published Annota asset URL to test anonymous HTTPS delivery.
 
 The recorded 602-second / 316-cycle run, original output, build hashes, CSV and memory curves live in [log](../log/2026-10-21-emulator-soak/README.md).
+
+## Continuous reading and preview updates (0.1.5-dev)
+
+The reader uses bounded continuous vertical rows (including two-page spreads), visible-page rendering, fling, focal-point pinch zoom, and persisted page/offset/zoom/spread. Fit width is the default; Fit page remains available. Progress updates never serialize all ink.
+
+PaperMenu is an anchored rounded preview panel shared by creation, insertion and template changes; it handles IME resize and removes its host layout observer when dismissed. Buttons, panels and navigation use linear 100–180 ms motion; fling uses Android scrolling physics. System-disabled animations are respected and ink is immediate.
+
+Development/preview builds list the latest 30 GitHub releases and accept non-draft prereleases with an update manifest, selecting the highest larger integer versionCode. Production stable builds retain the stable-only endpoint. Every install verifies the APK again, including restored pending packages. Publish APK + SHA256SUMS.txt + annota-update.json; --allow-debug is explicitly for labelled development previews, never production.
+
+0.1.4 needs one manual overwrite because its old binary excludes prereleases. Current acceptance: [continuous reading/update record](../docs/CONTINUOUS-READER-ACCEPTANCE.md). The earlier 316-cycle log remains 0.1.4 evidence, not a repeated soak of this reader.

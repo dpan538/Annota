@@ -12,7 +12,7 @@ p = argparse.ArgumentParser()
 p.add_argument("apk", type=Path)
 p.add_argument("--build-tools", type=Path, required=True)
 p.add_argument("--output", type=Path, required=True)
-p.add_argument("--allow-debug", action="store_true", help="only for local update verification")
+p.add_argument("--allow-debug", action="store_true", help="only for explicit development prereleases or local verification")
 a = p.parse_args()
 java = os.environ.get("JAVA_HOME")
 if not java:

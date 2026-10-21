@@ -1,0 +1,6 @@
+<resources>
+    <style name="AnnotaPanelMotion">
+        <item name="android:windowEnterAnimation">@anim/panel_enter</item>
+        <item name="android:windowExitAnimation">@anim/panel_exit</item>
+    </style>
+</resources>

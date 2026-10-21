@@ -341,6 +341,17 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
         writableDatabase.update("books", values(b), "id=?", arrayOf(b.id))
     }
 
+    /** Reading progress must not serialize all ink on every crossed page. */
+    @Synchronized
+    fun position(b: Book) {
+        writableDatabase.update(
+            "books",
+            ContentValues().apply { put("current", b.current) },
+            "id=?",
+            arrayOf(b.id),
+        )
+    }
+
     @Synchronized
     fun commit(b: Book) {
         val state = writeState(b.state())

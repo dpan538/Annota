@@ -314,7 +314,7 @@ class EnglishUiTest {
         assertFalse(dialogLabels().any { Regex("[\\u4e00-\\u9fff]").containsMatchIn(it) })
         select("Grid")
         select("White")
-        select("OK")
+        select("Create note")
         click(a, "Pen")
         assertTrue(
             dialogLabels()

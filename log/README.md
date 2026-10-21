@@ -5,3 +5,5 @@
 - [2026-10-21：316 轮持续使用测试](2026-10-21-emulator-soak/README.md)：602 秒、31 次 Activity 重开、笔迹恢复、内存与缓存曲线。
 
 其他功能回归与界面截图仍保存在 [Android verification](../android/verification/README.md)。
+
+- [2026-10-21：连续阅读、动效与测试版更新](2026-10-21-continuous-update/README.md)：38 项回归、真实界面流程与原始录屏。

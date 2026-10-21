@@ -1,10 +1,14 @@
 package io.github.dpan538.annota
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.os.Build
 import android.util.LruCache
 import android.view.*
+import android.widget.OverScroller
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.ThreadPoolExecutor
@@ -13,6 +17,10 @@ import kotlin.math.*
 
 class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var book: Book) :
     View(context) {
+    private val positionPrefs =
+        context.getSharedPreferences("reading-viewports", Context.MODE_PRIVATE)
+    private val restored =
+        runCatching { org.json.JSONObject(positionPrefs.getString(book.id, "")!!) }.getOrNull()
     var onToolChanged: () -> Unit = {}
     var tool = "hand"
         set(value) {
@@ -32,7 +40,16 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     var filled = false
     var eraserLocal = false
     var onlyHighlight = false
-    var spread = false
+    var spread = restored?.optBoolean("spread", false) ?: false
+        set(value) {
+            if (field == value) return
+            pendingAnchor = captureAnchor()
+            field = value
+            geometry = null
+            onToolChanged()
+            invalidate()
+        }
+
     var ruler = false
         set(value) {
             field = value
@@ -40,7 +57,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             invalidate()
         }
 
-    var zoom = 1f
+    var zoom = restored?.optDouble("zoom", 1.0)?.toFloat()?.coerceIn(.6f, 5f) ?: 1f
     var panX = 0f
     var panY = 0f
     var onChanged: () -> Unit = {}
@@ -75,6 +92,36 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private var suspended = false
     private var constrained = false
     private var closed = false
+    private var fitToWidth = restored?.optBoolean("fitWidth", true) ?: true
+    private var geometry: ContinuousLayout? = null
+
+    private data class Anchor(val page: String, val fraction: Float)
+
+    private var pendingAnchor =
+        restored?.let { Anchor(it.optString("page"), it.optDouble("fraction", 0.0).toFloat()) }
+    private var restorePan = restored?.optDouble("panRatio", 0.0)?.toFloat() ?: 0f
+    private val scroller = OverScroller(context)
+    private var viewportAnimator: ValueAnimator? = null
+    private var requestedPage: Int? = null
+    private var velocity: VelocityTracker? = null
+    private var pinchX = 0f
+    private var pinchY = 0f
+    private val savePosition = Runnable { persistPosition() }
+    private val longPress = Runnable {
+        if (tool == "hand" && !moved && maxPointers == 1 && !draggingRuler) {
+            active?.let { place ->
+                val p = point(place, downX, downY, 1f)
+                val page = book.pages[place.index]
+                selectionStart =
+                    words.get(page.id).orEmpty().firstOrNull {
+                        RectF(it.box).apply { inset(-6f, -6f) }.contains(p.x, p.y)
+                    }
+                selected = listOfNotNull(selectionStart)
+                selectionPage = page.id
+                invalidate()
+            }
+        }
+    }
 
     data class MemoryStats(
         val pageBytes: Int,
@@ -98,6 +145,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         )
 
     fun trimMemory(background: Boolean) {
+        persistPosition()
+        stopMotion()
         epoch++
         suspended = background
         constrained = true
@@ -166,6 +215,12 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     fun dispose() {
+        persistPosition()
+        stopMotion()
+        removeCallbacks(longPress)
+        removeCallbacks(savePosition)
+        velocity?.recycle()
+        velocity = null
         cancelStroke()
         closed = true
         executor.shutdownNow()
@@ -178,37 +233,286 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     fun refresh() {
+        stopMotion()
         selected = emptyList()
         selectionStart = null
         book.current = book.current.coerceIn(0, book.pages.lastIndex)
+        pendingAnchor = Anchor(book.pages[book.current].id, 0f)
+        geometry = null
         invalidate()
     }
 
     fun fit() {
+        stopMotion()
+        fitToWidth = false
         zoom = 1f
         panX = 0f
-        panY = 0f
+        pendingAnchor = Anchor(book.pages[book.current].id, 0f)
+        geometry = null
+        ensureGeometry()
+        persistPosition()
         invalidate()
     }
 
     fun fitWidth() {
-        val bounds = RectF()
-        placements.forEach { bounds.union(it.bounds) }
-        if (bounds.width() > 0) {
-            zoom = (zoom * (width - 32 * scale) / bounds.width()).coerceIn(.6f, 5f)
-            panX = 0f
-            panY = 0f
-            invalidate()
-        }
+        stopMotion()
+        fitToWidth = true
+        zoom = 1f
+        panX = 0f
+        pendingAnchor = Anchor(book.pages[book.current].id, 0f)
+        geometry = null
+        ensureGeometry()
+        persistPosition()
+        invalidate()
     }
 
     fun next(delta: Int) {
-        book.current =
-            (book.current + delta * (if (spread) 2 else 1)).coerceIn(0, book.pages.lastIndex)
-        store.metadata(book)
-        onActivePage(book.current)
-        fit()
+        goToPage(
+            ((requestedPage ?: book.current) + delta * (if (spread) 2 else 1)).coerceIn(
+                0,
+                book.pages.lastIndex,
+            )
+        )
+    }
+
+    private fun ensureGeometry(): ContinuousLayout? {
+        if (book.pages.isEmpty() || width == 0 || height == 0) return null
+        if (geometry == null) {
+            val layout = ContinuousLayout(book.pages, width, height, 16 * scale, spread, fitToWidth)
+            geometry = layout
+            val anchor = pendingAnchor
+            val index =
+                book.pages.indexOfFirst { it.id == anchor?.page }.takeIf { it >= 0 }
+                    ?: book.current.coerceIn(0, book.pages.lastIndex)
+            val row = layout.rowForPage(index)
+            panY = -(row.top + row.height * (anchor?.fraction ?: 0f).coerceIn(0f, 1f)) * zoom
+            panX = restorePan * width
+            restorePan = 0f
+            pendingAnchor = null
+            clampViewport(layout)
+        }
+        return geometry
+    }
+
+    private fun captureAnchor(): Anchor? {
+        val layout = geometry ?: return pendingAnchor
+        if (layout.rows.isEmpty()) return null
+        val row = layout.rows[layout.rowAt(-panY / zoom)]
+        return Anchor(
+            book.pages[row.first].id,
+            ((-panY / zoom - row.top) / row.height).coerceIn(0f, 1f),
+        )
+    }
+
+    private fun maxScroll(layout: ContinuousLayout) =
+        max(0f, layout.contentHeight * zoom + 2 * layout.margin - height)
+
+    private fun horizontalLimit(layout: ContinuousLayout) =
+        max(0f, (layout.contentWidth * zoom - width + 2 * layout.margin) / 2)
+
+    private fun clampViewport(layout: ContinuousLayout) {
+        panX = panX.coerceIn(-horizontalLimit(layout), horizontalLimit(layout))
+        panY = panY.coerceIn(-maxScroll(layout), 0f)
+    }
+
+    private fun viewportChanged() {
+        val layout = ensureGeometry() ?: return
+        clampViewport(layout)
+        val row = layout.rows[layout.rowAt((-panY + height / 2f - layout.margin) / zoom)]
+        val index =
+            if (stroke != null || beforeErase != null) active?.index ?: row.first else row.first
+        if (book.current != index) {
+            book.current = index
+            onActivePage(index)
+        }
+        removeCallbacks(savePosition)
+        postDelayed(savePosition, 300)
+        invalidate()
+    }
+
+    fun persistPosition() {
+        if (closed || geometry == null) return
+        val anchor = captureAnchor() ?: return
+        removeCallbacks(savePosition)
+        positionPrefs
+            .edit()
+            .putString(
+                book.id,
+                org.json
+                    .JSONObject()
+                    .put("page", anchor.page)
+                    .put("fraction", anchor.fraction.toDouble())
+                    .put("zoom", zoom.toDouble())
+                    .put("panRatio", (panX / max(1, width)).toDouble())
+                    .put("fitWidth", fitToWidth)
+                    .put("spread", spread)
+                    .toString(),
+            )
+            .apply()
+        store.position(book)
+    }
+
+    private fun stopMotion() {
+        scroller.forceFinished(true)
+        viewportAnimator?.cancel()
+        viewportAnimator = null
+        requestedPage = null
+    }
+
+    private fun scrollToPosition(target: Float, animated: Boolean) {
+        val layout = ensureGeometry() ?: return
+        stopMotion()
+        val destination = target.coerceIn(0f, maxScroll(layout))
+        if (animated && UiMotion.enabled() && abs(destination + panY) <= height * 2f) {
+            viewportAnimator =
+                ValueAnimator.ofFloat(-panY, destination).apply {
+                    duration = UiMotion.SCREEN
+                    interpolator = UiMotion.linear
+                    addUpdateListener {
+                        panY = -(it.animatedValue as Float)
+                        viewportChanged()
+                    }
+                    addListener(
+                        object : AnimatorListenerAdapter() {
+                            private var cancelled = false
+
+                            override fun onAnimationCancel(animation: Animator) {
+                                cancelled = true
+                            }
+
+                            override fun onAnimationEnd(animation: Animator) {
+                                requestedPage = null
+                                if (!cancelled) persistPosition()
+                            }
+                        }
+                    )
+                    start()
+                }
+        } else {
+            panY = -destination
+            viewportChanged()
+            persistPosition()
+            if (animated) UiMotion.enter(this, 0f)
+        }
+    }
+
+    fun goToPage(index: Int, animated: Boolean = true) {
+        val layout = ensureGeometry() ?: return
+        val page = index.coerceIn(0, book.pages.lastIndex)
+        scrollToPosition(layout.rowForPage(page).top * zoom, animated)
+        requestedPage = if (viewportAnimator?.isRunning == true) page else null
+        onActivePage(page)
         onChanged()
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        pendingAnchor = captureAnchor()
+        if (geometry != null) restorePan = panX / max(1, oldw)
+        geometry = null
+        stopMotion()
+        super.onSizeChanged(w, h, oldw, oldh)
+    }
+
+    override fun computeScroll() {
+        if (!closed && scroller.computeScrollOffset()) {
+            panX = scroller.currX.toFloat()
+            panY = -scroller.currY.toFloat()
+            viewportChanged()
+            postInvalidateOnAnimation()
+        }
+    }
+
+    fun pageBounds(index: Int): RectF? {
+        val layout = ensureGeometry() ?: return null
+        if (index !in book.pages.indices) return null
+        return layout
+            .rowForPage(index)
+            .pages
+            .first { it.index == index }
+            .bounds
+            .let {
+                RectF(
+                    width / 2f + (it.left - width / 2f) * zoom + panX,
+                    layout.margin + it.top * zoom + panY,
+                    width / 2f + (it.right - width / 2f) * zoom + panX,
+                    layout.margin + it.bottom * zoom + panY,
+                )
+            }
+    }
+
+    data class ViewportStats(
+        val scroll: Float,
+        val limit: Float,
+        val horizontalLimit: Float,
+        val placedPages: Int,
+        val moving: Boolean,
+    )
+
+    fun viewportStats(): ViewportStats {
+        val layout = ensureGeometry()
+        return ViewportStats(
+            -panY,
+            layout?.let { maxScroll(it) } ?: 0f,
+            layout?.let { horizontalLimit(it) } ?: 0f,
+            placements.size,
+            !scroller.isFinished || viewportAnimator?.isRunning == true,
+        )
+    }
+
+    override fun onGenericMotionEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_SCROLL) {
+            scrollToPosition(
+                -panY - event.getAxisValue(MotionEvent.AXIS_VSCROLL) * 64 * scale,
+                false,
+            )
+            return true
+        }
+        return super.onGenericMotionEvent(event)
+    }
+
+    override fun canScrollVertically(direction: Int): Boolean {
+        val layout = ensureGeometry() ?: return false
+        return if (direction < 0) panY < 0 else -panY < maxScroll(layout)
+    }
+
+    override fun onInitializeAccessibilityNodeInfo(
+        info: android.view.accessibility.AccessibilityNodeInfo
+    ) {
+        super.onInitializeAccessibilityNodeInfo(info)
+        info.isScrollable = canScrollVertically(1) || canScrollVertically(-1)
+        if (canScrollVertically(1))
+            info.addAction(
+                android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction
+                    .ACTION_SCROLL_FORWARD
+            )
+        if (canScrollVertically(-1))
+            info.addAction(
+                android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction
+                    .ACTION_SCROLL_BACKWARD
+            )
+    }
+
+    override fun performAccessibilityAction(action: Int, arguments: android.os.Bundle?): Boolean {
+        if (
+            action == android.view.accessibility.AccessibilityNodeInfo.ACTION_SCROLL_FORWARD ||
+                action == android.view.accessibility.AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD
+        ) {
+            scrollToPosition(
+                -panY +
+                    height *
+                        .8f *
+                        if (
+                            action ==
+                                android.view.accessibility.AccessibilityNodeInfo
+                                    .ACTION_SCROLL_FORWARD
+                        )
+                            1
+                        else -1,
+                true,
+            )
+            return true
+        }
+        return super.performAccessibilityAction(action, arguments)
     }
 
     private fun request(p: Sheet, width: Int) {
@@ -289,34 +593,29 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     override fun onDraw(canvas: Canvas) {
         canvas.drawColor(0xfff4f4f4.toInt())
         placements.clear()
-        if (book.pages.isEmpty() || suspended) return
-        val first = book.current
-        val count = if (spread && first < book.pages.lastIndex) 2 else 1
-        val availableW = width - 32 * scale
-        val availableH = height - 32 * scale
-        val sizes =
-            (first until first + count).map { i ->
-                val p = book.pages[i]
-                if (p.rotation % 180 == 0) p.w to p.h else p.h to p.w
-            }
-        val base =
-            min(
-                    (availableW - (count - 1) * 16 * scale) /
-                        sizes.sumOf { it.first.toDouble() }.toFloat(),
-                    availableH / sizes.maxOf { it.second },
-                )
-                .coerceAtLeast(.01f)
-        var x =
-            (width -
-                (sizes.sumOf { it.first.toDouble() }.toFloat() * base * zoom +
-                    (count - 1) * 16 * scale)) / 2 + panX
-        for (i in first until first + count) {
+        if (suspended || closed) return
+        val layout = ensureGeometry() ?: return
+        clampViewport(layout)
+        val firstRow = layout.rowAt(max(0f, (-panY - layout.margin) / zoom))
+        val lastRow = layout.rowAt((height - panY - layout.margin) / zoom)
+        val frames = (firstRow..lastRow).flatMap { layout.rows[it].pages }
+        val preload = layout.rows.getOrNull(lastRow + 1)?.pages.orEmpty()
+        val slots = max(2, frames.size + preload.size)
+        fun bitmapWidth(index: Int): Int {
+            val page = book.pages[index]
+            val target = if (constrained) 1000 else if (zoom > 1.4f) 2200 else 1600
+            return min(target, sqrt(cache.maxSize() / (4f * slots) * page.w / page.h).toInt())
+                .coerceAtLeast(100)
+        }
+        for (frame in frames) {
+            val i = frame.index
             val p = book.pages[i]
-            val s = base * zoom
-            val rotated = p.rotation % 180 != 0
-            val dw = (if (rotated) p.h else p.w) * s
-            val dh = (if (rotated) p.w else p.h) * s
-            val y = (height - dh) / 2 + panY
+            val bounds = pageBounds(i) ?: continue
+            if (bounds.bottom < 0 || bounds.top > height) continue
+            val x = bounds.left
+            val y = bounds.top
+            val dw = bounds.width()
+            val dh = bounds.height()
             val m = Matrix()
             val points = floatArrayOf(0f, 0f, p.w, 0f, 0f, p.h)
             val dest =
@@ -329,20 +628,17 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             m.setPolyToPoly(points, 0, dest, 0, 3)
             val inv = Matrix()
             m.invert(inv)
-            placements.add(Placement(i, m, inv, RectF(x, y, x + dw, y + dh)))
-            val requestedWidth = if (constrained) 1000 else if (zoom > 1.4f) 2200 else 1400
-            val bw =
-                min(requestedWidth, sqrt(cache.maxSize() / 8f * p.w / p.h).toInt())
-                    .coerceAtLeast(100)
+            placements.add(Placement(i, m, inv, bounds))
+            val bw = bitmapWidth(i)
             val key = "${book.source}:${p.id}:${p.style}:${p.paper}:$bw"
             val bitmap = cache.get(key)
             request(p, bw)
             canvas.save()
             canvas.concat(m)
             paint.color = Color.WHITE
+            paint.alpha = 255
             canvas.drawRect(0f, 0f, p.w, p.h, paint)
             if (bitmap != null) {
-                paint.alpha = 255
                 canvas.drawBitmap(bitmap, null, RectF(0f, 0f, p.w, p.h), paint)
             } else {
                 paint.color = 0xffa0a0a0.toInt()
@@ -358,8 +654,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             }
             canvas.restore()
             if (tool == "hand") requestWords(p)
-            x += dw + 16 * scale
         }
+        preload.forEach { request(book.pages[it.index], bitmapWidth(it.index)) }
         if (ruler) drawRuler(canvas)
     }
 
@@ -602,11 +898,18 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 (Build.VERSION.SDK_INT >= 33 && e.flags and MotionEvent.FLAG_CANCELED != 0)
         ) {
             cancelled = true
+            removeCallbacks(longPress)
+            stopMotion()
+            velocity?.recycle()
+            velocity = null
             cancelStroke()
             return true
         }
         when (e.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
+                stopMotion()
+                velocity?.recycle()
+                velocity = VelocityTracker.obtain().apply { addMovement(e) }
                 requestFocus()
                 downX = e.x
                 downY = e.y
@@ -619,16 +922,12 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 selected = emptyList()
                 selectionStart = null
                 active = placements.firstOrNull { it.bounds.contains(e.x, e.y) }
-                active?.let {
-                    if (book.current != it.index && !spread) {
-                        book.current = it.index
-                    }
-                    onActivePage(it.index)
-                }
+                active?.let { onActivePage(it.index) }
                 val r = rulerLocal(e.x, e.y)
                 draggingRuler = ruler && !stylus && abs(r.x) < 160 * scale && abs(r.y) < 24 * scale
                 val draw = stylus || !stylusSeen
                 if (active != null && tool != "hand" && draw && !draggingRuler) {
+                    book.current = active!!.index
                     val p = point(active!!, e.x, e.y, e.pressure)
                     if (tool == "eraser" || e.getToolType(0) == MotionEvent.TOOL_TYPE_ERASER) {
                         beforeErase = book.state()
@@ -643,6 +942,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                 filled = filled,
                             )
                 }
+                if (tool == "hand" && !stylus)
+                    postDelayed(longPress, ViewConfiguration.getLongPressTimeout().toLong())
                 return true
             }
             MotionEvent.ACTION_POINTER_DOWN -> {
@@ -653,11 +954,14 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 )
                     return true
                 maxPointers = max(maxPointers, e.pointerCount)
+                removeCallbacks(longPress)
                 if (!stylus) {
                     cancelStroke()
                     if (e.pointerCount == 2) {
                         pinchDistance = hypot(e.getX(0) - e.getX(1), e.getY(0) - e.getY(1))
                         gestureZoom = zoom
+                        pinchX = (e.getX(0) + e.getX(1)) / 2
+                        pinchY = (e.getY(0) + e.getY(1)) / 2
                         angleStart = atan2(e.getY(1) - e.getY(0), e.getX(1) - e.getX(0))
                         rulerAngleStart = rulerAngle
                     }
@@ -665,7 +969,13 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
-                if (hypot(e.x - downX, e.y - downY) > 8 * scale) moved = true
+                velocity?.addMovement(e)
+                if (
+                    hypot(e.x - downX, e.y - downY) > ViewConfiguration.get(context).scaledTouchSlop
+                ) {
+                    moved = true
+                    removeCallbacks(longPress)
+                }
                 if (e.pointerCount >= 2 && !stylus) {
                     if (draggingRuler) {
                         rulerAngle =
@@ -673,11 +983,22 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                 (atan2(e.getY(1) - e.getY(0), e.getX(1) - e.getX(0)) - angleStart) *
                                     180 / PI.toFloat()
                     } else if (pinchDistance > 0) {
-                        zoom =
-                            (gestureZoom * hypot(e.getX(0) - e.getX(1), e.getY(0) - e.getY(1)) /
-                                    pinchDistance)
-                                .coerceIn(.6f, 5f)
+                        val distance = hypot(e.getX(0) - e.getX(1), e.getY(0) - e.getY(1))
+                        val x = (e.getX(0) + e.getX(1)) / 2
+                        val y = (e.getY(0) + e.getY(1)) / 2
+                        val documentX = (pinchX - width / 2f - panX) / zoom
+                        val documentY = (pinchY - 16 * scale - panY) / zoom
+                        zoom = (zoom * distance / pinchDistance).coerceIn(.6f, 5f)
+                        panX = x - width / 2f - documentX * zoom
+                        panY = y - 16 * scale - documentY * zoom
+                        pinchDistance = distance
+                        pinchX = x
+                        pinchY = y
+                        moved = moved || abs(zoom - gestureZoom) > .015f
+                        viewportChanged()
                     }
+                    lastX = e.x
+                    lastY = e.y
                     invalidate()
                     return true
                 }
@@ -702,15 +1023,10 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                 } else m.points.add(p)
                             }
                     }
-                } else if (
-                    tool == "hand" && active != null && e.eventTime - downTime > 400 && zoom <= 1.1f
-                ) {
+                } else if (tool == "hand" && active != null && selectionStart != null) {
                     val p = point(active!!, e.x, e.y, 1f)
                     val page = book.pages[active!!.index]
                     val ws = words.get(page.id).orEmpty()
-                    if (selectionStart == null)
-                        selectionStart =
-                            ws.minByOrNull { hypot(it.box.centerX() - p.x, it.box.centerY() - p.y) }
                     val start = ws.indexOf(selectionStart)
                     val end =
                         ws.indexOf(
@@ -720,16 +1036,28 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                         selected = ws.subList(min(start, end), max(start, end) + 1)
                         selectionPage = page.id
                     }
-                } else if (maxPointers == 1 && !stylus) {
+                } else if (!stylus && moved) {
                     panX += e.x - lastX
                     panY += e.y - lastY
+                    viewportChanged()
                 }
                 lastX = e.x
                 lastY = e.y
                 invalidate()
                 return true
             }
+            MotionEvent.ACTION_POINTER_UP -> {
+                removeCallbacks(longPress)
+                val remaining = if (e.actionIndex == 0) 1 else 0
+                lastX = e.getX(remaining)
+                lastY = e.getY(remaining)
+                pinchDistance = 0f
+                return true
+            }
             MotionEvent.ACTION_UP -> {
+                val writing = stroke != null || beforeErase != null
+                removeCallbacks(longPress)
+                velocity?.addMovement(e)
                 if (!cancelled) {
                     if (stroke != null && active != null) {
                         book.pages[active!!.index].marks.add(stroke!!)
@@ -772,6 +1100,41 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                             onSelection(selected.joinToString(" ") { it.text })
                     }
                 }
+                if (
+                    !writing &&
+                        moved &&
+                        maxPointers == 1 &&
+                        !stylus &&
+                        !draggingRuler &&
+                        selectionStart == null
+                ) {
+                    val layout = ensureGeometry()
+                    velocity?.computeCurrentVelocity(
+                        1000,
+                        ViewConfiguration.get(context).scaledMaximumFlingVelocity.toFloat(),
+                    )
+                    val vx = velocity?.xVelocity ?: 0f
+                    val vy = velocity?.yVelocity ?: 0f
+                    if (
+                        layout != null &&
+                            abs(vy) > ViewConfiguration.get(context).scaledMinimumFlingVelocity
+                    ) {
+                        scroller.fling(
+                            panX.roundToInt(),
+                            (-panY).roundToInt(),
+                            vx.roundToInt(),
+                            -vy.roundToInt(),
+                            -horizontalLimit(layout).roundToInt(),
+                            horizontalLimit(layout).roundToInt(),
+                            0,
+                            maxScroll(layout).roundToInt(),
+                        )
+                        postInvalidateOnAnimation()
+                    }
+                }
+                velocity?.recycle()
+                velocity = null
+                persistPosition()
                 active = null
                 draggingRuler = false
                 invalidate()

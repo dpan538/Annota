@@ -51,3 +51,14 @@ See [acceptance and download checks](../../docs/ENGLISH-APK-ACCEPTANCE.md) for w
 - `english-apk-public-check.json`: anonymous public GitHub APK download of the same SHA-256, then installation and successful cold launch of that downloaded copy. Single debug-emulator `am start -W` time is an operational observation, not a performance benchmark.
 - `english-release-public.json`: uploaded development Pre-release assets, GitHub digests, public checksum match and actual stable-latest 404. Production signing and real higher-version stable in-app installation remain pending.
 - `english-update-live.json` / `english-update-no-stable.png`: actual in-app GitHub check after publication shows the English no-stable-release error; this does not test a production installer upgrade.
+
+## 0.1.5-dev continuous reader and preview updates
+
+- `continuous-build.json` / `continuous-lint-summary.txt`: final versionCode 6 identity, production source hashes and 0 errors / 63 warnings; the previous current build is saved as `build-info-0.1.4-dev.json`.
+- `continuous-instrumentation-api36.txt`: all 38 tests passed without skips, including the same-key v7 fixture. Seven continuous-reader cases cover slow cross-page drag, focal zoom/bounds, ink coordinates on a scrolled rotated page, viewport restoration/lightweight progress, fling interruption, repeated Next targets and 10,000-page virtualization. A fit-page bottom-margin assertion still rejects app chrome; default fit-width may legitimately continue beyond the viewport.
+- `continuous-ui-flow.json`: actual black/grid creation and 19 ink points retained after cold restart; page/fraction/zoom/fit/spread also retained after reopening the PDF.
+- `continuous-*.png`: actual paper previews, note ink/reopen, continuous page boundary, two-page rows, rounded menus, portrait and English panels. OS handwriting-IME onboarding is excluded from app screenshots.
+- `continuous-reader-motion.mp4`, `continuous-menu-motion.mp4`, `continuous-video-info.json`: original emulator screen recordings without interpolation or retiming; not device frame-rate/latency benchmarks.
+- `continuous-apk-local-check.json`: local transfer, resources/archive, signature, install and cold launch.
+
+See [continuous reader/update acceptance](../../docs/CONTINUOUS-READER-ACCEPTANCE.md) and the [work log](../../log/2026-10-21-continuous-update/README.md). The 316-cycle experiment remains explicitly scoped to 0.1.4, not this renderer.

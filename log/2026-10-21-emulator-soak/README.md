@@ -48,3 +48,5 @@ adb exec-out run-as io.github.dpan538.annota cat cache/english-soak.json > measu
 ## 后续描述可引用
 
 “为本地 PDF 笔记设计并执行 Android 模拟器持续使用测试：602 秒完成 316 轮渲染、增量笔迹保存、离线查词和缓存回收，31 次 Activity 重开后保存状态一致，页面缓存采样保持在 24 MiB 预算内。保留构建哈希、原始输出及内存曲线；小米真机手写与长时性能另行验收。”
+
+这份记录中的“最终包”特指 0.1.4-dev。后续 0.1.5-dev 已改为连续阅读，不能把这里的 316 轮成绩当作该新读取器的重复实测；新版本证据见[连续阅读与更新验收](../../docs/CONTINUOUS-READER-ACCEPTANCE.md)。

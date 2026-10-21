@@ -4,9 +4,9 @@
 
 首期通过公开仓库 `dpan538/Annota` 的 GitHub Releases 分发签名 APK。用户选择的首期渠道是 APK，不把小米应用商店作为当前发布依赖。这个方案不免除 Android 安装器或目标地区适用的开发者验证要求；发布前在目标设备确认实际安装流程。
 
-当前已发布 [0.1.4-dev 开发测试预览](https://github.com/dpan538/Annota/releases/tag/v0.1.4-dev)，开发签名，明确标为 Pre-release；[固定下载页](../DOWNLOAD.md) 提供点击下载与复制到浏览器的链接。公开 APK 已匿名完整下载、核对哈希/签名/随包资源，并安装该副本完成冷启动。源码 ZIP 不是 APK。
+当前开发预览为 [0.1.5-dev 开发测试预览](https://github.com/dpan538/Annota/releases/tag/v0.1.5-dev)，开发签名，明确标为 Pre-release；[固定下载页](../DOWNLOAD.md) 提供点击下载与复制到浏览器的链接。0.1.4 已完成匿名下载与安装回执；本次 0.1.5 的公开下载和应用内安装回执将在发布后补入。源码 ZIP 不是 APK。
 
-稳定通道 `/releases/latest` 不包含此预览，目前返回 404；客户端应明确提示尚无正式版本。预览由用户手动下载安装，不改成默认稳定更新。
+0.1.5 开发/预览包读取最近 30 条 Release，包括非草稿 Pre-release，以清单的整数 versionCode 选择更高版本；正式生产包保持 `/releases/latest` 稳定通道。没有更高版本时正常提示。原始 0.1.4 因旧逻辑限制需要手动覆盖一次，之后可在应用内检查测试更新。
 
 ## 用户流程
 
@@ -25,7 +25,7 @@
 - 正式标签：`vX.Y.Z`，附清晰的版本说明。
 - 附件：签名 `Annota-X.Y.Z.apk`、`SHA256SUMS.txt`，以及客户端必需的 `annota-update.json`（由 `android/scripts/make-update-manifest.py` 从真实签名 APK 生成）。
 - 使用公开 Releases API：`GET https://api.github.com/repos/dpan538/Annota/releases/latest`，没有 Token 也能读取公开发布信息，但需处理限流。
-- `latest` 用于正式版本；预览版另设明确 opt-in 渠道，不能把 prerelease 误推给默认用户。
+- `latest` 用于正式生产版本；安装开发/预览包的用户进入测试通道，允许 Pre-release，生产包不默认推送预览。
 - 只接受白名单仓库的 HTTPS 下载资源。GitHub 可能使用受控资源跳转，下载器要明确处理跳转和超时。
 - APK 自带的代码签名用于升级身份校验；SHA-256 用于文件完整性，不能单独替代签名信任。
 
@@ -45,7 +45,7 @@
 
 ## 当前验证与发布前闭环
 
-原生下载/校验/安装入口已有实现；签名验证、篡改拒绝与本地同签名覆盖升级有模拟器记录。开发预览的公开 GitHub 下载 → 专用模拟器安装/冷启动已通过，回执见 `android/verification/english-apk-public-check.json` 与 `english-release-public.json`。生产签名、更高版本正式 Release → 应用内下载 → 安装权限往返 → Xiaomi 安装器的完整更新仍待验收。反馈服务已有源码和本地回执测试，尚未部署公网 HTTPS。
+原生下载/校验/安装入口已有实现；签名验证、篡改拒绝与本地同签名覆盖升级有模拟器记录。0.1.4 的公开下载回执保留在 `android/verification/english-apk-public-check.json` 与 `english-release-public.json`；0.1.5 正在按新测试通道验收。生产签名、更高版本正式 Release → 应用内下载 → 安装权限往返 → Xiaomi 安装器的完整更新仍待验收。反馈服务已有源码和本地回执测试，尚未部署公网 HTTPS。
 
 - 同一签名的旧版 → 新版覆盖更新，已有笔记完整。
 - 下载损坏、取消、空间不足、安装权限拒绝、签名不符都能退出或重试。

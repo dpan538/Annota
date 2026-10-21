@@ -9,6 +9,7 @@ import java.net.URL
 import java.security.MessageDigest
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.net.ssl.HttpsURLConnection
+import org.json.JSONArray
 import org.json.JSONObject
 
 class Network(val context: Context) {
@@ -86,7 +87,7 @@ class Network(val context: Context) {
 
     private fun checkHttp(code: Int) {
         when (code) {
-            404 -> error("尚无正式发布的 APK（GitHub 404），可稍后重试")
+            404 -> error("未找到更新资源（GitHub 404），请稍后重试")
             403,
             429 -> error("GitHub 限流或拒绝访问，请稍后重试")
             in 200..299 -> Unit
@@ -94,36 +95,75 @@ class Network(val context: Context) {
         }
     }
 
+    companion object {
+        fun previewUpdates(
+            versionName: String = BuildConfig.VERSION_NAME,
+            debug: Boolean = BuildConfig.DEBUG,
+        ): Boolean =
+            debug ||
+                Regex("(?i).*(?:-dev|-alpha|-beta|-rc|preview|snapshot).*").matches(versionName)
+    }
+
+    fun releaseCandidates(releases: JSONArray, includePreview: Boolean): List<JSONObject> =
+        (0 until releases.length())
+            .map { releases.getJSONObject(it) }
+            .filter { release ->
+                !release.optBoolean("draft") &&
+                    (includePreview || !release.optBoolean("prerelease")) &&
+                    (0 until release.getJSONArray("assets").length()).any { i ->
+                        release.getJSONArray("assets").getJSONObject(i).optString("name") ==
+                            "annota-update.json"
+                    }
+            }
+
     fun checkUpdate(task: Task): Update? {
-        val c = open("https://api.github.com/repos/dpan538/Annota/releases/latest", task, true)
-        val release =
+        val previews = previewUpdates()
+        val endpoint = if (previews) "releases?per_page=30" else "releases/latest"
+        val c = open("https://api.github.com/repos/dpan538/Annota/$endpoint", task, true)
+        val releases =
             try {
+                if (!previews && c.responseCode == 404) return null
                 checkHttp(c.responseCode)
-                JSONObject(read(c, task))
+                val body = read(c, task)
+                if (previews) JSONArray(body) else JSONArray().put(JSONObject(body))
             } finally {
                 c.disconnect()
             }
-        require(!release.optBoolean("draft") && !release.optBoolean("prerelease"))
-        val assets = release.getJSONArray("assets")
-        var manifestUrl = ""
-        val urls = mutableMapOf<String, String>()
-        repeat(assets.length()) {
-            val a = assets.getJSONObject(it)
-            urls[a.getString("name")] = a.getString("browser_download_url")
-            if (a.getString("name") == "annota-update.json")
-                manifestUrl = a.getString("browser_download_url")
-        }
-        require(manifestUrl.startsWith("https://github.com/dpan538/Annota/releases/download/")) {
-            "此 Release 尚无 Annota 更新清单"
-        }
-        val mc = open(manifestUrl, task, true)
-        val m =
-            try {
-                checkHttp(mc.responseCode)
-                JSONObject(read(mc, task, 65536))
-            } finally {
-                mc.disconnect()
+        var newest: Update? = null
+        for (release in releaseCandidates(releases, previews)) {
+            task.check()
+            val assets = release.getJSONArray("assets")
+            val manifestUrl =
+                (0 until assets.length())
+                    .map { assets.getJSONObject(it) }
+                    .first { it.getString("name") == "annota-update.json" }
+                    .getString("browser_download_url")
+            require(
+                manifestUrl.startsWith("https://github.com/dpan538/Annota/releases/download/")
+            ) {
+                "更新下载域名不被允许"
             }
+            val mc = open(manifestUrl, task, true)
+            val manifest =
+                try {
+                    checkHttp(mc.responseCode)
+                    JSONObject(read(mc, task, 65536))
+                } finally {
+                    mc.disconnect()
+                }
+            updateFromManifest(release, manifest)?.let { update ->
+                if (newest == null || update.versionCode > newest!!.versionCode) newest = update
+            }
+        }
+        return newest
+    }
+
+    fun updateFromManifest(release: JSONObject, m: JSONObject): Update? {
+        val assets = release.getJSONArray("assets")
+        val urls =
+            (0 until assets.length())
+                .map { assets.getJSONObject(it) }
+                .associate { it.getString("name") to it.getString("browser_download_url") }
         require(
             m.getInt("schemaVersion") == 1 && m.getString("packageName") == context.packageName
         ) {

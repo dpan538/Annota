@@ -134,6 +134,8 @@ class ReaderPolishTest {
         inst.runOnMainSync {
             val view = ReaderView(context, store, PdfEngine(context, store), book)
             view.layout(0, 0, 1000, 1200)
+            // Fit-width may extend beyond the viewport; fit-page exposes the bottom canvas margin.
+            view.fit()
             val bitmap = Bitmap.createBitmap(1000, 1200, Bitmap.Config.ARGB_8888)
             view.draw(Canvas(bitmap))
             for (y in 1180 until 1200) for (x in 0 until 1000 step 2) assertEquals(

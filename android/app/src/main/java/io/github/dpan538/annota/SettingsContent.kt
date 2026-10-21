@@ -407,7 +407,7 @@ class SettingsContent(
                     y += 272f
                     preference(
                         tr("应用更新", "App update"),
-                        "${tr("当前版本","Current version")} · ${BuildConfig.VERSION_NAME}",
+                        "${tr("当前版本","Current version")} · ${BuildConfig.VERSION_NAME} · ${if (Network.previewUpdates()) tr("测试更新", "Preview") else tr("正式更新", "Stable")}",
                         tr("检查更新", "Check update"),
                         "check-update",
                     )

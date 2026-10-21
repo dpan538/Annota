@@ -804,6 +804,16 @@ class LibraryScreen(
 }
 
 private class UiButton(context: Context) : FrameLayout(context) {
+    private var wasPressed = false
+
+    override fun drawableStateChanged() {
+        super.drawableStateChanged()
+        if (wasPressed != isPressed) {
+            wasPressed = isPressed
+            UiMotion.press(this, isPressed)
+        }
+    }
+
     override fun onInitializeAccessibilityNodeInfo(
         info: android.view.accessibility.AccessibilityNodeInfo
     ) {

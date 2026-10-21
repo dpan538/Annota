@@ -40,8 +40,11 @@ class MainActivity : Activity() {
     private var pdfOnly = false
     private var dictionaryRequest = 0
     private var pendingExport: Book? = null
+    private var paperPopup: PopupWindow? = null
     private var activePage = 0
     private var updateApk: File? = null
+    private var verifiedUpdate: Network.Update? = null
+    private var preparingInstall = false
     private var liveTask: Network.Task? = null
     private var inputInfo = ""
     private val palettes =
@@ -140,7 +143,7 @@ class MainActivity : Activity() {
             savedInstanceState?.getString("pendingExport")?.let {
                 runCatching { store.book(it) }.getOrNull()
             }
-        updateApk = savedInstanceState?.getString("updateApk")?.let { File(it) }
+        restorePendingUpdate()
     }
 
     override fun onSaveInstanceState(out: Bundle) {
@@ -151,6 +154,7 @@ class MainActivity : Activity() {
     }
 
     override fun onDestroy() {
+        paperPopup?.dismiss()
         reader?.dispose()
         pageCovers?.close()
         liveTask?.cancel()
@@ -198,6 +202,7 @@ class MainActivity : Activity() {
     }
 
     override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+        paperPopup?.dismiss()
         super.onConfigurationChanged(newConfig)
         if (book != null) showReader() else if (section == "settings") settings() else library()
     }
@@ -247,13 +252,19 @@ class MainActivity : Activity() {
         Toast.makeText(this, s, Toast.LENGTH_LONG).show()
     }
 
+    private fun AlertDialog.Builder.display(): AlertDialog =
+        create().also {
+            UiMotion.dialog(it, UiPalette(this@MainActivity, prefs.getInt("theme", 0)))
+            it.show()
+        }
+
     private fun error(t: Throwable) {
         if (!isFinishing && !isDestroyed)
             AlertDialog.Builder(this)
                 .setTitle(tr("操作未完成", "Operation incomplete"))
                 .setMessage(translatedMessage(t.message ?: t.javaClass.simpleName))
                 .setPositiveButton("OK", null)
-                .show()
+                .display()
     }
 
     private fun prompt(title: String, initial: String = "", action: (String) -> Unit) {
@@ -272,15 +283,18 @@ class MainActivity : Activity() {
                 val value = edit.text.toString().trim()
                 if (value.isNotBlank()) action(value)
             }
-            .show()
+            .display()
     }
 
     private fun choose(title: String, labels: List<String>, action: (Int) -> Unit) {
-        AlertDialog.Builder(this)
-            .setTitle(title)
-            .setItems(labels.toTypedArray()) { _, i -> action(i) }
-            .setNegativeButton(tr("取消", "Cancel"), null)
-            .show()
+        val dialog =
+            AlertDialog.Builder(this)
+                .setTitle(title)
+                .setItems(labels.toTypedArray()) { _, i -> action(i) }
+                .setNegativeButton(tr("取消", "Cancel"), null)
+                .create()
+        UiMotion.dialog(dialog, UiPalette(this, prefs.getInt("theme", 0)))
+        dialog.show()
     }
 
     private fun confirm(title: String, message: String, action: () -> Unit) {
@@ -289,7 +303,7 @@ class MainActivity : Activity() {
             .setMessage(message)
             .setNegativeButton(tr("取消", "Cancel"), null)
             .setPositiveButton(tr("继续", "Continue")) { _, _ -> action() }
-            .show()
+            .display()
     }
 
     private fun work(label: String, job: (() -> Boolean) -> Unit, onDone: () -> Unit = {}) {
@@ -301,6 +315,7 @@ class MainActivity : Activity() {
                 setButton(DialogInterface.BUTTON_NEGATIVE, tr("取消", "Cancel")) { _, _ ->
                     cancelled.set(true)
                 }
+                UiMotion.dialog(this, UiPalette(this@MainActivity, prefs.getInt("theme", 0)))
                 show()
             }
         io.execute {
@@ -413,36 +428,53 @@ class MainActivity : Activity() {
             )
         screen.searchVisible = searchVisible
         root.addView(screen, LinearLayout.LayoutParams(-1, -1))
+        UiMotion.enter(screen)
         root.requestApplyInsets()
     }
 
-    private fun newNote() {
-        choose(
-            tr("纸张模板", "Paper"),
-            listOf(
-                tr("空白 / Blank", "Blank"),
-                tr("点阵 / Dots", "Dots"),
-                tr("格子 / Grid", "Grid"),
-                tr("横线 / Lined", "Lined"),
-            ),
-        ) { style ->
-            choose(
-                tr("纸张颜色", "Paper color"),
-                listOf(tr("白 / White", "White"), tr("灰 / Gray", "Gray"), tr("黑 / Black", "Black")),
-            ) { paper ->
-                prompt(tr("笔记名称", "Note name"), tr("新笔记", "New note")) {
-                    val b =
-                        store.newNote(
-                            it,
-                            listOf("blank", "dots", "grid", "lined")[style],
-                            listOf("white", "gray", "black")[paper],
-                            folder,
-                        )
-                    open(b)
-                    reader?.tool = "pen"
-                    reader?.color = if (paper == 2) android.graphics.Color.WHITE else colors[2]
-                }
+    private fun actionAnchor(title: String, view: View = root): View? {
+        if (view.isClickable && view.contentDescription == title) return view
+        if (view is ViewGroup)
+            for (i in 0 until view.childCount) actionAnchor(title, view.getChildAt(i))?.let {
+                return it
             }
+        return null
+    }
+
+    private fun paperMenu(
+        title: String,
+        anchorLabel: String,
+        name: String? = null,
+        style: String = "blank",
+        paper: String = "white",
+        onChosen: (String, String, String) -> Unit,
+    ) {
+        paperPopup?.dismiss()
+        paperPopup =
+            PaperMenu(
+                    this,
+                    actionAnchor(anchorLabel) ?: root,
+                    prefs.getInt("theme", 0),
+                    prefs.getInt("buttonSize", 68),
+                    english,
+                    title,
+                    name,
+                    style,
+                    paper,
+                    onChosen,
+                )
+                .show()
+    }
+
+    private fun newNote() {
+        paperMenu(tr("新建笔记", "New note"), tr("新建笔记", "New note"), tr("新笔记", "New note")) {
+            style,
+            paper,
+            name ->
+            val b = store.newNote(name, style, paper, folder)
+            open(b)
+            reader?.tool = "pen"
+            reader?.color = if (paper == "black") Color.WHITE else colors[2]
         }
     }
 
@@ -514,7 +546,6 @@ class MainActivity : Activity() {
         root.requestApplyInsets()
         val old = reader
         val oldTool = old?.tool ?: "hand"
-        val oldSpread = old?.spread ?: false
         old?.dispose()
         root.removeAllViews()
         root.setBackgroundColor(colors[3])
@@ -576,12 +607,7 @@ class MainActivity : Activity() {
                 LinearLayout.LayoutParams(rp(140f), -1),
             )
         add(left, "list", tr("缩略图与页面", "Pages")) { pages() }
-        add(left, "spread", tr("相邻双页", "Two pages")) {
-            reader?.let {
-                it.spread = !it.spread
-                it.fit()
-            }
-        }
+        add(left, "spread", tr("相邻双页", "Two pages")) { reader?.let { it.spread = !it.spread } }
         add(center, "pen", tr("笔与颜色", "Pen")) { penOptions() }
         add(center, "eraser", tr("橡皮", "Eraser")) { eraserOptions() }
         add(center, "ruler", tr("直尺", "Ruler")) {
@@ -606,9 +632,18 @@ class MainActivity : Activity() {
         val view = ReaderView(this, store, pdf, b)
         reader = view
         view.tool = oldTool
-        view.spread = oldSpread
+        if (old != null) {
+            view.spread = old.spread
+            view.penWidth = old.penWidth
+            view.filled = old.filled
+            view.eraserLocal = old.eraserLocal
+            view.onlyHighlight = old.onlyHighlight
+            view.ruler = old.ruler
+        }
         view.color =
-            if (b.pages[b.current].paper == "black") android.graphics.Color.WHITE else colors[2]
+            old?.color
+                ?: if (b.pages[b.current].paper == "black") android.graphics.Color.WHITE
+                else colors[2]
         view.onToolChanged = {
             toolButtons.forEach { (name, button) ->
                 button.isSelected =
@@ -617,6 +652,7 @@ class MainActivity : Activity() {
                         "shape" ->
                             view.tool in setOf("line", "rectangle", "ellipse", "triangle", "arrow")
                         "ruler" -> view.ruler
+                        "spread" -> view.spread
                         else -> view.tool == name
                     }
                 button.dotColor = view.color
@@ -631,7 +667,10 @@ class MainActivity : Activity() {
         view.onToolbarToggle = {
             bar.visibility = if (bar.visibility == View.VISIBLE) View.GONE else View.VISIBLE
         }
-        root.addView(view, LinearLayout.LayoutParams(-1, 0, 1f))
+        val canvas = FrameLayout(this).apply { setBackgroundColor(0xfff4f4f4.toInt()) }
+        canvas.addView(view, FrameLayout.LayoutParams(-1, -1))
+        root.addView(canvas, LinearLayout.LayoutParams(-1, 0, 1f))
+        UiMotion.enter(view)
     }
 
     private fun undo(redo: Boolean) {
@@ -765,7 +804,7 @@ class MainActivity : Activity() {
                             "${tr("本地私有存储","Private local storage")}\n${b.pages.size} ${tr("页","pages")}\n${if(b.source.isNotEmpty())store.file(b.source).length() else 0} bytes\n${tr("没有云同步；卸载将删除数据","No cloud sync; uninstall deletes data")}"
                         )
                         .setPositiveButton("OK", null)
-                        .show()
+                        .display()
             }
         }
     }
@@ -812,10 +851,8 @@ class MainActivity : Activity() {
             }
         list.setOnItemClickListener { _, _, position, _ ->
             if (position in b.pages.indices) {
-                b.current = position
                 activePage = position
-                store.metadata(b)
-                reader?.fit()
+                reader?.goToPage(position)
                 dialog.dismiss()
             }
         }
@@ -830,37 +867,19 @@ class MainActivity : Activity() {
             covers.close()
             if (pageCovers === covers) pageCovers = null
         }
+        UiMotion.dialog(dialog, UiPalette(this, prefs.getInt("theme", 0)))
         dialog.show()
         list.setSelection(b.current)
     }
 
     private fun addPage() {
         val b = book ?: return
-        choose(
-            tr("纸张模板", "Paper"),
-            listOf(
-                tr("空白 / Blank", "Blank"),
-                tr("点阵 / Dots", "Dots"),
-                tr("格子 / Grid", "Grid"),
-                tr("横线 / Lined", "Lined"),
-            ),
-        ) { style ->
-            choose(
-                tr("纸张颜色", "Paper color"),
-                listOf(tr("白 / White", "White"), tr("灰 / Gray", "Gray"), tr("黑 / Black", "Black")),
-            ) { paper ->
-                b.pages.add(
-                    b.current + 1,
-                    Sheet(
-                        style = listOf("blank", "dots", "grid", "lined")[style],
-                        paper = listOf("white", "gray", "black")[paper],
-                    ),
-                )
-                b.current++
-                activePage = b.current
-                store.commit(b)
-                reader?.refresh()
-            }
+        paperMenu(tr("新增纸页", "Add page"), tr("新增纸页", "Add page")) { style, paper, _ ->
+            b.pages.add(b.current + 1, Sheet(style = style, paper = paper))
+            b.current++
+            activePage = b.current
+            store.commit(b)
+            reader?.refresh()
         }
     }
 
@@ -892,28 +911,16 @@ class MainActivity : Activity() {
                         toast(tr("原始内容页不覆盖底色", "Original pages keep their background"))
                         return@choose
                     }
-                    choose(
+                    paperMenu(
                         tr("纸张模板", "Paper"),
-                        listOf(
-                            tr("空白 / Blank", "Blank"),
-                            tr("点阵 / Dots", "Dots"),
-                            tr("格子 / Grid", "Grid"),
-                            tr("横线 / Lined", "Lined"),
-                        ),
-                    ) { s ->
-                        choose(
-                            tr("纸张颜色", "Paper color"),
-                            listOf(
-                                tr("白 / White", "White"),
-                                tr("灰 / Gray", "Gray"),
-                                tr("黑 / Black", "Black"),
-                            ),
-                        ) { c ->
-                            p.style = listOf("blank", "dots", "grid", "lined")[s]
-                            p.paper = listOf("white", "gray", "black")[c]
-                            store.commit(b)
-                            reader?.refresh()
-                        }
+                        tr("更多", "More"),
+                        style = p.style,
+                        paper = p.paper,
+                    ) { style, paper, _ ->
+                        p.style = style
+                        p.paper = paper
+                        store.commit(b)
+                        reader?.refresh()
                     }
                 }
                 3 ->
@@ -1075,6 +1082,7 @@ class MainActivity : Activity() {
                 override fun afterTextChanged(e: Editable?) {}
             }
         )
+        UiMotion.dialog(dialog, UiPalette(this, prefs.getInt("theme", 0)))
         dialog.show()
         edit.requestFocus()
         if (initial.isNotBlank()) query()
@@ -1329,6 +1337,7 @@ class MainActivity : Activity() {
                 }
             }
         }
+        UiMotion.dialog(d, UiPalette(this, prefs.getInt("theme", 0)))
         d.show()
     }
 
@@ -1454,7 +1463,7 @@ class MainActivity : Activity() {
                                 )
                             )
                             .setPositiveButton("OK", null)
-                            .show()
+                            .display()
                 }
             }
         val screen =
@@ -1505,6 +1514,7 @@ class MainActivity : Activity() {
                 customBody = { ui, parent, width -> content.render(ui, parent, width) },
             )
         root.addView(screen, LinearLayout.LayoutParams(-1, -1))
+        UiMotion.enter(screen)
         root.requestApplyInsets()
     }
 
@@ -1531,7 +1541,7 @@ class MainActivity : Activity() {
             .setTitle(tr("设备能力与待验收项", "Device capabilities"))
             .setMessage(info)
             .setPositiveButton("OK", null)
-            .show()
+            .display()
     }
 
     override fun dispatchTouchEvent(e: MotionEvent): Boolean {
@@ -1600,7 +1610,7 @@ class MainActivity : Activity() {
             .setTitle(tr("开源与词库许可", "Licenses"))
             .setView(scroll)
             .setPositiveButton("OK", null)
-            .show()
+            .display()
     }
 
     private fun feedback() {
@@ -1784,6 +1794,7 @@ class MainActivity : Activity() {
         dialog.setContentView(card)
         dialog.setCanceledOnTouchOutside(true)
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        UiMotion.dialog(dialog, UiPalette(this, prefs.getInt("theme", 0)))
         dialog.show()
         dialog.window?.apply {
             setBackgroundDrawableResource(android.R.color.transparent)
@@ -1801,7 +1812,7 @@ class MainActivity : Activity() {
             ) {
                 if (it == 0) installUpdate()
                 else {
-                    updateApk = null
+                    clearPendingUpdate()
                     checkUpdate()
                 }
             }
@@ -1814,6 +1825,7 @@ class MainActivity : Activity() {
                 setMessage(tr("正在检查 GitHub Releases…", "Checking GitHub Releases…"))
                 setCancelable(false)
                 setButton(-2, tr("取消", "Cancel")) { _, _ -> task.cancel() }
+                UiMotion.dialog(this, UiPalette(this@MainActivity, prefs.getInt("theme", 0)))
                 show()
             }
         io.execute {
@@ -1821,7 +1833,7 @@ class MainActivity : Activity() {
                 val update = Network(this).checkUpdate(task)
                 runOnUiThread {
                     d.dismiss()
-                    if (update == null) toast(tr("没有更高版本的正式更新", "No newer stable release"))
+                    if (update == null) toast(tr("没有可安装的新版本", "No newer installable version"))
                     else
                         confirm("Annota ${update.versionName}", update.notes.take(8000)) {
                             download(update)
@@ -1848,6 +1860,7 @@ class MainActivity : Activity() {
                 setTitle(tr("下载并验证更新", "Download and verify"))
                 setCancelable(false)
                 setButton(-2, tr("取消", "Cancel")) { _, _ -> task.cancel() }
+                UiMotion.dialog(this, UiPalette(this@MainActivity, prefs.getInt("theme", 0)))
                 show()
             }
         io.execute {
@@ -1861,6 +1874,21 @@ class MainActivity : Activity() {
                 runOnUiThread {
                     d.dismiss()
                     updateApk = f
+                    verifiedUpdate = update
+                    prefs
+                        .edit()
+                        .putString(
+                            "pendingUpdate",
+                            org.json
+                                .JSONObject()
+                                .put("code", update.versionCode)
+                                .put("name", update.versionName)
+                                .put("file", f.name)
+                                .put("sha", update.sha)
+                                .put("certificate", update.certificate)
+                                .toString(),
+                        )
+                        .commit()
                     confirm(
                         tr("验证通过", "Verification passed"),
                         tr(
@@ -1882,8 +1910,71 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun clearPendingUpdate() {
+        updateApk?.takeIf { it.parentFile == File(cacheDir, "updates") }?.delete()
+        updateApk = null
+        verifiedUpdate = null
+        prefs.edit().remove("pendingUpdate").remove("awaitInstallPermission").commit()
+    }
+
+    private fun restorePendingUpdate() {
+        runCatching {
+                val pending = prefs.getString("pendingUpdate", null) ?: return
+                val json = org.json.JSONObject(pending)
+                val code = json.getLong("code")
+                val filename = json.getString("file")
+                require(code > 0 && filename == "annota-$code.apk")
+                updateApk = File(File(cacheDir, "updates"), filename).takeIf { it.isFile }
+                if (code <= BuildConfig.VERSION_CODE) {
+                    clearPendingUpdate()
+                    return
+                }
+                require(updateApk != null)
+                verifiedUpdate =
+                    Network.Update(
+                        code,
+                        json.getString("name"),
+                        "",
+                        "",
+                        json.getString("sha"),
+                        json.getString("certificate"),
+                    )
+            }
+            .onFailure { clearPendingUpdate() }
+    }
+
     private fun installUpdate() {
         val file = updateApk ?: return
+        val expected = verifiedUpdate ?: return
+        if (preparingInstall) return
+        preparingInstall = true
+        val dialog =
+            ProgressDialog(this).apply {
+                setMessage(tr("正在验证安装包…", "Verifying installation package…"))
+                setCancelable(false)
+                UiMotion.dialog(this, UiPalette(this@MainActivity, prefs.getInt("theme", 0)))
+                show()
+            }
+        io.execute {
+            try {
+                Network(this).verify(file, expected)
+                runOnUiThread {
+                    preparingInstall = false
+                    dialog.dismiss()
+                    if (!isFinishing && !isDestroyed) requestSystemInstall(file)
+                }
+            } catch (t: Throwable) {
+                runOnUiThread {
+                    preparingInstall = false
+                    dialog.dismiss()
+                    clearPendingUpdate()
+                    error(t)
+                }
+            }
+        }
+    }
+
+    private fun requestSystemInstall(file: File) {
         if (!packageManager.canRequestPackageInstalls()) {
             confirm(
                 tr("允许安装此来源", "Allow this source"),
@@ -1892,7 +1983,7 @@ class MainActivity : Activity() {
                     "Android requires permission for Annota to request updates. Return after granting it.",
                 ),
             ) {
-                prefs.edit().putBoolean("awaitInstallPermission", true).apply()
+                prefs.edit().putBoolean("awaitInstallPermission", true).commit()
                 startActivityForResult(
                     Intent(
                         Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
