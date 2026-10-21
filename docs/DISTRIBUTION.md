@@ -4,7 +4,7 @@
 
 首期通过公开仓库 `dpan538/Annota` 的 GitHub Releases 分发签名 APK。用户选择的首期渠道是 APK，不把小米应用商店作为当前发布依赖。这个方案不免除 Android 安装器或目标地区适用的开发者验证要求；发布前在目标设备确认实际安装流程。
 
-当前开发预览为 [0.1.5-dev 开发测试预览](https://github.com/dpan538/Annota/releases/tag/v0.1.5-dev)，开发签名，明确标为 Pre-release；[固定下载页](../DOWNLOAD.md) 提供点击下载与复制到浏览器的链接。0.1.4 已完成匿名下载与安装回执；本次 0.1.5 的公开下载和应用内安装回执将在发布后补入。源码 ZIP 不是 APK。
+当前开发预览为 [0.1.5-dev 开发测试预览](https://github.com/dpan538/Annota/releases/tag/v0.1.5-dev)，开发签名，明确标为 Pre-release；[固定下载页](../DOWNLOAD.md) 提供点击下载与复制到浏览器的链接。0.1.5 的真实公开 APK 已通过匿名下载、资源/签名校验、安装和冷启动，见 `android/verification/continuous-apk-public-check.json`。源码 ZIP 不是 APK。
 
 0.1.5 开发/预览包读取最近 30 条 Release，包括非草稿 Pre-release，以清单的整数 versionCode 选择更高版本；正式生产包保持 `/releases/latest` 稳定通道。没有更高版本时正常提示。原始 0.1.4 因旧逻辑限制需要手动覆盖一次，之后可在应用内检查测试更新。
 
@@ -45,7 +45,9 @@
 
 ## 当前验证与发布前闭环
 
-原生下载/校验/安装入口已有实现；签名验证、篡改拒绝与本地同签名覆盖升级有模拟器记录。0.1.4 的公开下载回执保留在 `android/verification/english-apk-public-check.json` 与 `english-release-public.json`；0.1.5 正在按新测试通道验收。生产签名、更高版本正式 Release → 应用内下载 → 安装权限往返 → Xiaomi 安装器的完整更新仍待验收。反馈服务已有源码和本地回执测试，尚未部署公网 HTTPS。
+0.1.5 已完成测试通道闭环：本地低版本修正客户端（versionCode 5）识别公开 Pre-release → 应用下载 versionCode 6 → 校验 → 杀进程重开恢复待安装包 → 系统来源授权 → Android 安装器覆盖升级。安装后 APK 哈希与公开原件相同，笔迹、精细阅读位置、废纸篓和初始化标记不变，暂存已清理。起点是修正源码的测试夹具，不能据此声称原始 0.1.4 能直接升级；原始用户需手动覆盖一次。证据见 `android/verification/continuous-update-install.json` 与[验收记录](CONTINUOUS-READER-ACCEPTANCE.md)。
+
+0.1.4 的旧公开下载和稳定通道 404 保留为历史记录。生产签名、更高版本正式稳定 Release、安装权限拒绝及 Xiaomi 安装器仍需另行验收。反馈服务已有源码和本地回执测试，尚未部署公网 HTTPS。
 
 - 同一签名的旧版 → 新版覆盖更新，已有笔记完整。
 - 下载损坏、取消、空间不足、安装权限拒绝、签名不符都能退出或重试。

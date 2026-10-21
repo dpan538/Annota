@@ -22,8 +22,8 @@
   "soakOnThisVersion": false,
   "historicalSoak": "log/2026-10-21-emulator-soak/",
   "updateChannel": "Preview builds include prereleases; production stable builds use stable only",
-  "publishedRelease": false,
-  "anonymousGithubDownloadVerified": false,
+  "publishedRelease": true,
+  "anonymousGithubDownloadVerified": true,
   "sourceSha256": {
     "android/app/build.gradle.kts": "cc2f2f077b7e5361c16eef395695a351f6f52d75860944d7039cbec6cd3a11d5",
     "android/app/src/main/java/io/github/dpan538/annota/ContinuousLayout.kt": "8e5698a9e14c020b2bc62c58fe2668ccfe71edd3e623c6d300a6fb8606f6bd43",
@@ -45,5 +45,11 @@
     "android/app/src/main/res/anim/panel_exit.xml": "4e08cfc43aff10c092612c20f21af2445cce6096e8e56bfb8f7e87e54765c2dd",
     "android/app/src/main/res/values/motion.xml": "87eed50f7200a423d81723414e6836a7238092cf834a87ee3ebef417b2685b6a",
     "android/app/src/main/assets/seed.json": "1085d4ba257883231032a8316caad33b417d247c95ebc4f29b7c4f019a45be4c"
-  }
+  },
+  "sourceCommit": "a1000ed2de858714b24735b2738f5ee4b94d736f",
+  "releasePublishedAt": "2026-10-21T00:48:42Z",
+  "releaseUrl": "https://github.com/dpan538/Annota/releases/tag/v0.1.5-dev",
+  "nativePreviewUpdateInstallVerified": true,
+  "updateInstallEvidence": "android/verification/continuous-update-install.json",
+  "updateTestOrigin": "local corrected-source lower-version fixture; original 0.1.4 still requires manual overwrite"
 }

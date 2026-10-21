@@ -35,9 +35,27 @@
 - `continuous-*.png`：单/双页连续边界、适宽、原生圆角菜单、新建面板横竖屏和英文界面。系统输入法首次教学不作为应用截图归档。
 - `continuous-build.json`、`continuous-lint-summary.txt`：最终构建与源码身份，lint **0 errors / 63 warnings**。已有建议及新增自定义 View/原生布局建议尚未全部清除。
 - `continuous-apk-local-check.json`：本地完整下载、ZIP/随包资源、签名、安装与冷启动。
+- `continuous-apk-public-check.json`、`continuous-release-public.json`：公开 Pre-release 的真实 APK 匿名下载、资源/签名校验、安装下载副本与冷启动；三份附件和更新清单哈希一致。
+- `continuous-update-install.json`、`continuous-update-*.png`：真实应用内 GitHub 下载、跨进程恢复、安装来源授权、Android 系统覆盖安装与数据保留。
 
 本次没有重跑先前 316 轮实验；[原始 log](../log/2026-10-21-emulator-soak/README.md) 明确对应 0.1.4。38 项回归及此次界面流程不能替代小米笔手感、掌触和数小时真机内存测试。
 
-公开 APK 与真实应用内安装的回执在发布后补入本页。
+## 已发布与实际更新安装
+
+[v0.1.5-dev](https://github.com/dpan538/Annota/releases/tag/v0.1.5-dev) 于 2026-10-21 00:48:42 UTC 公开发布，源码提交 `a1000ed2de858714b24735b2738f5ee4b94d736f`。附件为 APK、SHA256SUMS.txt 和 annota-update.json。最终 APK **74,695,905 bytes**，SHA-256：
+
+```text
+a3ddfcad0733732abd432d6ec73eac93a7df19c17dc775b2c593f9f61c8d8b6b
+```
+
+在同一个专用模拟器，用修正后源码构建本地低版本客户端 `0.1.4-dev-update-test / versionCode 5`，与公开 versionCode 6 使用同一开发证书。它仅用于制造真实升级条件，不是原始 0.1.4，也未发布。ADB 只负责安装这个起点；**5 → 6 的升级由应用下载公开 APK，再通过 Android 系统安装器完成**。
+
+实际流程：检查更新识别 Pre-release → 确认说明并下载 → 哈希/包名/版本/数字签名/当前证书通过 → 取消安装并强制停止 → 冷启动找回已验证包 → 重试并再次校验 → 系统设置打开“允许此来源” → 返回自动打开安装器 → 点击 Update → App installed → Open。
+
+新版启动就绪后，已安装 base.apk 哈希与公开 APK 完全一致；三份文档状态和精细阅读位置保持相同，黑底格子笔记保留 19 点笔迹，已删除指南仍在废纸篓、样例未补回，待安装记录和缓存已清理。再次检查没有更高版本时正常结束，不再出现旧的稳定通道 404 错误。
+
+两次界面脚本断言做了修正：下载很快，UIAutomator 错过瞬时进度框，直接读到“验证通过”；首次启动尚未完成时过早读取清理状态，待应用就绪后再次核对已清除。均保留在流程说明中，不将界面采样时序当成应用失败，也未改变已发布 APK。默认版本重新构建的 ZIP 内容逐项相同，但包元数据导致整包哈希不同；发布包一直保留最初测试的原件，见 `continuous-rebuild-check.json`。
+
+这完成了开发测试通道的模拟器闭环。原始 0.1.4 仍需手动覆盖一次；生产证书、正式稳定版本、Xiaomi 安装器和目标网络环境仍需各自验收。
 
 平台依据：[OverScroller](https://developer.android.com/reference/android/widget/OverScroller)、[系统动画开关](https://developer.android.com/reference/android/animation/ValueAnimator#areAnimatorsEnabled())、[PopupWindow 动画与输入法](https://developer.android.com/reference/android/widget/PopupWindow)。

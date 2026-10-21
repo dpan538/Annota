@@ -1,0 +1,43 @@
+{
+  "api": "https://api.github.com/repos/dpan538/Annota/releases/tags/v0.1.5-dev",
+  "transport": "anonymous HTTPS; no credentials",
+  "sourceCommit": "a1000ed2de858714b24735b2738f5ee4b94d736f",
+  "url": "https://github.com/dpan538/Annota/releases/tag/v0.1.5-dev",
+  "publishedAt": "2026-10-21T00:48:42Z",
+  "prerelease": true,
+  "draft": false,
+  "assets": [
+    {
+      "name": "Annota-0.1.5-dev.apk",
+      "size": 74695905,
+      "digest": "sha256:a3ddfcad0733732abd432d6ec73eac93a7df19c17dc775b2c593f9f61c8d8b6b",
+      "browser_download_url": "https://github.com/dpan538/Annota/releases/download/v0.1.5-dev/Annota-0.1.5-dev.apk"
+    },
+    {
+      "name": "annota-update.json",
+      "size": 324,
+      "digest": "sha256:210f9da2b66a19f79b77f7a0480971599817fec98c2d7904d22837c009528f92",
+      "browser_download_url": "https://github.com/dpan538/Annota/releases/download/v0.1.5-dev/annota-update.json"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "size": 87,
+      "digest": "sha256:5206bcef0411b9bf753e1ba34363165e1bb0c190432d54d8dc0743c5741a0da5",
+      "browser_download_url": "https://github.com/dpan538/Annota/releases/download/v0.1.5-dev/SHA256SUMS.txt"
+    }
+  ],
+  "manifest": {
+    "schemaVersion": 1,
+    "packageName": "io.github.dpan538.annota",
+    "versionCode": 6,
+    "versionName": "0.1.5-dev",
+    "apk": "Annota-0.1.5-dev.apk",
+    "sha256": "a3ddfcad0733732abd432d6ec73eac93a7df19c17dc775b2c593f9f61c8d8b6b",
+    "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18"
+  },
+  "manifestSha256": "210f9da2b66a19f79b77f7a0480971599817fec98c2d7904d22837c009528f92",
+  "publicChecksums": "a3ddfcad0733732abd432d6ec73eac93a7df19c17dc775b2c593f9f61c8d8b6b  Annota-0.1.5-dev.apk\n",
+  "checksumMatchesVerifiedApk": true,
+  "stableLatestHttpStatus": 404,
+  "stable404DoesNotExcludePreviewFromCorrectedClients": true
+}

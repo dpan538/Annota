@@ -10,7 +10,7 @@ All Android evidence here is from a local API 36 ARM64 emulator configured as a 
 - `feedback-gunicorn.json`: actual temporary loopback Gunicorn 25.3.0, two workers; 201 receipt then idempotent 200 receipt. No public HTTPS endpoint was deployed.
 - `lint-summary.txt`: Android lint with 0 errors; warnings remain for KTX suggestions, custom View constructors, explicit left/right placement, draw-time allocations, SharedPreferences commit used for durable drafts, dependency update suggestions and unused third-party TLS helper classes. Network code uses the platform's default HTTPS trust and hostname verification.
 - PNGs show actual native emulator UI: first launch, system-picked imported PDF, landscape/portrait reader/library and a complete offline dictionary entry. The imported test PDF is a generated fixture with a rotated first page, not the sample paper.
-- `build-info-0.1.1-dev.json`, `build-info-0.1.2-dev.json`: previous debug artifact identities; `build-info-0.1.3-dev.json` records the prior reader build; `build-info.json` records the current 0.1.4-dev artifact. Final 3B branding has its original integration evidence below.
+- `build-info-0.1.1-dev.json`, `build-info-0.1.2-dev.json`: previous debug artifact identities; `build-info-0.1.3-dev.json` and `build-info-0.1.4-dev.json` record prior builds; `build-info.json` records the current 0.1.5-dev artifact. Final 3B branding has its original integration evidence below.
 
 Hardware acceptance, system installer interaction on Xiaomi, offline handwriting IME, stable Release installation, production certificate continuity and public feedback HTTPS remain separate checks.
 
@@ -60,5 +60,9 @@ See [acceptance and download checks](../../docs/ENGLISH-APK-ACCEPTANCE.md) for w
 - `continuous-*.png`: actual paper previews, note ink/reopen, continuous page boundary, two-page rows, rounded menus, portrait and English panels. OS handwriting-IME onboarding is excluded from app screenshots.
 - `continuous-reader-motion.mp4`, `continuous-menu-motion.mp4`, `continuous-video-info.json`: original emulator screen recordings without interpolation or retiming; not device frame-rate/latency benchmarks.
 - `continuous-apk-local-check.json`: local transfer, resources/archive, signature, install and cold launch.
+- `continuous-apk-public-check.json`: anonymous complete download of the real published 0.1.5-dev APK, resource/signature verification, installation of that copy and successful cold launch.
+- `continuous-release-public.json`: real public Pre-release metadata, all three assets, manifest and checksum agreement; stable `/latest` still returns 404, which corrected preview clients do not use.
+- `continuous-update-install.json` / `continuous-update-*.png`: actual native GitHub download from a local corrected-client version 5 fixture, recovered pending package after process death, Android source-permission UI, system installer upgrade to public version 6 and exact installed-APK hash. All three book states, ink, viewport and Trash flags retained; pending record/cache cleared. This is not the original 0.1.4 client or Xiaomi installer acceptance.
+- `continuous-rebuild-check.json`: default version 6 restored after building the local lower-version client fixture. All ZIP payload entries match the published APK; archive/signing metadata change the whole-file hash. The published APK remains the exact originally tested artifact.
 
 See [continuous reader/update acceptance](../../docs/CONTINUOUS-READER-ACCEPTANCE.md) and the [work log](../../log/2026-10-21-continuous-update/README.md). The 316-cycle experiment remains explicitly scoped to 0.1.4, not this renderer.

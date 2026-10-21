@@ -1,0 +1,6 @@
+{
+  "publishedArtifactSha256": "a3ddfcad0733732abd432d6ec73eac93a7df19c17dc775b2c593f9f61c8d8b6b",
+  "rebuiltDefaultVersionSha256": "9aa716417a637f668d2f883efb6838945c3176a2f40125ea33b011cf152c0d24",
+  "allZipPayloadEntriesEqual": true,
+  "note": "After the local lower-version fixture, default versionCode 6 was rebuilt. ZIP entry bytes are identical, but archive/signing metadata differ. Published and installed artifact remains the originally tested APK; no reproducible whole-APK hash claim."
+}

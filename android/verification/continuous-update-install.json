@@ -1,0 +1,88 @@
+{
+  "device": "API36 ARM64 dedicated emulator",
+  "original014ClientTested": false,
+  "clientFixture": "corrected a1000ed source, lower versionCode 5 / 0.1.4-dev-update-test; local only",
+  "targetVersionCode": 6,
+  "targetVersionName": "0.1.5-dev",
+  "sourceCommit": "a1000ed2de858714b24735b2738f5ee4b94d736f",
+  "expectedSha256": "a3ddfcad0733732abd432d6ec73eac93a7df19c17dc775b2c593f9f61c8d8b6b",
+  "steps": [
+    {
+      "utc": "2026-10-21T00:50:21Z",
+      "action": "Moved the guide to Trash using the native long-press menu; captured all private book states and reading positions"
+    },
+    {
+      "utc": "2026-10-21T00:50:28Z",
+      "action": "Installed local corrected-client lower-version fixture with adb only for setup; existing data unchanged"
+    },
+    {
+      "utc": "2026-10-21T00:51:23Z",
+      "action": "Native Check update discovered real public GitHub prerelease v0.1.5-dev and displayed release notes"
+    },
+    {
+      "utc": "2026-10-21T00:53:20Z",
+      "action": "Native code downloaded the actual public GitHub APK and verified hash/package/version/digital signature/current certificate; transient progress was faster than UIAutomator capture"
+    },
+    {
+      "utc": "2026-10-21T00:53:42Z",
+      "action": "Cancel then force-stop/cold launch recovered the persisted verified package and Retry system install"
+    },
+    {
+      "utc": "2026-10-21T00:54:42Z",
+      "action": "Granted Allow from this source in Android Settings UI; on returning Annota reverified the APK and opened the real Android system installer"
+    },
+    {
+      "utc": "2026-10-21T00:55:13Z",
+      "action": "Pressed Update in the system package installer; Android displayed App installed (no adb install used for this upgrade)"
+    },
+    {
+      "utc": "2026-10-21T00:56:06Z",
+      "action": "Opened installed 0.1.5-dev; exact public APK hash, all book state hashes, 19 ink points, paper, reading positions and Trash flags retained; pending record/cache cleaned"
+    },
+    {
+      "utc": "2026-10-21T00:56:25Z",
+      "action": "Current version checked the public Preview channel without the old stable-only 404 dialog"
+    }
+  ],
+  "physicalXiaomiEvidence": false,
+  "passed": true,
+  "pendingManifestAfterDownload": {
+    "code": 6,
+    "name": "0.1.5-dev",
+    "file": "annota-6.apk",
+    "sha": "a3ddfcad0733732abd432d6ec73eac93a7df19c17dc775b2c593f9f61c8d8b6b",
+    "certificate": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18"
+  },
+  "installedVersionCode": 6,
+  "installedVersionName": "0.1.5-dev",
+  "installedApkSha256": "a3ddfcad0733732abd432d6ec73eac93a7df19c17dc775b2c593f9f61c8d8b6b",
+  "actualSystemInstallerUsed": true,
+  "sourcePermissionGrantedThroughUi": true,
+  "pendingPackageRecoveredAfterProcessDeath": true,
+  "pendingRecordAndCacheClearedAfterUpgrade": true,
+  "allBookStatesEqual": true,
+  "allReadingViewportsEqual": true,
+  "deletedGuideStayedInTrash": true,
+  "seedNotRecreated": true,
+  "retainedInkPoints": 19,
+  "retainedPaper": "black/grid",
+  "bookCount": 3,
+  "bookStateHashes": [
+    {
+      "title": "UX-check",
+      "stateSha256": "f3fc904d2907944bffda85849ae9ec03776c430a0543b098eec09471cc2035db",
+      "trash": false
+    },
+    {
+      "title": "Attention Is All You Need",
+      "stateSha256": "dcd88455c4dc5766e5e2c55536069d6ca7b26cdbac5b439d618f2e46f668c1bf",
+      "trash": false
+    },
+    {
+      "title": "Annota 使用指南",
+      "stateSha256": "99d3ea87637b88a7a3bca1cd7cd8b751418aae6b6c4549223b7ed821ff8a2eff",
+      "trash": true
+    }
+  ],
+  "noNewerCheckCompleted": true
+}
