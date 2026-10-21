@@ -1,0 +1,55 @@
+{
+  "device": "API36 ARM64 dedicated emulator",
+  "startVersionCode": 6,
+  "startVersionName": "0.1.5-dev",
+  "targetVersionCode": 8,
+  "targetVersionName": "0.1.7-dev",
+  "startIsOriginalPublished015": true,
+  "sourcePermissionAlreadyGranted": true,
+  "actualSystemInstallerUsed": true,
+  "physicalXiaomiEvidence": false,
+  "steps": [
+    {
+      "utc": "2026-10-21T03:25:12.719702+00:00",
+      "action": "Installed the original published 0.1.5 APK only as the starting client; retained emulator test data."
+    },
+    {
+      "utc": "2026-10-21T03:25:29.426710+00:00",
+      "action": "Original 0.1.5 client discovered public 0.1.7-dev through native Check update."
+    },
+    {
+      "utc": "2026-10-21T03:25:50.886703+00:00",
+      "action": "Native client downloaded the public APK and verified hash, package, version and signing identity."
+    },
+    {
+      "utc": "2026-10-21T03:26:31.905296+00:00",
+      "action": "Confirmed Update in the real Android system installer and opened the upgraded app; no adb install performed for this upgrade."
+    },
+    {
+      "utc": "2026-10-21T03:26:41.225353+00:00",
+      "action": "Exact public APK installed; document states, metadata, reading positions and appearance settings retained; pending update cleared."
+    }
+  ],
+  "pendingManifestAfterDownload": {
+    "code": 8,
+    "name": "0.1.7-dev",
+    "file": "annota-8.apk",
+    "sha": "3aa1b8d1b570f45ba577a78221e2f1d8b6badc21f50d5b734d8d963f4d151c32",
+    "certificate": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18"
+  },
+  "installedApkSha256": "3aa1b8d1b570f45ba577a78221e2f1d8b6badc21f50d5b734d8d963f4d151c32",
+  "bookStateHashes": {
+    "guide": "69446171f6458fc957cda72e5ab67b3d0c422f7542471ecc00f57762fb8081b6",
+    "attention": "3dd4b564d794368e9e9c5433033b718da933ec17e4c8a8480ee510bdb326a7e8"
+  },
+  "bookCount": 2,
+  "appearancePreferences": {
+    "english": "false",
+    "theme": "2",
+    "buttonSize": "76"
+  },
+  "readingViewportsSha256": "02c74922ee8cad68d52c6b1c8e5b40e109a04602d912b21743e897dca383ffab",
+  "dataSnapshotUnchanged": true,
+  "pendingUpdateCleared": true,
+  "passed": true
+}

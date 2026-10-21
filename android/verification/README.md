@@ -85,3 +85,5 @@ Context dictionary continuation: `dictionary-context-*.png` shows the native PDF
 ## 三档按键与 0.1.7
 
 `ui-sizing-*` 记录最终版三档控件、完整回归、普通/大号键盘及 APK 发布身份；`size-*.png` 为三档横竖屏原生截图，`release-017-*` 为最终包的阅读器与词典记录。`reader-fidelity-*` 继续属于之前的 0.1.6 本地候选；不跨包冒认测试。详见[验收说明](../../docs/UI-SIZING-ACCEPTANCE.md)。
+
+当前 `build-info.json` 指向公开 0.1.7；旧公开 0.1.5 的完整身份保留为 `continuous-build-info.json`。`ui-sizing-update-install.json` 及 `release-017-update-*` 保存原始 0.1.5 经真实系统安装器升级到 0.1.7 的记录。

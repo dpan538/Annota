@@ -1,6 +1,6 @@
 # 三档按键与交互验收
 
-2026-10-21，0.1.7-dev / versionCode 8。继承 0.1.6 本地候选的阅读器与词典修正，新的递增版本让已安装本地候选的设备也能获得更新。开发签名与旧包相同，按测试 Pre-release 分发。
+2026-10-21，0.1.7-dev / versionCode 8。继承 0.1.6 本地候选的阅读器与词典修正，新的递增版本让已安装本地候选的设备也能获得更新。开发签名与旧包相同，已发布为[测试 Pre-release](https://github.com/dpan538/Annota/releases/tag/v0.1.7-dev)。
 
 ## 三档尺寸实际生效
 
@@ -19,6 +19,8 @@
 - `ui-sizing-visual-api36.txt`：默认 68 下的完整阅读器与词典视觉流程。
 - `ui-sizing-large-keyboard-api36.txt`：76 大号与 420 dpi 下的完整视觉流程，真实 IME 可见，释义可读并可展开/滚动；不把键盘未出现当作通过。
 - `size-*.png` 是三档横竖屏原生截图；`release-017-*.png` 为最终包的阅读、查词与大键盘截图。原始 0.1.6 候选的 `reader-fidelity-*` 及其身份记录保留，不冒认作最终包成绩。
-- 构建身份、源码与测试哈希见 `ui-sizing-build.json`；公网发布与完整下载回执单独归档。
+- 构建身份、源码与测试哈希见 `ui-sizing-build.json`；公网发布见 `ui-sizing-release-public.json`，完整匿名下载、签名/资源、安装及冷启动回执见 `ui-sizing-apk-public-check.json`。lint 为 0 errors / 75 warnings。
+
+原始公开 0.1.5-dev（非修正客户端夹具）通过原生「检查更新」发现公开 0.1.7，应用下载并校验，实际 Android 安装器完成 6 → 8 升级；安装后 APK 哈希与公开原件相同，文档状态、元数据、阅读位置与外观偏好快照一致，待安装记录清理。仅用 ADB 建立旧版起点，没有用 ADB 完成被测升级；原有安装来源权限已允许。本轮未重复拒绝权限或进程重开下载流程。回执见 `ui-sizing-update-install.json`，四阶段原生截图为 `release-017-update-*.png`。
 
 模拟器不证明 Xiaomi 专有笔手势、实际落笔延迟或数小时压力已通过。词典仍是离线短语、搭配和词性匹配，21 个歧义词专门适配，规则覆盖有限。未新增账号、云同步、在线翻译、OCR、主题或反馈部署。

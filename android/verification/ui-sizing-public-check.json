@@ -1,0 +1,14 @@
+{
+  "anonymous": true,
+  "releasePublished": true,
+  "prerelease": true,
+  "assets": [
+    "Annota-0.1.7-dev.apk",
+    "annota-update.json",
+    "SHA256SUMS.txt"
+  ],
+  "manifestAndChecksumMatch": true,
+  "versionCode": 8,
+  "releaseUrl": "https://github.com/dpan538/Annota/releases/tag/v0.1.7-dev",
+  "passed": true
+}

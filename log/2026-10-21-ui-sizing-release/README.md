@@ -5,3 +5,7 @@
 [验收说明](../../docs/UI-SIZING-ACCEPTANCE.md)记录范围与边界；原始结果与 APK 身份保存在 `android/verification/ui-sizing-*`，三档横竖屏截图为 `size-*.png`，最终包阅读器/键盘为 `release-017-*`。历史 0.1.6 的 54 项与 0.1.4 的 316 轮均保留各自身份。
 
 新增触摸测试先纠正了测试脚本把 PopupWindow 根坐标当作屏幕坐标，以及竖屏内容全显时强求非零滚动的问题；最终检查使用屏幕实际位置和可见范围，不把这些脚本失败说成应用崩溃。
+
+已发布 [0.1.7-dev](https://github.com/dpan538/Annota/releases/tag/v0.1.7-dev)，开发签名 Pre-release。57 项原生回归与两项完整视觉流程通过；公开三附件、匿名完整下载/签名/安装/冷启动回执保存在 `ui-sizing-*public*.json`。
+
+原始公开 0.1.5 客户端通过公开新版本完成原生下载与实际系统安装器升级，已验证最终 APK 原件身份、文档/阅读位置/外观快照不变、待安装记录清理。详情见 `ui-sizing-update-install.json` 与四张 `release-017-update-*` 原生截图。

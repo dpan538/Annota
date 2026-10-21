@@ -9,7 +9,7 @@
   "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18",
   "buildType": "debug",
   "productionSigned": false,
-  "publishedRelease": false,
+  "publishedRelease": true,
   "clientDate": "2026-10-21",
   "clientTimezone": "Australia/Brisbane",
   "api36EmulatorTests": 57,
@@ -31,7 +31,7 @@
   "nativeThreeSizeTaps": true,
   "samePopupPenChanges": true,
   "settingsHostRetained": true,
-  "screenshotCount": 42,
+  "screenshotCount": 46,
   "sourceBaseCommit": "d5be4923aed74b1b20351bd1339a9c80c695cb61",
   "sourceWorkingTreeDirty": true,
   "sourceSha256": {
@@ -80,5 +80,13 @@
   "physicalXiaomiAcceptance": false,
   "soakOnThisVersion": false,
   "public015Unchanged": true,
-  "public015Sha256": "a3ddfcad0733732abd432d6ec73eac93a7df19c17dc775b2c593f9f61c8d8b6b"
+  "public015Sha256": "a3ddfcad0733732abd432d6ec73eac93a7df19c17dc775b2c593f9f61c8d8b6b",
+  "sourceCommit": "88a49bfebed8ff05baaea36a27fc1370d5262b2a",
+  "releaseUrl": "https://github.com/dpan538/Annota/releases/tag/v0.1.7-dev",
+  "releasePublishedAt": "2026-10-21T03:22:25Z",
+  "anonymousGithubDownloadVerified": true,
+  "nativePreviewUpdateInstallVerified": true,
+  "updateInstallEvidence": "android/verification/ui-sizing-update-install.json",
+  "updateTestOrigin": "original public 0.1.5-dev versionCode 6; real public download and Android installer upgrade to versionCode 8",
+  "cleanBuild": false
 }

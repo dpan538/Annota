@@ -4,9 +4,13 @@
 
 首期通过公开仓库 `dpan538/Annota` 的 GitHub Releases 分发签名 APK。用户选择的首期渠道是 APK，不把小米应用商店作为当前发布依赖。这个方案不免除 Android 安装器或目标地区适用的开发者验证要求；发布前在目标设备确认实际安装流程。
 
-当前开发预览为 [0.1.5-dev 开发测试预览](https://github.com/dpan538/Annota/releases/tag/v0.1.5-dev)，开发签名，明确标为 Pre-release；[固定下载页](../DOWNLOAD.md) 提供点击下载与复制到浏览器的链接。0.1.5 的真实公开 APK 已通过匿名下载、资源/签名校验、安装和冷启动，见 `android/verification/continuous-apk-public-check.json`。源码 ZIP 不是 APK。
+历史 0.1.5 开发预览为 [0.1.5-dev 开发测试预览](https://github.com/dpan538/Annota/releases/tag/v0.1.5-dev)，开发签名，明确标为 Pre-release；[固定下载页](../DOWNLOAD.md) 提供点击下载与复制到浏览器的链接。0.1.5 的真实公开 APK 已通过匿名下载、资源/签名校验、安装和冷启动，见 `android/verification/continuous-apk-public-check.json`。源码 ZIP 不是 APK。
 
 0.1.5 开发/预览包读取最近 30 条 Release，包括非草稿 Pre-release，以清单的整数 versionCode 选择更高版本；正式生产包保持 `/releases/latest` 稳定通道。没有更高版本时正常提示。原始 0.1.4 因旧逻辑限制需要手动覆盖一次，之后可在应用内检查测试更新。
+
+## 0.1.7 当前测试版
+
+当前下载为 [0.1.7-dev](https://github.com/dpan538/Annota/releases/tag/v0.1.7-dev)，versionCode 8，继承 0.1.6 本地候选内容并补齐三档控件和稳定菜单。保持同一开发签名，真实 APK、SHA256SUMS.txt 与 annota-update.json 三附件公开可读；完整匿名 APK 下载、签名/资源、安装与冷启动通过，见 `android/verification/ui-sizing-apk-public-check.json`。57 项原生回归、两项完整视觉流程与源码身份见[本轮验收](UI-SIZING-ACCEPTANCE.md)。原始公开 0.1.5 的原生检查、下载、校验及真实 Android 安装器升级 6 → 8 也已通过，文档状态、元数据、阅读位置和外观偏好保持，见 `ui-sizing-update-install.json`。不是正式生产签名稳定版。
 
 ## 用户流程
 

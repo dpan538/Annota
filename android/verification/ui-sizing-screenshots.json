@@ -292,5 +292,33 @@
     "height": 3408,
     "sha256": "64068006362e9a566825c596d032dbcd65cedad5244280db011b12b46e64c056",
     "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-update-discovered.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "e9b11d3b8993d606d013a96c4bd4b5860320f072123346845220bb9536e107b5",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-update-installed.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "eb25dcb7fbb902029f16de8b650d683a98d5e5ec469a1e13e048560b19827964",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-update-installer.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "a36ac91157d90bdc17eaa52e5d57f8fc104411d9661ba12fcb39216423b61a85",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-update-verified.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "9f51ad3ab5bbe21c6af0a8b1221d872a11ff5613fd00b082a61e6be8f7c64112",
+    "systemDensityDpi": 240
   }
 ]

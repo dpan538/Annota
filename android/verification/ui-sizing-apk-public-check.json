@@ -1,0 +1,21 @@
+{
+  "artifact": "Annota-0.1.7-dev.apk",
+  "sha256": "3aa1b8d1b570f45ba577a78221e2f1d8b6badc21f50d5b734d8d963f4d151c32",
+  "bytes": 74368279,
+  "transport": "public GitHub HTTPS, no credentials",
+  "publicUrl": "https://github.com/dpan538/Annota/releases/download/v0.1.7-dev/Annota-0.1.7-dev.apk",
+  "contentType": "application/vnd.android.package-archive",
+  "contentLength": 74368279,
+  "zipEntries": 216,
+  "nativeAbis": [],
+  "packageName": "io.github.dpan538.annota",
+  "versionCode": 8,
+  "versionName": "0.1.7-dev",
+  "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18",
+  "signatureV2": true,
+  "signatureV3": false,
+  "assetsAndArchiveVerified": true,
+  "downloadedCopyInstalledAndColdLaunched": true,
+  "coldStartAmTotalTimeMs": 4974,
+  "passed": true
+}

@@ -22,7 +22,7 @@
 
 ## 下载
 
-[下载安装包 ↗](https://github.com/dpan538/Annota/releases/download/v0.1.5-dev/Annota-0.1.5-dev.apk) · [固定下载页](DOWNLOAD.md)
+[下载安装包 ↗](https://github.com/dpan538/Annota/releases/download/v0.1.7-dev/Annota-0.1.7-dev.apk) · [固定下载页](DOWNLOAD.md)
 
 直接点击，或复制下载页中的链接到平板浏览器。下载完成后按系统提示安装。当前为开发测试包，尚非正式版。
 
@@ -48,14 +48,14 @@
 | 中 | 笔、橡皮、直尺、图片、图形、手形 |
 | 右 | 新增页、阅读模式、词典、更多 |
 
-四种笔、粗细与颜色收在笔菜单。主页和设置的按键有 60 / 68 / 76 三档。
+四种笔、粗细与颜色收在笔菜单。书库、设置、阅读器及小菜单的控件支持 60 / 68 / 76 三档，点击即时生效。
 
 ## 实现
 
 | 环节 | 做法 |
 | --- | --- |
 | 墨迹 | 标准 MotionEvent 压感与历史采样；抬笔提交矢量笔迹；最近 50 步撤销状态可跨进程恢复 |
-| 词典 | 随包英汉、汉英 SQLite 索引词库；安装校验后本地只读查询，支持词形和拼写候选 |
+| 词典 | 随包英汉、汉英 SQLite 索引词库；安装校验后本地只读查询，支持词形、拼写候选与局部语境简释，其他义项折叠 |
 | 更新 | GitHub 测试更新已走通模拟器下载、校验和系统覆盖安装；生产签名与真机安装仍待验收 |
 | 存储 | 私有本地文件与原子状态快照；同签名覆盖升级保留数据，支持导出备份与合并恢复 |
 | 内存 | 首页只读封面元数据；位图与文字缓存按堆预算限额，后台回收、前台重建 |
@@ -128,4 +128,4 @@ python3 design/dictionary/test_lookup.py
 
 A local-first PDF reader and handwriting notebook for the Xiaomi Pad 9 Pro Max. Files, strokes, reading position and settings stay on the device. No account, cloud or sync. Offline ECDICT/CC-CEDICT lookup; networking only for requested updates and feedback.
 
-Development APK available through [GitHub Releases](https://github.com/dpan538/Annota/releases/tag/v0.1.5-dev); Xiaomi hardware, production signing and the stable-update flow remain pending. MIT for code; CC BY-NC 4.0 for original artwork and the guide.
+Development APK available through [GitHub Releases](https://github.com/dpan538/Annota/releases/tag/v0.1.7-dev); Xiaomi hardware, production signing and the stable-update flow remain pending. MIT for code; CC BY-NC 4.0 for original artwork and the guide.
