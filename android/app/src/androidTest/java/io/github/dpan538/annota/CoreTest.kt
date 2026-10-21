@@ -28,6 +28,7 @@ class CoreTest {
             "Database/input fixtures run only on an emulator",
             android.os.Build.HARDWARE in setOf("ranchu", "goldfish"),
         )
+        finishReadersBeforeDatabaseReset()
         context.deleteDatabase("library.sqlite")
         store = Store(context)
         pdf = PdfEngine(context, store)

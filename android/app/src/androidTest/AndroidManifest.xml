@@ -1,0 +1,6 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity android:name="io.github.dpan538.annota.testsender.SenderActivity" android:exported="true" />
+        <provider android:name="io.github.dpan538.annota.testsender.SenderProvider" android:authorities="io.github.dpan538.annota.test.incoming" android:exported="false" android:grantUriPermissions="true" />
+    </application>
+</manifest>

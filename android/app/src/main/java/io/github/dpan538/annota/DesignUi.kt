@@ -272,6 +272,14 @@ class LibraryScreen(
     val customBody: ((LibraryScreen, FrameLayout, Float) -> Float)? = null,
 ) : DesignScreen(context, theme, buttonSize, english) {
     private val covers = CoverRepository(context, pdf)
+    var typeFilter = if (pdfOnly) "pdf" else if (section == "notes") "notes" else "all"
+
+    fun applyTypeFilter(value: String) {
+        require(value in setOf("all", "pdf", "notes"))
+        typeFilter = value
+        render()
+    }
+
     private var searchText = query
     var searchVisible = false
     private var mainScroll: ScrollView? = null
@@ -380,7 +388,8 @@ class LibraryScreen(
         box(
             side,
             label(
-                    tr("本地书库", "LOCAL LIBRARY"),
+                    if (Network.previewUpdates()) tr("本地书库", "LOCAL LIBRARY")
+                    else "${BuildConfig.VERSION_NAME} · ${tr("正式版","Stable")}",
                     if (portrait && english) 9f else if (portrait) 10f else 11f,
                     palette.color("muted"),
                 )
@@ -750,8 +759,8 @@ class LibraryScreen(
                 .filter { b ->
                     b.trash == (section == "trash") &&
                         (section != "favorites" || b.favorite) &&
-                        (section != "notes" || b.source.isEmpty()) &&
-                        (!pdfOnly || b.source.isNotEmpty()) &&
+                        (typeFilter != "notes" || b.source.isEmpty()) &&
+                        (typeFilter != "pdf" || b.source.isNotEmpty()) &&
                         (folder.isEmpty() || b.folder == folder)
                 }
                 .filter { b ->

@@ -265,6 +265,18 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
     }
 
     @Synchronized
+    fun widgetMetadata(id: String): Pair<String, Int>? =
+        readableDatabase
+            .rawQuery("SELECT title,current FROM books WHERE id=? AND trash=0", arrayOf(id))
+            .use { if (it.moveToFirst()) it.getString(0) to it.getInt(1) else null }
+
+    @Synchronized
+    fun available(id: String): Boolean =
+        readableDatabase.rawQuery("SELECT 1 FROM books WHERE id=? AND trash=0", arrayOf(id)).use {
+            it.moveToFirst()
+        }
+
+    @Synchronized
     fun libraryBooks(): List<Book> =
         readableDatabase.rawQuery("SELECT * FROM books ORDER BY opened DESC,title", null).use { c ->
             buildList { while (c.moveToNext()) add(decode(c, preview = true)) }
@@ -395,6 +407,29 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
         return true
     }
 
+    /** Resolve duplicate external shares without retaining the sender's URI. */
+    @Synchronized
+    fun externalBook(hash: String): Book? {
+        val id =
+            readableDatabase
+                .rawQuery("SELECT value FROM flags WHERE key=?", arrayOf("external-pdf:$hash"))
+                .use { if (it.moveToFirst()) it.getString(0) else null } ?: return null
+        return runCatching { book(id) }.getOrNull()?.takeUnless { it.trash }
+    }
+
+    @Synchronized
+    fun rememberExternal(hash: String, book: Book) {
+        writableDatabase.insertWithOnConflict(
+            "flags",
+            null,
+            ContentValues().apply {
+                put("key", "external-pdf:$hash")
+                put("value", book.id)
+            },
+            SQLiteDatabase.CONFLICT_REPLACE,
+        )
+    }
+
     /** Page IDs, not page numbers: reorder and undo cannot silently move a bookmark. */
     @Synchronized
     fun bookmarks(b: Book): Set<String> {
@@ -472,14 +507,20 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
         return File(assetsDir, name)
     }
 
-    fun copyInput(uri: Uri, suffix: String, cancelled: () -> Boolean = { false }): File {
+    fun copyInput(
+        uri: Uri,
+        suffix: String,
+        cancelled: () -> Boolean = { false },
+        progress: (Long) -> Unit = {},
+    ): File {
         val target = file("${uid()}.$suffix")
         try {
-            context.contentResolver.openInputStream(uri)!!.use { input ->
-                atomicWrite(target) { out ->
-                    copyLimited(input, out, 512L * 1024 * 1024, cancelled)
+            (context.contentResolver.openInputStream(uri) ?: throw IOException("无法读取文件，请重新分享 PDF"))
+                .use { input ->
+                    atomicWrite(target) { out ->
+                        copyLimited(input, out, 512L * 1024 * 1024, cancelled, progress)
+                    }
                 }
-            }
             return target
         } catch (t: Throwable) {
             target.delete()
@@ -492,6 +533,7 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
         out: OutputStream,
         max: Long,
         cancelled: () -> Boolean = { false },
+        progress: (Long) -> Unit = {},
     ) {
         var count = 0L
         val buf = ByteArray(65536)
@@ -503,6 +545,7 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
             require(count <= max) { "文件超过允许大小" }
             if (assetsDir.usableSpace < 16L * 1024 * 1024) throw IOException("本地空间不足，至少保留 16 MiB")
             out.write(buf, 0, n)
+            progress(count)
         }
     }
 

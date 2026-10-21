@@ -62,6 +62,7 @@ class RenderLifecycleTest {
     @Test
     fun attachedReaderEvictsAndRebuildsWithoutLosingSavedDocumentOrAddingBottomChrome() {
         Assume.assumeTrue(android.os.Build.HARDWARE in setOf("ranchu", "goldfish"))
+        finishReadersBeforeDatabaseReset()
         context.deleteDatabase("library.sqlite")
         val a =
             inst.startActivitySync(

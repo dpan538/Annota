@@ -125,6 +125,20 @@ class ReaderNavigator(
                 when (item) {
                     is Int -> {
                         column.contentDescription = "${tr("页面","Page")} ${item+1}"
+                        if (tab == 3) {
+                            column.addView(
+                                AnnotationPreview(activity, book.pages[item]),
+                                LinearLayout.LayoutParams(-1, ui.px(76f)),
+                            )
+                            column.addView(
+                                ui.label(
+                                    if (ui.english) "${book.pages[item].marks.size} annotations"
+                                    else "${book.pages[item].marks.size} 处批注",
+                                    11f,
+                                    ui.palette.color("muted"),
+                                )
+                            )
+                        }
                         if (tab == 0)
                             column.addView(
                                 DocumentCoverView(
@@ -199,12 +213,17 @@ class ReaderNavigator(
             LinearLayout.LayoutParams(ui.px(34f), ui.px(34f)),
         )
         view.addView(header)
-        listOf(tr("页面", "Pages"), tr("目录", "Outline"), tr("书签", "Bookmarks")).forEachIndexed {
-            i,
-            label ->
-            tabs.addView(button(label) { showTab(i) }, LinearLayout.LayoutParams(0, ui.px(36f), 1f))
-        }
+        listOf(tr("页面", "Pages"), tr("目录", "Outline"), tr("书签", "Bookmarks"), tr("批注", "Ink"))
+            .forEachIndexed { i, label ->
+                tabs.addView(
+                    button(label) { showTab(i) },
+                    LinearLayout.LayoutParams(0, ui.px(36f), 1f),
+                )
+            }
         view.addView(tabs)
+        currentLabel.contentDescription = tr("跳至页面", "Go to page")
+        currentLabel.isClickable = true
+        currentLabel.setOnClickListener { jumpToPage() }
         current.addView(currentLabel, LinearLayout.LayoutParams(0, ui.px(40f), 1f))
         current.addView(
             bookmark,
@@ -233,7 +252,11 @@ class ReaderNavigator(
         list.setOnItemClickListener { _, _, position, _ ->
             if (message.isEmpty())
                 when (val item = rows[position]) {
-                    is Int -> reader.navigatePage(book.pages[item].id)
+                    is Int ->
+                        reader.navigatePage(
+                            book.pages[item].id,
+                            if (tab == 3) annotationBounds(book.pages[item]) else null,
+                        )
                     is OutlineEntry ->
                         item.target?.let {
                             if (!reader.navigate(it))
@@ -317,8 +340,12 @@ class ReaderNavigator(
         adapter.notifyDataSetChanged()
     }
 
+    fun annotationsChanged() {
+        if (!searching && tab == 3) showTab(3)
+    }
+
     fun updateCurrent() {
-        currentLabel.text = pageLabel(book.current)
+        currentLabel.text = "${book.current+1} / ${book.pages.size}  ›"
         val marked = book.pages.getOrNull(book.current)?.id in store.bookmarks(book)
         val label = if (marked) tr("移除书签", "Remove bookmark") else tr("添加书签", "Add bookmark")
         bookmark.contentDescription = label
@@ -330,6 +357,38 @@ class ReaderNavigator(
                 8f,
             )
         adapter.notifyDataSetChanged()
+    }
+
+    private fun jumpToPage() {
+        val input =
+            EditText(activity).apply {
+                inputType = android.text.InputType.TYPE_CLASS_NUMBER
+                setSingleLine()
+                setText((book.current + 1).toString())
+                selectAll()
+                contentDescription = tr("页码", "Page number")
+            }
+        val dialog =
+            android.app.AlertDialog.Builder(activity)
+                .setTitle(tr("跳至页面", "Go to page"))
+                .setView(input)
+                .setNegativeButton(tr("取消", "Cancel"), null)
+                .setPositiveButton(tr("前往", "Go"), null)
+                .create()
+        dialog.setOnShowListener {
+            dialog.getButton(-1).setOnClickListener {
+                val page = input.text.toString().toIntOrNull()
+                if (page == null || page !in 1..book.pages.size)
+                    input.error = "1–${book.pages.size}"
+                else {
+                    reader.navigatePage(book.pages[page - 1].id)
+                    updateCurrent()
+                    dialog.dismiss()
+                }
+            }
+        }
+        UiMotion.dialog(dialog, ui.palette)
+        dialog.show()
     }
 
     private fun toggleBookmark() {
@@ -357,6 +416,11 @@ class ReaderNavigator(
         message = ""
         when (tab) {
             0 -> rows = book.pages.indices.toList()
+            3 -> {
+                rows = book.pages.indices.filter { book.pages[it].marks.isNotEmpty() }
+                if (rows.isEmpty())
+                    message = tr("添加笔迹或高亮后，可在这里快速定位。", "Your ink and highlights will appear here.")
+            }
             2 -> {
                 val saved = store.bookmarks(book)
                 rows = book.pages.indices.filter { book.pages[it].id in saved }

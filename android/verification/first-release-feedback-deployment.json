@@ -1,0 +1,16 @@
+{
+  "projectId": "prj_5a6t20rsnRUh4BydTTKZqTKb1xfg",
+  "deploymentId": "dpl_Lg5iZ5D2zsZvBrkRsyqZiEiDTQw4",
+  "target": "production",
+  "state": "READY",
+  "health": {
+    "service": "annota-feedback",
+    "configured": true
+  },
+  "productionPublic": true,
+  "previewSsoProtected": true,
+  "userAuthorizedProductionPublicAccess": true,
+  "credentialNameRetained": "NNOTA_GITHUB_TOKEN",
+  "credentialsIncluded": false,
+  "nativeLiveIssueUrl": "https://github.com/dpan538/Annota/issues/2"
+}

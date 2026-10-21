@@ -4,7 +4,7 @@
 
 面向小米平板 9 Pro Max 的 PDF 阅读器与手写批注本。没有账号、云空间和跨端同步，文件、笔迹、阅读进度和设置都在本机；断网也能读、能写、能查词。
 
-[![APK](https://img.shields.io/badge/APK-开发测试版-2f6f4e)](https://github.com/dpan538/Annota/blob/main/DOWNLOAD.md)
+[![APK](https://img.shields.io/badge/APK-1.0.0_正式版-2f6f4e)](https://github.com/dpan538/Annota/blob/main/DOWNLOAD.md)
 ![license](https://img.shields.io/badge/code-MIT-blue)
 
 <table width="100%">
@@ -14,7 +14,7 @@
   </tr>
 </table>
 
-当前为开发测试版，尚无正式签名 Release。仅主动获取更新、提交反馈时使用应用网络功能。
+首个正式版为 **1.0.0**。非调试 Release 构建，沿用已有签名，开发测试版可直接覆盖升级。仅主动获取更新、提交反馈时使用应用网络功能。
 
 ## 目录
 
@@ -22,9 +22,9 @@
 
 ## 下载
 
-[下载安装包 ↗](https://github.com/dpan538/Annota/releases/download/v0.1.9-dev/Annota-0.1.9-dev.apk) · [固定下载页](DOWNLOAD.md)
+[下载安装包 ↗](https://github.com/dpan538/Annota/releases/download/v1.0.0/Annota-1.0.0.apk) · [固定下载页](DOWNLOAD.md)
 
-直接点击，或复制下载页中的链接到平板浏览器。下载完成后按系统提示安装。当前为开发测试包，尚非正式版。
+直接点击，或复制下载页中的链接到平板浏览器。下载完成后按系统提示安装。无需卸载已有测试版。
 
 ## 界面
 
@@ -36,7 +36,7 @@
 
 默认适宽，单页或相邻双页连续上下滚动；支持惯性滑动、双指缩放与阅读位置恢复，缩略图列表按需打开。四套外观：松间、晴昼、蓝调、原野。圆角新建面板直接预览空白、点阵、格子、横线四种纸，选择白、灰、黑底色并命名。文件长按可收藏、重命名、复制、移动、导出 PDF、移进废纸篓。
 
-文内搜索显示原页高亮，支持前后结果切换并在关闭时恢复位置；选区手柄可扩展同页跨行文字。现有页面侧栏共用缩略图、PDF 目录和页书签，文内跳转可返回原处。
+文内搜索显示原页高亮，支持前后结果切换并在关闭时恢复位置；选区手柄可扩展同页跨行文字。现有页面侧栏共用缩略图、PDF 目录、页书签和批注预览；点击页码可跳页，文内跳转可返回原处。
 
 首次启动只有横版五页指南和 11 页 *Attention Is All You Need* 示例论文；封面读取真实首页。删除后重启或升级都不补回。
 
@@ -60,7 +60,7 @@
 | --- | --- |
 | 墨迹 | 标准 MotionEvent 压感与历史采样；抬笔提交矢量笔迹；最近 50 步撤销状态可跨进程恢复 |
 | 词典 | 随包英汉、汉英 SQLite 索引词库；安装校验后本地只读查询，支持词形、拼写候选与局部语境简释，其他义项折叠 |
-| 更新 | GitHub 测试更新已走通模拟器下载、校验和系统覆盖安装；生产签名与真机安装仍待验收 |
+| 更新 | GitHub 检查版本、下载/签名校验和系统覆盖安装；1.0.0 正式包待反馈服务验收后发布 |
 | 存储 | 私有本地文件与原子状态快照；同签名覆盖升级保留数据，支持导出备份与合并恢复 |
 | 内存 | 首页只读封面元数据；位图与文字缓存按堆预算限额，后台回收、前台重建 |
 
@@ -118,7 +118,7 @@ python3 design/dictionary/test_lookup.py
 
 ## 反馈
 
-公开问题走 [GitHub Issues](https://github.com/dpan538/Annota/issues)，别贴私人文件、联系方式和完整日志。应用内「意见反馈」是匿名通道，不自动附带设备标识或文档；公网接口尚未配置，未收到真实回执就保留本地草稿。见 [隐私说明](docs/PRIVACY.md)。
+公开问题走 [GitHub Issues](https://github.com/dpan538/Annota/issues)，别贴私人文件、联系方式和完整日志。应用内「意见反馈」只需点击提交，由 HTTPS 接收服务写入 GitHub；真实 Issue 创建成功后自动弹出“已收到反馈”，网络或服务失败则提示并保留草稿。不会附带联系方式、设备标识或文档，也不需要用户检查提交结果。接收服务已部署，实际非调试 Android 包的自动上传、真实 Issue 与自动提示已端到端验证。见 [隐私说明](docs/PRIVACY.md)。
 
 ## 许可
 
@@ -130,8 +130,8 @@ python3 design/dictionary/test_lookup.py
 
 ## English
 
-A local-first PDF reader and handwriting notebook for the Xiaomi Pad 9 Pro Max. Files, strokes, reading position and settings stay on the device. No account, cloud or sync. Offline ECDICT/CC-CEDICT lookup; networking only for requested updates and feedback.
+A local-first PDF reader and handwriting notebook for the Xiaomi Pad 9 Pro Max. Files, strokes, reading position and settings stay on the device. No account, cloud or sync. Offline ECDICT/CC-CEDICT lookup; networking only for requested updates and feedback. Feedback submits through an HTTPS relay and automatically acknowledges the actual GitHub issue; drafts survive offline or failed attempts. The relay and automatic acknowledgement have been validated end to end on the Android release build. The resizable Android home-screen widget resumes the latest reading position.
 
 Read mode has a slim toolbar and only Original / Soft / Clear display presets. Tap the document to toggle chrome, long press for offline lookup, and tap Annotate to restore the previous tool.
 
-Development APK available through [GitHub Releases](https://github.com/dpan538/Annota/releases/tag/v0.1.9-dev); Xiaomi hardware, production signing and the stable-update flow remain pending. MIT for code; CC BY-NC 4.0 for original artwork and the guide.
+First stable version **1.0.0** is available through [GitHub Releases](https://github.com/dpan538/Annota/releases/tag/v1.0.0). The non-debuggable build retains the existing certificate for in-place upgrades. Hardware testing of prior functionality has been reported as passed by the user; the new integrations are verified on a dedicated Android emulator. MIT for code; CC BY-NC 4.0 for original artwork and the guide.

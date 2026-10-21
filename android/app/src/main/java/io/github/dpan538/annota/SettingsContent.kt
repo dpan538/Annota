@@ -378,9 +378,9 @@ class SettingsContent(
                     box(
                         parent,
                         label(
-                            tr("源自 Annotation · 批注", "From Annotation"),
-                            14f,
-                            palette.color("muted"),
+                            "${BuildConfig.VERSION_NAME} · ${if(Network.previewUpdates()) tr("测试版","Preview build") else tr("正式版","Stable release")}",
+                            16f,
+                            palette.accent,
                         ),
                         0f,
                         y + 103f,
@@ -408,7 +408,7 @@ class SettingsContent(
                     y += 272f
                     preference(
                         tr("应用更新", "App update"),
-                        "${tr("当前版本","Current version")} · ${BuildConfig.VERSION_NAME} · ${if (Network.previewUpdates()) tr("测试更新", "Preview") else tr("正式更新", "Stable")}",
+                        "${tr("当前版本","Current version")} · ${BuildConfig.VERSION_NAME} · ${if (Network.previewUpdates()) tr("测试更新", "Preview") else tr("正式版", "Stable release")}",
                         tr("检查更新", "Check update"),
                         "check-update",
                     )

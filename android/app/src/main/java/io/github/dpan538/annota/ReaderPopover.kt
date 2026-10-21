@@ -247,6 +247,7 @@ class ReaderPopover(
             popup.width = width
             popup.height = height
             popup.showAtLocation(host, Gravity.TOP or Gravity.LEFT, x, y)
+            UiMotion.enter(shell, 0f)
         }
     }
 }

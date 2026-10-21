@@ -1,0 +1,10 @@
+{
+  "anonymousStatus": 200,
+  "health": {
+    "service": "annota-feedback",
+    "configured": true
+  },
+  "productionPublic": true,
+  "previewProtection": "SSO preview only; user explicitly authorized production public access",
+  "liveAutomaticFeedbackIssue": "https://github.com/dpan538/Annota/issues/2"
+}

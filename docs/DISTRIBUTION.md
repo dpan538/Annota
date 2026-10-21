@@ -49,13 +49,13 @@
 
 **更新分发无需业务后端。** GitHub 承担版本信息和 APK 文件托管，客户端负责验证、下载与交给系统安装。
 
-应用内匿名反馈需要单独的最小 HTTPS 接口：校验正文、限制滥用、保存或转交开发者，并返回真实回执。联系方式不得公开写入 GitHub Issue，客户端不得内置仓库写入 Token。接口尚未配置时保留草稿。
+当前反馈使用 GitHub 公开 Issue：系统浏览器登录并确认提交，App 返回后读取真实 Issue 回执，核对成功才清空对应草稿。离线、尚未提交、GitHub 不可达均保留草稿并提示。不需要业务后端，也不在 APK 中放仓库写入 Token；没有匿名直传能力。
 
 ## 当前验证与发布前闭环
 
 0.1.5 已完成测试通道闭环：本地低版本修正客户端（versionCode 5）识别公开 Pre-release → 应用下载 versionCode 6 → 校验 → 杀进程重开恢复待安装包 → 系统来源授权 → Android 安装器覆盖升级。安装后 APK 哈希与公开原件相同，笔迹、精细阅读位置、废纸篓和初始化标记不变，暂存已清理。起点是修正源码的测试夹具，不能据此声称原始 0.1.4 能直接升级；原始用户需手动覆盖一次。证据见 `android/verification/continuous-update-install.json` 与[验收记录](CONTINUOUS-READER-ACCEPTANCE.md)。
 
-0.1.4 的旧公开下载和稳定通道 404 保留为历史记录。生产签名、更高版本正式稳定 Release、安装权限拒绝及 Xiaomi 安装器仍需另行验收。反馈服务已有源码和本地回执测试，尚未部署公网 HTTPS。
+0.1.4 的旧公开下载和稳定通道 404 保留为历史记录。生产签名、更高版本正式稳定 Release、安装权限拒绝及 Xiaomi 安装器仍需另行验收。旧私有反馈接收器源码保留为历史参考，当前安卓反馈不调用该接收器。目标设备真机测试由用户反馈通过；本轮新增功能的自动化证据单列，不替代微信、QQ 与不同厂商桌面的实机测试。
 
 - 同一签名的旧版 → 新版覆盖更新，已有笔记完整。
 - 下载损坏、取消、空间不足、安装权限拒绝、签名不符都能退出或重试。
@@ -64,3 +64,11 @@
 - 真机验证已记录；未测项目如实列出。
 
 官方参考：[Releases API](https://docs.github.com/en/rest/releases/releases)、[Android 应用签名](https://developer.android.com/studio/publish/app-signing)、[APK 独立分发](https://developer.android.com/distribute/marketing-tools/alternative-distribution)、[Android 开发者验证](https://developer.android.com/developer-verification)。
+
+## 1.0.0 首个稳定版的签名决定
+
+用户明确选择沿用当前证书，以保留从开发版覆盖升级的能力。1.0.0 使用非调试 release 构建；证书 SHA-256 保持 `90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18`，没有生成新证书或要求卸载迁移。同一私钥转存为本机权限受限的发布配置，原密钥及发布配置只允许维护者读取；密钥、密码和仓库写入凭据均不入库、不打入 APK。
+
+维护者本机发布配置位于被 Git 忽略的 `android/.tooling/signing/`；后续仍通过 `ANNOTA_KEYSTORE`、`ANNOTA_STORE_PASSWORD`、`ANNOTA_KEY_ALIAS`、`ANNOTA_KEY_PASSWORD` 四个环境变量使用 Gradle release 构建。保管并备份这个签名身份；更换证书将影响覆盖更新。
+
+内部 0.2.0 里程碑对外统一为 1.0.0（versionCode 11），Release 与 APK 均使用这个名称。精确身份和实际升级证据见 [首版验收](INTEGRATION-ACCEPTANCE.md)。

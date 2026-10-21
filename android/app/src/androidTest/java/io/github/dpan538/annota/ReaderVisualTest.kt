@@ -130,6 +130,7 @@ class ReaderVisualTest {
     @Test
     fun captureRealReaderMenusZoomAndMotion() {
         Assume.assumeTrue(android.os.Build.HARDWARE in setOf("ranchu", "goldfish"))
+        finishReadersBeforeDatabaseReset()
         context.deleteDatabase("library.sqlite")
         context
             .getSharedPreferences("settings", 0)

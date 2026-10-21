@@ -1,0 +1,13 @@
+test_automatic_submit_returns_real_issue_and_same_request_reuses_it (test_github_relay.Tests.test_automatic_submit_returns_real_issue_and_same_request_reuses_it) ... ok
+test_conflicting_request_cannot_acknowledge_other_content (test_github_relay.Tests.test_conflicting_request_cannot_acknowledge_other_content) ... ok
+test_missing_credentials_or_github_failure_never_accepts (test_github_relay.Tests.test_missing_credentials_or_github_failure_never_accepts) ... ok
+test_real_http_request_and_automatic_response (test_github_relay.Tests.test_real_http_request_and_automatic_response) ... ok
+test_repository_hourly_guard (test_github_relay.Tests.test_repository_hourly_guard) ... ok
+test_success_requires_valid_github_receipt (test_github_relay.Tests.test_success_requires_valid_github_receipt) ... ok
+test_timeout_after_github_write_keeps_identity_for_recovery (test_github_relay.Tests.test_timeout_after_github_write_keeps_identity_for_recovery) ... ok
+test_validation_and_body_limit (test_github_relay.Tests.test_validation_and_body_limit) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.029s
+
+OK

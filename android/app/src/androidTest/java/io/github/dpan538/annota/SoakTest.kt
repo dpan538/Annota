@@ -72,6 +72,7 @@ class SoakTest {
     @Test
     fun repeatedRenderWriteLookupTrimAndActivityRecreationKeepSavedInkAndBoundedCaches() {
         Assume.assumeTrue(Build.HARDWARE in setOf("ranchu", "goldfish"))
+        finishReadersBeforeDatabaseReset()
         context.deleteDatabase("library.sqlite")
         context.getSharedPreferences("settings", 0).edit().putBoolean("english", true).commit()
         val seconds =

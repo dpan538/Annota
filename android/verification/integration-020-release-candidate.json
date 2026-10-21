@@ -1,0 +1,14 @@
+{
+  "artifact": "app-release-unsigned.apk",
+  "versionName": "0.2.0",
+  "versionCode": 11,
+  "sha256": "e43b2842e50d0a7326253c6e8e85fbc92a526836f40a19b7682955bb9ac33884",
+  "bytes": 70334045,
+  "debuggable": false,
+  "archiveVerified": true,
+  "originalPdfUnchanged": true,
+  "productionSigned": false,
+  "published": false,
+  "status": "Release candidate; maintainer signing configuration still required",
+  "signingEnvironmentConfigured": false
+}

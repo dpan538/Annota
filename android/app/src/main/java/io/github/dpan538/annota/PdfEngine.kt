@@ -32,6 +32,7 @@ class PdfEngine(val context: Context, val store: Store) {
         title: String,
         password: String = "",
         cancelled: () -> Boolean = { false },
+        progress: (Int, Int) -> Unit = { _, _ -> },
     ): Book {
         try {
             PDDocument.load(file, password, memory()).use { doc ->
@@ -60,6 +61,7 @@ class PdfEngine(val context: Context, val store: Store) {
                     PdfRenderer(fd).use { r ->
                         MutableList(r.pageCount) { n ->
                             if (cancelled()) throw InterruptedIOException("已取消")
+                            progress(n + 1, r.pageCount)
                             r.openPage(n).use { p ->
                                 require(p.width in 1..20000 && p.height in 1..20000) {
                                     "PDF 纸张尺寸异常"
@@ -69,6 +71,7 @@ class PdfEngine(val context: Context, val store: Store) {
                         }
                     }
                 }
+            if (cancelled()) throw InterruptedIOException("已取消")
             return Book(
                     uid(),
                     title.take(200),
@@ -233,14 +236,20 @@ class PdfEngine(val context: Context, val store: Store) {
         return words
     }
 
-    fun export(book: Book, target: File, cancelled: () -> Boolean = { false }) {
+    fun export(
+        book: Book,
+        target: File,
+        cancelled: () -> Boolean = { false },
+        progress: (Int, Int) -> Unit = { _, _ -> },
+    ) {
         val source =
             if (book.source.isNotEmpty()) PDDocument.load(store.file(book.source), memory())
             else null
         try {
             PDDocument(memory()).use { out ->
-                book.pages.forEach { p ->
+                book.pages.forEachIndexed { index, p ->
                     if (cancelled()) throw InterruptedIOException("已取消")
+                    progress(index + 1, book.pages.size)
                     val pg =
                         if (p.source >= 0) out.importPage(source!!.getPage(p.source))
                         else PDPage(PDRectangle(p.w, p.h)).also { out.addPage(it) }

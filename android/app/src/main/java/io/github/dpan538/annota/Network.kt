@@ -96,6 +96,24 @@ class Network(val context: Context) {
     }
 
     companion object {
+        fun hasInternet(context: Context): Boolean {
+            val manager = context.getSystemService(android.net.ConnectivityManager::class.java)
+            val network = manager.activeNetwork ?: return false
+            val caps = manager.getNetworkCapabilities(network) ?: return false
+            return caps.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                caps.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        }
+
+        fun feedbackAcknowledgement(result: JSONObject, id: String): String {
+            val receipt = result.optString("receipt")
+            require(
+                result.optBoolean("accepted") &&
+                    result.optString("requestId") == id &&
+                    GitHubFeedback.validReceipt(receipt)
+            )
+            return receipt
+        }
+
         fun previewUpdates(
             versionName: String = BuildConfig.VERSION_NAME,
             debug: Boolean = BuildConfig.DEBUG,
@@ -256,49 +274,52 @@ class Network(val context: Context) {
         }
     }
 
-    fun submitFeedback(
-        endpoint: String,
-        body: String,
-        contact: String,
-        id: String,
-        task: Task,
-    ): String {
-        require(
-            body.isNotBlank() &&
-                body.codePointCount(0, body.length) <= 1000 &&
-                contact.codePointCount(0, contact.length) <= 120
-        )
-        require(endpoint.isNotBlank()) { "反馈服务尚未配置，草稿已保留" }
-        val u = URL(endpoint)
-        require(u.protocol == "https" && u.userInfo == null)
-        val c = u.openConnection() as HttpsURLConnection
+    fun submitFeedback(payload: JSONObject, task: Task): String {
+        val endpoint = URL(BuildConfig.FEEDBACK_ENDPOINT)
+        require(endpoint.protocol == "https" && endpoint.userInfo == null)
+        val c = endpoint.openConnection() as HttpsURLConnection
         task.connection = c
         c.connectTimeout = 15000
-        c.readTimeout = 20000
+        c.readTimeout = 60000
         c.instanceFollowRedirects = false
         c.requestMethod = "POST"
         c.doOutput = true
         c.setRequestProperty("Content-Type", "application/json; charset=utf-8")
         try {
             task.check()
-            c.outputStream.use {
-                it.write(
-                    JSONObject()
-                        .put("body", body)
-                        .put("contact", contact)
-                        .put("requestId", id)
-                        .toString()
-                        .toByteArray()
-                )
-            }
-            require(c.responseCode in 200..299) { "反馈发送失败（HTTP ${c.responseCode}），草稿已保留" }
-            val result = JSONObject(read(c, task, 16384))
-            require(result.optBoolean("accepted") && result.optString("receipt").isNotBlank()) {
-                "服务未提供有效回执，草稿已保留"
-            }
-            return result.getString("receipt")
+            c.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }
+            checkHttp(c.responseCode)
+            return feedbackAcknowledgement(
+                JSONObject(read(c, task, 16384)),
+                payload.getString("requestId"),
+            )
         } finally {
             c.disconnect()
         }
+    }
+
+    fun feedbackReceipt(id: String, task: Task): String? {
+        GitHubFeedback.marker(id)
+        // Exact marker on GitHub's authoritative issue list; no search-index delay.
+        for (page in 1..5) {
+            val c =
+                open(
+                    "https://api.github.com/repos/dpan538/Annota/issues?state=all&sort=created&direction=desc&per_page=100&page=$page",
+                    task,
+                    true,
+                )
+            val issues =
+                try {
+                    checkHttp(c.responseCode)
+                    JSONArray(read(c, task, 4 * 1024 * 1024))
+                } finally {
+                    c.disconnect()
+                }
+            GitHubFeedback.findReceipt(issues, id)?.let {
+                return it
+            }
+            if (issues.length() < 100) break
+        }
+        return null
     }
 }

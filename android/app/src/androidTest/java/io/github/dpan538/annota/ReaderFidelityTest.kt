@@ -70,6 +70,7 @@ class ReaderFidelityTest {
         originalEnglish = prefs.getBoolean("english", false)
         originalTheme = prefs.getInt("theme", 0)
         prefs.edit().putBoolean("english", true).commit()
+        finishReadersBeforeDatabaseReset()
         context.deleteDatabase("library.sqlite")
         store = Store(context)
         pdf = PdfEngine(context, store)

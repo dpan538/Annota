@@ -372,11 +372,10 @@ class EnglishUiTest {
                 },
             )
         )
-        select("Send feedback")
-        waitFor {
-            dialogLabels().any { it.contains("Feedback service is not configured. Draft kept.") }
-        }
+        assertTrue(dialogLabels().any { it.contains("Feedback is public on GitHub") })
+        assertTrue(dialogLabels().contains("Submit feedback"))
+        assertFalse(dialogLabels().contains("Check submission"))
         assertEquals("English UI validation", prefs.getString("feedbackBody", ""))
-        select("Cancel")
+        select("Close")
     }
 }

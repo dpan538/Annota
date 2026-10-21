@@ -17,6 +17,7 @@ class ReaderPolishTest {
     @Before
     fun setup() {
         Assume.assumeTrue(android.os.Build.HARDWARE in setOf("ranchu", "goldfish"))
+        finishReadersBeforeDatabaseReset()
         context.deleteDatabase("library.sqlite")
         store = Store(context)
     }

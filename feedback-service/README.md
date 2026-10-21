@@ -1,20 +1,23 @@
-# Annota 反馈接收层
+# Annota 自动反馈接收服务
 
-尚未部署线上服务，没有真实公网回执。Android 默认 endpoint 为空：失败或未配置时保留草稿，不声称已发送。
+Android 点击一次“提交反馈”后，通过 HTTPS 接收层写入 `dpan538/Annota` 的 GitHub Issue，再自动提示结果。没有用户登录、浏览器中转或手动检查按钮。客户端只含接口地址，不含维护者凭据。
 
-只接收 `POST /v1/feedback` JSON：`body`（1–1000 Unicode 字符）、`contact`（0–120）、`requestId`（16–80 位字母/数字/连字符）。未知字段拒绝。不接收附件、截图、日志或设备信息；没有 GitHub Token，没有公开读取反馈接口。成功写入 SQLite 后返回 `{"accepted":true,"receipt":"真实随机回执"}`；相同请求 ID 与正文重试返回相同回执，正文冲突返回 409。
+## 当前部署
+
+Vercel 项目 [annota-feedback](https://vercel.com/dpan538s-projects/annota-feedback)，生产地址 `https://annota-feedback-dpan538s-projects.vercel.app/v1/feedback`。部署已 READY；用户明确授权后，生产接口已公开，预览仍保留登录保护。用户已配置生产 Secret `NNOTA_GITHUB_TOKEN`，接收服务兼容这个名称。真实 Android 非调试包自动创建 [测试 Issue #2](https://github.com/dpan538/Annota/issues/2) 并自动提示成功，端到端已通过。
+
+将仅限 `dpan538/Annota`、Issues 读写权限的 GitHub fine-grained token 配置为生产 Secret `ANNOTA_GITHUB_TOKEN`，然后重新部署。当前用户已创建的 `NNOTA_GITHUB_TOKEN` 保留原名，代码兼容读取。不要把 token 放入源码、APK、聊天或 `.env` 提交。生产反馈接口需要允许匿名访问，预览仍可保持登录保护。只对这个独立项目设置，不改其他项目或团队安全策略。
+
+`GET /healthz` 只返回服务名和凭据是否配置；不会显示凭据。`POST /v1/feedback` 接收 JSON `body`（1–1000 Unicode 字符）、`requestId`（16–80 字母/数字/连字符）、`version`。未知字段拒绝，不接收联系方式或附件。成功仅返回 `accepted:true`、匹配的 `requestId` 和真实 GitHub Issue `receipt` URL。
+
+GitHub Token 仅发送到固定 GitHub API 地址，禁用重定向；服务不记录消息正文或凭据。请求失败、无凭据、GitHub 拒绝/无效回执均返回错误。超时后不盲目重发 POST，下次同 ID 提交先检查 GitHub 中最近 500 条记录。同实例串行化；不保证多实例同一 ID 同时提交或超过检索窗口后的严格去重。仓库级每小时 20 条保守限流；规模扩大时再接持久存储做全局锁和精细限流。
 
 ## 本地验证
 
 ```sh
-cd feedback-service
-python3 -m unittest -v
+python3 -m unittest discover -s feedback-service -p test_github_relay.py -v
 ```
 
-测试使用临时 SQLite 和真实本地 HTTP 连接；它不是公网 HTTPS 验收。
+8 项测试包含真实本地 HTTP、GitHub 成功、无效回执、失败保留请求身份、超时写入后的恢复、冲突和限流。模拟的 GitHub 不代替公网验收。实际需要验证：Android 提交按钮 → Vercel → GitHub Issue → 自动成功弹窗，以及断网/失败草稿保留。
 
-## 部署
-
-在有可用域名与 80/443 端口的服务器上设置 `FEEDBACK_HOST`、至少 32 字符随机 `FEEDBACK_SECRET`，运行 `docker compose up -d --build`。Caddy 负责 HTTPS；服务端口不映射至宿主。数据库卷不可公开，联系方式只供维护者在服务器内访问。默认保留 90 天，接收下一条提交时清理过期记录；需要精确到时的删除由运维另行运行清理。限制每小时 8 条；当前按直接传输对端做 HMAC，因此反向代理后限制对所有用户合并生效，是保守小规模部署默认值。不要直接信任客户端 X-Forwarded-For；多用户扩容时需配置受信代理限流。
-
-验证真实部署：POST 后检查返回的 receipt 和私有数据库记录，再以 Android `-PfeedbackEndpoint=https://你的域名/v1/feedback` 构建。不要把示例域名作为实际服务地址写入 APK。应用端拒绝 HTTP 和重定向。服务端不写请求体访问日志，部署方需保护反向代理日志和持久卷。
+`api/index.py` 是 Vercel WSGI 入口，`github_relay.py` 是当前实现。旧 `server.py`、Docker/Caddy 与 `test_server.py` 仅保留历史私有 SQLite 接收器，不是当前 Vercel 的入口；旧随机 receipt 不代表 GitHub 收到。

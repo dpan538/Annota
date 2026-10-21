@@ -1,0 +1,6 @@
+
+io.github.dpan538.annota.IntegrationTest:.
+
+Time: 16.103
+
+OK (1 test)

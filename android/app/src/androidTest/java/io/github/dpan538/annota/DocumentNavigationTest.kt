@@ -66,6 +66,7 @@ class DocumentNavigationTest {
             .putInt("theme", 2)
             .putInt("buttonSize", 68)
             .commit()
+        finishReadersBeforeDatabaseReset()
         context.deleteDatabase("library.sqlite")
         store = Store(context)
         pdf = PdfEngine(context, store)

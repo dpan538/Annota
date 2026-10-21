@@ -6,7 +6,6 @@ import android.graphics.*
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.*
-import android.provider.OpenableColumns
 import android.provider.Settings
 import android.text.*
 import android.view.*
@@ -36,7 +35,7 @@ class MainActivity : Activity() {
     private var section = "home"
     private var folder = ""
     private var search = ""
-    private var pdfOnly = false
+    private var libraryFilter = "all"
     private var pendingExport: Book? = null
     private var paperPopup: PopupWindow? = null
     private var readerPopup: PopupWindow? = null
@@ -51,6 +50,12 @@ class MainActivity : Activity() {
     private var preparingInstall = false
     private var liveTask: Network.Task? = null
     private var inputInfo = ""
+    private var operationCancel: AtomicBoolean? = null
+    private var ready = false
+    private val incoming = ArrayDeque<Intent>()
+    private var activeIncoming: Intent? = null
+    private var importing = false
+    private var restoringSession: ReaderSession? = null
     private val palettes =
         listOf(
             intArrayOf(
@@ -107,11 +112,7 @@ class MainActivity : Activity() {
             onBackInvokedDispatcher.registerOnBackInvokedCallback(
                 android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT
             ) {
-                if (book != null) library()
-                else if (section == "settings") {
-                    section = "home"
-                    library()
-                } else finish()
+                back()
             }
         root =
             LinearLayout(this).apply {
@@ -133,12 +134,32 @@ class MainActivity : Activity() {
             insets
         }
         text(tr("正在准备本地书库…", "Preparing your local library…")).also { root.addView(it) }
+        restoringSession = ReaderSession.decode(savedInstanceState?.getString("readerSession"))
+        val restoredIncoming =
+            if (Build.VERSION.SDK_INT >= 33)
+                savedInstanceState?.getParcelable("incoming", Intent::class.java)
+            else @Suppress("DEPRECATION") savedInstanceState?.getParcelable<Intent>("incoming")
+        if (restoredIncoming != null) incoming.add(restoredIncoming)
+        else if (
+            savedInstanceState == null &&
+                intent?.action in setOf(Intent.ACTION_VIEW, Intent.ACTION_SEND)
+        )
+            incoming.add(Intent(intent))
         io.execute {
             try {
                 store.seed()
                 dictionary.install()
-                val id = savedInstanceState?.getString("book")
-                runOnUiThread { if (id != null) open(store.book(id)) else library() }
+                val id =
+                    if (intent?.action == ContinueReadingWidget.OPEN)
+                        ContinueReadingWidget.target(this)
+                    else savedInstanceState?.getString("book")
+                val restoredBook = id?.let { runCatching { store.book(it) }.getOrNull() }
+                runOnUiThread {
+                    if (isDestroyed) return@runOnUiThread
+                    ready = true
+                    if (restoredBook != null) open(restoredBook) else library()
+                    consumeIncoming()
+                }
             } catch (t: Throwable) {
                 runOnUiThread { error(t) }
             }
@@ -155,9 +176,150 @@ class MainActivity : Activity() {
         out.putString("book", book?.id)
         out.putString("pendingExport", pendingExport?.id)
         out.putString("updateApk", updateApk?.path)
+        reader?.let {
+            out.putString(
+                "readerSession",
+                ReaderSession(it.viewport(), navigationPanel?.snapshot(), it.navigationHistory())
+                    .encode(),
+            )
+        }
+        (activeIncoming ?: incoming.firstOrNull())?.let { out.putParcelable("incoming", it) }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent.action == ContinueReadingWidget.OPEN) {
+            io.execute {
+                val target =
+                    ContinueReadingWidget.target(this)?.let {
+                        runCatching { store.book(it) }.getOrNull()
+                    }
+                runOnUiThread {
+                    if (!isDestroyed) {
+                        if (target != null) open(target) else library()
+                    }
+                }
+            }
+            return
+        }
+        if (intent.action !in setOf(Intent.ACTION_VIEW, Intent.ACTION_SEND)) return
+        if (incoming.size >= 8) {
+            toast(tr("正在处理文件，请稍后再试", "Finishing the current import. Try again shortly."))
+            return
+        }
+        incoming.add(Intent(intent))
+        consumeIncoming()
+    }
+
+    private fun consumeIncoming() {
+        if (!ready || importing || incoming.isEmpty() || isDestroyed) return
+        val request = incoming.removeFirst()
+        try {
+            ExternalPdf.uri(request)?.let { importPdf(it, true, request) }
+        } catch (t: Throwable) {
+            error(t)
+            consumeIncoming()
+        }
+    }
+
+    private fun importPdf(uri: Uri, external: Boolean, request: Intent? = null) {
+        importing = true
+        activeIncoming = request
+        var copied: File? = null
+        var imported: Book? = null
+        var encrypted = false
+        var title = "Imported PDF"
+        var digest: String? = null
+        val destination = if (external) "" else folder
+        workDetailed(
+            tr("导入 PDF…", "Importing PDF…"),
+            { cancel, report ->
+                try {
+                    title = ExternalPdf.name(this, uri)
+                    report(tr("复制到本地…", "Copying locally…"))
+                    val f =
+                        store.copyInput(uri, "pdf", cancel) { bytes ->
+                            report("${tr("复制到本地", "Copying locally")} · ${bytes/1024/1024} MB")
+                        }
+                    copied = f
+                    ExternalPdf.requirePdf(f)
+                    val hash = if (external) sha256(f) else null
+                    digest = hash
+                    imported = hash?.let(store::externalBook)
+                    if (imported != null) {
+                        f.delete()
+                        copied = null
+                    } else {
+                        report(tr("检查 PDF 页面…", "Checking PDF pages…"))
+                        imported =
+                            pdf.import(
+                                f,
+                                title,
+                                cancelled = cancel,
+                                progress = { done, total ->
+                                    report("${tr("检查页面", "Checking pages")} · $done / $total")
+                                },
+                            )
+                        imported!!.folder = destination
+                        store.metadata(imported!!)
+                        hash?.let { store.rememberExternal(it, imported!!) }
+                    }
+                } catch (t: Throwable) {
+                    if (
+                        t is com.tom_roush.pdfbox.pdmodel.encryption.InvalidPasswordException &&
+                            copied != null
+                    )
+                        encrypted = true
+                    else {
+                        if (imported == null) copied?.delete()
+                        if (t is SecurityException)
+                            throw java.io.IOException(
+                                tr(
+                                    "无法读取文件，请从原应用重新分享 PDF。",
+                                    "Cannot read this file. Share the PDF again from the source app.",
+                                ),
+                                t,
+                            )
+                        throw t
+                    }
+                }
+            },
+            {
+                if (encrypted)
+                    passwordImport(copied!!, title) { result ->
+                        importing = false
+                        activeIncoming = null
+                        result?.let {
+                            it.folder = destination
+                            store.metadata(it)
+                            digest?.let { hash -> store.rememberExternal(hash, it) }
+                            if (external) open(it) else library()
+                        }
+                        consumeIncoming()
+                    }
+                else {
+                    importing = false
+                    activeIncoming = null
+                    imported?.let { if (external) open(it) else library() }
+                    consumeIncoming()
+                }
+            },
+            {
+                importing = false
+                activeIncoming = null
+                importPdf(uri, external, request)
+            },
+            {
+                importing = false
+                activeIncoming = null
+            },
+        )
     }
 
     override fun onDestroy() {
+        feedbackDialog?.dismiss()
+        operationCancel?.set(true)
         navigationPanel?.dispose()
         navigationPanel = null
         readerPopup?.dismiss()
@@ -189,6 +351,7 @@ class MainActivity : Activity() {
 
     override fun onStop() {
         trimRenderMemory(true)
+        book?.let { ContinueReadingWidget.remember(this, it) }
         super.onStop()
     }
 
@@ -209,10 +372,13 @@ class MainActivity : Activity() {
     }
 
     override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+        val reopenFeedback = feedbackDialog?.isShowing == true
+        feedbackDialog?.dismiss()
         readerPopup?.dismiss()
         paperPopup?.dismiss()
         super.onConfigurationChanged(newConfig)
         if (book != null) showReader() else if (section == "settings") settings() else library()
+        if (reopenFeedback) root.post { if (!isDestroyed) feedback() }
     }
 
     private fun text(value: String, size: Float = 16f) =
@@ -314,29 +480,67 @@ class MainActivity : Activity() {
             .display()
     }
 
-    private fun work(label: String, job: (() -> Boolean) -> Unit, onDone: () -> Unit = {}) {
+    private fun work(label: String, job: (() -> Boolean) -> Unit, onDone: () -> Unit = {}) =
+        workDetailed(label, { cancelled, _ -> job(cancelled) }, onDone)
+
+    private fun workDetailed(
+        label: String,
+        job: (() -> Boolean, (String) -> Unit) -> Unit,
+        onDone: () -> Unit = {},
+        retry: (() -> Unit)? = null,
+        onFailure: () -> Unit = {},
+    ) {
         val cancelled = AtomicBoolean(false)
+        operationCancel = cancelled
         val dialog =
             ProgressDialog(this).apply {
                 setMessage(label)
                 setCancelable(false)
-                setButton(DialogInterface.BUTTON_NEGATIVE, tr("取消", "Cancel")) { _, _ ->
-                    cancelled.set(true)
-                }
+                setButton(DialogInterface.BUTTON_NEGATIVE, tr("取消", "Cancel")) { _, _ -> }
                 UiMotion.dialog(this, UiPalette(this@MainActivity, prefs.getInt("theme", 0)))
                 show()
             }
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener {
+            cancelled.set(true)
+            dialog.setMessage(tr("正在取消…", "Cancelling…"))
+            it.isEnabled = false
+        }
         io.execute {
+            var lastReport = 0L
             try {
-                job { cancelled.get() }
+                job({ cancelled.get() }) { message ->
+                    val now = SystemClock.elapsedRealtime()
+                    if (now - lastReport >= 120L && !cancelled.get()) {
+                        lastReport = now
+                        runOnUiThread {
+                            if (!isDestroyed && dialog.isShowing && !cancelled.get())
+                                dialog.setMessage(message)
+                        }
+                    }
+                }
                 runOnUiThread {
+                    if (operationCancel === cancelled) operationCancel = null
                     dialog.dismiss()
                     if (!isDestroyed) onDone()
                 }
             } catch (t: Throwable) {
                 runOnUiThread {
                     dialog.dismiss()
-                    error(t)
+                    onFailure()
+                    if (!isDestroyed) {
+                        if (cancelled.get() || t is java.io.InterruptedIOException)
+                            toast(tr("已取消", "Cancelled"))
+                        else
+                            AlertDialog.Builder(this)
+                                .setTitle(tr("操作未完成", "Operation incomplete"))
+                                .setMessage(translatedMessage(t.message ?: t.javaClass.simpleName))
+                                .setNegativeButton(tr("关闭", "Close"), null)
+                                .apply {
+                                    if (retry != null)
+                                        setPositiveButton(tr("重试", "Retry")) { _, _ -> retry() }
+                                }
+                                .display()
+                    }
                 }
             }
         }
@@ -346,6 +550,9 @@ class MainActivity : Activity() {
 
     private fun library() {
         closeNavigation()
+        reader?.persistPosition()
+        book?.let { ContinueReadingWidget.remember(this, it) }
+        ContinueReadingWidget.update(this)
         readerPopup?.dismiss()
         pageCovers?.close()
         pageCovers = null
@@ -370,7 +577,7 @@ class MainActivity : Activity() {
                 section,
                 folder,
                 search,
-                pdfOnly,
+                libraryFilter == "pdf",
                 store.libraryBooks(),
                 store.folders(),
                 pdf,
@@ -394,15 +601,7 @@ class MainActivity : Activity() {
                         }
                         "settings" -> settings()
                         "feedback" -> feedback()
-                        "filter" ->
-                            choose(
-                                tr("类型筛选", "Filter"),
-                                listOf(tr("全部文件", "All documents"), "PDF", tr("笔记", "Notes")),
-                            ) { i ->
-                                pdfOnly = i == 1
-                                section = if (i == 2) "notes" else "home"
-                                library()
-                            }
+                        "filter" -> libraryFilterMenu()
                         "trash" -> {
                             section = "trash"
                             folder = ""
@@ -442,8 +641,37 @@ class MainActivity : Activity() {
                 onQuery = { search = it },
             )
         screen.searchVisible = searchVisible
+        screen.typeFilter = libraryFilter
         root.addView(screen, LinearLayout.LayoutParams(-1, -1))
         root.requestApplyInsets()
+    }
+
+    private fun libraryFilterMenu() {
+        val screen = root.getChildAt(0) as? LibraryScreen ?: return
+        val anchor = actionAnchor(tr("筛选", "Filter")) ?: return
+        paperPopup?.dismiss()
+        val menu =
+            ReaderPopover(
+                this,
+                anchor,
+                prefs.getInt("theme", 0),
+                english,
+                208f,
+                prefs.getInt("buttonSize", 68),
+            )
+        menu.content.addView(menu.label(tr("文件类型", "Document type"), 12f, true))
+        listOf("all" to tr("全部文件", "All documents"), "pdf" to "PDF", "notes" to tr("笔记", "Notes"))
+            .forEach { (value, label) ->
+                menu.item(
+                    "",
+                    if (libraryFilter == value) "$label  ✓" else label,
+                    selected = libraryFilter == value,
+                ) {
+                    libraryFilter = value
+                    screen.applyTypeFilter(value)
+                }
+            }
+        paperPopup = menu.show()
     }
 
     private fun actionAnchor(title: String, view: View = root): View? {
@@ -548,16 +776,23 @@ class MainActivity : Activity() {
     }
 
     private fun open(b: Book) {
+        reader?.persistPosition()
+        if (book != null && book?.id != b.id) restoringSession = null
         book = b
         b.opened = System.currentTimeMillis()
         store.metadata(b)
+        ContinueReadingWidget.remember(this, b)
         activePage = b.current
         showReader()
     }
 
     private fun showReader() {
         val b = book ?: return
-        val navigationState = if (reader?.book?.id == b.id) navigationPanel?.snapshot() else null
+        val session = restoringSession
+        restoringSession = null
+        val navigationState =
+            session?.navigation
+                ?: if (reader?.book?.id == b.id) navigationPanel?.snapshot() else null
         val backHistory =
             if (reader?.book?.id == b.id) reader?.navigationHistory().orEmpty() else emptyList()
         closeNavigation()
@@ -732,7 +967,7 @@ class MainActivity : Activity() {
             }
         }
         view.onToolChanged()
-        view.onChanged = {}
+        view.onChanged = { navigationPanel?.annotationsChanged() }
         view.onError = { error(it) }
         view.onActivePage = {
             activePage = it
@@ -799,14 +1034,17 @@ class MainActivity : Activity() {
         view.onNavigationChanged = { hasBack ->
             returnChip.visibility = if (hasBack && !view.searching) View.VISIBLE else View.GONE
         }
-        view.restoreNavigationHistory(backHistory)
+        view.restoreNavigationHistory(session?.history ?: backHistory)
 
         readerHost = canvas
         root.addView(canvas, LinearLayout.LayoutParams(-1, 0, 1f))
-        if (navigationState != null)
-            canvas.post {
-                if (reader === view) showNavigation(navigationState.searching, navigationState)
+        canvas.post {
+            if (reader === view) {
+                session?.viewport?.let(view::restoreViewport)
+                if (navigationState != null)
+                    showNavigation(navigationState.searching, navigationState)
             }
+        }
     }
 
     private fun undo(redo: Boolean) {
@@ -1233,6 +1471,7 @@ class MainActivity : Activity() {
         val width =
             menu.ui.px(264f).coerceAtMost((resources.displayMetrics.widthPixels * .46f).toInt())
         readerHost?.addView(panel.view, FrameLayout.LayoutParams(width, -1, Gravity.START))
+        UiMotion.enter(panel.view, 0f)
         r.layoutParams = FrameLayout.LayoutParams(-1, -1).apply { leftMargin = width }
         readerTools["list"]?.isSelected = true
     }
@@ -1418,19 +1657,28 @@ class MainActivity : Activity() {
     private fun share(b: Book) {
         val dir = File(cacheDir, "exports").apply { mkdirs() }
         val target = File(dir, "${uid()}.pdf")
-        work(tr("合成 PDF…", "Composing PDF…"), { cancel -> pdf.export(b, target, cancel) }) {
-            val uri = FileProvider.getUriForFile(this, "$packageName.files", target)
-            startActivity(
-                Intent.createChooser(
-                    Intent(Intent.ACTION_SEND).apply {
-                        type = "application/pdf"
-                        putExtra(Intent.EXTRA_STREAM, uri)
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    },
-                    tr("分享 PDF", "Share PDF"),
+        workDetailed(
+            tr("合成 PDF…", "Composing PDF…"),
+            { cancel, report ->
+                pdf.export(b, target, cancel) { done, total ->
+                    report("${tr("合成页面", "Composing pages")} · $done / $total")
+                }
+            },
+            {
+                val uri = FileProvider.getUriForFile(this, "$packageName.files", target)
+                startActivity(
+                    Intent.createChooser(
+                        Intent(Intent.ACTION_SEND).apply {
+                            type = "application/pdf"
+                            putExtra(Intent.EXTRA_STREAM, uri)
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        },
+                        tr("分享 PDF", "Share PDF"),
+                    )
                 )
-            )
-        }
+            },
+            onFailure = { target.delete() },
+        )
     }
 
     @Deprecated("Platform result bridge")
@@ -1442,39 +1690,7 @@ class MainActivity : Activity() {
         }
         val uri = data?.data ?: return
         when (requestCode) {
-            10 -> {
-                var title = "Imported PDF"
-                contentResolver
-                    .query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
-                    ?.use { if (it.moveToFirst()) title = it.getString(0).removeSuffix(".pdf") }
-                var copied: File? = null
-                val name = title
-                work(
-                    tr("导入 PDF…", "Importing PDF…"),
-                    { cancel ->
-                        try {
-                            val f = store.copyInput(uri, "pdf", cancel)
-                            copied = f
-                            val b = pdf.import(f, name, cancelled = cancel)
-                            b.folder = folder
-                            store.metadata(b)
-                        } catch (t: Throwable) {
-                            if (
-                                t is
-                                    com.tom_roush.pdfbox.pdmodel.encryption.InvalidPasswordException &&
-                                    copied != null
-                            ) {
-                                runOnUiThread { passwordImport(copied!!, name) }
-                            } else {
-                                copied?.delete()
-                                throw t
-                            }
-                        }
-                    },
-                ) {
-                    library()
-                }
-            }
+            10 -> importPdf(uri, false)
             11 -> {
                 if (reader?.readOnly == true) return
                 val b = book ?: return
@@ -1527,11 +1743,14 @@ class MainActivity : Activity() {
                 val b = pendingExport ?: return
                 pendingExport = null
                 val temp = File(cacheDir, "export-${uid()}.pdf")
-                work(
+                workDetailed(
                     tr("合成与保存 PDF…", "Composing and saving PDF…"),
-                    { cancel ->
+                    { cancel, report ->
                         try {
-                            pdf.export(b, temp, cancel)
+                            pdf.export(b, temp, cancel) { done, total ->
+                                report("${tr("合成页面", "Composing pages")} · $done / $total")
+                            }
+                            report(tr("保存 PDF…", "Saving PDF…"))
                             contentResolver.openOutputStream(uri, "wt")!!.use { out ->
                                 temp.inputStream().use {
                                     store.copyLimited(it, out, 1024L * 1024 * 1024, cancel)
@@ -1549,9 +1768,8 @@ class MainActivity : Activity() {
                             temp.delete()
                         }
                     },
-                ) {
-                    toast(tr("PDF 已保存", "PDF saved"))
-                }
+                    { toast(tr("PDF 已保存", "PDF saved")) },
+                )
             }
             13 ->
                 work(
@@ -1591,56 +1809,66 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun passwordImport(f: File, title: String) {
+    private fun passwordImport(
+        f: File,
+        title: String,
+        complete: (Book?) -> Unit = { it?.let(::open) },
+    ) {
         val edit =
             EditText(this).apply {
                 inputType =
                     android.text.InputType.TYPE_CLASS_TEXT or
                         android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
             }
-        val d =
+        fun cancel() {
+            f.delete()
+            complete(null)
+        }
+        val dialog =
             AlertDialog.Builder(this)
                 .setTitle(tr("PDF 密码", "PDF password"))
                 .setView(edit)
-                .setNegativeButton(tr("取消", "Cancel")) { _, _ -> f.delete() }
+                .setNegativeButton(tr("取消", "Cancel")) { _, _ -> cancel() }
                 .setPositiveButton(tr("导入", "Import"), null)
                 .create()
-        d.setOnCancelListener { f.delete() }
-        d.setOnShowListener {
-            d.getButton(-1).setOnClickListener {
+        dialog.setOnCancelListener { cancel() }
+        dialog.setOnShowListener {
+            dialog.getButton(-1).setOnClickListener {
                 val password = edit.text.toString()
-                d.dismiss()
-                var imported: Book? = null
-                work(
+                dialog.dismiss()
+                var result: Book? = null
+                var wrong = false
+                workDetailed(
                     tr("解锁 PDF…", "Unlocking PDF…"),
-                    { cancel ->
+                    { cancelled, report ->
                         try {
-                            imported = pdf.import(f, title, password, cancel)
-                        } catch (t: Throwable) {
-                            if (
-                                t
-                                    is
-                                    com.tom_roush.pdfbox.pdmodel.encryption.InvalidPasswordException
-                            )
-                                runOnUiThread { passwordImport(f, title) }
-                            else {
-                                f.delete()
-                                throw t
-                            }
+                            result =
+                                pdf.import(f, title, password, cancelled) { done, total ->
+                                    report("$done / $total")
+                                }
+                        } catch (
+                            t: com.tom_roush.pdfbox.pdmodel.encryption.InvalidPasswordException) {
+                            wrong = true
                         }
                     },
-                ) {
-                    imported?.let { open(it) }
-                }
+                    {
+                        if (wrong) {
+                            toast(tr("密码不正确，请重试", "Incorrect password. Try again."))
+                            passwordImport(f, title, complete)
+                        } else complete(result)
+                    },
+                    onFailure = { cancel() },
+                )
             }
         }
-        UiMotion.dialog(d, UiPalette(this, prefs.getInt("theme", 0)))
-        d.show()
+        UiMotion.dialog(dialog, UiPalette(this, prefs.getInt("theme", 0)))
+        dialog.show()
     }
 
     private var settingsTab = "appearance"
 
     private fun settings(tab: String = settingsTab) {
+        closeNavigation()
         readerPopup?.dismiss()
         paperPopup?.dismiss()
         section = "settings"
@@ -1907,12 +2135,21 @@ class MainActivity : Activity() {
     // API 33+ uses the registered OnBackInvokedCallback; this is the API 29–32 fallback.
     @android.annotation.SuppressLint("GestureBackNavigation")
     @Deprecated("Platform back")
-    override fun onBackPressed() {
-        if (book != null) library()
+    override fun onBackPressed() = back()
+
+    private fun back() {
+        val insets = ViewCompat.getRootWindowInsets(root)
+        if (insets?.isVisible(WindowInsetsCompat.Type.ime()) == true) {
+            WindowInsetsControllerCompat(window, root).hide(WindowInsetsCompat.Type.ime())
+            root.clearFocus()
+        } else if (paperPopup?.isShowing == true) paperPopup?.dismiss()
+        else if (readerPopup?.isShowing == true) readerPopup?.dismiss()
+        else if (navigationPanel != null) closeNavigation()
+        else if (book != null) library()
         else if (section == "settings") {
             section = "home"
             library()
-        } else super.onBackPressed()
+        } else finish()
     }
 
     private fun licenses() {
@@ -1944,112 +2181,143 @@ class MainActivity : Activity() {
             .display()
     }
 
+    private var feedbackDialog: Dialog? = null
+    private var feedbackStatus: ((String) -> Unit)? = null
+    private var submittingFeedback = false
+    private var feedbackSubmitButton: View? = null
+
+    private fun feedbackNotice(message: String) {
+        feedbackStatus?.invoke(message)
+        toast(message)
+    }
+
+    private fun submitFeedback() {
+        if (submittingFeedback) return
+        val delivery = GitHubFeedback(this)
+        val draft = delivery.draft()
+        if (draft.body.isBlank() || draft.body.codePointCount(0, draft.body.length) > 1000) {
+            feedbackStatus?.invoke(
+                tr("请填写 1–1000 字的问题或建议。", "Enter a message of 1–1000 characters.")
+            )
+            return
+        }
+        if (!Network.hasInternet(this)) {
+            feedbackNotice(tr("未连接互联网，草稿已保留。", "No internet connection. Draft kept."))
+            return
+        }
+        val payload = delivery.prepare()
+        submittingFeedback = true
+        feedbackSubmitButton?.isEnabled = false
+        feedbackStatus?.invoke(tr("正在提交…", "Submitting…"))
+        io.execute {
+            val result = runCatching { Network(this).submitFeedback(payload, Network.Task()) }
+            result.getOrNull()?.let { delivery.acknowledge(draft.id, it) }
+            runOnUiThread {
+                submittingFeedback = false
+                feedbackSubmitButton?.isEnabled = true
+                if (!isDestroyed) {
+                    feedbackNotice(
+                        if (result.isSuccess) tr("已收到反馈", "Feedback received")
+                        else if (!Network.hasInternet(this))
+                            tr("未连接互联网，草稿已保留。", "No internet connection. Draft kept.")
+                        else
+                            tr(
+                                "提交失败，请检查网络后重试。草稿已保留。",
+                                "Could not submit. Check your connection and try again. Draft kept.",
+                            )
+                    )
+                }
+            }
+        }
+    }
+
     private fun feedback() {
-        val ui =
+        val delivery = GitHubFeedback(this)
+        val menu =
             DesignScreen(this, prefs.getInt("theme", 0), prefs.getInt("buttonSize", 68), english)
-        ui.configure(root.width, root.height)
-        val palette = ui.palette
+                .apply {
+                    configure(
+                        root.width,
+                        root.height,
+                        UiSizing.scale(prefs.getInt("buttonSize", 68)),
+                    )
+                }
+        feedbackDialog?.dismiss()
         val dialog = Dialog(this)
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-        val width = min(540f, ui.designWidth - 52f)
-        val card =
-            FrameLayout(this).apply { background = ui.background(palette.color("panel"), 22f) }
-        val size = prefs.getInt("buttonSize", 68).toFloat()
-        val pad = 28f
-        val inner = width - pad * 2
-        val header = 22f
-        val cancel = ui.action(tr("取消", "Cancel")) { dialog.dismiss() }
-        ui.box(cancel, ui.label(tr("取消", "Cancel"), 16f, palette.color("muted")), 0f, 0f, 80f, size)
-        ui.box(card, cancel, pad, header, 80f, size)
-        ui.box(
-            card,
-            ui.label(tr("意见反馈", "Feedback"), 23f, palette.ink, 500).apply {
-                gravity = Gravity.CENTER
-            },
-            pad + 92f,
-            header,
-            inner - 184f,
-            size,
+        feedbackDialog = dialog
+        val column =
+            column().apply { setPadding(menu.px(24f), menu.px(20f), menu.px(24f), menu.px(20f)) }
+        fun label(value: String, size: Float = 14f) =
+            menu.label(value, size).apply {
+                maxLines = Int.MAX_VALUE
+                ellipsize = null
+                setPadding(0, menu.px(8f), 0, menu.px(8f))
+            }
+        fun action(value: String, primary: Boolean = false, run: () -> Unit): View =
+            menu.action(value, run).apply {
+                background =
+                    menu.background(
+                        if (primary) menu.palette.accent else menu.palette.color("thumb"),
+                        12f,
+                    )
+                addView(
+                    menu
+                        .label(value, 16f, if (primary) Color.WHITE else menu.palette.ink, 500)
+                        .apply {
+                            gravity = Gravity.CENTER
+                            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+                        },
+                    FrameLayout.LayoutParams(-1, -1),
+                )
+                layoutParams =
+                    LinearLayout.LayoutParams(-1, menu.px(if (primary) 48f else 42f)).apply {
+                        topMargin = menu.px(8f)
+                    }
+            }
+        val header = row()
+        header.addView(
+            menu.label(tr("意见反馈", "Feedback"), 22f, menu.palette.ink, 500),
+            LinearLayout.LayoutParams(0, menu.px(42f), 1f),
         )
-        var y = header + size + 20f
-        ui.box(card, ui.label(tr("问题和建议", "Message"), 17f, palette.ink, 500), pad, y, inner, 26f)
-        y += 38f
+        header.addView(
+            menu
+                .action(tr("关闭", "Close")) { dialog.dismiss() }
+                .apply {
+                    addView(
+                        ReaderGlyph(this@MainActivity, "close").apply { tint = menu.palette.ink },
+                        FrameLayout.LayoutParams(menu.px(22f), menu.px(22f), Gravity.CENTER),
+                    )
+                },
+            LinearLayout.LayoutParams(menu.px(42f), menu.px(42f)),
+        )
+        column.addView(header)
+        column.addView(
+            label(
+                    tr(
+                        "反馈会公开到 GitHub，请勿填写联系方式或私人文档。",
+                        "Feedback is public on GitHub. Leave out contact details and private documents.",
+                    ),
+                    13f,
+                )
+                .apply { setTextColor(menu.palette.color("muted")) }
+        )
+        column.addView(label(tr("问题和建议", "Message"), 15f))
         val body =
             EditText(this).apply {
-                hint = tr("请描述遇到的问题，或告诉我们你的建议。", "Your thoughts, up to 1000 characters.")
-                gravity = Gravity.TOP
+                tag = "feedback-message"
+                hint = tr("问题或建议，最多 1000 字", "Message, up to 1000 characters")
                 typeface = UiFonts.get(this@MainActivity)
-                setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, 16f * ui.unit)
-                setTextColor(palette.ink)
-                setHintTextColor(palette.color("muted"))
-                setPadding(ui.px(18f), ui.px(18f), ui.px(18f), ui.px(18f))
-                background = ui.background(palette.paper, 12f, palette.color("rule"))
-                filters = arrayOf(InputFilter.LengthFilter(2000))
-                setText(prefs.getString("feedbackBody", ""))
-            }
-        ui.box(card, body, pad, y, inner, 180f)
-        y += 204f
-        val contactTitle = ui.label(tr("联系方式", "Contact"), 17f, palette.ink, 500)
-        ui.box(card, contactTitle, pad, y, if (english) 65f else 68f, 26f)
-        ui.box(
-            card,
-            ui.label(tr("选填", "optional"), 13f, palette.color("muted")),
-            pad + (if (english) 74f else 77f),
-            y,
-            inner - 90f,
-            26f,
-        )
-        y += 38f
-        val contact =
-            EditText(this).apply {
-                hint = tr("邮箱、微信或 QQ", "Email or another contact method")
-                setSingleLine()
-                typeface = UiFonts.get(this@MainActivity)
-                setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, 16f * ui.unit)
-                setTextColor(palette.ink)
-                setHintTextColor(palette.color("muted"))
-                setPadding(ui.px(18f), 0, ui.px(18f), 0)
-                background = ui.background(palette.paper, 12f, palette.color("rule"))
-                filters = arrayOf(InputFilter.LengthFilter(240))
-                setText(prefs.getString("feedbackContact", ""))
-            }
-        ui.box(card, contact, pad, y, inner, size)
-        y += size
-        val error =
-            ui.label("", 13f, palette.ink).apply {
-                maxLines = 2
+                setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, 16f * menu.unit)
+                setTextColor(colors[2])
+                setHintTextColor(menu.palette.color("muted"))
                 gravity = Gravity.TOP
-                visibility = View.GONE
+                minLines = 4
+                maxLines = 8
+                setText(delivery.draft().body)
+                background = menu.background(menu.palette.color("thumb"), 12f)
+                setPadding(menu.px(14f), menu.px(12f), menu.px(14f), menu.px(12f))
             }
-        ui.box(card, error, pad, y + 10f, inner, 40f)
-        val submitTop = y + 20f
-        val submit = ui.action(tr("提交反馈", "Send feedback")) {}
-        submit.background = ui.background(palette.color("orange"), 14f)
-        val submitLabel =
-            ui.label(tr("提交反馈", "Send feedback"), 16f, palette.color("action-ink"), 500).apply {
-                gravity = Gravity.CENTER
-            }
-        ui.box(submit, submitLabel, 0f, 0f, inner, size)
-        ui.box(card, submit, pad, submitTop, inner, size)
-        var baseHeight = submitTop + size + 28f
-        fun showError(message: String) {
-            error.text = translatedMessage(message)
-            error.visibility = View.VISIBLE
-            submit.layoutParams =
-                (submit.layoutParams as FrameLayout.LayoutParams).apply {
-                    topMargin = ui.px(submitTop + 40f)
-                }
-            dialog.window?.setLayout(ui.px(width), ui.px(baseHeight + 40f))
-        }
-        fun save() {
-            prefs
-                .edit()
-                .putString("feedbackBody", body.text.toString())
-                .putString("feedbackContact", contact.text.toString())
-                .putString("feedbackId", uid())
-                .commit()
-        }
-        val watcher =
+        body.addTextChangedListener(
             object : TextWatcher {
                 override fun beforeTextChanged(
                     s: CharSequence?,
@@ -2059,80 +2327,72 @@ class MainActivity : Activity() {
                 ) {}
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    save()
+                    delivery.save(s.toString())
                 }
 
-                override fun afterTextChanged(e: Editable?) {}
+                override fun afterTextChanged(s: Editable?) {}
             }
-        body.addTextChangedListener(watcher)
-        contact.addTextChangedListener(watcher)
-        submit.setOnClickListener {
-            val message = body.text.toString().trim()
-            val address = contact.text.toString().trim()
-            if (
-                message.isBlank() ||
-                    message.codePointCount(0, message.length) > 1000 ||
-                    address.codePointCount(0, address.length) > 120
-            ) {
-                showError(
-                    tr(
-                        "正文必填且最多 1000 字，联系方式最多 120 字。",
-                        "Message: 1–1000 characters; contact: up to 120.",
-                    )
+        )
+        column.addView(body, LinearLayout.LayoutParams(-1, menu.px(124f)))
+        val status =
+            label(tr("提交后会自动告知结果。", "You will receive a confirmation after submitting."), 13f)
+        status.tag = "feedback-status"
+        column.addView(status)
+        feedbackStatus = {
+            status.text = it
+            if (delivery.draft().body.isEmpty()) body.setText("")
+        }
+        feedbackSubmitButton =
+            action(tr("提交反馈", "Submit feedback"), true) { submitFeedback() }
+                .apply { isEnabled = !submittingFeedback }
+        column.addView(feedbackSubmitButton)
+        val scroll =
+            ScrollView(this).apply {
+                addView(column)
+                isFillViewport = false
+            }
+        dialog.setContentView(scroll)
+        UiMotion.dialog(dialog, menu.palette)
+        dialog.window?.apply {
+            setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+            setBackgroundDrawable(
+                menu.background(menu.palette.color("panel"), 22f, menu.palette.color("rule"))
+            )
+            setDimAmount(.2f)
+        }
+        dialog.show()
+        val host = dialog.window!!.decorView
+        val observer = host.viewTreeObserver
+        var lastWidth = 0
+        var lastHeight = 0
+        val resize =
+            ViewTreeObserver.OnGlobalLayoutListener {
+                val frame = Rect().also { host.getWindowVisibleDisplayFrame(it) }
+                val width = min(menu.px(520f), frame.width() - menu.px(32f)).coerceAtLeast(1)
+                column.measure(
+                    View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 )
-                return@setOnClickListener
-            }
-            val id =
-                prefs.getString("feedbackId", null)
-                    ?: uid().also { prefs.edit().putString("feedbackId", it).commit() }
-            val task = Network.Task()
-            liveTask = task
-            submit.isEnabled = false
-            submitLabel.text = tr("正在提交…", "Sending…")
-            io.execute {
-                try {
-                    val receipt =
-                        Network(this)
-                            .submitFeedback(
-                                BuildConfig.FEEDBACK_ENDPOINT,
-                                message,
-                                address,
-                                id,
-                                task,
-                            )
-                    runOnUiThread {
-                        if (prefs.getString("feedbackId", "") == id)
-                            prefs
-                                .edit()
-                                .remove("feedbackBody")
-                                .remove("feedbackContact")
-                                .remove("feedbackId")
-                                .commit()
-                        dialog.dismiss()
-                        toast("${tr("已提交，回执","Accepted, receipt")}: $receipt")
-                    }
-                } catch (t: Throwable) {
-                    runOnUiThread {
-                        submit.isEnabled = true
-                        submitLabel.text = tr("提交反馈", "Send feedback")
-                        showError(t.message ?: tr("发送失败，草稿已保留。", "Sending failed; draft kept."))
-                    }
-                } finally {
-                    liveTask = null
+                val height =
+                    min(column.measuredHeight, frame.height() - menu.px(24f)).coerceAtLeast(1)
+                if (width != lastWidth || height != lastHeight) {
+                    lastWidth = width
+                    lastHeight = height
+                    dialog.window?.setLayout(width, height)
                 }
             }
+        observer.addOnGlobalLayoutListener(resize)
+        dialog.setOnDismissListener {
+            if (observer.isAlive) observer.removeOnGlobalLayoutListener(resize)
+            if (feedbackDialog === dialog) {
+                feedbackDialog = null
+                feedbackStatus = null
+                feedbackSubmitButton = null
+            }
         }
-        dialog.setContentView(card)
-        dialog.setCanceledOnTouchOutside(true)
-        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-        UiMotion.dialog(dialog, UiPalette(this, prefs.getInt("theme", 0)))
-        dialog.show()
-        dialog.window?.apply {
-            setBackgroundDrawableResource(android.R.color.transparent)
-            setLayout(ui.px(width), ui.px(baseHeight))
-            setGravity(Gravity.CENTER)
-        }
-        cancel.requestFocus()
+        resize.onGlobalLayout()
+        header.isFocusableInTouchMode = true
+        header.requestFocus()
     }
 
     private fun checkUpdate() {

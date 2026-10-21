@@ -282,7 +282,9 @@ class ReadingModeTest {
                 MotionEvent.obtain(now, SystemClock.uptimeMillis(), action, x, y, 0).apply {
                     source = InputDevice.SOURCE_TOUCHSCREEN
                 }
-            assertTrue(inst.uiAutomation.injectInputEvent(e, true))
+            // Queue DOWN without waiting for a rendered frame: synchronous injection can turn a
+            // 35 ms tap into a long press when PDF rendering occupies the emulator's input thread.
+            assertTrue(inst.uiAutomation.injectInputEvent(e, action == MotionEvent.ACTION_UP))
             e.recycle()
             if (action == MotionEvent.ACTION_DOWN) SystemClock.sleep(hold)
         }
