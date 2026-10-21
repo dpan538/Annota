@@ -10,7 +10,7 @@
   "bytes": 74982340,
   "buildType": "debug",
   "productionSigned": false,
-  "publishedRelease": false,
+  "publishedRelease": true,
   "clientDate": "2026-10-21",
   "clientTimezone": "Australia/Brisbane",
   "buttonSizes": [
@@ -94,5 +94,14 @@
   "largeReadingLookupButtonSize": 68,
   "largestControlsAndActualImeVerified": true,
   "largeAnnotationLookupButtonSize": 76,
-  "screenshotCount": 51
+  "screenshotCount": 55,
+  "sourceCommit": "9ee3536d8705479e6fc5afbeeed22f0c0a4fa044",
+  "releaseUrl": "https://github.com/dpan538/Annota/releases/tag/v0.1.8-dev",
+  "releasePublishedAt": "2026-10-21T07:37:57Z",
+  "anonymousGithubDownloadVerified": true,
+  "nativePreviewUpdateInstallVerified": true,
+  "updateInstallEvidence": "android/verification/reading-update-install.json",
+  "updateTestOrigin": "original public 0.1.7-dev versionCode 8; real public download and Android system installer upgrade to versionCode 9",
+  "featureScreenshotCount": 51,
+  "updateScreenshotCount": 4
 }

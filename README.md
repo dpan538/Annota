@@ -22,7 +22,7 @@
 
 ## 下载
 
-[下载安装包 ↗](https://github.com/dpan538/Annota/releases/download/v0.1.7-dev/Annota-0.1.7-dev.apk) · [固定下载页](DOWNLOAD.md)
+[下载安装包 ↗](https://github.com/dpan538/Annota/releases/download/v0.1.8-dev/Annota-0.1.8-dev.apk) · [固定下载页](DOWNLOAD.md)
 
 直接点击，或复制下载页中的链接到平板浏览器。下载完成后按系统提示安装。当前为开发测试包，尚非正式版。
 
@@ -112,7 +112,7 @@ npm run test:reader && npm run test:guide && npm run test:library
 python3 design/dictionary/test_lookup.py
 ```
 
-仪器测试会重置书库，仅在专用模拟器运行；更新校验需先放入同签名夹具。浏览器测试需先构建原型，自动断言与截图复核共同验收。实际结果、性能边界与剩余工作见 [验收记录](docs/CONTINUOUS-READER-ACCEPTANCE.md)、[测试 log](log/README.md) 和 [流程审计](docs/FLOW-AUDIT.md)。
+仪器测试会重置书库，仅在专用模拟器运行；更新校验需先放入同签名夹具。浏览器测试需先构建原型，自动断言与截图复核共同验收。实际结果、性能边界与剩余工作见 [验收记录](docs/READING-MODE-ACCEPTANCE.md)、[测试 log](log/README.md) 和 [流程审计](docs/FLOW-AUDIT.md)。
 
 ## 反馈
 
@@ -132,4 +132,4 @@ A local-first PDF reader and handwriting notebook for the Xiaomi Pad 9 Pro Max. 
 
 Read mode has a slim toolbar and only Original / Soft / Clear display presets. Tap the document to toggle chrome, long press for offline lookup, and tap Annotate to restore the previous tool.
 
-Development APK available through [GitHub Releases](https://github.com/dpan538/Annota/releases/tag/v0.1.7-dev); Xiaomi hardware, production signing and the stable-update flow remain pending. MIT for code; CC BY-NC 4.0 for original artwork and the guide.
+Development APK available through [GitHub Releases](https://github.com/dpan538/Annota/releases/tag/v0.1.8-dev); Xiaomi hardware, production signing and the stable-update flow remain pending. MIT for code; CC BY-NC 4.0 for original artwork and the guide.

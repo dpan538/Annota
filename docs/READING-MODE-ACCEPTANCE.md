@@ -38,3 +38,9 @@
 - [BOOX 刷新设置](https://booxsupport.zendesk.com/hc/en-us/articles/10701492644372-Refresh-Settings)：水墨屏清残影的全刷与普通平板不同，本轮不引入全屏闪刷。
 
 这些是本产品的实现取舍，不代表使用了厂商专有算法，也不承诺护眼或硬件延迟改善。
+
+## 公开交付
+
+已发布 [0.1.8-dev 开发测试预览](https://github.com/dpan538/Annota/releases/tag/v0.1.8-dev)，源码标签对应 `reading-build.json` 的 sourceCommit。APK、SHA256SUMS.txt、annota-update.json 三附件公开可读；匿名完整下载后 SHA-256、ZIP/资源、开发证书、安装与冷启动均通过。它仍是开发签名 Pre-release，旧公开 0.1.7 原件保留。
+
+原始公开 0.1.7 客户端已从应用内检查/下载公开 0.1.8，经真实 Android 系统安装器完成 code 8 → 9。最终已安装 APK 与公开原件一致，文档状态、元数据、阅读位置和外观/阅读偏好快照保持，待安装记录清理。ADB 只建立旧版起点，没有替代本次升级；来源安装权限此前已授予。回执为 `reading-update-install.json`，另存四张系统流程原生截图，连同 51 张界面截图共 55 张。

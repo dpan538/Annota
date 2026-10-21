@@ -8,9 +8,13 @@
 
 0.1.5 开发/预览包读取最近 30 条 Release，包括非草稿 Pre-release，以清单的整数 versionCode 选择更高版本；正式生产包保持 `/releases/latest` 稳定通道。没有更高版本时正常提示。原始 0.1.4 因旧逻辑限制需要手动覆盖一次，之后可在应用内检查测试更新。
 
-## 0.1.7 当前测试版
+## 0.1.8 当前测试版
 
-当前下载为 [0.1.7-dev](https://github.com/dpan538/Annota/releases/tag/v0.1.7-dev)，versionCode 8，继承 0.1.6 本地候选内容并补齐三档控件和稳定菜单。保持同一开发签名，真实 APK、SHA256SUMS.txt 与 annota-update.json 三附件公开可读；完整匿名 APK 下载、签名/资源、安装与冷启动通过，见 `android/verification/ui-sizing-apk-public-check.json`。57 项原生回归、两项完整视觉流程与源码身份见[本轮验收](UI-SIZING-ACCEPTANCE.md)。原始公开 0.1.5 的原生检查、下载、校验及真实 Android 安装器升级 6 → 8 也已通过，文档状态、元数据、阅读位置和外观偏好保持，见 `ui-sizing-update-install.json`。不是正式生产签名稳定版。
+当前下载为 [0.1.8-dev](https://github.com/dpan538/Annota/releases/tag/v0.1.8-dev)，versionCode 9，使用原开发证书的 Pre-release。独立纯阅读与三个精简预览卡保持只读和阅读位置；详见[验收](READING-MODE-ACCEPTANCE.md)。63 项原生回归、四项独立视觉/界面流程通过；三附件摘要及公开完整下载/安装/冷启动回执为 `android/verification/reading-*public*.json`。原始公开 0.1.7 通过原生入口与实际 Android 安装器完成 8 → 9，文档/进度/外观及阅读偏好保持，见 `reading-update-install.json`。历史版本附件与证书连续性保留，不改变正式稳定通道。
+
+## 0.1.7 历史测试版
+
+该次下载为 [0.1.7-dev](https://github.com/dpan538/Annota/releases/tag/v0.1.7-dev)，versionCode 8，继承 0.1.6 本地候选内容并补齐三档控件和稳定菜单。保持同一开发签名，真实 APK、SHA256SUMS.txt 与 annota-update.json 三附件公开可读；完整匿名 APK 下载、签名/资源、安装与冷启动通过，见 `android/verification/ui-sizing-apk-public-check.json`。57 项原生回归、两项完整视觉流程与源码身份见[本轮验收](UI-SIZING-ACCEPTANCE.md)。原始公开 0.1.5 的原生检查、下载、校验及真实 Android 安装器升级 6 → 8 也已通过，文档状态、元数据、阅读位置和外观偏好保持，见 `ui-sizing-update-install.json`。不是正式生产签名稳定版。
 
 ## 用户流程
 

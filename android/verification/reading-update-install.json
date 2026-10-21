@@ -1,0 +1,56 @@
+{
+  "device": "API36 ARM64 dedicated emulator",
+  "startVersionCode": 8,
+  "startVersionName": "0.1.7-dev",
+  "targetVersionCode": 9,
+  "targetVersionName": "0.1.8-dev",
+  "startIsOriginalPublished017": true,
+  "sourcePermissionAlreadyGranted": true,
+  "actualSystemInstallerUsed": true,
+  "physicalXiaomiEvidence": false,
+  "steps": [
+    {
+      "utc": "2026-10-21T07:39:10.959911+00:00",
+      "action": "Installed the original published 0.1.7 APK only as the starting client; retained emulator test data."
+    },
+    {
+      "utc": "2026-10-21T07:39:24.256826+00:00",
+      "action": "Original 0.1.7 client discovered public 0.1.8-dev through native Check update."
+    },
+    {
+      "utc": "2026-10-21T07:39:46.149032+00:00",
+      "action": "Native client downloaded the public APK and verified hash, package, version and signing identity."
+    },
+    {
+      "utc": "2026-10-21T07:40:06.553968+00:00",
+      "action": "Confirmed Update in the real Android system installer and opened the upgraded app; no adb install performed for this upgrade."
+    },
+    {
+      "utc": "2026-10-21T07:40:15.780009+00:00",
+      "action": "Exact public APK installed; document states, metadata, reading positions and appearance settings retained; pending update cleared."
+    }
+  ],
+  "pendingManifestAfterDownload": {
+    "code": 9,
+    "name": "0.1.8-dev",
+    "file": "annota-9.apk",
+    "sha": "220992434006c09c8a1f89b09670c51584fedb84726d7c1554e9d62e51238336",
+    "certificate": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18"
+  },
+  "installedApkSha256": "220992434006c09c8a1f89b09670c51584fedb84726d7c1554e9d62e51238336",
+  "bookStateHashes": {
+    "guide": "a1a2cd049f751782a8ea2cc4ad8270b52f914ca409b2c0634f39e791b1712dbc",
+    "attention": "3710b1dee433172cf48147eaaf938bd369e3168211ddf3c27d8a5168845acd6f"
+  },
+  "bookCount": 2,
+  "appearancePreferences": {
+    "english": "false",
+    "theme": "2",
+    "buttonSize": "76"
+  },
+  "readingViewportsSha256": "f705786319848c0c71076ee0a9085e5ce600c1a401624adfd002ca7ec3cdb580",
+  "readingDisplaySha256": "3325d2a819fdd8062c2cdc48a09b995c9b012915bcdf88b1cf9742a7f057c793",
+  "dataSnapshotUnchanged": true,
+  "pendingUpdateCleared": true,
+  "passed": true
+}

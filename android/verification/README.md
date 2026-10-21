@@ -10,7 +10,7 @@ All Android evidence here is from a local API 36 ARM64 emulator configured as a 
 - `feedback-gunicorn.json`: actual temporary loopback Gunicorn 25.3.0, two workers; 201 receipt then idempotent 200 receipt. No public HTTPS endpoint was deployed.
 - `lint-summary.txt`: Android lint with 0 errors; warnings remain for KTX suggestions, custom View constructors, explicit left/right placement, draw-time allocations, SharedPreferences commit used for durable drafts, dependency update suggestions and unused third-party TLS helper classes. Network code uses the platform's default HTTPS trust and hostname verification.
 - PNGs show actual native emulator UI: first launch, system-picked imported PDF, landscape/portrait reader/library and a complete offline dictionary entry. The imported test PDF is a generated fixture with a rotated first page, not the sample paper.
-- `build-info-0.1.1-dev.json`, `build-info-0.1.2-dev.json`: previous debug artifact identities; `build-info-0.1.3-dev.json` and `build-info-0.1.4-dev.json` record prior builds; `build-info.json` records the current 0.1.5-dev artifact. Final 3B branding has its original integration evidence below.
+- `build-info-0.1.1-dev.json`, `build-info-0.1.2-dev.json`: previous debug artifact identities; `build-info-0.1.3-dev.json` and `build-info-0.1.4-dev.json` record prior builds; `continuous-build-info.json` records the historical public 0.1.5-dev artifact; `build-info.json` is the current public build. Final 3B branding has its original integration evidence below.
 
 Hardware acceptance, system installer interaction on Xiaomi, offline handwriting IME, stable Release installation, production certificate continuity and public feedback HTTPS remain separate checks.
 
@@ -86,10 +86,14 @@ Context dictionary continuation: `dictionary-context-*.png` shows the native PDF
 
 `ui-sizing-*` 记录最终版三档控件、完整回归、普通/大号键盘及 APK 发布身份；`size-*.png` 为三档横竖屏原生截图，`release-017-*` 为最终包的阅读器与词典记录。`reader-fidelity-*` 继续属于之前的 0.1.6 本地候选；不跨包冒认测试。详见[验收说明](../../docs/UI-SIZING-ACCEPTANCE.md)。
 
-当前 `build-info.json` 指向公开 0.1.7；旧公开 0.1.5 的完整身份保留为 `continuous-build-info.json`。`ui-sizing-update-install.json` 及 `release-017-update-*` 保存原始 0.1.5 经真实系统安装器升级到 0.1.7 的记录。
+0.1.7 完整身份保留为 `ui-sizing-build.json`；旧公开 0.1.5 的完整身份保留为 `continuous-build-info.json`。`ui-sizing-update-install.json` 及 `release-017-update-*` 保存原始 0.1.5 经真实系统安装器升级到 0.1.7 的记录。
 
 ## 极简纯阅读（0.1.8-dev）
 
 `reading-build.json` 记录本轮 APK 及源码/测试哈希，`reading-instrumentation-api36.txt` 为完整原生回归。新增六项覆盖只读、显示像素/颜色、分块驻留与视口、按文档恢复、三档横竖屏和隐藏顶栏后的实际查词/键盘。`reading-regression-visual-api36.txt` 为原有视觉流程；`reading-large-ui-api36.txt` 和 `reading-large-lookup-api36.txt` 为 420 dpi 的实际触摸检查。
 
 `reading-*.png` 为新模式原生截图，`reading-regression-*` 为本轮旧功能视觉回归，`reading-large-*` 为大系统键盘环境；不覆盖旧版截图。`reading-apk-local-check.json` 仅证明 loopback 下载及资源/签名核验。发布回执单独归档，不把测试夹具当作公开更新。详见[验收说明](../../docs/READING-MODE-ACCEPTANCE.md)。
+
+本轮 `reading-build.json` / `build-info.json` 指向公开 0.1.8。`reading-apk-public-check.json` 为匿名完整下载、资源/签名、下载副本安装与冷启动；`reading-release-public.json` 为公开三附件与先前 0.1.7 原件保留校验。`reading-large-regression-*` 另记录 76 档 / 420 dpi 的完整原有视觉流程，并归档三个关键截图。
+
+`reading-update-install.json` / `reading-update-*.png` 保存原始公开 0.1.7 → 0.1.8 的原生下载/校验、实际 Android 安装器与数据保留。ADB 仅建立旧版起点，安装来源权限已授予，未宣称本轮重测权限拒绝/进程死亡分支。
