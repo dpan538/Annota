@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.8-dev — 极简纯阅读 / Minimal reading mode
+
+- 阅读模式独立于手形工具：隐藏批注和页面编辑入口，笔尾、侧键、撤销手势均不能修改文档；「批注」恢复原工具、颜色、粗细与尺子。
+- 单击正文显示/隐藏顶栏，长按仍可离线查词；隐藏顶栏保留布局和阅读位置。
+- 只提供原始 / 柔和 / 清晰三个显示预设，以横向纸色与 Aa 预览卡展示，选中项描边/勾选；按文档记忆。轻微页色和对比度变化复用已渲染 PDF 分块，不重新打开文档；原始显示可完全还原。
+- 显示处理同时影响 PDF 的文字与图片，应用笔迹及导出保持原样；黑底笔记不反转。没有增加亮度、裁边、重排或额外触摸设置。
+- 小菜单锚点使用按钮固定布局边界，避免按下缩放引起参数切换时微移；隐藏阅读顶栏后系统状态图标保持清晰。
+- One read-only workspace and three reversible display presets; long-press lookup and one-tap return to annotation. VersionCode 9, development preview with the existing debug certificate.
+
 ## 0.1.7-dev — 三档按键与阅读体验 / Control sizes and reading polish
 
 - 60 / 68 / 76 三档同时作用于书库、阅读器顶栏、小菜单与新建面板；设置即时更新并保留当前位置，冷启动保留选择。

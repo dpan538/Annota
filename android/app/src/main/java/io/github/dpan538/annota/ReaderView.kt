@@ -22,26 +22,55 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private val restored =
         runCatching { org.json.JSONObject(positionPrefs.getString(book.id, "")!!) }.getOrNull()
     var onToolChanged: () -> Unit = {}
-    var lastPenTool = "pen"
-    var tool = "hand"
+    private val displayPrefs = context.getSharedPreferences("reading-display", Context.MODE_PRIVATE)
+    private val displaySaved =
+        runCatching { org.json.JSONObject(displayPrefs.getString(book.id, "")!!) }.getOrNull()
+    var reading = displaySaved?.optBoolean("enabled", false) ?: false
         set(value) {
+            if (field == value) return
+            stopMotion()
+            cancelStroke()
+            removeCallbacks(longPress)
+            clearSelection()
+            field = value
+            saveReadingDisplay()
+            onToolChanged()
+            invalidate()
+        }
+
+    var readingStyle = ReadingStyle.from(displaySaved?.optString("style"))
+        set(value) {
+            if (field == value) return
+            field = value
+            saveReadingDisplay()
+            onToolChanged()
+            invalidate()
+        }
+
+    private val browsing
+        get() = reading || tool == "hand"
+
+    var lastPenTool = displaySaved?.optString("lastPen", "pen") ?: "pen"
+    var tool = displaySaved?.optString("tool", "hand") ?: "hand"
+        set(value) {
+            if (reading) return
             field = value
             if (value in setOf("pen", "pencil", "fountain", "highlight")) lastPenTool = value
             onToolChanged()
             invalidate()
         }
 
-    var color = 0xff262a2d.toInt()
+    var color = displaySaved?.optInt("color", 0xff262a2d.toInt()) ?: 0xff262a2d.toInt()
         set(value) {
             field = value
             onToolChanged()
             invalidate()
         }
 
-    var penWidth = 2.4f
-    var filled = false
-    var eraserLocal = false
-    var onlyHighlight = false
+    var penWidth = displaySaved?.optDouble("width", 2.4)?.toFloat() ?: 2.4f
+    var filled = displaySaved?.optBoolean("filled", false) ?: false
+    var eraserLocal = displaySaved?.optBoolean("eraserLocal", false) ?: false
+    var onlyHighlight = displaySaved?.optBoolean("onlyHighlight", false) ?: false
     var spread = restored?.optBoolean("spread", false) ?: false
         set(value) {
             if (field == value) return
@@ -52,7 +81,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             invalidate()
         }
 
-    var ruler = false
+    var ruler = displaySaved?.optBoolean("ruler", false) ?: false
         set(value) {
             field = value
             onToolChanged()
@@ -72,6 +101,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private fun tr(zh: String, en: String) = if (english) en else zh
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+    private val documentPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
     private val memory = RenderMemory.from(context)
     private val cache =
         object : LruCache<String, Bitmap>(memory.pages / 4) {
@@ -119,7 +149,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private var pinchY = 0f
     private val savePosition = Runnable { persistPosition() }
     private val longPress = Runnable {
-        if (tool == "hand" && !moved && maxPointers == 1 && !draggingRuler) {
+        if (browsing && !moved && maxPointers == 1 && !draggingRuler) {
             active?.let { place ->
                 val p = point(place, downX, downY, 1f)
                 val page = book.pages[place.index]
@@ -357,6 +387,23 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         removeCallbacks(savePosition)
         postDelayed(savePosition, 300)
         invalidate()
+    }
+
+    private fun saveReadingDisplay() {
+        val value =
+            org.json
+                .JSONObject()
+                .put("enabled", reading)
+                .put("style", readingStyle.key)
+                .put("tool", tool)
+                .put("lastPen", lastPenTool)
+                .put("color", color)
+                .put("width", penWidth)
+                .put("ruler", ruler)
+                .put("filled", filled)
+                .put("eraserLocal", eraserLocal)
+                .put("onlyHighlight", onlyHighlight)
+        displayPrefs.edit().putString(book.id, value.toString()).apply()
     }
 
     fun persistPosition() {
@@ -725,7 +772,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.drawColor(0xfff4f4f4.toInt())
+        canvas.drawColor(if (reading) readingStyle.surround else 0xfff4f4f4.toInt())
+        documentPaint.colorFilter = if (reading) readingStyle.filter else null
         placements.clear()
         if (suspended || closed) return
         val layout = ensureGeometry() ?: return
@@ -784,13 +832,22 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             canvas.save()
             canvas.concat(m)
             canvas.clipRect(0f, 0f, p.w, p.h)
-            paint.color = Color.WHITE
+            paint.color = if (reading) readingStyle.paper(Color.WHITE) else Color.WHITE
             paint.alpha = 255
             canvas.drawRect(0f, 0f, p.w, p.h, paint)
             if (p.source < 0) {
-                PdfEngine.drawPaper(canvas, p)
+                val paper =
+                    when (p.paper) {
+                        "gray" -> Color.rgb(233, 233, 233)
+                        else -> Color.WHITE
+                    }
+                PdfEngine.drawPaper(
+                    canvas,
+                    p,
+                    if (reading && p.paper != "black") readingStyle.paper(paper) else null,
+                )
             } else if (bitmap != null) {
-                canvas.drawBitmap(bitmap, null, RectF(0f, 0f, p.w, p.h), paint)
+                canvas.drawBitmap(bitmap, null, RectF(0f, 0f, p.w, p.h), documentPaint)
             } else {
                 paint.color = 0xffa0a0a0.toInt()
                 paint.textSize = 15f
@@ -810,7 +867,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                             tile.area.right / tile.scale,
                             tile.area.bottom / tile.scale,
                         ),
-                        paint,
+                        documentPaint,
                     )
                     drawnTiles++
                 }
@@ -824,13 +881,13 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 selected.forEach { canvas.drawRect(it.box, paint) }
             }
             canvas.restore()
-            if (tool == "hand") requestWords(p)
+            if (browsing) requestWords(p)
         }
         preload.forEach {
             if (book.pages[it.index].source >= 0)
                 request(book.pages[it.index], bitmapWidth(it.index))
         }
-        if (ruler) drawRuler(canvas)
+        if (ruler && !reading) drawRuler(canvas)
     }
 
     private fun pageMatrix(p: Sheet, bounds: RectF): Matrix {
@@ -1176,7 +1233,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         val stylus =
             e.getToolType(e.actionIndex) in
                 setOf(MotionEvent.TOOL_TYPE_STYLUS, MotionEvent.TOOL_TYPE_ERASER)
-        if (stylus) stylusSeen = true
+        if (stylus && !reading) stylusSeen = true
         if (
             e.actionMasked == MotionEvent.ACTION_CANCEL ||
                 (Build.VERSION.SDK_INT >= 33 && e.flags and MotionEvent.FLAG_CANCELED != 0)
@@ -1209,17 +1266,22 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 active?.let { onActivePage(it.index) }
                 val r = rulerLocal(e.x, e.y)
                 draggingRuler =
-                    ruler && !stylus && abs(r.x) < rulerHalfWidth && abs(r.y) < rulerHalfHeight
+                    !reading &&
+                        ruler &&
+                        !stylus &&
+                        abs(r.x) < rulerHalfWidth &&
+                        abs(r.y) < rulerHalfHeight
                 rulerEdge =
                     if (
-                        ruler &&
+                        !reading &&
+                            ruler &&
                             tool in setOf("pen", "pencil", "fountain", "highlight", "line") &&
                             abs(r.x) < rulerHalfWidth + 24 * scale &&
                             abs(abs(r.y) - rulerHalfHeight) < 32 * scale
                     )
                         (if (r.y > 0) rulerHalfHeight else -rulerHalfHeight)
                     else null
-                val draw = stylus || !stylusSeen
+                val draw = !reading && (stylus || !stylusSeen)
                 val temporaryEraser =
                     e.getToolType(0) == MotionEvent.TOOL_TYPE_ERASER ||
                         (stylus && e.buttonState and MotionEvent.BUTTON_STYLUS_PRIMARY != 0)
@@ -1241,7 +1303,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                 filled = filled,
                             )
                 }
-                if (tool == "hand" && !stylus)
+                if (browsing && (!stylus || reading))
                     postDelayed(longPress, ViewConfiguration.getLongPressTimeout().toLong())
                 return true
             }
@@ -1322,7 +1384,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                 } else m.points.add(p)
                             }
                     }
-                } else if (tool == "hand" && active != null && selectionStart != null) {
+                } else if (browsing && active != null && selectionStart != null) {
                     val p = point(active!!, e.x, e.y, 1f)
                     val page = book.pages[active!!.index]
                     val ws = words.get(page.id).orEmpty()
@@ -1335,7 +1397,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                         selected = ws.subList(min(start, end), max(start, end) + 1)
                         selectionPage = page.id
                     }
-                } else if (!stylus && moved) {
+                } else if ((browsing || !stylus) && moved) {
                     panX += e.x - lastX
                     panY += e.y - lastY
                     viewportChanged()
@@ -1395,14 +1457,14 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                 if (maxPointers == 2) "undo" else "redo",
                             )
                         when (action) {
-                            "undo" -> store.undo(book, false)
-                            "redo" -> store.undo(book, true)
+                            "undo" -> if (!reading) store.undo(book, false)
+                            "redo" -> if (!reading) store.undo(book, true)
                             "toolbar" -> onToolbarToggle()
                         }
-                        onChanged()
-                    } else if (tool == "hand" && active != null && !draggingRuler) {
+                        if (!reading) onChanged()
+                    } else if (browsing && active != null && !draggingRuler) {
                         val page = book.pages[active!!.index]
-                        if (selected.isEmpty() && !moved) {
+                        if (!reading && selected.isEmpty() && !moved) {
                             val p = point(active!!, e.x, e.y, 1f)
                             selected =
                                 words.get(page.id).orEmpty().filter {
@@ -1412,13 +1474,16 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                         }
                         if (selected.isNotEmpty())
                             onSelection(selected.joinToString(" ") { it.text })
+                        else if (reading && !moved && maxPointers == 1) onToolbarToggle()
+                    } else if (reading && !moved && maxPointers == 1) {
+                        onToolbarToggle()
                     }
                 }
                 if (
                     !writing &&
                         moved &&
                         maxPointers == 1 &&
-                        !stylus &&
+                        (!stylus || reading) &&
                         !draggingRuler &&
                         selectionStart == null
                 ) {

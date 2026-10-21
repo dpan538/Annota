@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "nativeTapAndLongPress": true,
+  "threeDisplayChoices": true,
+  "readerInstanceRetained": true,
+  "physicalXiaomiEvidence": false
+}

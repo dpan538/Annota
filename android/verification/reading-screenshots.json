@@ -1,0 +1,363 @@
+{
+  "apkSha256": "220992434006c09c8a1f89b09670c51584fedb84726d7c1554e9d62e51238336",
+  "unmodifiedNativePngs": true,
+  "captures": [
+    {
+      "file": "android/verification/reading-60-landscape.png",
+      "sha256": "8f81870b8bfac6e7511f1f9092815979b70c54e7ae533426581c3d520c0cd54f",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-60-portrait.png",
+      "sha256": "6dfac7fd96ed900949b934b963cf35c18cdad9545d0181f13b37e850aed12ec4",
+      "width": 2272,
+      "height": 3408,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-68-landscape.png",
+      "sha256": "60eb2ed8c5ef7a8fe61338d43f15efa93312b63efc1131ec4e89f0d166436863",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-68-portrait.png",
+      "sha256": "b1b52fdd8d24da31323a96f93601b4fc4ece21d8ce6ccadf753f21fe88743d89",
+      "width": 2272,
+      "height": 3408,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-76-landscape.png",
+      "sha256": "97af5dc62b8f1ebfab4ab927937bd229eef36b1debb1ecdf9f93c50894a109bf",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-76-portrait-english.png",
+      "sha256": "491ef797f3d586f8fc32dd19d1380313898adba73389b71f9dc2c670e5e7d882",
+      "width": 2272,
+      "height": 3408,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-76-portrait.png",
+      "sha256": "5f5980a081b350a14244ff21ef9190e962a6a963b7cf4d13b9ea92f8d99ce83c",
+      "width": 2272,
+      "height": 3408,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-dictionary-keyboard.png",
+      "sha256": "4aaf611222bc57caa098e96e17d470eb57284cefc8a546641e83a9c1521bbbff",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-hidden-chrome-dictionary.png",
+      "sha256": "f2372ae3f342529336a4e434fd00dc23c83af4d1545a2418abbc3abaa1e51340",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-large-60-landscape.png",
+      "sha256": "1f856c19c1ee03ef18d867aceb4caccc228d78ae3e2fde01b5d214e48e3e85e5",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 420
+    },
+    {
+      "file": "android/verification/reading-large-60-portrait.png",
+      "sha256": "bf5c7a733ef47493ae56c54689e9ab206d2b8e0cc9b809f050b6b8cb3c5ea146",
+      "width": 2272,
+      "height": 3408,
+      "densityDpi": 420
+    },
+    {
+      "file": "android/verification/reading-large-68-landscape.png",
+      "sha256": "fe4e63894ad6c91265af9cd46597a4db66722651802d5e21112b3be087c04314",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 420
+    },
+    {
+      "file": "android/verification/reading-large-68-portrait.png",
+      "sha256": "259c2f096380615149c013890c668ec3c6d87849f1a28a7c1ef988e5a04ffc4f",
+      "width": 2272,
+      "height": 3408,
+      "densityDpi": 420
+    },
+    {
+      "file": "android/verification/reading-large-76-landscape.png",
+      "sha256": "bed02ba9174fa3b21b514588732c3565f8eddac509e4b8213b1d97b89a7634d9",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 420
+    },
+    {
+      "file": "android/verification/reading-large-76-portrait-english.png",
+      "sha256": "45fd79ca6f1de0ebd9ccf793824eeb054a51c219e2c9bf9762619d2b5d81db98",
+      "width": 2272,
+      "height": 3408,
+      "densityDpi": 420
+    },
+    {
+      "file": "android/verification/reading-large-76-portrait.png",
+      "sha256": "867468751a4a9955b8e26d19133fb5c517e7a65199fce10d69332bdbce4a6094",
+      "width": 2272,
+      "height": 3408,
+      "densityDpi": 420
+    },
+    {
+      "file": "android/verification/reading-large-dictionary-keyboard.png",
+      "sha256": "92b372482389f33e730df1dd71ecb61b71b77697a6d986e89a3c837af2a73f7f",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 420
+    },
+    {
+      "file": "android/verification/reading-large-hidden-chrome-dictionary.png",
+      "sha256": "db83fd74ef8d758b9dfb3e668a505a561e33ed3684b5ce3e53b37e02c418acce",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 420
+    },
+    {
+      "file": "android/verification/reading-large-preset-clear.png",
+      "sha256": "790d599a57e1f4aaafe19cc7e7f82b31fbd957d491da9c072d09ec2d9df63364",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 420
+    },
+    {
+      "file": "android/verification/reading-large-preset-original.png",
+      "sha256": "e42cd5179a854366d64ad35ec8a766d55dea9a12f4cdbdf4a6aa223222e2f844",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 420
+    },
+    {
+      "file": "android/verification/reading-large-preset-soft.png",
+      "sha256": "fe4e63894ad6c91265af9cd46597a4db66722651802d5e21112b3be087c04314",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 420
+    },
+    {
+      "file": "android/verification/reading-large-regression-dictionary-keyboard.png",
+      "sha256": "ea3090052f3976450a9fa0980340835f807b6eb484cda0ac91c473752728f024",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 420
+    },
+    {
+      "file": "android/verification/reading-large-regression-dictionary-long.png",
+      "sha256": "36e4bc744df246e01428274ef160ac8998791f1aa754f241a0365c5261602254",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 420
+    },
+    {
+      "file": "android/verification/reading-large-regression-pen.png",
+      "sha256": "49b96e5b21e6082850a15215cdd1788f08ada47e4d24a2c46a647944d9c7e53a",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 420
+    },
+    {
+      "file": "android/verification/reading-large-three-presets.png",
+      "sha256": "6ceb983dfcf8e3dbd22d0e6c1cef3840087391ece97eaf975f4131e279fdc7f1",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 420
+    },
+    {
+      "file": "android/verification/reading-preset-clear.png",
+      "sha256": "bc588f790bbf4f429d6617223bc4f1db4e4a6724d1177eb89ba4f372c0c59c02",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-preset-original.png",
+      "sha256": "888d0135d62cf52fac755e790653d695926b66dc8fdc542ad30e54c330977ea6",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-preset-soft.png",
+      "sha256": "fe38eb12eaa01da84d0bc997fea560172ca7a8ff007fdd960e5458fbb7017d21",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-continuous.png",
+      "sha256": "6639c423340f0a520c7983415825e1a2787b578f97618a50874fe9c885a1fbca",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-dictionary-keyboard.png",
+      "sha256": "aca166eb0bbc04625af3b3f451ebed54b290d0563f8e3c6afaeb61b9f5e272fe",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-dictionary-long-expanded.png",
+      "sha256": "1162178691bb443ea9882ba29519625b371e711421cd6524715f82068bb54da7",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-dictionary-long.png",
+      "sha256": "40e562587fc94169a5858c49746b7104ad4ddc6e8496dcc178dc758996ff17c1",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-dictionary-portrait-keyboard.png",
+      "sha256": "164a22ad35f611e7a9beb6623de9a69c2defa3fa99ac2495432dac53e518e4bd",
+      "width": 2272,
+      "height": 3408,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-dictionary-portrait.png",
+      "sha256": "386e201a636c9ba3107caba081cf96fa196fae1b153fc6e6e70023e19f791a16",
+      "width": 2272,
+      "height": 3408,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-dictionary-scrolled.png",
+      "sha256": "243184fdc45f5a00402de7cb1cb0454993be659e2f3230a79bfb79241130ef25",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-dictionary-suggestions.png",
+      "sha256": "1ea0e95c31bee1cba6acee9aa5acbb435e335cbddef6742a70480edee86d13e8",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-dictionary.png",
+      "sha256": "00b0da44567c5e4304e5f7d797cb4482929cbf658ddd850f6ebd65c6fd54c66e",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-eraser.png",
+      "sha256": "6af71b4882796aac56d5ef038052983e7cbde80c0ce6cac1be48647a940554b0",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-fit.png",
+      "sha256": "19c721d05bb1048b1c5f93433a57c9274ae6a6004e17d29c70892a15449397ae",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-guide-zoom.png",
+      "sha256": "11e4d521cea29677af94e683d912d26002f3d1d06473bc2969770fcb9cb4d0f7",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-page-menu.png",
+      "sha256": "52b83627527c4f6753003817d5d807794fc8e28ca9d3ee6dc9c8a1aab9233e7c",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-pages.png",
+      "sha256": "796b38413b8620dfbebfa1648819dbf752c48dcceb6895370a43c741ec040e47",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-pen-portrait.png",
+      "sha256": "bfcb16f0d33abd77b09066234e74c2274781f840a53f431c2ba8d11356cc4a65",
+      "width": 2272,
+      "height": 3408,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-pen-sidebar.png",
+      "sha256": "d54123107788c2b99de8479e75f513c86b73367b4ed4a611396a3e248978867b",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-pen.png",
+      "sha256": "b38b4111f1f04ac4de2de74c29ca8c27570a5fa43697b741da665e3123ff208f",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-pencil.png",
+      "sha256": "000f32af09c7b6ee7f428cd58d69b3ea3b48ad3f11e80f585471924ba6f7cce5",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-ruler.png",
+      "sha256": "19ba51749c15ecb6d288b5fed3f87b9b4a5f67b3b11cfe65714decade3c1ce58",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-selection.png",
+      "sha256": "002f668b18298b8113e805a8ed2580523d60d01249b9ed3011552c6abc45e095",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-settings.png",
+      "sha256": "c709211b749895e09838a7baaf863359af66490476fe5c06b808315a06835f50",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-regression-zoom.png",
+      "sha256": "0f135e9873122efba2f66478448181cff8e2dedec4dc4653161a5a1c549d7ced",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    },
+    {
+      "file": "android/verification/reading-three-presets.png",
+      "sha256": "f3f2d088ac83794602c2964a28867c7a6ea1594e5f7c41b6df4fb100e416fd39",
+      "width": 3408,
+      "height": 2272,
+      "densityDpi": 240
+    }
+  ]
+}

@@ -63,9 +63,9 @@ See `../docs/IMPLEMENTATION-STATUS.md` for actual build/test evidence, artifact 
 
 ## Onboarding and regression fixtures
 
-Current development build: `0.1.4-dev` / versionCode 6. Both seed PDFs are bundled and verified by SHA-256 and page count. They publish together in a database transaction. Any earlier initialization marker is final, including the old guide-only development build. No sample is added back on restart or upgrade, even after removal. Paper rights are separate: see `app/src/main/assets/SAMPLE-PAPER-NOTICE.md`; redistribution clearance remains a public-release checklist item.
+Current development build: `0.1.8-dev` / versionCode 9. Both seed PDFs are bundled and verified by SHA-256 and page count. They publish together in a database transaction. Any earlier initialization marker is final, including the old guide-only development build. No sample is added back on restart or upgrade, even after removal. Paper rights are separate: see `app/src/main/assets/SAMPLE-PAPER-NOTICE.md`; redistribution clearance remains a public-release checklist item.
 
-The update tests require a same-development-key versionCode 6 / versionName `0.1.5-update-fixture` APK at the target app's `cache/update-test.apk`. Build it with Gradle property overrides, keep it outside Git and stage it with `adb shell run-as io.github.dpan538.annota ...` on the dedicated emulator. Without it, those two tests are explicitly skipped; do not report them as passed. No fixture is a published update. Test APKs reset library data and must never run on a user's tablet.
+The update tests require a same-development-key versionCode 10 / versionName `update-test-fixture` APK at the target app's `cache/update-test.apk`. Build it with Gradle property overrides, keep it outside Git and stage it with `adb shell run-as io.github.dpan538.annota ...` on the dedicated emulator. Without it, those two tests are explicitly skipped; do not report them as passed. No fixture is a published update. Test APKs reset library data and must never run on a user's tablet.
 
 ## Reader design, lifecycle and memory acceptance
 
@@ -100,3 +100,9 @@ Development/preview builds list the latest 30 GitHub releases and accept non-dra
 ## Three control sizes and 0.1.7 preview
 
 60/68/76 now change actual library, reader, floating-menu and paper-picker controls. Settings retain their host and scroll; pen parameters update inside one popup. Run `UiSizingTest` on the dedicated emulator with the other regression classes. `ReaderVisualTest` also accepts `-e buttonSize 76` for the largest controls. See [acceptance](../docs/UI-SIZING-ACCEPTANCE.md) for final build and public delivery evidence.
+
+## Minimal reading mode (0.1.8-dev)
+
+Read is a per-document, read-only workspace, distinct from the Hand tool in annotation. It hides editing controls and blocks stylus erasing/buttons, undo/redo and page editing. Tap the document to toggle chrome without resizing its viewport; long press still opens local lookup. Annotate restores the previous nib, width, color and ruler.
+
+Only Original / Soft / Clear display presets are exposed. A cached color matrix is applied to both base PDF previews and resident detail tiles, without invalidating render caches or modifying source/export/ink. This is a whole-page transform, including embedded images, not text segmentation. Black notebook backgrounds are preserved. See [reading acceptance](../docs/READING-MODE-ACCEPTANCE.md) for the native tests, large-keyboard checks and research sources.

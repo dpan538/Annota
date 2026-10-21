@@ -1,0 +1,80 @@
+0 errors / 78 warnings
+
+Warning: ApplySharedPref: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2056: Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background
+Warning: ApplySharedPref: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2116: Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background
+Warning: ApplySharedPref: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2228: Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background
+Warning: ApplySharedPref: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2254: Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background
+Warning: ApplySharedPref: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2323: Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background
+Warning: AndroidGradlePluginVersion: android/gradle/wrapper/gradle-wrapper.properties:3: A newer version of Gradle than 8.13 is available: 8.14.6
+Warning: GradleDependency: android/app/build.gradle.kts:55: A newer version of com.android.tools.build:apksig than 8.13.2 is available: 9.4.1
+Warning: GradleDependency: android/app/build.gradle.kts:56: A newer version of androidx.core:core-ktx than 1.17.0 is available: 1.19.1
+Warning: GradleDependency: android/app/build.gradle.kts:57: A newer version of androidx.test:runner than 1.6.2 is available: 1.7.0
+Warning: GradleDependency: android/app/build.gradle.kts:58: A newer version of androidx.test.ext:junit than 1.2.1 is available: 1.3.0
+Warning: TrustAllX509TrustManager: android/.tooling/gradle-home/caches/modules-2/files-2.1/org.bouncycastle/bcpkix-jdk15to18/1.86/39bc0c0d7d42684c2532f0bf503b344cc091e5d3/bcpkix-jdk15to18-1.86.jar:: `checkServerTrusted` is empty, which could cause insecure network traffic due to trusting arbitrary TLS/SSL certificates presented by peers
+Warning: DrawAllocation: android/app/src/main/java/io/github/dpan538/annota/DocumentCover.kt:188: Avoid object allocations during draw/layout operations (preallocate and reuse instead)
+Warning: DrawAllocation: android/app/src/main/java/io/github/dpan538/annota/PaperMenu.kt:286: Avoid object allocations during draw/layout operations (preallocate and reuse instead)
+Warning: DrawAllocation: android/app/src/main/java/io/github/dpan538/annota/ReaderPopover.kt:305: Avoid object allocations during draw/layout operations (preallocate and reuse instead)
+Warning: DrawAllocation: android/app/src/main/java/io/github/dpan538/annota/ReaderPopover.kt:333: Avoid object allocations during draw/layout operations (preallocate and reuse instead)
+Warning: DrawAllocation: android/app/src/main/java/io/github/dpan538/annota/ReaderPopover.kt:343: Avoid object allocations during draw/layout operations (preallocate and reuse instead)
+Warning: DrawAllocation: android/app/src/main/java/io/github/dpan538/annota/ReaderPopover.kt:358: Avoid object allocations during draw/layout operations (preallocate and reuse instead)
+Warning: DrawAllocation: android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:809: Avoid object allocations during draw/layout operations (preallocate and reuse instead)
+Warning: DrawAllocation: android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:825: Avoid object allocations during draw/layout operations (preallocate and reuse instead)
+Warning: DrawAllocation: android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:827: Avoid object allocations during draw/layout operations (preallocate and reuse instead)
+Warning: DrawAllocation: android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:850: Avoid object allocations during draw/layout operations (preallocate and reuse instead)
+Warning: DrawAllocation: android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:864: Avoid object allocations during draw/layout operations (preallocate and reuse instead)
+Warning: DrawAllocation: android/app/src/main/java/io/github/dpan538/annota/SettingsContent.kt:450: Avoid object allocations during draw/layout operations (preallocate and reuse instead)
+Warning: DrawAllocation: android/app/src/main/java/io/github/dpan538/annota/SettingsContent.kt:468: Avoid object allocations during draw/layout operations (preallocate and reuse instead)
+Warning: DrawAllocation: android/app/src/main/java/io/github/dpan538/annota/ToolButton.kt:99: Avoid object allocations during draw/layout operations (preallocate and reuse instead)
+Warning: DrawAllocation: android/app/src/main/java/io/github/dpan538/annota/ToolButton.kt:134: Avoid object allocations during draw/layout operations (preallocate and reuse instead)
+Warning: ObsoleteSdkInt: android/app/src/main/res/drawable-v26:: This folder configuration (`v26`) is unnecessary; `minSdkVersion` is 29. Merge all the resources in this folder into `drawable`.
+Warning: UsableSpace: android/app/src/main/java/io/github/dpan538/annota/Network.kt:205: Consider also using `StorageManager#getAllocatableBytes` and `allocateBytes` which will consider clearable cached data
+Warning: UsableSpace: android/app/src/main/java/io/github/dpan538/annota/Store.kt:470: Consider also using `StorageManager#getAllocatableBytes` and `allocateBytes` which will consider clearable cached data
+Warning: ViewConstructor: android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt:58: Custom view `LucideIcon` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`
+Warning: ViewConstructor: android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt:150: Custom view `DesignScreen` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`
+Warning: ViewConstructor: android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt:254: Custom view `LibraryScreen` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`
+Warning: ViewConstructor: android/app/src/main/java/io/github/dpan538/annota/DocumentCover.kt:146: Custom view `DocumentCoverView` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`
+Warning: ViewConstructor: android/app/src/main/java/io/github/dpan538/annota/PaperMenu.kt:277: Custom view `PaperSample` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`
+Warning: ViewConstructor: android/app/src/main/java/io/github/dpan538/annota/ReaderPopover.kt:255: Custom view `ReaderGlyph` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`
+Warning: ViewConstructor: android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:18: Custom view `ReaderView` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`
+Warning: ViewConstructor: android/app/src/main/java/io/github/dpan538/annota/SettingsContent.kt:437: Custom view `SwitchDrawing` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`
+Warning: ViewConstructor: android/app/src/main/java/io/github/dpan538/annota/SettingsContent.kt:457: Custom view `ThemePreview` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`
+Warning: ViewConstructor: android/app/src/main/java/io/github/dpan538/annota/ToolButton.kt:8: Custom view `ToolButton` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt:25: Use the KTX extension function `String.toColorInt` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt:135: Use the KTX extension function `Canvas.withTranslation` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/DocumentCover.kt:186: Use the KTX extension function `Canvas.withClip` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:408: Use the KTX extension function `SharedPreferences.edit` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:785: Use the KTX extension property `View.isVisible` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:785: Use the KTX extension property `View.isVisible` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:1693: Use the KTX extension function `SharedPreferences.edit` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:1722: Use the KTX extension function `SharedPreferences.edit` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:1760: Use the KTX extension function `String.toUri` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:1820: Use the KTX extension function `SharedPreferences.edit` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2051: Use the KTX extension function `SharedPreferences.edit` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2093: Use the KTX extension function `SharedPreferences.edit` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2111: Use the KTX extension function `SharedPreferences.edit` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2215: Use the KTX extension function `SharedPreferences.edit` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2254: Use the KTX extension function `SharedPreferences.edit` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2323: Use the KTX extension function `SharedPreferences.edit` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2327: Use the KTX extension function `String.toUri` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2358: Use the KTX extension function `SharedPreferences.edit` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/PaperMenu.kt:180: Use the KTX extension function `Int.toDrawable` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/PdfEngine.kt:88: Use the KTX function `createBitmap` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/PdfEngine.kt:115: Use the KTX function `createBitmap` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/ReaderPopover.kt:47: Use the KTX extension function `Int.toDrawable` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/ReaderPopover.kt:295: Use the KTX extension function `Canvas.withScale` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:406: Use the KTX extension function `SharedPreferences.edit` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:413: Use the KTX extension function `SharedPreferences.edit` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:832: Use the KTX extension function `Canvas.withMatrix` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:1005: Use the KTX extension function `Canvas.withTranslation` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/SettingsContent.kt:447: Use the KTX extension function `Canvas.withScale` instead?
+Warning: UseKtx: android/app/src/main/java/io/github/dpan538/annota/ToolButton.kt:115: Use the KTX extension function `Canvas.withTranslation` instead?
+Warning: ClickableViewAccessibility: android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:1147: `ReaderView#onTouchEvent` should call `ReaderView#performClick` when a click is detected
+Warning: SetTextI18n: android/app/src/main/java/io/github/dpan538/annota/DictionaryPanel.kt:315: Do not concatenate text displayed with `setText`. Use resource string with placeholders.
+Warning: SetTextI18n: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:735: Do not concatenate text displayed with `setText`. Use resource string with placeholders.
+Warning: SetTextI18n: android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:858: String literal in `setText` can not be translated. Use Android resources instead.
+Warning: RtlHardcoded: android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt:702: Use "`Gravity.END`" instead of "`Gravity.RIGHT`" to ensure correct behavior in right-to-left locales
+Warning: RtlHardcoded: android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt:702: Use "`Gravity.END`" instead of "`Gravity.RIGHT`" to ensure correct behavior in right-to-left locales
+Warning: RtlHardcoded: android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt:855: Use "`Gravity.END`" instead of "`Gravity.RIGHT`" to ensure correct behavior in right-to-left locales
+Warning: RtlHardcoded: android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt:855: Use "`Gravity.END`" instead of "`Gravity.RIGHT`" to ensure correct behavior in right-to-left locales
+Warning: RtlHardcoded: android/app/src/main/java/io/github/dpan538/annota/PaperMenu.kt:265: Use "`Gravity.START`" instead of "`Gravity.LEFT`" to ensure correct behavior in right-to-left locales
+Warning: RtlHardcoded: android/app/src/main/java/io/github/dpan538/annota/ReaderPopover.kt:249: Use "`Gravity.START`" instead of "`Gravity.LEFT`" to ensure correct behavior in right-to-left locales

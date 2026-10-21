@@ -276,6 +276,9 @@ class UiSizingTest {
                 tap(pen)
                 waitFor { popup()?.isShowing == true }
                 val p = popup()!!
+                // The anchor's press-release animation changes its screen bounds slightly.
+                waitFor { ui { pen.scaleX == 1f && pen.scaleY == 1f } }
+                inst.waitForIdleSync()
                 val oldBounds = ui { screenBounds(p.contentView) }
                 widths += p.width
                 for (label in listOf("铅笔", "粗细 4.0 pt", "颜色 · 强调色")) {

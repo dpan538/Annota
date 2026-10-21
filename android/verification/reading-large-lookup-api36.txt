@@ -1,0 +1,8 @@
+
+io.github.dpan538.annota.ReadingModeTest:.
+
+Time: 10.437
+
+OK (1 test)
+
+

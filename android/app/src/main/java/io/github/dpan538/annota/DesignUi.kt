@@ -878,7 +878,7 @@ class LibraryScreen(
     }
 }
 
-private class UiButton(context: Context) : FrameLayout(context) {
+internal class UiButton(context: Context) : FrameLayout(context) {
     private var wasPressed = false
 
     override fun drawableStateChanged() {

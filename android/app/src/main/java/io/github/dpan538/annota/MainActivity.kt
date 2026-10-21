@@ -576,12 +576,49 @@ class MainActivity : Activity() {
         val left = row()
         val center = row()
         val right = row()
+        var chromeHidden = false
+        val readingLabel =
+            TextView(this).apply {
+                typeface = UiFonts.get(this@MainActivity, 500)
+                setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, 14f * ru * controls)
+                setTextColor(if (prefs.getInt("theme", 0) == 3) colors[2] else Color.WHITE)
+                gravity = Gravity.CENTER
+                setSingleLine()
+            }
+        val readingDisplay =
+            UiButton(this).apply {
+                tag = "reading-display"
+                contentDescription = tr("阅读显示", "Reading display")
+                tooltipText = contentDescription
+                isClickable = true
+                isFocusable = true
+                addView(
+                    readingLabel,
+                    FrameLayout.LayoutParams(-1, -1).apply { rightMargin = rp(17f * controls) },
+                )
+                addView(
+                    LucideIcon(this@MainActivity, "ChevronRight").apply {
+                        rotation = 90f
+                        tint = if (prefs.getInt("theme", 0) == 3) colors[2] else Color.WHITE
+                    },
+                    FrameLayout.LayoutParams(
+                        rp(12f * controls),
+                        rp(12f * controls),
+                        Gravity.END or Gravity.CENTER_VERTICAL,
+                    ),
+                )
+                setOnClickListener { readingOptions(this) }
+            }
         readerTools.clear()
         pageSidebar = null
         val toolButtons = readerTools
         bar.addView(left, android.widget.FrameLayout.LayoutParams(-2, -1, Gravity.START))
         bar.addView(center, android.widget.FrameLayout.LayoutParams(-2, -1, Gravity.CENTER))
         bar.addView(right, android.widget.FrameLayout.LayoutParams(-2, -1, Gravity.END))
+        bar.addView(
+            readingDisplay,
+            FrameLayout.LayoutParams(rp(144f * controls), -1, Gravity.CENTER),
+        )
         fun add(group: LinearLayout, n: String, label: String, action: () -> Unit) {
             group.addView(
                 icon(n, label, action).apply {
@@ -669,8 +706,8 @@ class MainActivity : Activity() {
         add(right, "add", tr("新增纸页", "Add page")) { addPage() }
         add(right, "book", tr("阅读模式", "Read")) {
             readerPopup?.dismiss()
-            reader?.tool = "hand"
-            reader?.invalidate()
+            paperPopup?.dismiss()
+            reader?.let { it.reading = !it.reading }
         }
         add(right, "dictionary", tr("离线词典", "Offline dictionary")) { dictionaryDialog() }
         add(right, "more", tr("更多", "More")) { readerMenu() }
@@ -686,11 +723,37 @@ class MainActivity : Activity() {
             view.onlyHighlight = old.onlyHighlight
             view.ruler = old.ruler
         }
-        view.color =
-            old?.color
-                ?: if (b.pages[b.current].paper == "black") android.graphics.Color.WHITE
-                else colors[2]
+        if (old != null) view.color = old.color
+        else if (!view.reading)
+            view.color = if (b.pages[b.current].paper == "black") Color.WHITE else colors[2]
         view.onToolChanged = {
+            if (!view.reading) chromeHidden = false
+            center.visibility = if (view.reading) View.GONE else View.VISIBLE
+            readingDisplay.visibility = if (view.reading) View.VISIBLE else View.GONE
+            toolButtons["add"]?.visibility = if (view.reading) View.GONE else View.VISIBLE
+            readingLabel.text =
+                "${tr("阅读", "Read")} · ${if (english) view.readingStyle.en else view.readingStyle.zh}"
+            toolButtons["book"]?.let { button ->
+                button.caption = if (view.reading) tr("批注", "Annotate") else ""
+                button.contentDescription =
+                    if (view.reading) tr("开始批注", "Annotate") else tr("阅读模式", "Read")
+                button.tooltipText = button.contentDescription
+                button.layoutParams =
+                    button.layoutParams.apply {
+                        width =
+                            rp(
+                                (if (view.reading) {
+                                    if (english) 102f else 74f
+                                } else 34f) * controls
+                            )
+                    }
+            }
+            bar.visibility = if (chromeHidden) View.INVISIBLE else View.VISIBLE
+            androidx.core.view.WindowCompat.getInsetsController(window, root)
+                .isAppearanceLightStatusBars = chromeHidden || prefs.getInt("theme", 0) == 3
+            root.setBackgroundColor(
+                if (view.reading && chromeHidden) view.readingStyle.surround else colors[3]
+            )
             toolButtons.forEach { (name, button) ->
                 button.isSelected =
                     when (name) {
@@ -699,6 +762,8 @@ class MainActivity : Activity() {
                             view.tool in setOf("line", "rectangle", "ellipse", "triangle", "arrow")
                         "ruler" -> view.ruler
                         "spread" -> view.spread
+                        "book" -> view.reading
+                        "list" -> pageSidebar != null
                         else -> view.tool == name
                     }
                 button.dotColor = view.color
@@ -711,7 +776,13 @@ class MainActivity : Activity() {
         view.onActivePage = { activePage = it }
         view.onSelection = { selection(it) }
         view.onToolbarToggle = {
-            bar.visibility = if (bar.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+            if (view.reading) {
+                chromeHidden = !chromeHidden
+                bar.visibility = if (chromeHidden) View.INVISIBLE else View.VISIBLE
+                root.setBackgroundColor(if (chromeHidden) view.readingStyle.surround else colors[3])
+                androidx.core.view.WindowCompat.getInsetsController(window, root)
+                    .isAppearanceLightStatusBars = chromeHidden || prefs.getInt("theme", 0) == 3
+            } else bar.visibility = if (bar.visibility == View.VISIBLE) View.GONE else View.VISIBLE
         }
         val canvas = FrameLayout(this).apply { setBackgroundColor(0xfff4f4f4.toInt()) }
         canvas.addView(view, FrameLayout.LayoutParams(-1, -1))
@@ -720,6 +791,7 @@ class MainActivity : Activity() {
     }
 
     private fun undo(redo: Boolean) {
+        if (reader?.reading == true) return
         book?.let {
             if (!store.undo(it, redo)) toast(tr("没有更多历史", "No more history"))
             reader?.refresh()
@@ -747,8 +819,101 @@ class MainActivity : Activity() {
         readerPopup = panel.show(bounds, beside)
     }
 
+    private fun readingOptions(anchor: View) {
+        val r = reader ?: return
+        if (!r.reading) return
+        if (readerPanelKey == "reading" && readerPopup?.isShowing == true) {
+            readerPopup?.dismiss()
+            return
+        }
+        val menu = readerPanel("reading", 264f, anchor)
+        val ui = menu.ui
+        val palette = menu.palette
+        menu.content.setPadding(ui.px(9f), ui.px(9f), ui.px(9f), ui.px(9f))
+        menu.popup.contentView.background =
+            ui.background(palette.color("panel"), 14f, palette.color("rule"))
+        menu.popup.elevation = ui.px(8f).toFloat()
+        val choices = row()
+        ReadingStyle.entries.forEach { style ->
+            val selected = r.readingStyle == style
+            val choice =
+                ui.action(if (english) style.en else style.zh) {
+                        menu.popup.dismiss()
+                        r.readingStyle = style
+                    }
+                    .apply { isSelected = selected }
+            val paper =
+                FrameLayout(this).apply {
+                    tag = "reading-preset-preview"
+                    background =
+                        ui.background(
+                            style.paper(Color.WHITE),
+                            7f,
+                            if (selected) palette.accent else palette.color("rule"),
+                        )
+                    importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+                }
+            paper.addView(
+                TextView(this).apply {
+                    text = "Aa"
+                    typeface =
+                        android.graphics.Typeface.create("serif", android.graphics.Typeface.NORMAL)
+                    setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, 25f * ui.unit)
+                    setTextColor(style.paper(Color.BLACK))
+                    gravity = Gravity.CENTER
+                    includeFontPadding = false
+                },
+                FrameLayout.LayoutParams(-1, -1),
+            )
+            choice.addView(
+                paper,
+                FrameLayout.LayoutParams(-1, ui.px(48f)).apply {
+                    leftMargin = ui.px(5f)
+                    rightMargin = leftMargin
+                },
+            )
+            if (selected) {
+                val check =
+                    FrameLayout(this).apply {
+                        background = ui.background(palette.accent, 9f)
+                        importantForAccessibility =
+                            View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+                        addView(
+                            LucideIcon(this@MainActivity, "Check").apply { tint = Color.WHITE },
+                            FrameLayout.LayoutParams(ui.px(10f), ui.px(10f), Gravity.CENTER),
+                        )
+                    }
+                choice.addView(
+                    check,
+                    FrameLayout.LayoutParams(ui.px(16f), ui.px(16f), Gravity.TOP or Gravity.END)
+                        .apply {
+                            topMargin = ui.px(36f)
+                            rightMargin = ui.px(1f)
+                        },
+                )
+            }
+            choice.addView(
+                ui.label(
+                        if (english) style.en else style.zh,
+                        12f,
+                        if (selected) palette.accent else palette.ink,
+                        if (selected) 500 else 400,
+                    )
+                    .apply {
+                        gravity = Gravity.CENTER
+                        importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+                    },
+                FrameLayout.LayoutParams(-1, ui.px(25f), Gravity.BOTTOM),
+            )
+            choices.addView(choice, LinearLayout.LayoutParams(0, ui.px(78f), 1f))
+        }
+        menu.content.addView(choices, LinearLayout.LayoutParams(-1, -2))
+        showPanel(menu)
+    }
+
     private fun penOptions() {
         val r = reader ?: return
+        if (r.reading) return
         if (r.tool !in setOf("pen", "pencil", "fountain", "highlight")) r.tool = "pen"
         val menu = readerPanel("pen", 508f)
         menu.centerOn = r
@@ -901,6 +1066,7 @@ class MainActivity : Activity() {
 
     private fun eraserOptions() {
         val r = reader ?: return
+        if (r.reading) return
         r.tool = "eraser"
         val menu = readerPanel("eraser", 220f)
         menu.header(tr("橡皮", "Eraser"))
@@ -918,6 +1084,7 @@ class MainActivity : Activity() {
 
     private fun shapeOptions() {
         val r = reader ?: return
+        if (r.reading) return
         val menu = readerPanel("shape", 256f)
         menu.header(tr("图形", "Shapes"))
         val labels =
@@ -990,7 +1157,10 @@ class MainActivity : Activity() {
                 "undo",
                 "redo",
             )
-        titles.forEachIndexed { i, title -> menu.item(icons[i], title) { action(i) } }
+        titles.forEachIndexed { i, title ->
+            if (reader?.reading != true || i !in setOf(8, 9))
+                menu.item(icons[i], title) { action(i) }
+        }
         showPanel(menu)
     }
 
@@ -1062,8 +1232,11 @@ class MainActivity : Activity() {
             (list.adapter as BaseAdapter).notifyDataSetChanged()
         }
         list.setOnItemLongClickListener { _, view, position, _ ->
-            pageMenu(position, view)
-            true
+            if (reader?.reading == true) false
+            else {
+                pageMenu(position, view)
+                true
+            }
         }
         panel.addView(list, LinearLayout.LayoutParams(-1, 0, 1f))
         val width = menu.ui.px(150f)
@@ -1075,8 +1248,10 @@ class MainActivity : Activity() {
     }
 
     private fun addPage() {
+        if (reader?.reading == true) return
         val b = book ?: return
         paperMenu(tr("新增纸页", "Add page"), tr("新增纸页", "Add page")) { style, paper, _ ->
+            if (reader?.reading == true) return@paperMenu
             b.pages.add(b.current + 1, Sheet(style = style, paper = paper))
             b.current++
             activePage = b.current
@@ -1086,11 +1261,13 @@ class MainActivity : Activity() {
     }
 
     private fun pageMenu(i: Int, anchor: View? = null) {
+        if (reader?.reading == true) return
         val b = book ?: return
         val p = b.pages[i]
         val menu = readerPanel("list", 224f, anchor)
         menu.content.addView(menu.label("${tr("第", "Page")} ${i + 1} ${tr("页", "")}", 14f, true))
         val action: (Int) -> Unit = action@{
+            if (reader?.reading == true) return@action
             when (it) {
                 0 -> {
                     b.pages.add(i + 1, Sheet.from(p.json().put("id", uid())))
@@ -1220,6 +1397,7 @@ class MainActivity : Activity() {
     }
 
     private fun pickImage() {
+        if (reader?.reading == true) return
         val intent =
             if (Build.VERSION.SDK_INT >= 33)
                 Intent(android.provider.MediaStore.ACTION_PICK_IMAGES).apply { type = "image/*" }
@@ -1304,6 +1482,7 @@ class MainActivity : Activity() {
                 }
             }
             11 -> {
+                if (reader?.reading == true) return
                 val b = book ?: return
                 val p = b.pages[activePage.coerceIn(0, b.pages.lastIndex)]
                 var mark: Mark? = null
@@ -1341,9 +1520,12 @@ class MainActivity : Activity() {
                     },
                 ) {
                     mark?.let {
-                        p.marks.add(it)
-                        store.commit(b)
-                        reader?.refresh()
+                        if (reader?.reading == true) store.file(it.image).delete()
+                        else {
+                            p.marks.add(it)
+                            store.commit(b)
+                            reader?.refresh()
+                        }
                     }
                 }
             }
@@ -1719,7 +1901,7 @@ class MainActivity : Activity() {
                 reader != null
         ) {
             reader?.let {
-                if (event.repeatCount == 0)
+                if (!it.reading && event.repeatCount == 0)
                     it.tool = if (it.tool == "eraser") it.lastPenTool else "eraser"
             }
             inputInfo = "${tr("真实系统笔按键", "System stylus button")} keyCode=$keyCode"

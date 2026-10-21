@@ -51,8 +51,10 @@ class ToolButton(context: Context, val name: String) : View(context) {
     var selectedFill = 0x33ffffff
     var selectedTint = 0xff262a2d.toInt()
     var dotColor = 0xff262a2d.toInt()
+    var caption = ""
     var unit = resources.displayMetrics.density
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val annotateGlyph = if (name == "book") LucideIcon(context, "PenLine") else null
     private val glyph =
         LucideIcon(
             context,
@@ -92,8 +94,14 @@ class ToolButton(context: Context, val name: String) : View(context) {
             paint.color = selectedFill
             paint.alpha = (Color.alpha(selectedFill) * selectionProgress).toInt()
             val s = 28 * unit
+            val selectionWidth = if (caption.isEmpty()) s else width - 8 * unit
             canvas.drawRoundRect(
-                RectF((width - s) / 2, (height - s) / 2, (width + s) / 2, (height + s) / 2),
+                RectF(
+                    (width - selectionWidth) / 2,
+                    (height - s) / 2,
+                    (width + selectionWidth) / 2,
+                    (height + s) / 2,
+                ),
                 8 * unit,
                 8 * unit,
                 paint,
@@ -101,12 +109,25 @@ class ToolButton(context: Context, val name: String) : View(context) {
             paint.alpha = 255
         }
         val s = (20 * unit).toInt()
-        glyph.tint = if (isSelected) selectedTint else tint
-        glyph.layout(0, 0, s, s)
+        val visibleGlyph = if (caption.isNotEmpty()) annotateGlyph ?: glyph else glyph
+        visibleGlyph.tint = if (isSelected) selectedTint else tint
+        visibleGlyph.layout(0, 0, s, s)
         canvas.save()
-        canvas.translate((width - s) / 2f, (height - s) / 2f)
-        glyph.draw(canvas)
+        canvas.translate(if (caption.isEmpty()) (width - s) / 2f else 9 * unit, (height - s) / 2f)
+        visibleGlyph.draw(canvas)
         canvas.restore()
+        if (caption.isNotEmpty()) {
+            paint.typeface = UiFonts.get(context, 500)
+            paint.textSize = 12 * unit
+            paint.color = if (isSelected) selectedTint else tint
+            val metrics = paint.fontMetrics
+            canvas.drawText(
+                caption,
+                34 * unit,
+                height / 2f - (metrics.ascent + metrics.descent) / 2,
+                paint,
+            )
+        }
         if (name == "pen" && isSelected) {
             paint.color = dotColor
             canvas.drawRoundRect(

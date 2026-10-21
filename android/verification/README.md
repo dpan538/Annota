@@ -87,3 +87,9 @@ Context dictionary continuation: `dictionary-context-*.png` shows the native PDF
 `ui-sizing-*` 记录最终版三档控件、完整回归、普通/大号键盘及 APK 发布身份；`size-*.png` 为三档横竖屏原生截图，`release-017-*` 为最终包的阅读器与词典记录。`reader-fidelity-*` 继续属于之前的 0.1.6 本地候选；不跨包冒认测试。详见[验收说明](../../docs/UI-SIZING-ACCEPTANCE.md)。
 
 当前 `build-info.json` 指向公开 0.1.7；旧公开 0.1.5 的完整身份保留为 `continuous-build-info.json`。`ui-sizing-update-install.json` 及 `release-017-update-*` 保存原始 0.1.5 经真实系统安装器升级到 0.1.7 的记录。
+
+## 极简纯阅读（0.1.8-dev）
+
+`reading-build.json` 记录本轮 APK 及源码/测试哈希，`reading-instrumentation-api36.txt` 为完整原生回归。新增六项覆盖只读、显示像素/颜色、分块驻留与视口、按文档恢复、三档横竖屏和隐藏顶栏后的实际查词/键盘。`reading-regression-visual-api36.txt` 为原有视觉流程；`reading-large-ui-api36.txt` 和 `reading-large-lookup-api36.txt` 为 420 dpi 的实际触摸检查。
+
+`reading-*.png` 为新模式原生截图，`reading-regression-*` 为本轮旧功能视觉回归，`reading-large-*` 为大系统键盘环境；不覆盖旧版截图。`reading-apk-local-check.json` 仅证明 loopback 下载及资源/签名核验。发布回执单独归档，不把测试夹具当作公开更新。详见[验收说明](../../docs/READING-MODE-ACCEPTANCE.md)。

@@ -48,6 +48,8 @@
 | 中 | 笔、橡皮、直尺、图片、图形、手形 |
 | 右 | 新增页、阅读模式、词典、更多 |
 
+纯阅读使用独立入口：收起批注工具，单击正文隐藏/显示顶栏，长按查词；「批注」一键返回原工具。阅读显示只提供原始、柔和、清晰三个预设，按文档记住选择，切换保留位置。手形仍是批注界面的浏览工具。
+
 四种笔、粗细与颜色收在笔菜单。书库、设置、阅读器及小菜单的控件支持 60 / 68 / 76 三档，点击即时生效。
 
 ## 实现
@@ -127,5 +129,7 @@ python3 design/dictionary/test_lookup.py
 ## English
 
 A local-first PDF reader and handwriting notebook for the Xiaomi Pad 9 Pro Max. Files, strokes, reading position and settings stay on the device. No account, cloud or sync. Offline ECDICT/CC-CEDICT lookup; networking only for requested updates and feedback.
+
+Read mode has a slim toolbar and only Original / Soft / Clear display presets. Tap the document to toggle chrome, long press for offline lookup, and tap Annotate to restore the previous tool.
 
 Development APK available through [GitHub Releases](https://github.com/dpan538/Annota/releases/tag/v0.1.7-dev); Xiaomi hardware, production signing and the stable-update flow remain pending. MIT for code; CC BY-NC 4.0 for original artwork and the guide.

@@ -140,16 +140,17 @@ class ReaderPopover(
         row.alpha = if (enabled) 1f else .35f
         val tint =
             if (danger) 0xffba3e45.toInt() else if (row.isSelected) palette.accent else palette.ink
-        row.addView(
-            ReaderGlyph(activity, glyph).apply { this.tint = tint },
-            FrameLayout.LayoutParams(ui.px(22f), ui.px(22f), Gravity.CENTER_VERTICAL).apply {
-                leftMargin = ui.px(8f)
-            },
-        )
+        if (glyph.isNotEmpty())
+            row.addView(
+                ReaderGlyph(activity, glyph).apply { this.tint = tint },
+                FrameLayout.LayoutParams(ui.px(22f), ui.px(22f), Gravity.CENTER_VERTICAL).apply {
+                    leftMargin = ui.px(8f)
+                },
+            )
         row.addView(
             ui.label(title, 16f, tint, 500),
             FrameLayout.LayoutParams(-1, -1).apply {
-                leftMargin = ui.px(44f)
+                leftMargin = ui.px(if (glyph.isEmpty()) 12f else 44f)
                 rightMargin = ui.px(8f)
             },
         )
@@ -170,7 +171,14 @@ class ReaderPopover(
         val frame = Rect().also { host.getWindowVisibleDisplayFrame(it) }
         val margin = ui.px(10f)
         val width = min(ui.px(panelWidth), frame.width() - 2 * margin).coerceAtLeast(1)
-        val location = IntArray(2).also { anchor.getLocationOnScreen(it) }
+        // Anchor to layout bounds, not the button's transient press-scale transform.
+        val location = IntArray(2)
+        val parent = anchor.parent as? View
+        if (parent != null) {
+            parent.getLocationOnScreen(location)
+            location[0] += anchor.left - parent.scrollX
+            location[1] += anchor.top - parent.scrollY
+        } else anchor.getLocationOnScreen(location)
         val top = max(frame.top + margin, location[1] + anchor.height + ui.px(8f))
         val available =
             if (fixedBody != null) frame.bottom - margin - top else frame.height() - 2 * margin

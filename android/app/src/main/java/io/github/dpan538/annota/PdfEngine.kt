@@ -406,13 +406,14 @@ class PdfEngine(val context: Context, val store: Store) {
             ) ?: error("图片解码失败")
         }
 
-        fun drawPaper(c: Canvas, p: Sheet) {
+        fun drawPaper(c: Canvas, p: Sheet, displayPaper: Int? = null) {
             c.drawColor(
-                when (p.paper) {
-                    "black" -> Color.rgb(39, 40, 42)
-                    "gray" -> Color.rgb(233, 233, 233)
-                    else -> Color.WHITE
-                }
+                displayPaper
+                    ?: when (p.paper) {
+                        "black" -> Color.rgb(39, 40, 42)
+                        "gray" -> Color.rgb(233, 233, 233)
+                        else -> Color.WHITE
+                    }
             )
             val paint =
                 Paint(Paint.ANTI_ALIAS_FLAG).apply {
