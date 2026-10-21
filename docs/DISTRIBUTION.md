@@ -1,5 +1,9 @@
 # APK 与应用内更新
 
+## 当前正式版
+
+当前稳定版本为 [1.0.1](https://github.com/dpan538/Annota/releases/tag/v1.0.1)，1.0.0 是首个正式版。二者均为非调试 release 构建，按用户明确决定保留原证书，开发版可覆盖升级。正式包、SHA256SUMS.txt 与 annota-update.json 通过 GitHub Releases 分发；固定入口为 [下载页](../DOWNLOAD.md)。1.0.0 的公开下载、原始 0.1.9 经真实 Android 系统安装器升级与数据保留均已验收，见 [首版验收](INTEGRATION-ACCEPTANCE.md)。1.0.1 修正默认阅读偏黄并统一中性柔和预设，见 [阅读颜色验收](NEUTRAL-READING-ACCEPTANCE.md)。
+
 ## 下载渠道
 
 首期通过公开仓库 `dpan538/Annota` 的 GitHub Releases 分发签名 APK。用户选择的首期渠道是 APK，不把小米应用商店作为当前发布依赖。这个方案不免除 Android 安装器或目标地区适用的开发者验证要求；发布前在目标设备确认实际安装流程。
@@ -8,9 +12,9 @@
 
 0.1.5 开发/预览包读取最近 30 条 Release，包括非草稿 Pre-release，以清单的整数 versionCode 选择更高版本；正式生产包保持 `/releases/latest` 稳定通道。没有更高版本时正常提示。原始 0.1.4 因旧逻辑限制需要手动覆盖一次，之后可在应用内检查测试更新。
 
-## 0.1.8 当前测试版
+## 0.1.8 历史测试版
 
-当前下载为 [0.1.8-dev](https://github.com/dpan538/Annota/releases/tag/v0.1.8-dev)，versionCode 9，使用原开发证书的 Pre-release。独立纯阅读与三个精简预览卡保持只读和阅读位置；详见[验收](READING-MODE-ACCEPTANCE.md)。63 项原生回归、四项独立视觉/界面流程通过；三附件摘要及公开完整下载/安装/冷启动回执为 `android/verification/reading-*public*.json`。原始公开 0.1.7 通过原生入口与实际 Android 安装器完成 8 → 9，文档/进度/外观及阅读偏好保持，见 `reading-update-install.json`。历史版本附件与证书连续性保留，不改变正式稳定通道。
+该次下载为 [0.1.8-dev](https://github.com/dpan538/Annota/releases/tag/v0.1.8-dev)，versionCode 9，使用原开发证书的 Pre-release。独立纯阅读与三个精简预览卡保持只读和阅读位置；详见[验收](READING-MODE-ACCEPTANCE.md)。63 项原生回归、四项独立视觉/界面流程通过；三附件摘要及公开完整下载/安装/冷启动回执为 `android/verification/reading-*public*.json`。原始公开 0.1.7 通过原生入口与实际 Android 安装器完成 8 → 9，文档/进度/外观及阅读偏好保持，见 `reading-update-install.json`。历史版本附件与证书连续性保留，不改变正式稳定通道。
 
 ## 0.1.7 历史测试版
 

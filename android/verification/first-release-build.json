@@ -22,12 +22,15 @@
   "hardware": "Previous functionality reported passed on hardware by user; new integrations verified on dedicated emulator",
   "gitHubFeedback": "Native submit -> public Vercel HTTPS relay -> real GitHub Issue -> automatic result",
   "privateCredentialsCommitted": false,
-  "status": "signed stable release candidate verified; publication in progress",
-  "publicReleasePublished": false,
+  "status": "published stable release, download and actual system upgrade verified",
+  "publicReleasePublished": true,
   "finalNativeTests": 19,
   "relayTests": 8,
   "liveAutomaticFeedbackVerified": true,
   "stableLabelsVerified": "first-release-stable-labels.json",
   "liveFeedbackLog": "first-release-feedback-live-api36.txt",
-  "liveFeedbackIssue": "https://github.com/dpan538/Annota/issues/2"
+  "liveFeedbackIssue": "https://github.com/dpan538/Annota/issues/2",
+  "sourceCommit": "32646b481cab312b383856eb3274070b4a813b68",
+  "publicDownloadVerification": "first-release-apk-public-check.json",
+  "systemUpgradeVerification": "first-release-update-install.json"
 }

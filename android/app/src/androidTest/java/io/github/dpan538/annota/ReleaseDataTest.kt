@@ -20,6 +20,25 @@ class ReleaseDataTest {
         Assume.assumeTrue(Build.HARDWARE in setOf("ranchu", "goldfish"))
         val inst = InstrumentationRegistry.getInstrumentation()
         val context = inst.targetContext
+        if (InstrumentationRegistry.getArguments().getString("seedUpgrade") == "true") {
+            Store(context).use { store ->
+                val book = store.books().first { it.title == "Attention Is All You Need" }
+                if (book.pages[0].marks.isEmpty()) {
+                    book.pages[0]
+                        .marks
+                        .add(
+                            Mark(
+                                "pen",
+                                android.graphics.Color.BLUE,
+                                2f,
+                                mutableListOf(Point(50f, 200f), Point(250f, 200f)),
+                            )
+                        )
+                    store.commit(book)
+                }
+                store.setBookmarks(book, store.bookmarks(book) + book.pages[2].id)
+            }
+        }
         fun digest(file: File): String =
             file.inputStream().use { input ->
                 val sha = MessageDigest.getInstance("SHA-256")

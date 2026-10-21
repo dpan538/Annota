@@ -736,6 +736,82 @@ class DocumentNavigationTest {
         assertArrayEquals(original, source.readBytes())
     }
 
+    /** Real release screenshots for the README; fresh seeded library, one consistent blue theme. */
+    @Test
+    fun readmeBlueThemeProductTour() {
+        activity =
+            inst.startActivitySync(
+                Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            ) as MainActivity
+        ui { activity!!.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
+        waitFor {
+            ui { all(activity!!.window.decorView).any { it is LibraryScreen && it.width > 0 } }
+        }
+        SystemClock.sleep(1000)
+        assertEquals(2, store.books().size)
+        capture("readme-library-blue")
+        val b = store.books().first { it.title == "Attention Is All You Need" }
+        open(b)
+        val r = reader()
+        ui {
+            r.reading = true
+            r.readingStyle = ReadingStyle.ORIGINAL
+            r.fit()
+        }
+        SystemClock.sleep(1500)
+        capture("readme-reading-blue")
+        tap("开始批注")
+        tap("笔与颜色")
+        if (popup()?.isShowing != true) tap("笔与颜色")
+        waitFor { ui { popup()?.isShowing == true } }
+        capture("readme-pen-blue")
+        ui { popup()?.dismiss() }
+        tap("阅读模式")
+        val word = pdf.words(r.book, r.book.pages[0]).first { it.text.equals("Attention", true) }
+        val point = sourcePoint(r, 0, word.box.centerX(), word.box.centerY())
+        tapAt(point.x, point.y, ViewConfiguration.getLongPressTimeout() + 200L)
+        waitFor { ui { r.selectedText().equals("attention", true) && popup()?.isShowing == true } }
+        tap("查词")
+        waitFor { views().filterIsInstance<TextView>().any { it.text.toString().contains("注意力") } }
+        capture("readme-dictionary-blue")
+        ui { popup()?.dismiss() }
+        tap("缩略图与页面")
+        tap("页面")
+        capture("readme-pages-blue")
+        tap("关闭导航")
+        tap("更多")
+        tap("文内搜索")
+        ui {
+            views()
+                .filterIsInstance<EditText>()
+                .first { it.tag == "document-search-query" }
+                .setText("attention")
+        }
+        waitFor {
+            views().filterIsInstance<TextView>().any {
+                it.text.toString().matches(Regex("1 / [0-9]+"))
+            }
+        }
+        ui {
+            androidx.core.view
+                .WindowInsetsControllerCompat(activity!!.window, activity!!.window.decorView)
+                .hide(androidx.core.view.WindowInsetsCompat.Type.ime())
+        }
+        SystemClock.sleep(300)
+        capture("readme-search-blue")
+        tap("关闭导航")
+        ui {
+            r.readingStyle = ReadingStyle.SOFT
+            r.fit()
+        }
+        SystemClock.sleep(300)
+        capture("readme-soft-blue")
+        val gallery = File(context.getExternalFilesDir(null), "readme-gallery").apply { mkdirs() }
+        out.listFiles()!!
+            .filter { it.name.startsWith("readme-") }
+            .forEach { it.copyTo(File(gallery, it.name), true) }
+    }
+
     @Test
     fun bundledChinesePdfSearchAndSelectionJoinRealGlyphs() {
         val source = store.file("${uid()}.pdf")

@@ -8,6 +8,6 @@ test_timeout_after_github_write_keeps_identity_for_recovery (test_github_relay.T
 test_validation_and_body_limit (test_github_relay.Tests.test_validation_and_body_limit) ... ok
 
 ----------------------------------------------------------------------
-Ran 8 tests in 0.029s
+Ran 8 tests in 0.534s
 
 OK

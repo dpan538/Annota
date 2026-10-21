@@ -1,0 +1,42 @@
+{
+  "startVersionCode": 10,
+  "startVersionName": "0.1.9-dev",
+  "targetVersionCode": 11,
+  "targetVersionName": "1.0.0",
+  "startIsOriginalPublished019": true,
+  "actualSystemInstallerUsed": true,
+  "physicalDevice": false,
+  "steps": [
+    {
+      "utc": "2026-10-21T13:34:04.717166+00:00",
+      "action": "Installed exact original public 0.1.9 starting APK; captured document/ink/source/bookmark/position/preferences snapshot with signed instrumentation."
+    },
+    {
+      "utc": "2026-10-21T13:34:55.675986+00:00",
+      "action": "Original 0.1.9 app discovered stable 1.0.0 on GitHub, downloaded the public APK and verified hash, identity and version."
+    },
+    {
+      "utc": "2026-10-21T13:35:35.572564+00:00",
+      "action": "Confirmed Update in Android system installer and opened the non-debuggable stable app; stable labels are visible in library and About. No adb install used for this upgrade."
+    },
+    {
+      "utc": "2026-10-21T13:35:42.345028+00:00",
+      "action": "Exact public release installed, run-as correctly denied, and all persistent data snapshots including ink, source hashes, bookmarks and viewport/display preferences match."
+    }
+  ],
+  "verifiedPendingUpdate": {
+    "code": 11,
+    "name": "1.0.0",
+    "file": "annota-11.apk",
+    "sha": "84d6f0c50119e4c9ad74d156b6612a1ee98c6f70c9be3e83ca4050e53bf54ff2",
+    "certificate": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18"
+  },
+  "stableLabelVisibleInLibraryAndAbout": true,
+  "passed": true,
+  "installedApkSha256": "84d6f0c50119e4c9ad74d156b6612a1ee98c6f70c9be3e83ca4050e53bf54ff2",
+  "debuggable": false,
+  "bookCount": 3,
+  "dataSnapshotUnchanged": true,
+  "pendingUpdateCleared": true,
+  "certificateRetained": true
+}

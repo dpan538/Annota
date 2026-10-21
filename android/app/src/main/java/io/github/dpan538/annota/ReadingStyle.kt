@@ -15,7 +15,7 @@ enum class ReadingStyle(
     private val black: Int = Color.BLACK,
 ) {
     ORIGINAL("original", "原始", "Original", 0xfff4f4f4.toInt(), Color.WHITE, 1f),
-    SOFT("soft", "柔和", "Soft", 0xffeeece6.toInt(), 0xfffaf7ef.toInt(), 1f, 0xff191c20.toInt()),
+    SOFT("soft", "柔和", "Soft", 0xffeeeeee.toInt(), 0xfff8f8f8.toInt(), 1f, 0xff191919.toInt()),
     CLEAR("clear", "清晰", "Clear", 0xffeef0f1.toInt(), 0xfffdfdfb.toInt(), 1.035f);
 
     private val matrix: FloatArray =
@@ -44,6 +44,6 @@ enum class ReadingStyle(
     }
 
     companion object {
-        fun from(key: String?) = entries.firstOrNull { it.key == key } ?: SOFT
+        fun from(key: String?) = entries.firstOrNull { it.key == key } ?: ORIGINAL
     }
 }

@@ -4,6 +4,7 @@
   "libraryLabel": "1.0.0 · 正式版",
   "aboutLabel": "1.0.0 · 正式版",
   "debuggable": false,
-  "localCandidateOnly": true,
-  "publicReleasePublished": false
+  "localCandidateOnly": false,
+  "publicReleasePublished": true,
+  "publicSystemUpgrade": "first-release-update-install.json"
 }

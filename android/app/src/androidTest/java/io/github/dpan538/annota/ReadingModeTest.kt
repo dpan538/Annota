@@ -331,7 +331,17 @@ class ReadingModeTest {
             Canvas(output).drawBitmap(input, 0f, 0f, Paint().apply { colorFilter = style.filter })
             val actual = pixels(output)
             if (style == ReadingStyle.ORIGINAL) assertArrayEquals(colors, actual)
-            if (style == ReadingStyle.SOFT) assertTrue(Color.red(actual[0]) > Color.blue(actual[0]))
+            if (style == ReadingStyle.SOFT) {
+                for (i in listOf(0, 1, 2, 3, 7)) {
+                    assertEquals(
+                        "Neutral paper and gray lines must not gain a color cast",
+                        Color.red(actual[i]),
+                        Color.blue(actual[i]),
+                    )
+                    assertEquals(Color.red(actual[i]), Color.green(actual[i]))
+                }
+                assertEquals(Color.red(style.surround), Color.blue(style.surround))
+            }
             if (style == ReadingStyle.CLEAR) assertTrue(Color.red(actual[7]) < 128)
             assertTrue("Light gray axes survive", actual[0] != actual[2] && actual[2] != actual[3])
             assertEquals(
@@ -459,7 +469,7 @@ class ReadingModeTest {
         assertTrue(reopened.ruler)
         val another = view(store.newNote("Separate document", "blank", "white"))
         assertFalse(another.reading)
-        assertEquals(ReadingStyle.SOFT, another.readingStyle)
+        assertEquals(ReadingStyle.ORIGINAL, another.readingStyle)
         ui { reopened.reading = false }
         assertEquals(before, b.state())
         val black = store.newNote("Black paper", "grid", "black")

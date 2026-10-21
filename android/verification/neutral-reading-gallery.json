@@ -1,0 +1,30 @@
+{
+  "versionName": "1.0.1",
+  "versionCode": 12,
+  "debuggable": false,
+  "apkSha256": "423655f9f0e3ca5920c5e9a4e86528a65c4fc6d8f658c92b95e2ee04aaf39d34",
+  "device": "Android 16 / API36 ARM64 dedicated emulator, 3408x2272",
+  "theme": "blue / 蓝调",
+  "demo": "original bundled Attention Is All You Need; seeded two-document library",
+  "screenshots": {
+    "docs/images/readme-dictionary-blue.png": "0cc666933900ad7efe8c263a5273989559b42a3f0059ed27bf2741281e0b8cf6",
+    "docs/images/readme-library-blue.png": "1f23af9e9abc80cea3ede28db889d4ab64d35d0f64fb70b70aeaaf7aeaea10c4",
+    "docs/images/readme-pages-blue.png": "ea7179862b2d8a2e34f906dd884c2f699864415100d132677abb3aadd5231873",
+    "docs/images/readme-pen-blue.png": "9acc165f2abf5092c8073aa929032b8d43fe8e4d1bc6084f55e3a3cabe26b59d",
+    "docs/images/readme-reading-blue.png": "529ba444fa2ee7efbdffefa09a9999a7d68e20be455469b83d748f475266e3a1",
+    "docs/images/readme-search-blue.png": "fdc59a35538815238dc3fab23690ddf16c9440c7b8a19c172037af47199463ca",
+    "docs/images/readme-soft-blue.png": "aaba7e04118c7020591034d9a264fd8b4ca1ed4ba4c65cbaac4c4d240cb3c933"
+  },
+  "paperPixelRgb": {
+    "reading": [
+      255,
+      255,
+      255
+    ],
+    "soft": [
+      248,
+      248,
+      248
+    ]
+  }
+}

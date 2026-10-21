@@ -1,0 +1,117 @@
+{
+  "books": [
+    {
+      "id": "9ee4e151-9ba8-4e16-89c9-f66f36716cc8",
+      "title": "Attention Is All You Need",
+      "source": "a6ac5d63-f2e2-4ed7-8743-148e8477c60a.pdf",
+      "folder": "",
+      "favorite": "0",
+      "trash": "0",
+      "opened": "1792589415474",
+      "current": "2",
+      "revision": "0",
+      "cursor": "0",
+      "state": "396c606178891928877dbfbab6849c85ee3e5ec2b890342e3672fcae40a34b5b.json.gz",
+      "stateSha256": "656c57675724e7a0111d3d7ebb8f6ac1fd32220a93e482b5ab0f3db295d98886",
+      "sourceSha256": "d87d482d5ae7960e2e43d7dd6d21377e60e73e8fce1bf2a01aff7aca8a08c537"
+    },
+    {
+      "id": "attention",
+      "title": "Attention Is All You Need",
+      "source": "00000000-0000-0000-0000-000000000002.pdf",
+      "folder": "",
+      "favorite": "0",
+      "trash": "0",
+      "opened": "1792589414756",
+      "current": "0",
+      "revision": "0",
+      "cursor": "0",
+      "state": "5f09cd3cc8c64571d227a3c638c41a4c5791820cfa0907f7f64f3bd8c8e73838.json.gz",
+      "stateSha256": "ba14cb607133ad06838ba639dd0a82b52137ee9928917a806126f676a1ccae20",
+      "sourceSha256": "d87d482d5ae7960e2e43d7dd6d21377e60e73e8fce1bf2a01aff7aca8a08c537"
+    },
+    {
+      "id": "guide",
+      "title": "Annota 使用指南",
+      "source": "00000000-0000-0000-0000-000000000001.pdf",
+      "folder": "",
+      "favorite": "0",
+      "trash": "0",
+      "opened": "1792589414709",
+      "current": "0",
+      "revision": "0",
+      "cursor": "0",
+      "state": "0486869194abb8502b5187199dd5efd111251aeb5f258c314a70400e38bfbf88.json.gz",
+      "stateSha256": "f356ab84d656e1fe89173def67c12969ca19dc1fee3cd1ba53618a3173bd70b5",
+      "sourceSha256": "4d0a1ef7475f09a5e11b09c9bf42f35e5e67167eaf97e82899a002a6ff3edbe9"
+    }
+  ],
+  "flags": [
+    {
+      "key": "bookmarks:9ee4e151-9ba8-4e16-89c9-f66f36716cc8",
+      "value": "[\"156338c1-8ff3-468a-86cf-3e07ff4ed19c\"]"
+    },
+    {
+      "key": "library-initialized-v1",
+      "value": "1"
+    },
+    {
+      "key": "seed",
+      "value": "1"
+    },
+    {
+      "key": "seed-attention-v1",
+      "value": "1"
+    }
+  ],
+  "settings": {
+    "english": false,
+    "theme": 2,
+    "buttonSize": 76
+  },
+  "reading-viewports": {
+    "03ff3972-88a4-4544-aaf2-4aa3cc986c07": "{\"page\":\"dbeea40d-5c3b-4f64-8f36-22de817cbd79\",\"fraction\":0,\"zoom\":1,\"panRatio\":0,\"fitWidth\":true,\"spread\":false}",
+    "3aa07e5a-e0c3-40be-80a4-572f5dc35526": "{\"page\":\"f90fd58d-f97d-4b98-b352-d90518064f09\",\"fraction\":0,\"zoom\":1,\"panRatio\":0,\"fitWidth\":true,\"spread\":false}",
+    "3bab767c-d836-41be-9020-a9212d185f1a": "{\"page\":\"624edc09-f194-4c75-8589-b806b9836124\",\"fraction\":0,\"zoom\":1,\"panRatio\":0,\"fitWidth\":true,\"spread\":false}",
+    "74367054-7cbf-46e2-becc-61e99da7f29f": "{\"page\":\"0eeb123a-123f-49a0-b342-8f3789735eb2\",\"fraction\":0,\"zoom\":1,\"panRatio\":0,\"fitWidth\":false,\"spread\":false}",
+    "9ee4e151-9ba8-4e16-89c9-f66f36716cc8": "{\"page\":\"156338c1-8ff3-468a-86cf-3e07ff4ed19c\",\"fraction\":0,\"zoom\":1,\"panRatio\":0,\"fitWidth\":false,\"spread\":false}",
+    "acb2ea03-d352-4a5b-9cf4-615e98e435cc": "{\"page\":\"7fbd52f0-00fc-4a03-8971-0a72c5d7f708\",\"fraction\":0,\"zoom\":1,\"panRatio\":0,\"fitWidth\":true,\"spread\":false}",
+    "attention": "{\"page\":\"e6cef262-2c1e-4a01-8833-236fc039f090\",\"fraction\":0.04289446026086807,\"zoom\":1,\"panRatio\":0,\"fitWidth\":true,\"spread\":false}",
+    "c8a46a26-92b8-4922-bfaf-151b9d3063db": "{\"page\":\"1d694dab-ad85-45c3-ab9d-cc810b52e800\",\"fraction\":0,\"zoom\":1,\"panRatio\":0,\"fitWidth\":true,\"spread\":false}",
+    "d070e8ff-878a-4aac-b98e-8070589d5c33": "{\"page\":\"95aff372-cedf-4da8-9893-c3d96af2b631\",\"fraction\":0,\"zoom\":1,\"panRatio\":0,\"fitWidth\":true,\"spread\":false}",
+    "eeb1177b-7dce-48e7-b1cb-9010b0322bd7": "{\"page\":\"09206625-f54b-48e0-a4fd-684b8b9390da\",\"fraction\":0,\"zoom\":1,\"panRatio\":0,\"fitWidth\":false,\"spread\":false}",
+    "guide": "{\"page\":\"f900b4bc-b9ac-42bd-881f-8686c35c5abe\",\"fraction\":0,\"zoom\":1,\"panRatio\":0,\"fitWidth\":true,\"spread\":false}"
+  },
+  "reading-display": {
+    "06212358-ed5d-43ee-ad20-f604ecaeda29": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "189358f9-95a6-410e-bfca-9446cdf56b09": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "20171a40-8594-4f1c-9761-1e2ac1bf17c5": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "2b6f96d2-af94-4118-8833-1187d52af222": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "391a4832-ae80-41a6-b561-32dd38ecace2": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "3f8b9174-ccb4-4d4f-bf52-8a9309be2683": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "6003446f-da4e-44c1-a4ad-18cef90b4cac": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "62395983-a2b2-46c8-8d17-51af03321bd4": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "62c70551-eaa3-47c0-b6df-e970bccfabd0": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "6524403d-5d82-44dc-abf4-6453317fe291": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "74367054-7cbf-46e2-becc-61e99da7f29f": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "77bdd1c4-1a0d-4f9e-b896-9727b035412d": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "7f520c37-66b5-4e95-9738-0017b3cdfe96": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "81cabf2e-f4bc-4921-8bae-56863761f7eb": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "883d052d-8b92-448c-82b0-7e7134d8f903": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "9a510cb0-cba2-4801-9a38-088200651011": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "9ee4e151-9ba8-4e16-89c9-f66f36716cc8": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "a674e386-c65d-4d22-8bda-e065ed0d2463": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "a8b08b8a-f889-4123-974d-66f096987731": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "b4061b2a-f63a-497c-b148-bd82c59343bf": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "d17ec07b-1733-43e7-8b89-ac5fa1a27730": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "da7a372e-ba8b-460f-a5e5-0201c3ade53a": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "db96f04d-cf8a-4950-8c5d-b60e29f626d3": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "eae96286-1d63-4dd9-932d-569181251a0b": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "ebb68cfa-176b-48d1-87a4-ff69f7970a6f": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "ee7c092d-69c1-4c90-9ceb-9899d9d103f3": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "eeb1177b-7dce-48e7-b1cb-9010b0322bd7": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "fa90f8dc-c0db-4ccd-8b1b-398c4bcd83d4": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}",
+    "fdff99e4-d32d-4de1-94ca-6acaf5484a60": "{\"enabled\":true,\"style\":\"soft\",\"tool\":\"hand\",\"lastPen\":\"pen\",\"color\":-15329253,\"width\":2.4,\"ruler\":false,\"filled\":false,\"eraserLocal\":false,\"onlyHighlight\":false}"
+  },
+  "pendingUpdateCleared": true
+}

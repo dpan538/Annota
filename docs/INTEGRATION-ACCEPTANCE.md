@@ -34,9 +34,11 @@ Vercel 项目 `annota-feedback`，当前部署 `dpl_Lg5iZ5D2zsZvBrkRsyqZiEiDTQw4
 
 真机测试：用户已报告此前版本实机测试通过；本轮新增反馈、小组件与外部应用集成的证据以专用模拟器测试为准。
 
-## 当前候选验收
+## 1.0.0 正式交付验收
 
 - 自动反馈本地安卓流程 19 项（含离线提示、回执身份/草稿、布局/键盘、英文和三档尺寸）、接收服务 8 项测试通过。接收服务测试中的 GitHub 是模拟上游；不代表真实公网写入通过。
 - 原有 78 项回归和内部 12 项功能已通过，日志保留其测试时间与版本边界。
 - 非调试 1.0.0 候选已完成资源/ZIP/签名、模拟器安装冷启动，证书与旧版相同。书库和关于页实际可见“1.0.0 · 正式版”，见 `first-release-stable-labels.json`。
-- 当前候选 SHA-256：`84d6f0c50119e4c9ad74d156b6612a1ee98c6f70c9be3e83ca4050e53bf54ff2`。真实自动反馈已通过，公开下载与实际系统覆盖升级在发布后补充记录。
+- 当前候选 SHA-256：`84d6f0c50119e4c9ad74d156b6612a1ee98c6f70c9be3e83ca4050e53bf54ff2`。真实自动反馈、匿名完整下载、原始公开 0.1.9 经应用更新入口与 Android 系统安装器升级至 1.0.0 均已通过；前后文档、原始 PDF 哈希、笔迹状态、书签、阅读位置及外观/阅读偏好快照完全一致。待安装记录已清理。见 `first-release-apk-public-check.json`、`first-release-update-install.json` 与前后快照。
+
+公开 [v1.0.0 正式版](https://github.com/dpan538/Annota/releases/tag/v1.0.0) 的 tag 指向源码 `32646b481cab312b383856eb3274070b4a813b68`，非草稿、非预发布，发布时为 latest stable；APK、SHA256SUMS.txt、annota-update.json 三附件摘要已匿名核对。旧 0.1.9 附件保持不变。归档身份为 `build-info-1.0.0.json`。
