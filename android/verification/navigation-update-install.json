@@ -1,0 +1,68 @@
+{
+  "device": "API36 ARM64 dedicated emulator",
+  "startVersionCode": 9,
+  "startVersionName": "0.1.8-dev",
+  "targetVersionCode": 10,
+  "targetVersionName": "0.1.9-dev",
+  "startIsOriginalPublished018": true,
+  "sourcePermissionAlreadyGranted": true,
+  "actualSystemInstallerUsed": true,
+  "physicalXiaomiEvidence": false,
+  "steps": [
+    {
+      "utc": "2026-10-21T10:02:35.810444+00:00",
+      "action": "Installed the original published 0.1.8 APK only as the starting client; retained emulator test data."
+    },
+    {
+      "utc": "2026-10-21T10:02:50.302403+00:00",
+      "action": "Original 0.1.8 client discovered public 0.1.9-dev through native Check update."
+    },
+    {
+      "utc": "2026-10-21T10:03:31.229335+00:00",
+      "action": "Native client downloaded the public APK and verified hash, package, version and signing identity."
+    },
+    {
+      "utc": "2026-10-21T10:03:52.378464+00:00",
+      "action": "Confirmed Update in the real Android system installer and opened the upgraded app; no adb install performed for this upgrade."
+    },
+    {
+      "utc": "2026-10-21T10:17:24.740759+00:00",
+      "action": "Exact public APK installed; document states, metadata, reading positions and appearance settings retained; pending update cleared."
+    }
+  ],
+  "pendingManifestAfterDownload": {
+    "code": 10,
+    "name": "0.1.9-dev",
+    "file": "annota-10.apk",
+    "sha": "b3a6d004036dd3c26e103279bb47e31b89917f63b06ac7b9f528d1b3b5b01e4c",
+    "certificate": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18"
+  },
+  "installedApkSha256": "b3a6d004036dd3c26e103279bb47e31b89917f63b06ac7b9f528d1b3b5b01e4c",
+  "bookStateHashes": {
+    "a674e386-c65d-4d22-8bda-e065ed0d2463": "4c988bc2c3bae125b5407e4a7964dcda2dfcb844b131ebab1c526e7693e25936",
+    "guide": "fa3f69b0644cc05db007af188ff0061c1e36ac5692be4a669bba76b3d6c193bf",
+    "attention": "123ba8ecc16e0d52a7eb837a878f07c0478968c6f1fcf7c0cd878282837f547d"
+  },
+  "bookCount": 3,
+  "pageBookmarks": [
+    {
+      "key": "bookmarks:a674e386-c65d-4d22-8bda-e065ed0d2463",
+      "value": "[\"a04ec6b4-0295-43d0-846b-1b2733849632\"]"
+    }
+  ],
+  "appearancePreferences": {
+    "english": "false",
+    "theme": "2",
+    "buttonSize": "76"
+  },
+  "readingViewportsSha256": "d9232cd7945cd7749c658b25b538be791d2ddd39b12764b6eefca3629d5a2113",
+  "readingDisplaySha256": "c25d9a6921f0cee702c04479affd9ce7ae9b32f52595c675bc35fd87b62664ad",
+  "dataSnapshotUnchanged": true,
+  "pendingUpdateCleared": true,
+  "passed": true,
+  "emulatorDnsServers": [
+    "1.1.1.1",
+    "8.8.8.8"
+  ],
+  "networkRetry": "Initial system DNS resolution failed; data-preserving emulator restart with explicit DNS restored real public update connectivity."
+}

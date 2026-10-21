@@ -10,7 +10,7 @@
   "bytes": 74485635,
   "buildType": "debug",
   "productionSigned": false,
-  "publishedRelease": false,
+  "publishedRelease": true,
   "clientDate": "2026-10-21",
   "clientTimezone": "Australia/Brisbane",
   "sourceBaseCommit": "c332b5b775e9d64afe0dc793e2b01cdb85ff90ef",
@@ -101,8 +101,16 @@
     "navigation-paper-selection.png"
   ],
   "featureScreenshotCount": 88,
-  "screenshotCount": 88,
+  "screenshotCount": 92,
   "physicalXiaomiAcceptance": false,
   "physicalSamsungAcceptance": false,
-  "soakOnThisVersion": false
+  "soakOnThisVersion": false,
+  "sourceCommit": "574ce4ea7ba50d7808a7bccdd2a1763ebf6dfc96",
+  "releaseUrl": "https://github.com/dpan538/Annota/releases/tag/v0.1.9-dev",
+  "releasePublishedAt": "2026-10-21T09:56:36Z",
+  "anonymousGithubDownloadVerified": true,
+  "nativePreviewUpdateInstallVerified": true,
+  "updateInstallEvidence": "android/verification/navigation-update-install.json",
+  "updateTestOrigin": "original public 0.1.8-dev versionCode 9; real public download and Android system installer upgrade to versionCode 10",
+  "updateScreenshotCount": 4
 }

@@ -24,3 +24,13 @@
 最终包 78 项原生回归通过，无跳过；另有四项独立视觉/界面流程通过，覆盖 420 dpi 的最大按键和实际键盘。lint 0 errors / 78 warnings。88 张原生界面截图已归档。测试、构建身份和证据以 `android/verification/navigation-build.json` 与 `navigation-*-api36.txt` 为准。正式演示为 Attention 原文；双栏夹具、中文指南、旋转页面、1,200 次匹配等分别验证边界。布局覆盖 60 / 68 / 76、中英文、横竖屏与真实软键盘；右侧纯图标与中间无控件也有断言。
 
 专用 API 36 ARM64 模拟器为本轮自动化环境，未将其等同于小米/三星实机笔或长时使用验证。旧版本测试、截图和公开 APK 原件保留各自身份。
+
+## 公开交付
+
+已发布 [0.1.9-dev 开发预览](https://github.com/dpan538/Annota/releases/tag/v0.1.9-dev)，源码标签固定到 `navigation-build.json` 的 sourceCommit。APK、SHA256SUMS.txt、annota-update.json 三附件已匿名核对，完整下载副本的 ZIP/资源、签名、安装与冷启动通过。既有开发证书保持，公开 0.1.8 原件保留。
+
+原始公开 0.1.8 客户端已通过应用内检查和公开下载，经真实 Android 系统安装器完成 code 9 → 10。文档状态、元数据、页书签、阅读位置和外观/阅读偏好快照一致，已安装 APK 与公开哈希完全相同，待安装记录清理。ADB 只建立旧版起点。回执为 `navigation-update-install.json`，四张安装流程截图连同 88 张功能截图共 92 张。
+
+[原文选词](../android/verification/navigation-paper-selection.png) · [原文搜索](../android/verification/navigation-paper-search.png) · [原文查词](../android/verification/navigation-paper-dictionary.png)
+
+在线更新首次遇到模拟器系统 DNS 无法解析 GitHub。保留数据重启模拟器并指定 DNS 后，原始公开客户端重试通过；该条件已写入升级回执。

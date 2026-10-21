@@ -10,7 +10,7 @@
 <table width="100%">
   <tr>
     <td width="50%"><img src="android/verification/reader-polish-library-landscape.png" width="100%" alt="主页，松间主题，横屏"></td>
-    <td width="50%"><img src="android/verification/reader-polish-paper.png" width="100%" alt="阅读器，松间主题，单页阅读"></td>
+    <td width="50%"><img src="android/verification/navigation-paper-reading.png" width="100%" alt="阅读模式，蓝调主题，Attention 原文"></td>
   </tr>
 </table>
 
@@ -22,7 +22,7 @@
 
 ## 下载
 
-[下载安装包 ↗](https://github.com/dpan538/Annota/releases/download/v0.1.8-dev/Annota-0.1.8-dev.apk) · [固定下载页](DOWNLOAD.md)
+[下载安装包 ↗](https://github.com/dpan538/Annota/releases/download/v0.1.9-dev/Annota-0.1.9-dev.apk) · [固定下载页](DOWNLOAD.md)
 
 直接点击，或复制下载页中的链接到平板浏览器。下载完成后按系统提示安装。当前为开发测试包，尚非正式版。
 
@@ -36,19 +36,21 @@
 
 默认适宽，单页或相邻双页连续上下滚动；支持惯性滑动、双指缩放与阅读位置恢复，缩略图列表按需打开。四套外观：松间、晴昼、蓝调、原野。圆角新建面板直接预览空白、点阵、格子、横线四种纸，选择白、灰、黑底色并命名。文件长按可收藏、重命名、复制、移动、导出 PDF、移进废纸篓。
 
+文内搜索显示原页高亮，支持前后结果切换并在关闭时恢复位置；选区手柄可扩展同页跨行文字。现有页面侧栏共用缩略图、PDF 目录和页书签，文内跳转可返回原处。
+
 首次启动只有横版五页指南和 11 页 *Attention Is All You Need* 示例论文；封面读取真实首页。删除后重启或升级都不补回。
 
 ## 顶栏
 
-横屏设计坐标 1024 × 682⅔，参考画幅 3408 × 2272。阅读器保持一行三组，底部不放页码和操作条：
+横屏设计坐标 1024 × 682⅔，参考画幅 3408 × 2272。批注模式保持一行三组，底部不放页码和操作条：
 
 | 区 | 入口 |
 | --- | --- |
 | 左 | 返回书库、缩略图、单/双页 |
-| 中 | 笔、橡皮、直尺、图片、图形、手形 |
+| 中 | 批注时为笔、橡皮、直尺、图片、图形、手形；阅读时留空 |
 | 右 | 新增页、阅读模式、词典、更多 |
 
-纯阅读使用独立入口：收起批注工具，单击正文隐藏/显示顶栏，长按查词；「批注」一键返回原工具。阅读显示只提供原始、柔和、清晰三个预设，按文档记住选择，切换保留位置。手形仍是批注界面的浏览工具。
+纯阅读收起批注工具，顶栏只保留左右两侧图标，中间留空。单击正文隐藏/显示顶栏，长按选词后用「复制｜查词」文字小菜单；右侧笔图标返回原工具。三个显示预设在「更多 → 阅读显示」中，按文档记住选择。手形仍是批注界面的浏览工具。
 
 四种笔、粗细与颜色收在笔菜单。书库、设置、阅读器及小菜单的控件支持 60 / 68 / 76 三档，点击即时生效。
 
@@ -132,4 +134,4 @@ A local-first PDF reader and handwriting notebook for the Xiaomi Pad 9 Pro Max. 
 
 Read mode has a slim toolbar and only Original / Soft / Clear display presets. Tap the document to toggle chrome, long press for offline lookup, and tap Annotate to restore the previous tool.
 
-Development APK available through [GitHub Releases](https://github.com/dpan538/Annota/releases/tag/v0.1.8-dev); Xiaomi hardware, production signing and the stable-update flow remain pending. MIT for code; CC BY-NC 4.0 for original artwork and the guide.
+Development APK available through [GitHub Releases](https://github.com/dpan538/Annota/releases/tag/v0.1.9-dev); Xiaomi hardware, production signing and the stable-update flow remain pending. MIT for code; CC BY-NC 4.0 for original artwork and the guide.
