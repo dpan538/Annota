@@ -1,0 +1,37 @@
+{
+  "startVersionCode": 11,
+  "startVersionName": "1.0.0",
+  "targetVersionCode": 12,
+  "targetVersionName": "1.0.1",
+  "startIsOriginalPublished100": true,
+  "actualSystemInstallerUsed": true,
+  "physicalDevice": false,
+  "steps": [
+    {
+      "utc": "2026-10-21T13:54:36.753252+00:00",
+      "action": "Installed exact original public 1.0.0 starting APK; captured document/ink/source/bookmark/position/preferences snapshot with signed instrumentation."
+    },
+    {
+      "utc": "2026-10-21T13:55:18.843627+00:00",
+      "action": "Original 1.0.0 app discovered stable 1.0.1 on GitHub, downloaded the public APK and verified hash, identity and version."
+    },
+    {
+      "utc": "2026-10-21T13:55:56.486000+00:00",
+      "action": "Confirmed Update in Android system installer and opened the non-debuggable stable app; stable labels are visible in library and About. No adb install used for this upgrade."
+    },
+    {
+      "utc": "2026-10-21T13:56:03.378759+00:00",
+      "action": "Exact public release installed, run-as correctly denied, and all persistent data snapshots including ink, source hashes, bookmarks and viewport/display preferences match."
+    }
+  ],
+  "verificationUiObserved": true,
+  "downloadExpectedSha256": "423655f9f0e3ca5920c5e9a4e86528a65c4fc6d8f658c92b95e2ee04aaf39d34",
+  "stableLabelVisibleInLibraryAndAbout": true,
+  "passed": true,
+  "installedApkSha256": "423655f9f0e3ca5920c5e9a4e86528a65c4fc6d8f658c92b95e2ee04aaf39d34",
+  "debuggable": false,
+  "bookCount": 2,
+  "dataSnapshotUnchanged": true,
+  "pendingUpdateCleared": true,
+  "certificateRetained": true
+}

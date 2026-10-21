@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.0.1 — 中性阅读颜色 / Neutral reading colors
+
+- 新文档默认原始 PDF 白底；柔和预设改为中性浅灰，去除页面和外围背景的暖黄偏色，既有选择仍有效。
+- 保留浅灰细线与彩色图表区分，显示变换不改原始文档、笔迹与导出。
+- README 新增六张同蓝调原生产品截图及用途说明，统一下载、能力、隐私、开发与许可信息。
+- Same-certificate stable patch; original-white defaults and neutral Soft display, with a consistent illustrated product README.
+
+## 1.0.0 — 首个正式版 / First stable release
+
+- 首个非调试正式包，沿用现有证书以保留覆盖升级；应用书库、关于页、README 和 GitHub Release 均明确标注正式版。
+- 增加外部 PDF 打开 / 分享与私有持久副本、去重、导入 / 导出进度和失败重试。
+- 增加可调整大小的“继续阅读”安卓桌面小组件、跳页与按页批注预览；旋转 / 重建保留搜索和阅读位置。
+- 书库筛选改为锚定小菜单，常驻图标无装饰底色；菜单 / 侧栏采用短线性局部过渡。
+- 反馈表单按平板字号与 60 / 68 / 76 控件比例显示。单击提交经 Vercel 自动创建 GitHub Issue 后提示已收到，网络 / 服务失败保留草稿；无需用户检查提交结果。
+- Verified public APK download, actual Android system upgrade from 0.1.9 and automatic GitHub feedback on the non-debuggable build.
+
 ## 0.1.9-dev — 文档搜索与导航 / Document search and navigation
 
 - 新增文内搜索、原页匹配高亮和前后结果切换；退出恢复阅读位置与笔型，旋转保留查询。Added in-document search with original-page highlights, Previous/Next, viewport/tool restoration and rotation retention.

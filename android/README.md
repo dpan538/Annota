@@ -1,10 +1,10 @@
-# Annota Android development build
+# Annota Android
 
-Native Kotlin application ID: `io.github.dpan538.annota`. Minimum Android 10 / API 29, compile / target API 36. Debug version 0.1.9-dev (10). The earlier 0.1.0-dev build used a simplified functional-test interface and did not meet the approved design. This folder contains the native implementation; it does not publish GitHub Releases or change the design sources.
+Native Kotlin application ID: `io.github.dpan538.annota`. Minimum Android 10 / API 29, compile / target API 36. Current stable version 1.0.1 (12); 1.0.0 was the first stable release. The earlier 0.1.0-dev build used a simplified functional-test interface and did not meet the approved design. This folder contains the native implementation; it does not publish GitHub Releases or change the design sources.
 
 ## Build
 
-Install a **full JDK 17 or 21**, Android SDK platform 36 and build-tools 35.0.0. Set `JAVA_HOME` and `ANDROID_HOME`, or create untracked `local.properties` with `sdk.dir=/absolute/sdk/path`.
+Install a **full JDK 17 or 21**, Android SDK platform 36 and build-tools 36.0.0. Set `JAVA_HOME` and `ANDROID_HOME`, or create untracked `local.properties` with `sdk.dir=/absolute/sdk/path`.
 
 ```sh
 ./gradlew assembleDebug assembleDebugAndroidTest lintDebug
@@ -13,7 +13,7 @@ adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
 adb shell am instrument -w -e class io.github.dpan538.annota.CoreTest,io.github.dpan538.annota.DesignUiTest,io.github.dpan538.annota.EnglishUiTest,io.github.dpan538.annota.InputTest,io.github.dpan538.annota.ReaderPolishTest,io.github.dpan538.annota.RenderLifecycleTest,io.github.dpan538.annota.SeedTest,io.github.dpan538.annota.UpdateTest,io.github.dpan538.annota.ContinuousReaderTest,io.github.dpan538.annota.MotionTest io.github.dpan538.annota.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
-The two `UpdateTest` cases require a local same-signed APK built with `-PannotaVersionCode=11 -PannotaVersionName=update-test-fixture`, staged in the target application's `cache/update-test.apk` (push to `/data/local/tmp/` then copy using `adb shell run-as io.github.dpan538.annota`). Keep the installed target at versionCode 10. Without the fixture these two tests explicitly skip. Run instrumentation only on a disposable emulator because storage fixtures reset its library.
+The two `UpdateTest` cases require a local same-signed APK built with `-PannotaVersionCode=13 -PannotaVersionName=update-test-fixture`, staged in the target application's `cache/update-test.apk` (push to `/data/local/tmp/` then copy using `adb shell run-as io.github.dpan538.annota`). Keep the installed debug target at versionCode 12. Without the fixture these two tests explicitly skip. Run instrumentation only on a disposable emulator because storage fixtures reset its library.
 
 The checked-in wrapper pins Gradle 8.13 and verifies its distribution SHA-256. `.tooling/` holds only ignored local downloads and SDK/emulator files. No SDK, build cache or private key should be committed. `scripts/sync-assets.py` can re-copy the dictionaries from the read-only `../design/dictionary/` source. The actual database SHA-256 values are checked again at installation. The original authored five-page guide is bundled as `assets/guide.pdf`; the owner-supplied original paper is bundled as a second initial document with an independent rights notice.
 
@@ -35,11 +35,11 @@ Settings → Stylus and device reports only observed system inputs and real devi
 
 ## Feedback
 
-The endpoint is empty by default. Configure a real deployed HTTPS service with `-PfeedbackEndpoint=https://YOUR_HOST/v1/feedback` after validating `../feedback-service/`. Feedback is sent only on Send, with message, optional contact and an idempotency request ID. Drafts remain unless a genuine accepted receipt is returned. No documents/screenshots/logs are attached. No GitHub token is embedded.
+Feedback posts to the deployed Vercel HTTPS relay only when the user clicks Submit. Payload fields are message body, application version and request ID; no contacts, documents, screenshots, logs or device identifiers are included. The server creates a public Issue in this repository and returns its real URL. Only a matching accepted receipt clears that draft and triggers the automatic success notice; network or service failures retain it. No browser login or manual result check is required. GitHub credentials remain server-side. See `../feedback-service/README.md` and `../docs/PRIVACY.md`.
 
 ## Signing and GitHub updates
 
-Debug APKs have an automatically created local debug certificate. Preserve the local debug keystore only for development continuity; a different machine normally produces a different key, so it cannot overwrite this install. Do not claim it is a production signature. A later production signature cannot replace a debug install in place: export a local backup first, install the production app after removing the development app, then restore.
+Public stable APKs are non-debuggable release builds. The existing certificate is retained by explicit user decision so development users can upgrade in place. Local debug builds normally use the developer machine's own key and cannot overwrite a public install if the certificate differs. No signing material is committed.
 
 Production signing uses only environment variables:
 
@@ -48,24 +48,24 @@ export ANNOTA_KEYSTORE=/secure/path/annota-release.jks
 export ANNOTA_STORE_PASSWORD=...
 export ANNOTA_KEY_ALIAS=...
 export ANNOTA_KEY_PASSWORD=...
-./gradlew assembleRelease -PannotaVersionCode=5 -PannotaVersionName=0.1.4
+./gradlew assembleRelease
 python3 scripts/make-update-manifest.py app/build/outputs/apk/release/app-release.apk \
-  --build-tools "$ANDROID_HOME/build-tools/35.0.0" --output annota-update.json
+  --build-tools "$ANDROID_HOME/build-tools/36.0.0" --output annota-update.json
 ```
 
-No production keystore is generated or checked in. Without the environment variables `assembleRelease` produces an unsigned artifact, which must not be distributed as installable. Keep the production key and an offline backup permanently; future updates must use it.
+Signing material is supplied locally and kept outside Git. Without the environment variables `assembleRelease` produces an unsigned artifact, which must not be distributed as installable. Keep the production key and an offline backup permanently; future updates must use it.
 
-A real stable Release at `dpan538/Annota` must include the signed APK **and** the generated `annota-update.json`. App check reads the latest stable Release only on user request, shows notes, and waits for a download action. Download permits only HTTPS GitHub asset hosts, enforces size and cancellation, checks SHA-256, cryptographic APK signature (apksig), exact package/version and the currently installed signer before asking the Android installer. Install permission refusal leaves the verified file available for retry. A debug APK can upgrade only to the same debug signing identity. No Release is created by this project.
+A real stable Release at `dpan538/Annota` must include the signed APK **and** the generated `annota-update.json`. App check reads the latest stable Release only on user request, shows notes, and waits for a download action. Download permits only HTTPS GitHub asset hosts, enforces size and cancellation, checks SHA-256, cryptographic APK signature (apksig), exact package/version and the currently installed signer before asking the Android installer. Install permission refusal leaves the verified file available for retry. Every in-place upgrade must retain the installed signing identity. Gradle builds the artifact; publishing is a separate verified Release step.
 
-404, rate limit, offline/network error, cancellation, hash/signature mismatch and installation permission states have explicit messages. GitHub release availability and an actual production installer handoff require a real Release/signing key; local fixture tests do not establish publication.
+404, rate limit, offline/network error, cancellation, hash/signature mismatch and installation permission states have explicit messages. Public stable releases, anonymous downloads and real Android installer upgrades are recorded in `../docs/INTEGRATION-ACCEPTANCE.md` and `../docs/NEUTRAL-READING-ACCEPTANCE.md`; local fixtures alone do not establish publication.
 
 See `../docs/IMPLEMENTATION-STATUS.md` for actual build/test evidence, artifact paths/hashes and target-device acceptance work.
 
 ## Onboarding and regression fixtures
 
-Current development build: `0.1.9-dev` / versionCode 10. Both seed PDFs are bundled and verified by SHA-256 and page count. They publish together in a database transaction. Any earlier initialization marker is final, including the old guide-only development build. No sample is added back on restart or upgrade, even after removal. Paper rights are separate: see `app/src/main/assets/SAMPLE-PAPER-NOTICE.md`; redistribution clearance remains a public-release checklist item.
+Current stable build: `1.0.1` / versionCode 12. Both seed PDFs are bundled and verified by SHA-256 and page count. They publish together in a database transaction. Any earlier initialization marker is final, including the old guide-only development build. No sample is added back on restart or upgrade, even after removal. Paper rights are separate: see `app/src/main/assets/SAMPLE-PAPER-NOTICE.md`; redistribution clearance remains a public-release checklist item.
 
-The update tests require a same-development-key versionCode 11 / versionName `update-test-fixture` APK at the target app's `cache/update-test.apk`. Build it with Gradle property overrides, keep it outside Git and stage it with `adb shell run-as io.github.dpan538.annota ...` on the dedicated emulator. Without it, those two tests are explicitly skipped; do not report them as passed. No fixture is a published update. Test APKs reset library data and must never run on a user's tablet.
+The update tests require a same-development-key versionCode 13 / versionName `update-test-fixture` APK at the target app's `cache/update-test.apk`. Build it with Gradle property overrides, keep it outside Git and stage it with `adb shell run-as io.github.dpan538.annota ...` on the dedicated emulator. Without it, those two tests are explicitly skipped; do not report them as passed. No fixture is a published update. Test APKs reset library data and must never run on a user's tablet.
 
 ## Reader design, lifecycle and memory acceptance
 
