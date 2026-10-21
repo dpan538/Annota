@@ -13,7 +13,7 @@ adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
 adb shell am instrument -w -e class io.github.dpan538.annota.CoreTest,io.github.dpan538.annota.DesignUiTest,io.github.dpan538.annota.EnglishUiTest,io.github.dpan538.annota.InputTest,io.github.dpan538.annota.ReaderPolishTest,io.github.dpan538.annota.RenderLifecycleTest,io.github.dpan538.annota.SeedTest,io.github.dpan538.annota.UpdateTest,io.github.dpan538.annota.ContinuousReaderTest,io.github.dpan538.annota.MotionTest io.github.dpan538.annota.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
-The two `UpdateTest` cases require a local same-signed APK built with `-PannotaVersionCode=7 -PannotaVersionName=0.1.6-update-fixture`, staged in the target application's `cache/update-test.apk` (push to `/data/local/tmp/` then copy using `adb shell run-as io.github.dpan538.annota`). Keep the installed target at versionCode 6. Without the fixture these two tests explicitly skip. Run instrumentation only on a disposable emulator because storage fixtures reset its library.
+The two `UpdateTest` cases require a local same-signed APK built with `-PannotaVersionCode=9 -PannotaVersionName=update-test-fixture`, staged in the target application's `cache/update-test.apk` (push to `/data/local/tmp/` then copy using `adb shell run-as io.github.dpan538.annota`). Keep the installed target at versionCode 8. Without the fixture these two tests explicitly skip. Run instrumentation only on a disposable emulator because storage fixtures reset its library.
 
 The checked-in wrapper pins Gradle 8.13 and verifies its distribution SHA-256. `.tooling/` holds only ignored local downloads and SDK/emulator files. No SDK, build cache or private key should be committed. `scripts/sync-assets.py` can re-copy the dictionaries from the read-only `../design/dictionary/` source. The actual database SHA-256 values are checked again at installation. The original authored five-page guide is bundled as `assets/guide.pdf`; the owner-supplied original paper is bundled as a second initial document with an independent rights notice.
 
@@ -96,3 +96,7 @@ PaperMenu is an anchored rounded preview panel shared by creation, insertion and
 Development/preview builds list the latest 30 GitHub releases and accept non-draft prereleases with an update manifest, selecting the highest larger integer versionCode. Production stable builds retain the stable-only endpoint. Every install verifies the APK again, including restored pending packages. Publish APK + SHA256SUMS.txt + annota-update.json; --allow-debug is explicitly for labelled development previews, never production.
 
 0.1.4 needs one manual overwrite because its old binary excludes prereleases. Current acceptance: [continuous reading/update record](../docs/CONTINUOUS-READER-ACCEPTANCE.md). The earlier 316-cycle log remains 0.1.4 evidence, not a repeated soak of this reader.
+
+## Three control sizes and 0.1.7 preview
+
+60/68/76 now change actual library, reader, floating-menu and paper-picker controls. Settings retain their host and scroll; pen parameters update inside one popup. Run `UiSizingTest` on the dedicated emulator with the other regression classes. `ReaderVisualTest` also accepts `-e buttonSize 76` for the largest controls. See [acceptance](../docs/UI-SIZING-ACCEPTANCE.md) for final build and public delivery evidence.

@@ -17,6 +17,14 @@ class RenderLifecycleTest {
     private val inst = InstrumentationRegistry.getInstrumentation()
     private val context = inst.targetContext
     private var activity: MainActivity? = null
+    private var originalEnglish = false
+
+    @Before
+    fun language() {
+        val settings = context.getSharedPreferences("settings", 0)
+        originalEnglish = settings.getBoolean("english", false)
+        settings.edit().putBoolean("english", false).commit()
+    }
 
     private fun all(view: View): List<View> =
         listOf(view) +
@@ -44,6 +52,11 @@ class RenderLifecycleTest {
     fun close() {
         activity?.let { ui { it.finish() } }
         inst.waitForIdleSync()
+        context
+            .getSharedPreferences("settings", 0)
+            .edit()
+            .putBoolean("english", originalEnglish)
+            .commit()
     }
 
     @Test

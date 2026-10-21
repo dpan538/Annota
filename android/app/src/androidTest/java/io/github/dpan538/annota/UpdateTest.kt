@@ -37,7 +37,7 @@ class UpdateTest {
     }
 
     private fun info(file: File) =
-        Network.Update(nextVersion, "0.1.6-update-fixture", "", "", sha256(file), certificate())
+        Network.Update(nextVersion, "update-test-fixture", "", "", sha256(file), certificate())
 
     private fun release(
         tag: String,

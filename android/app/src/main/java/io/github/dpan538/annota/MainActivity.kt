@@ -10,7 +10,6 @@ import android.provider.OpenableColumns
 import android.provider.Settings
 import android.text.*
 import android.view.*
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
@@ -38,9 +37,13 @@ class MainActivity : Activity() {
     private var folder = ""
     private var search = ""
     private var pdfOnly = false
-    private var dictionaryRequest = 0
     private var pendingExport: Book? = null
     private var paperPopup: PopupWindow? = null
+    private var readerPopup: PopupWindow? = null
+    private var readerPanelKey = ""
+    private val readerTools = mutableMapOf<String, ToolButton>()
+    private var readerHost: FrameLayout? = null
+    private var pageSidebar: View? = null
     private var activePage = 0
     private var updateApk: File? = null
     private var verifiedUpdate: Network.Update? = null
@@ -154,6 +157,7 @@ class MainActivity : Activity() {
     }
 
     override fun onDestroy() {
+        readerPopup?.dismiss()
         paperPopup?.dismiss()
         reader?.dispose()
         pageCovers?.close()
@@ -202,6 +206,7 @@ class MainActivity : Activity() {
     }
 
     override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+        readerPopup?.dismiss()
         paperPopup?.dismiss()
         super.onConfigurationChanged(newConfig)
         if (book != null) showReader() else if (section == "settings") settings() else library()
@@ -337,8 +342,14 @@ class MainActivity : Activity() {
     private var searchVisible = false
 
     private fun library() {
+        readerPopup?.dismiss()
+        pageCovers?.close()
+        pageCovers = null
         reader?.dispose()
         reader = null
+        readerHost = null
+        pageSidebar = null
+        readerTools.clear()
         book = null
         updateNavigationBars()
         root.removeAllViews()
@@ -428,7 +439,6 @@ class MainActivity : Activity() {
             )
         screen.searchVisible = searchVisible
         root.addView(screen, LinearLayout.LayoutParams(-1, -1))
-        UiMotion.enter(screen)
         root.requestApplyInsets()
     }
 
@@ -449,6 +459,7 @@ class MainActivity : Activity() {
         paper: String = "white",
         onChosen: (String, String, String) -> Unit,
     ) {
+        readerPopup?.dismiss()
         paperPopup?.dismiss()
         paperPopup =
             PaperMenu(
@@ -544,6 +555,9 @@ class MainActivity : Activity() {
         val b = book ?: return
         updateNavigationBars()
         root.requestApplyInsets()
+        readerPopup?.dismiss()
+        pageCovers?.close()
+        pageCovers = null
         val old = reader
         val oldTool = old?.tool ?: "hand"
         old?.dispose()
@@ -554,13 +568,17 @@ class MainActivity : Activity() {
         val ru =
             resources.displayMetrics.widthPixels /
                 (if (resources.configuration.orientation == 2) 1024f else 682.6667f)
+        val controls = UiSizing.scale(prefs.getInt("buttonSize", 68))
         fun rp(value: Float) = (value * ru).roundToInt()
         val bar = android.widget.FrameLayout(this).apply { setBackgroundColor(colors[3]) }
-        root.addView(bar, LinearLayout.LayoutParams(-1, rp(39f)))
+        bar.tag = "reader-toolbar"
+        root.addView(bar, LinearLayout.LayoutParams(-1, rp(39f * controls)))
         val left = row()
         val center = row()
         val right = row()
-        val toolButtons = mutableMapOf<String, ToolButton>()
+        readerTools.clear()
+        pageSidebar = null
+        val toolButtons = readerTools
         bar.addView(left, android.widget.FrameLayout.LayoutParams(-2, -1, Gravity.START))
         bar.addView(center, android.widget.FrameLayout.LayoutParams(-2, -1, Gravity.CENTER))
         bar.addView(right, android.widget.FrameLayout.LayoutParams(-2, -1, Gravity.END))
@@ -568,7 +586,7 @@ class MainActivity : Activity() {
             group.addView(
                 icon(n, label, action).apply {
                     toolButtons[n] = this
-                    unit = ru
+                    unit = ru * controls
                     val theme = prefs.getInt("theme", 0)
                     selectedFill =
                         intArrayOf(
@@ -588,7 +606,7 @@ class MainActivity : Activity() {
                         if (prefs.getInt("theme", 0) == 3) colors[2]
                         else android.graphics.Color.WHITE
                 },
-                LinearLayout.LayoutParams(rp(34f), -1),
+                LinearLayout.LayoutParams(rp(34f * controls), -1),
             )
         }
         add(left, "back", tr("返回书库", "Library")) { library() }
@@ -597,7 +615,7 @@ class MainActivity : Activity() {
                 TextView(this).apply {
                     text = b.title
                     typeface = UiFonts.get(this@MainActivity)
-                    setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, 14f * ru)
+                    setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, 14f * ru * controls)
                     setTextColor(if (prefs.getInt("theme", 0) == 3) colors[2] else Color.WHITE)
                     setPadding(rp(4f), 0, rp(8f), 0)
                     maxLines = 1
@@ -607,23 +625,50 @@ class MainActivity : Activity() {
                 LinearLayout.LayoutParams(rp(140f), -1),
             )
         add(left, "list", tr("缩略图与页面", "Pages")) { pages() }
-        add(left, "spread", tr("相邻双页", "Two pages")) { reader?.let { it.spread = !it.spread } }
-        add(center, "pen", tr("笔与颜色", "Pen")) { penOptions() }
-        add(center, "eraser", tr("橡皮", "Eraser")) { eraserOptions() }
+        add(left, "spread", tr("相邻双页", "Two pages")) {
+            readerPopup?.dismiss()
+            reader?.let { it.spread = !it.spread }
+        }
+        add(center, "pen", tr("笔与颜色", "Pen")) {
+            reader?.let { r ->
+                if (r.tool !in setOf("pen", "pencil", "fountain", "highlight")) {
+                    readerPopup?.dismiss()
+                    r.tool = r.lastPenTool
+                } else if (readerPopup?.isShowing == true && readerPanelKey == "pen")
+                    readerPopup?.dismiss()
+                else penOptions()
+            }
+        }
+        add(center, "eraser", tr("橡皮", "Eraser")) {
+            reader?.let { r ->
+                if (r.tool != "eraser") {
+                    readerPopup?.dismiss()
+                    r.tool = "eraser"
+                } else if (readerPopup?.isShowing == true && readerPanelKey == "eraser")
+                    readerPopup?.dismiss()
+                else eraserOptions()
+            }
+        }
         add(center, "ruler", tr("直尺", "Ruler")) {
+            readerPopup?.dismiss()
             reader?.let {
                 it.ruler = !it.ruler
                 it.invalidate()
             }
         }
-        add(center, "image", tr("插入图片", "Insert image")) { pickImage() }
+        add(center, "image", tr("插入图片", "Insert image")) {
+            readerPopup?.dismiss()
+            pickImage()
+        }
         add(center, "shape", tr("图形", "Shapes")) { shapeOptions() }
         add(center, "hand", tr("手形", "Hand")) {
+            readerPopup?.dismiss()
             reader?.tool = "hand"
             reader?.invalidate()
         }
         add(right, "add", tr("新增纸页", "Add page")) { addPage() }
         add(right, "book", tr("阅读模式", "Read")) {
+            readerPopup?.dismiss()
             reader?.tool = "hand"
             reader?.invalidate()
         }
@@ -633,6 +678,7 @@ class MainActivity : Activity() {
         reader = view
         view.tool = oldTool
         if (old != null) {
+            view.lastPenTool = old.lastPenTool
             view.spread = old.spread
             view.penWidth = old.penWidth
             view.filled = old.filled
@@ -669,8 +715,8 @@ class MainActivity : Activity() {
         }
         val canvas = FrameLayout(this).apply { setBackgroundColor(0xfff4f4f4.toInt()) }
         canvas.addView(view, FrameLayout.LayoutParams(-1, -1))
+        readerHost = canvas
         root.addView(canvas, LinearLayout.LayoutParams(-1, 0, 1f))
-        UiMotion.enter(view)
     }
 
     private fun undo(redo: Boolean) {
@@ -680,110 +726,221 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun readerPanel(
+        anchor: String,
+        width: Float = 250f,
+        view: View? = null,
+    ): ReaderPopover {
+        readerPopup?.dismiss()
+        readerPanelKey = anchor
+        return ReaderPopover(
+            this,
+            view ?: readerTools[anchor] ?: reader ?: root,
+            prefs.getInt("theme", 0),
+            english,
+            width,
+            prefs.getInt("buttonSize", 68),
+        )
+    }
+
+    private fun showPanel(panel: ReaderPopover, bounds: RectF? = null, beside: Boolean = false) {
+        readerPopup = panel.show(bounds, beside)
+    }
+
     private fun penOptions() {
         val r = reader ?: return
-        choose(
-            tr("画笔", "Pen"),
-            listOf(
-                tr("笔 / Pen", "Pen"),
-                tr("铅笔 / Pencil", "Pencil"),
-                tr("钢笔 / Fountain", "Fountain pen"),
-                tr("荧光笔 / Highlighter", "Highlighter"),
-                tr("颜色 / Color", "Color"),
-                tr("粗细 / Width", "Width"),
-            ),
-        ) { i ->
-            when (i) {
-                in 0..3 -> {
-                    r.tool = listOf("pen", "pencil", "fountain", "highlight")[i]
-                    r.invalidate()
+        if (r.tool !in setOf("pen", "pencil", "fountain", "highlight")) r.tool = "pen"
+        val menu = readerPanel("pen", 508f)
+        menu.centerOn = r
+        val ribbon = row()
+        val selections = mutableListOf<() -> Unit>()
+        fun updateOptions() {
+            selections.forEach { it() }
+            r.onToolChanged()
+        }
+        fun chip(name: String, label: String, selected: () -> Boolean, action: () -> Unit) {
+            val button = menu.chip(name, label, selected(), action)
+            selections += {
+                button.isSelected = selected()
+                button.background =
+                    menu.ui.background(
+                        if (button.isSelected) menu.palette.color("side-active")
+                        else Color.TRANSPARENT,
+                        10f,
+                    )
+                (button as FrameLayout).getChildAt(0).let { glyph ->
+                    (glyph as ReaderGlyph).tint =
+                        if (button.isSelected) menu.palette.accent else menu.palette.ink
+                    glyph.invalidate()
                 }
-                4 ->
-                    choose(
-                        tr("墨迹颜色", "Ink color"),
-                        listOf(
-                            tr("黑 / Black", "Black"),
-                            tr("白 / White", "White"),
-                            tr("红 / Red", "Red"),
-                            tr("蓝 / Blue", "Blue"),
-                            tr("绿 / Green", "Green"),
-                            tr("黄 / Yellow", "Yellow"),
-                        ),
-                    ) {
-                        r.color =
-                            intArrayOf(
-                                0xff262a2d.toInt(),
-                                -1,
-                                0xffcb4544.toInt(),
-                                0xff4460ce.toInt(),
-                                0xff1c614c.toInt(),
-                                0xffffda4c.toInt(),
-                            )[it]
-                        if (r.tool == "hand") r.tool = "pen"
-                    }
-                5 ->
-                    choose(tr("粗细", "Width"), listOf("1 pt", "2.4 pt", "4 pt", "7 pt")) {
-                        r.penWidth = floatArrayOf(1f, 2.4f, 4f, 7f)[it]
-                    }
+            }
+            ribbon.addView(button, LinearLayout.LayoutParams(menu.ui.px(36f), menu.ui.px(38f)))
+        }
+        fun divider() {
+            ribbon.addView(
+                View(this).apply { setBackgroundColor(menu.palette.color("rule")) },
+                LinearLayout.LayoutParams(menu.ui.px(1f), menu.ui.px(28f)).apply {
+                    setMargins(menu.ui.px(5f), 0, menu.ui.px(5f), 0)
+                },
+            )
+        }
+        val labels =
+            listOf(
+                tr("笔", "Pen"),
+                tr("铅笔", "Pencil"),
+                tr("钢笔", "Fountain pen"),
+                tr("荧光笔", "Highlighter"),
+            )
+        listOf("pen", "pencil", "fountain", "highlight").forEachIndexed { i, tool ->
+            chip(tool, labels[i], { r.tool == tool }) {
+                r.tool = tool
+                updateOptions()
             }
         }
+        divider()
+        floatArrayOf(1f, 2.4f, 4f, 7f).forEach { width ->
+            val dot =
+                menu.ui.action("${tr("粗细", "Width")} $width pt") {
+                    r.penWidth = width
+                    updateOptions()
+                }
+            dot.isSelected = r.penWidth == width
+            dot.background =
+                menu.ui.background(
+                    if (dot.isSelected) menu.palette.color("side-active") else Color.TRANSPARENT,
+                    9f,
+                )
+            dot.addView(
+                object : View(this) {
+                    val p = Paint(Paint.ANTI_ALIAS_FLAG)
+
+                    override fun onDraw(c: Canvas) {
+                        p.color = menu.palette.ink
+                        c.drawCircle(
+                            this.width / 2f,
+                            height / 2f,
+                            menu.ui.unit * (1.2f + width / 2),
+                            p,
+                        )
+                    }
+                },
+                FrameLayout.LayoutParams(-1, -1),
+            )
+            selections += {
+                dot.isSelected = r.penWidth == width
+                dot.background =
+                    menu.ui.background(
+                        if (dot.isSelected) menu.palette.color("side-active")
+                        else Color.TRANSPARENT,
+                        9f,
+                    )
+            }
+            ribbon.addView(dot, LinearLayout.LayoutParams(menu.ui.px(28f), menu.ui.px(38f)))
+        }
+        divider()
+        val inks =
+            (listOf("ink", "accent", "mark", "reserve-annotation", "blue").map {
+                    menu.palette.color(it)
+                } + Color.WHITE)
+                .toIntArray()
+        val names =
+            listOf(
+                tr("墨色", "Ink"),
+                tr("强调色", "Accent"),
+                tr("标记色", "Mark"),
+                tr("荧光色", "Highlight"),
+                tr("辅助色", "Secondary"),
+                tr("白色", "White"),
+            )
+        inks.forEachIndexed { i, color ->
+            val swatch =
+                menu.ui.action("${tr("颜色", "Color")} · ${names[i]}") {
+                    r.color = color
+                    updateOptions()
+                }
+            swatch.isSelected = r.color == color
+            swatch.addView(
+                object : View(this) {
+                    val p = Paint(Paint.ANTI_ALIAS_FLAG)
+
+                    override fun onDraw(c: Canvas) {
+                        val x = width / 2f
+                        val y = height / 2f
+                        val radius = menu.ui.unit * 9f
+                        p.style = Paint.Style.FILL
+                        p.color = color
+                        c.drawCircle(x, y, radius, p)
+                        p.style = Paint.Style.STROKE
+                        p.strokeWidth = menu.ui.unit
+                        p.color = menu.palette.color("rule")
+                        c.drawCircle(x, y, radius, p)
+                        if (r.color == color) {
+                            p.color = menu.palette.accent
+                            p.strokeWidth = menu.ui.unit * 1.6f
+                            c.drawCircle(x, y, radius + menu.ui.unit * 3, p)
+                        }
+                    }
+                },
+                FrameLayout.LayoutParams(-1, -1),
+            )
+            selections += {
+                swatch.isSelected = r.color == color
+                swatch.getChildAt(0).invalidate()
+            }
+            ribbon.addView(swatch, LinearLayout.LayoutParams(menu.ui.px(28f), menu.ui.px(38f)))
+        }
+        chip("close", tr("关闭", "Close"), { false }) { menu.popup.dismiss() }
+        menu.content.addView(
+            HorizontalScrollView(this).apply {
+                isHorizontalScrollBarEnabled = false
+                addView(ribbon)
+            }
+        )
+        showPanel(menu)
     }
 
     private fun eraserOptions() {
         val r = reader ?: return
         r.tool = "eraser"
-        choose(
-            tr("橡皮", "Eraser"),
-            listOf(
-                tr("整笔 / Whole stroke", "Whole stroke"),
-                tr("局部 / Partial", "Partial"),
-                if (r.onlyHighlight) tr("全部笔迹 / All ink", "All ink")
-                else tr("仅荧光笔 / Highlighter only", "Highlighter only"),
-            ),
-        ) {
-            when (it) {
-                0 -> r.eraserLocal = false
-                1 -> r.eraserLocal = true
-                2 -> r.onlyHighlight = !r.onlyHighlight
-            }
+        val menu = readerPanel("eraser", 220f)
+        menu.header(tr("橡皮", "Eraser"))
+        menu.item("eraser", tr("整笔", "Whole stroke") + if (!r.eraserLocal) " ✓" else "") {
+            r.eraserLocal = false
         }
+        menu.item("eraser", tr("局部", "Partial") + if (r.eraserLocal) " ✓" else "") {
+            r.eraserLocal = true
+        }
+        menu.item("highlight", tr("仅荧光笔", "Highlighter only") + if (r.onlyHighlight) " ✓" else "") {
+            r.onlyHighlight = !r.onlyHighlight
+        }
+        showPanel(menu)
     }
 
     private fun shapeOptions() {
         val r = reader ?: return
-        choose(
-            tr("图形", "Shapes"),
+        val menu = readerPanel("shape", 256f)
+        menu.header(tr("图形", "Shapes"))
+        val labels =
             listOf(
-                tr("直线 / Line", "Line"),
-                tr("矩形 / Rectangle", "Rectangle"),
-                tr("椭圆 / Ellipse", "Ellipse"),
-                tr("箭头 / Arrow", "Arrow"),
-                tr("三角形 / Triangle", "Triangle"),
-                if (r.filled) tr("取消填充 / No fill", "No fill") else tr("填充 / Fill", "Fill"),
-            ),
-        ) {
-            if (it < 5) r.tool = listOf("line", "rectangle", "ellipse", "arrow", "triangle")[it]
-            else r.filled = !r.filled
+                tr("直线", "Line"),
+                tr("矩形", "Rectangle"),
+                tr("椭圆", "Ellipse"),
+                tr("箭头", "Arrow"),
+                tr("三角形", "Triangle"),
+            )
+        listOf("line", "rectangle", "ellipse", "arrow", "triangle").forEachIndexed { i, tool ->
+            menu.item(tool, labels[i]) { r.tool = tool }
         }
+        menu.item("rectangle", tr("填充", "Fill") + if (r.filled) " ✓" else "") {
+            r.filled = !r.filled
+        }
+        showPanel(menu)
     }
 
     private fun readerMenu() {
         val b = book ?: return
-        choose(
-            b.title,
-            listOf(
-                "‹ ${tr("上一页","Previous")}",
-                "${tr("下一页","Next")} ›",
-                tr("整页显示", "Fit page"),
-                tr("适宽显示", "Fit width"),
-                tr("导出 PDF", "Export PDF"),
-                tr("分享 PDF", "Share PDF"),
-                if (b.favorite) tr("取消收藏", "Unfavorite") else tr("收藏", "Favorite"),
-                tr("文档信息", "Document info"),
-                tr("撤销", "Undo"),
-                tr("重做", "Redo"),
-            ),
-        ) {
+        val menu = readerPanel("more", 236f)
+        val action: (Int) -> Unit = {
             when (it) {
                 0 -> reader?.next(-1)
                 1 -> reader?.next(1)
@@ -807,26 +964,64 @@ class MainActivity : Activity() {
                         .display()
             }
         }
+        val titles =
+            listOf(
+                tr("上一页", "Previous"),
+                tr("下一页", "Next"),
+                tr("整页显示", "Fit page"),
+                tr("适宽显示", "Fit width"),
+                tr("导出 PDF", "Export PDF"),
+                tr("分享 PDF", "Share PDF"),
+                if (b.favorite) tr("取消收藏", "Unfavorite") else tr("收藏", "Favorite"),
+                tr("文档信息", "Document info"),
+                tr("撤销", "Undo"),
+                tr("重做", "Redo"),
+            )
+        val icons =
+            listOf(
+                "previous",
+                "next",
+                "fit",
+                "width",
+                "export",
+                "share",
+                "favorite",
+                "info",
+                "undo",
+                "redo",
+            )
+        titles.forEachIndexed { i, title -> menu.item(icons[i], title) { action(i) } }
+        showPanel(menu)
     }
 
     private fun pages() {
+        val host = readerHost ?: return
+        pageSidebar?.let {
+            host.removeView(it)
+            pageSidebar = null
+            reader?.layoutParams = FrameLayout.LayoutParams(-1, -1)
+            pageCovers?.close()
+            pageCovers = null
+            readerTools["list"]?.isSelected = false
+            return
+        }
         val b = book ?: return
+        readerPopup?.dismiss()
+        val menu = readerPanel("list")
+        val panel =
+            column().apply {
+                setBackgroundColor(menu.palette.color("panel"))
+                setPadding(menu.ui.px(12f), menu.ui.px(10f), menu.ui.px(12f), 0)
+            }
         val covers = CoverRepository(this, pdf)
         pageCovers?.close()
         pageCovers = covers
-        val list = ListView(this)
-        val dialog =
-            AlertDialog.Builder(this)
-                .setTitle(tr("页面", "Pages"))
-                .setView(list)
-                .setNegativeButton(tr("关闭", "Close"), null)
-                .create()
-        list.addFooterView(
-            button(tr("＋ 新增纸页", "＋ Add page")) {
-                dialog.dismiss()
-                addPage()
+        panel.addView(menu.label(tr("缩略图", "Pages"), 16f, true))
+        val list =
+            ListView(this).apply {
+                divider = null
+                isVerticalScrollBarEnabled = false
             }
-        )
         list.adapter =
             object : BaseAdapter() {
                 override fun getCount() = b.pages.size
@@ -836,39 +1031,46 @@ class MainActivity : Activity() {
                 override fun getItemId(position: Int) = position.toLong()
 
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View =
-                    row().apply {
+                    column().apply {
                         contentDescription = "${tr("页面", "Page")} ${position + 1}"
+                        gravity = Gravity.CENTER_HORIZONTAL
+                        setPadding(menu.ui.px(8f), menu.ui.px(8f), menu.ui.px(8f), menu.ui.px(12f))
                         addView(
                             DocumentCoverView(
-                                this@MainActivity,
-                                b.copy(pages = mutableListOf(b.pages[position])),
-                                covers,
-                            ),
-                            LinearLayout.LayoutParams(dp(110), dp(116)),
+                                    this@MainActivity,
+                                    b.copy(pages = mutableListOf(b.pages[position])),
+                                    covers,
+                                )
+                                .apply {
+                                    background =
+                                        menu.ui.background(
+                                            Color.WHITE,
+                                            4f,
+                                            if (position == b.current) menu.palette.accent
+                                            else menu.palette.color("rule"),
+                                        )
+                                },
+                            LinearLayout.LayoutParams(-1, menu.ui.px(128f)),
                         )
-                        addView(text("${position + 1}", 17f))
+                        addView(
+                            menu.label("${position + 1}", 14f).apply { gravity = Gravity.CENTER }
+                        )
                     }
             }
         list.setOnItemClickListener { _, _, position, _ ->
-            if (position in b.pages.indices) {
-                activePage = position
-                reader?.goToPage(position)
-                dialog.dismiss()
-            }
+            reader?.goToPage(position)
+            (list.adapter as BaseAdapter).notifyDataSetChanged()
         }
-        list.setOnItemLongClickListener { _, _, position, _ ->
-            if (position in b.pages.indices) {
-                dialog.dismiss()
-                pageMenu(position)
-            }
+        list.setOnItemLongClickListener { _, view, position, _ ->
+            pageMenu(position, view)
             true
         }
-        dialog.setOnDismissListener {
-            covers.close()
-            if (pageCovers === covers) pageCovers = null
-        }
-        UiMotion.dialog(dialog, UiPalette(this, prefs.getInt("theme", 0)))
-        dialog.show()
+        panel.addView(list, LinearLayout.LayoutParams(-1, 0, 1f))
+        val width = menu.ui.px(150f)
+        host.addView(panel, FrameLayout.LayoutParams(width, -1, Gravity.START))
+        reader?.layoutParams = FrameLayout.LayoutParams(-1, -1).apply { leftMargin = width }
+        pageSidebar = panel
+        readerTools["list"]?.isSelected = true
         list.setSelection(b.current)
     }
 
@@ -883,20 +1085,12 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun pageMenu(i: Int) {
+    private fun pageMenu(i: Int, anchor: View? = null) {
         val b = book ?: return
         val p = b.pages[i]
-        choose(
-            "${tr("页面","Page")} ${i+1}",
-            listOf(
-                tr("复制页面", "Duplicate"),
-                tr("旋转 90°", "Rotate 90°"),
-                tr("纸张模板", "Paper template"),
-                tr("清除批注", "Clear annotations"),
-                tr("删除页面", "Delete"),
-                tr("移动到…", "Move to…"),
-            ),
-        ) {
+        val menu = readerPanel("list", 224f, anchor)
+        menu.content.addView(menu.label("${tr("第", "Page")} ${i + 1} ${tr("页", "")}", 14f, true))
+        val action: (Int) -> Unit = action@{
             when (it) {
                 0 -> {
                     b.pages.add(i + 1, Sheet.from(p.json().put("id", uid())))
@@ -909,7 +1103,7 @@ class MainActivity : Activity() {
                 2 -> {
                     if (p.source >= 0 || p.guide.isNotEmpty()) {
                         toast(tr("原始内容页不覆盖底色", "Original pages keep their background"))
-                        return@choose
+                        return@action
                     }
                     paperMenu(
                         tr("纸张模板", "Paper"),
@@ -932,7 +1126,7 @@ class MainActivity : Activity() {
                 4 -> {
                     if (b.pages.size == 1) {
                         toast(tr("至少保留一页", "Keep at least one page"))
-                        return@choose
+                        return@action
                     }
                     b.pages.removeAt(i)
                     b.current = b.current.coerceAtMost(b.pages.lastIndex)
@@ -951,141 +1145,68 @@ class MainActivity : Activity() {
             }
             reader?.refresh()
         }
+        val titles =
+            listOf(
+                tr("复制页面", "Duplicate"),
+                tr("旋转页面", "Rotate 90°"),
+                tr("更换模板", "Paper template"),
+                tr("清除批注", "Clear annotations"),
+                tr("删除页面", "Delete"),
+                tr("移动到…", "Move to…"),
+            )
+        val icons = listOf("copy", "rotate", "paper", "eraser", "trash", "next")
+        titles.forEachIndexed { n, title ->
+            menu.item(
+                icons[n],
+                title,
+                enabled = n != 2 || (p.source < 0 && p.guide.isEmpty()),
+                danger = n == 4,
+            ) {
+                action(n)
+            }
+        }
+        showPanel(menu, beside = anchor != null)
     }
 
     private fun selection(value: String) {
-        choose(value.take(160), listOf(tr("复制", "Copy"), tr("离线查词", "Dictionary"))) {
-            if (it == 0) {
-                (getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager)
-                    .setPrimaryClip(ClipData.newPlainText("", value))
-                toast(tr("已复制", "Copied"))
-            } else dictionaryDialog(value)
+        val r = reader ?: return
+        val menu = readerPanel("hand", 240f, r)
+        val controls = row()
+        listOf("copy" to tr("复制", "Copy"), "dictionary" to tr("查词", "Dictionary")).forEachIndexed {
+            i,
+            (glyph, title) ->
+            val action =
+                menu.ui.action(title) {
+                    menu.popup.dismiss()
+                    if (i == 0) {
+                        (getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager)
+                            .setPrimaryClip(ClipData.newPlainText("", value))
+                        toast(tr("已复制", "Copied"))
+                    } else dictionaryDialog(value)
+                }
+            action.addView(
+                ReaderGlyph(this, glyph).apply { tint = menu.palette.ink },
+                FrameLayout.LayoutParams(menu.ui.px(20f), menu.ui.px(20f), Gravity.CENTER_VERTICAL)
+                    .apply { leftMargin = menu.ui.px(7f) },
+            )
+            action.addView(
+                menu.ui.label(title, 14f),
+                FrameLayout.LayoutParams(-1, -1).apply { leftMargin = menu.ui.px(34f) },
+            )
+            controls.addView(action, LinearLayout.LayoutParams(0, menu.ui.px(36f), 1f))
         }
+        menu.content.addView(controls)
+        showPanel(menu, r.selectionBounds())
     }
 
     private fun dictionaryDialog(initial: String = "") {
-        val box = column().apply { setPadding(dp(12), 0, dp(12), 0) }
-        val controls = row()
-        val edit =
-            EditText(this).apply {
-                setSingleLine()
-                hint = tr("英汉 / 汉英离线词典", "English ↔ Chinese, offline")
-                setText(initial)
-            }
-        controls.addView(edit, LinearLayout.LayoutParams(0, -2, 1f))
-        controls.addView(
-            icon("keyboard", tr("键盘输入", "Keyboard")) {
-                edit.requestFocus()
-                (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(
-                    edit,
-                    InputMethodManager.SHOW_IMPLICIT,
-                )
-            },
-            LinearLayout.LayoutParams(dp(46), dp(48)),
-        )
-        controls.addView(
-            icon("pen", tr("系统手写输入", "System handwriting")) {
-                edit.requestFocus()
-                val ime = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                if (Build.VERSION.SDK_INT >= 34) ime.startStylusHandwriting(edit)
-                else ime.showSoftInput(edit, InputMethodManager.SHOW_IMPLICIT)
-                toast(tr("需兼容的离线手写输入法", "Requires a compatible offline handwriting IME"))
-            },
-            LinearLayout.LayoutParams(dp(46), dp(48)),
-        )
-        box.addView(controls)
-        val results = column()
-        val sc = ScrollView(this)
-        sc.addView(results)
-        box.addView(sc, LinearLayout.LayoutParams(-1, dp(300)))
-        val dialog =
-            AlertDialog.Builder(this)
-                .setTitle(tr("完整离线词库", "Offline dictionaries"))
-                .setView(box)
-                .setNegativeButton(tr("关闭", "Close"), null)
-                .create()
-        var open = true
-        dialog.setOnDismissListener {
-            open = false
-            dictionaryRequest++
+        val menu = readerPanel("dictionary", 344f)
+        val surrounding = reader?.lookupContext()
+        val query = initial.ifBlank { surrounding?.selected.orEmpty() }
+        DictionaryPanel(this, menu, dictionary, lookup, query, surrounding) {
+            reader?.clearSelection()
         }
-        fun query() {
-            val id = ++dictionaryRequest
-            val q = edit.text.toString()
-            results.removeAllViews()
-            if (q.isBlank()) return
-            results.addView(text(tr("查询中…", "Searching…"), 15f))
-            lookup.execute {
-                try {
-                    val r = dictionary.query(q)
-                    runOnUiThread {
-                        if (open && dictionaryRequest == id) {
-                            results.removeAllViews()
-                            r.entries.forEach { e ->
-                                results.addView(text(e.word, 20f))
-                                if (e.pronunciation.isNotBlank())
-                                    results.addView(text(e.pronunciation, 15f))
-                                results.addView(text(e.meaning, 15f))
-                            }
-                            r.suggestions.forEach { s ->
-                                results.addView(
-                                    button(s) {
-                                        edit.setText(s)
-                                        edit.setSelection(s.length)
-                                    }
-                                )
-                            }
-                            if (r.entries.isEmpty() && r.suggestions.isEmpty())
-                                results.addView(
-                                    text(
-                                        if (
-                                            q.contains(Regex("[.!?。！？]")) ||
-                                                q.trim().split(Regex("\\s+")).size > 4
-                                        )
-                                            tr("暂不支持整句翻译", "Sentence translation is unavailable")
-                                        else tr("词库未收录", "No entry"),
-                                        15f,
-                                    )
-                                )
-                        }
-                    }
-                } catch (t: Throwable) {
-                    runOnUiThread {
-                        if (open && dictionaryRequest == id) {
-                            results.removeAllViews()
-                            results.addView(
-                                text(
-                                    translatedMessage(
-                                        t.message ?: tr("词库查询失败", "Dictionary lookup failed")
-                                    ),
-                                    15f,
-                                )
-                            )
-                        }
-                    }
-                }
-            }
-        }
-        edit.addTextChangedListener(
-            object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int,
-                ) {}
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    query()
-                }
-
-                override fun afterTextChanged(e: Editable?) {}
-            }
-        )
-        UiMotion.dialog(dialog, UiPalette(this, prefs.getInt("theme", 0)))
-        dialog.show()
-        edit.requestFocus()
-        if (initial.isNotBlank()) query()
+        showPanel(menu)
     }
 
     private fun pickPdf() {
@@ -1344,17 +1465,56 @@ class MainActivity : Activity() {
     private var settingsTab = "appearance"
 
     private fun settings(tab: String = settingsTab) {
+        readerPopup?.dismiss()
+        paperPopup?.dismiss()
         section = "settings"
         settingsTab = tab
         reader?.dispose()
         reader = null
+        readerHost = null
+        pageSidebar = null
+        readerTools.clear()
         book = null
         root.removeAllViews()
         root.setPadding(0, 0, 0, 0)
         root.setBackgroundColor(colors[0])
         androidx.core.view.WindowCompat.getInsetsController(window, root)
             .isAppearanceLightStatusBars = true
-        val content =
+        lateinit var content: SettingsContent
+        fun refreshControls() {
+            content.haptics = prefs.getBoolean("haptics", true)
+            content.doubleTap = prefs.getString("doubleTap", "pen-eraser")!!
+            content.twoFinger = prefs.getString("twoFinger", "undo")!!
+            content.threeFinger = prefs.getString("threeFinger", "redo")!!
+            (root.getChildAt(0) as? LibraryScreen)?.render()
+        }
+        fun preferenceMenu(
+            title: String,
+            values: List<Pair<String, String>>,
+            key: String,
+            fallback: String,
+        ) {
+            readerPopup?.dismiss()
+            val menu =
+                ReaderPopover(
+                    this,
+                    actionAnchor(title) ?: root,
+                    prefs.getInt("theme", 0),
+                    english,
+                    250f,
+                    prefs.getInt("buttonSize", 68),
+                )
+            menu.header(title)
+            val current = prefs.getString(key, fallback)
+            values.forEach { (value, label) ->
+                menu.item("hand", label, selected = current == value) {
+                    prefs.edit().putString(key, value).apply()
+                    refreshControls()
+                }
+            }
+            readerPopup = menu.show()
+        }
+        content =
             SettingsContent(
                 tab,
                 prefs.getBoolean("haptics", true),
@@ -1366,55 +1526,48 @@ class MainActivity : Activity() {
                 when (parts[0]) {
                     "tab" -> settings(parts[1])
                     "theme" -> {
-                        prefs.edit().putInt("theme", parts[1].toInt()).apply()
-                        settings()
+                        val theme = parts[1].toInt()
+                        prefs.edit().putInt("theme", theme).apply()
+                        (root.getChildAt(0) as? LibraryScreen)?.applyTheme(theme)
+                        root.setBackgroundColor(colors[0])
                     }
                     "size" -> {
-                        prefs.edit().putInt("buttonSize", parts[1].toInt()).apply()
-                        settings()
+                        val size = UiSizing.normalize(parts[1].toInt())
+                        prefs.edit().putInt("buttonSize", size).apply()
+                        (root.getChildAt(0) as? LibraryScreen)?.applyButtonSize(size)
                     }
                     "haptics" -> {
                         prefs
                             .edit()
                             .putBoolean("haptics", !prefs.getBoolean("haptics", true))
                             .apply()
-                        settings()
+                        refreshControls()
                     }
                     "doubleTap" ->
-                        choose(
+                        preferenceMenu(
                             tr("轻点两下切换", "Double tap"),
                             listOf(
-                                tr("画笔 / 橡皮擦", "Pen / eraser"),
-                                tr("上一个工具", "Previous tool"),
-                                tr("无操作", "None"),
+                                "pen-eraser" to tr("画笔 / 橡皮擦", "Pen / eraser"),
+                                "previous-tool" to tr("上一个工具", "Previous tool"),
+                                "none" to tr("无操作", "None"),
                             ),
-                        ) {
-                            prefs
-                                .edit()
-                                .putString(
-                                    "doubleTap",
-                                    listOf("pen-eraser", "previous-tool", "none")[it],
-                                )
-                                .apply()
-                            settings()
-                        }
+                            "doubleTap",
+                            "pen-eraser",
+                        )
                     "twoFinger",
                     "threeFinger" ->
-                        choose(
-                            tr("手势操作", "Gesture action"),
+                        preferenceMenu(
+                            if (parts[0] == "twoFinger") tr("双指点击", "Two-finger tap")
+                            else tr("三指点击", "Three-finger tap"),
                             listOf(
-                                tr("撤销", "Undo"),
-                                tr("重做", "Redo"),
-                                tr("显示 / 隐藏工具栏", "Toggle toolbar"),
-                                tr("无操作", "None"),
+                                "undo" to tr("撤销", "Undo"),
+                                "redo" to tr("重做", "Redo"),
+                                "toolbar" to tr("显示 / 隐藏工具栏", "Toggle toolbar"),
+                                "none" to tr("无操作", "None"),
                             ),
-                        ) {
-                            prefs
-                                .edit()
-                                .putString(parts[0], listOf("undo", "redo", "toolbar", "none")[it])
-                                .apply()
-                            settings()
-                        }
+                            parts[0],
+                            if (parts[0] == "twoFinger") "undo" else "redo",
+                        )
                     "check-update" -> checkUpdate()
                     "device" -> deviceInfo()
                     "licenses" -> licenses()
@@ -1514,7 +1667,6 @@ class MainActivity : Activity() {
                 customBody = { ui, parent, width -> content.render(ui, parent, width) },
             )
         root.addView(screen, LinearLayout.LayoutParams(-1, -1))
-        UiMotion.enter(screen)
         root.requestApplyInsets()
     }
 
@@ -1566,7 +1718,10 @@ class MainActivity : Activity() {
                 keyCode == KeyEvent.KEYCODE_STYLUS_BUTTON_PRIMARY &&
                 reader != null
         ) {
-            reader?.let { it.tool = if (it.tool == "eraser") "pen" else "eraser" }
+            reader?.let {
+                if (event.repeatCount == 0)
+                    it.tool = if (it.tool == "eraser") it.lastPenTool else "eraser"
+            }
             inputInfo = "${tr("真实系统笔按键", "System stylus button")} keyCode=$keyCode"
             return true
         }

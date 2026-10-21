@@ -28,6 +28,7 @@ class PaperMenu(
             configure(
                 activity.resources.displayMetrics.widthPixels,
                 activity.resources.displayMetrics.heightPixels,
+                UiSizing.scale(buttonSize),
             )
         }
     private val palette = ui.palette

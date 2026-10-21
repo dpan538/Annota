@@ -108,6 +108,47 @@ class PdfEngine(val context: Context, val store: Store) {
         return result
     }
 
+    /** Rasterize this region directly from the PDF at the current display scale, never a JPEG. */
+    fun renderTile(book: Book, page: Sheet, pixelsPerPoint: Float, area: Rect): Bitmap {
+        require(pixelsPerPoint.isFinite() && pixelsPerPoint > 0)
+        require(area.width() in 1..770 && area.height() in 1..770)
+        val result = Bitmap.createBitmap(area.width(), area.height(), Bitmap.Config.ARGB_8888)
+        result.eraseColor(Color.WHITE)
+        val transform =
+            android.graphics.Matrix().apply {
+                setScale(pixelsPerPoint, pixelsPerPoint)
+                postTranslate(-area.left.toFloat(), -area.top.toFloat())
+            }
+        try {
+            if (page.source >= 0) {
+                ParcelFileDescriptor.open(
+                        store.file(book.source),
+                        ParcelFileDescriptor.MODE_READ_ONLY,
+                    )
+                    .use { fd ->
+                        PdfRenderer(fd).use { renderer ->
+                            renderer.openPage(page.source).use {
+                                it.render(
+                                    result,
+                                    null,
+                                    transform,
+                                    PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY,
+                                )
+                            }
+                        }
+                    }
+            } else
+                Canvas(result).apply {
+                    concat(transform)
+                    drawPaper(this, page)
+                }
+            return result
+        } catch (t: Throwable) {
+            result.recycle()
+            throw t
+        }
+    }
+
     fun words(book: Book, page: Sheet): List<Word> {
         if (page.source < 0) return emptyList()
         PDDocument.load(store.file(book.source), memory()).use { doc ->

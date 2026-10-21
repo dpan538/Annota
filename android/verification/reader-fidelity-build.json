@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "packageName": "io.github.dpan538.annota",
+  "versionCode": 7,
+  "versionName": "0.1.6-dev",
+  "artifact": "android/dist/Annota-0.1.6-dev.apk",
+  "sha256": "9117f4365f171739d960226fe7d9de1420da0456d0dd2220bd99f31900342b6c",
+  "bytes": 74864172,
+  "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18",
+  "buildType": "debug",
+  "clientDate": "2026-10-21",
+  "clientTimezone": "Australia/Brisbane",
+  "publishedRelease": false,
+  "productionSigned": false,
+  "physicalXiaomiAcceptance": false,
+  "soakOnThisVersion": false,
+  "api36EmulatorTests": 54,
+  "focusedLargeKeyboardTests": 1,
+  "separateVisualTests": 1,
+  "skippedTests": 0,
+  "lintErrors": 0,
+  "lintWarnings": 75,
+  "sourceBaseCommit": "d5be4923aed74b1b20351bd1339a9c80c695cb61",
+  "sourceWorkingTreeDirty": true,
+  "sourceSha256": {
+    "android/app/src/main/java/io/github/dpan538/annota/ContinuousLayout.kt": "8e5698a9e14c020b2bc62c58fe2668ccfe71edd3e623c6d300a6fb8606f6bd43",
+    "android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt": "2fb7a9ce74150b1f9d131e27ab38dfec516ca6c2f2d2a07b77de3fb5cf037e5f",
+    "android/app/src/main/java/io/github/dpan538/annota/Dictionary.kt": "40f30864832d9d16ca7127e01d11c66f9694b41e513b8229a6a4c65e0f405c96",
+    "android/app/src/main/java/io/github/dpan538/annota/DictionaryPanel.kt": "be693324030a5c941252af9459ff2745537a2b2b6a7d57da78544546fc66e973",
+    "android/app/src/main/java/io/github/dpan538/annota/DictionaryReading.kt": "7872355d95a6b6837a291a8f8b0c24e0035b583fff1aba8ba8ef9c1f09bc5aec",
+    "android/app/src/main/java/io/github/dpan538/annota/DocumentCover.kt": "05f6dac668199ccc551d894a2fc87bbcefc433a6bb318cae822d722b647d77dd",
+    "android/app/src/main/java/io/github/dpan538/annota/LookupContext.kt": "f9b5e8e3264b1a499a1f723ae9e20193494cd6905d2f52902d3f1a5a91c87e0e",
+    "android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt": "6e3ce7881fdaa6131e3189e59f12ae3fdff79c4159376d25713ca120c402fd3e",
+    "android/app/src/main/java/io/github/dpan538/annota/Network.kt": "87bd440dbb71cf3a271d6453e4615c01257fc917ae567d7c04abfa93ec349ba3",
+    "android/app/src/main/java/io/github/dpan538/annota/PaperMenu.kt": "5b01353b6d1ad7990e20a50d0475b34e18f75dba45bb514bde1ca84864909f10",
+    "android/app/src/main/java/io/github/dpan538/annota/PdfEngine.kt": "021bd53b6bac33c57814f623b93bebbcc989b77f3eaf9e87d792ecf34adc83a5",
+    "android/app/src/main/java/io/github/dpan538/annota/ReaderPopover.kt": "2b637c4482768758ff8d439bc427f1c8b62eb17fc3a910e0306f2affd67c9079",
+    "android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt": "6eb1d1b4ba76c151d62ac39596bd71218cdc34294d161669b67745b9aeb499e1",
+    "android/app/src/main/java/io/github/dpan538/annota/RenderMemory.kt": "77dd59a42308f2ce186684fec02f47ba4af80ddfbd729dece1beaa50ccfa01ba",
+    "android/app/src/main/java/io/github/dpan538/annota/SettingsContent.kt": "0c526c02c84fd7ca1b9db521a18a945488d02aec31ac7f92e8158a17c175ac92",
+    "android/app/src/main/java/io/github/dpan538/annota/Store.kt": "a223b544afd96bb385179cda6374a4a740350c1b9216e00029242318123a9d36",
+    "android/app/src/main/java/io/github/dpan538/annota/ToolButton.kt": "21fa18af4dce5b37c9b1a5a89c85e95afa1be04ab08c733df8838d0203aa5c34",
+    "android/app/src/main/java/io/github/dpan538/annota/UiMessages.kt": "907e2135be6f7a8e5747795cb8866ec2eccbefa2a83742bfb808d78d91943fa2",
+    "android/app/src/main/java/io/github/dpan538/annota/UiMotion.kt": "a7d3aedd75282960916caffdfc9523dd9638c5f3aafb23a8cb577022dd66043d",
+    "android/app/build.gradle.kts": "eb6a909da2853fb06b2d2b5676b5c874d9ee38d263a85c5b9bf6038fa0249193",
+    "android/app/src/main/AndroidManifest.xml": "cd8a717e1045bda2a09b77210d4d232370ab2fb17179dbba59acaef02d8ccc0c",
+    "android/app/src/main/assets/dictionary/context-senses.json": "57bf64edc8efe1e80848e253dd2f1f9e2f2d6f2e0c9d233f9ed7f6d806048e02"
+  },
+  "testSourceSha256": {
+    "android/app/src/androidTest/java/io/github/dpan538/annota/ContinuousReaderTest.kt": "ca2aa28c8a375c2a589ded2f04d630f78f4b3e9756b342c43318630abefd6ee0",
+    "android/app/src/androidTest/java/io/github/dpan538/annota/CoreTest.kt": "55b9126914696219b686f6d20d911457342e50dbcd222b9337d745123c989ee1",
+    "android/app/src/androidTest/java/io/github/dpan538/annota/DesignUiTest.kt": "733e27e188a5540e94717801b79d40da099979fb4a13b7b665d179452e0ccaf0",
+    "android/app/src/androidTest/java/io/github/dpan538/annota/DictionaryContextTest.kt": "587430bd494353914a455a65cde6d933ade661483f344f58cb33180c7173a2ad",
+    "android/app/src/androidTest/java/io/github/dpan538/annota/DictionaryContextUiTest.kt": "2d0f4a21009b51685479b535d0b177560a2ac4e5a4b84ad85e028dff80192a7d",
+    "android/app/src/androidTest/java/io/github/dpan538/annota/EnglishUiTest.kt": "69579845ce3174f6fdd9532445b5b71db8e035479a4d42619b28f81efee7505e",
+    "android/app/src/androidTest/java/io/github/dpan538/annota/InputTest.kt": "3dc2ecf31c102e830b15c2ca69f7d051fc39dfb3527967829648220f1944c6fb",
+    "android/app/src/androidTest/java/io/github/dpan538/annota/MotionTest.kt": "87b32ec0e35ee446a79ef17679e28c3f2f9c1ca3856b945e959b9b315ed61e4a",
+    "android/app/src/androidTest/java/io/github/dpan538/annota/ReaderFidelityTest.kt": "175c4eb937e3ec17f9d3b7b2787c2d86fca05677426dcefef217f7fe1050f35a",
+    "android/app/src/androidTest/java/io/github/dpan538/annota/ReaderPolishTest.kt": "5e238e20b73f15b286015cb9b7fed6c1b6c5fa069471fbebe9052820f3a84890",
+    "android/app/src/androidTest/java/io/github/dpan538/annota/ReaderVisualTest.kt": "1fdee08fc34c46b9875314bef94943548ca4e85a6976707f2db6692866e1d877",
+    "android/app/src/androidTest/java/io/github/dpan538/annota/RenderLifecycleTest.kt": "12f38334e642630d25deea3787f430802c858e32dee3abb2cff1175823e8441e",
+    "android/app/src/androidTest/java/io/github/dpan538/annota/SeedTest.kt": "56cb27b886af674b8999e5ed4fa44f2558710d9e3124b7be0b5c58c2535f2b6d",
+    "android/app/src/androidTest/java/io/github/dpan538/annota/SoakTest.kt": "c6223d76cbbc7d1a647d1bf9d5cd389fe840b5bc4531af18a2ece70d7ff387a6",
+    "android/app/src/androidTest/java/io/github/dpan538/annota/UpdateTest.kt": "d3def07a6a680feca28f1d5b4d73a551cb7ad97935da83f0d6db18b4e1901ec8"
+  },
+  "currentScreenshotCount": 29,
+  "beforeScreenshotCount": 2,
+  "recording": {
+    "file": "reader-fidelity-motion.mp4",
+    "sha256": "6f5a1264d7e9058157555b71dc4eee01d91e054ae30f0b5380427d24550f8cc2",
+    "probe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 1704,
+          "height": 1136,
+          "avg_frame_rate": "5500000/810191"
+        },
+        {
+          "avg_frame_rate": "0/0"
+        },
+        {
+          "avg_frame_rate": "0/0"
+        }
+      ],
+      "format": {
+        "duration": "81.019100",
+        "size": "5131071"
+      }
+    },
+    "interpolatedOrRetimed": false,
+    "frameRateBenchmark": false
+  },
+  "public015Unchanged": true,
+  "public015Sha256": "a3ddfcad0733732abd432d6ec73eac93a7df19c17dc775b2c593f9f61c8d8b6b",
+  "contextSenseRules": 21,
+  "contextMatching": "Offline dictionary phrases, curated collocations and explicit grammatical cues; uncertain results retain short alternatives."
+}

@@ -10,9 +10,70 @@ import org.json.JSONObject
 class Dictionary(private val context: Context) {
     data class Entry(val word: String, val pronunciation: String, val meaning: String)
 
-    data class Result(val entries: List<Entry>, val suggestions: List<String>)
+    data class Result(
+        val entries: List<Entry>,
+        val suggestions: List<String>,
+        val reading: DictionaryReading? = null,
+    )
+
+    private val readings by lazy { DictionaryReadings(context) }
 
     private val dir = File(context.filesDir, "dictionary").apply { mkdirs() }
+
+    fun lookup(text: String, context: LookupContext? = null): Result {
+        val result = query(text)
+        val active = context?.takeIf { it.matches(text) }
+        val phrase = if (active == null || result.entries.isEmpty()) null else phrase(active)
+        return result.copy(reading = readings.present(text, result, active, phrase))
+    }
+
+    private fun phrase(context: LookupContext): Pair<String, Entry>? {
+        val target = LookupContext.tokens(context.selected)
+        if (target.size != 1 || !target.single().matches(Regex("[a-z]+"))) return null
+        val candidates =
+            buildList {
+                    for (before in 0..minOf(2, context.before.size)) for (after in
+                        0..minOf(2, context.after.size)) {
+                        if (before + after in 1..3)
+                            add(
+                                (context.before.takeLast(before) +
+                                        target +
+                                        context.after.take(after))
+                                    .joinToString(" ")
+                            )
+                    }
+                }
+                .distinct()
+                .sortedByDescending { it.length }
+        SQLiteDatabase.openDatabase(
+                File(dir, "en-zh.sqlite").path,
+                null,
+                SQLiteDatabase.OPEN_READONLY,
+            )
+            .use { db ->
+                candidates.forEach { value ->
+                    db.rawQuery(
+                            "SELECT word,phonetic,translation,definition FROM entries WHERE key=? OR compact=? LIMIT 1",
+                            arrayOf(value, value.replace(Regex("[^a-z0-9]"), "")),
+                        )
+                        .use { c ->
+                            if (
+                                c.moveToFirst() &&
+                                    LookupContext.key(c.getString(0)).replace('-', ' ') == value
+                            )
+                                return value to
+                                    Entry(
+                                        c.getString(0),
+                                        c.getString(1).orEmpty(),
+                                        c.getString(2).orEmpty().ifBlank {
+                                            c.getString(3).orEmpty()
+                                        },
+                                    )
+                        }
+                }
+            }
+        return null
+    }
 
     @Synchronized
     fun install() {

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.7-dev — 三档按键与阅读体验 / Control sizes and reading polish
+
+- 60 / 68 / 76 三档同时作用于书库、阅读器顶栏、小菜单与新建面板；设置即时更新并保留当前位置，冷启动保留选择。
+- 笔型、粗细和颜色在同一居中菜单内切换；笔/橡皮一次点击切换并记住笔型。手写笔与手势偏好改为带选中状态的小菜单。
+- 原始 PDF 可见区域高清分块、稳定预览与精确内存预算；扩大尺子，修正笔采样与掌触，减少翻页及外观切换的整屏闪烁。
+- 词典浅色卡片、首行对齐、真实键盘避让；局部上下文优先显示短义，其他义项折叠，手动改词清除旧语境。离线规则覆盖有限。
+- 继承未发布的本地 0.1.6 修正；versionCode 8，高于本地候选 7。开发签名 Pre-release，非正式生产版。
+- Three real control sizes, persistent in-place menus, sharper PDF zoom and concise offline contextual lookup. Xiaomi hardware acceptance remains separate.
+
 ## 0.1.5-dev — 连续阅读与测试更新 / Continuous reading and preview updates
 
 - PDF 连续纵向滚动、惯性与边界、中心缩放、双页连续行及阅读位置恢复；保留适宽/整页与顶部操作。

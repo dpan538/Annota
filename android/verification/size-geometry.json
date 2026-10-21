@@ -1,0 +1,42 @@
+{
+  "measurements": [
+    {
+      "size": 60,
+      "portrait": false,
+      "toolbarHeight": 115,
+      "penMenuWidth": 1492
+    },
+    {
+      "size": 68,
+      "portrait": false,
+      "toolbarHeight": 130,
+      "penMenuWidth": 1691
+    },
+    {
+      "size": 76,
+      "portrait": false,
+      "toolbarHeight": 145,
+      "penMenuWidth": 1890
+    },
+    {
+      "size": 60,
+      "portrait": true,
+      "toolbarHeight": 115,
+      "penMenuWidth": 1492
+    },
+    {
+      "size": 68,
+      "portrait": true,
+      "toolbarHeight": 130,
+      "penMenuWidth": 1691
+    },
+    {
+      "size": 76,
+      "portrait": true,
+      "toolbarHeight": 145,
+      "penMenuWidth": 1890
+    }
+  ],
+  "nativeTaps": true,
+  "passed": true
+}

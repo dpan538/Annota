@@ -1,0 +1,250 @@
+[
+  {
+    "file": "dictionary-context-expanded.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "9f06e4d69275f1fd8699ff5a75ba1fb5f15f08bd82a52f5d57e220e1681ae70a",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "dictionary-context-manual-bank.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "8c89ac1af295199a3c172dfdd8b37e51c6dc764bbd3323af8277c344bd881b0b",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "dictionary-context-river-bank.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "831b334fdbca0aae3a3d73dd5a857da7a5a7faecb1b3ac92adcf21b17e17aa59",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "dictionary-context-sunset.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "1fe40f6b0a918b973b58c898669654736fd9c0a7ba1ca255f99e3188764f5489",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "dictionary-context-training-set.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "0bf911e4740e2f160c7ef42fe24726933c5eb760656406e03836ecdcbb1842ea",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-continuous.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "2e8c1e8138be700157bde9eb360beb792f378f3d2e2b23cac776dd6d8500f3b7",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-dictionary-before.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "1a78a9d7726fc27af99c9c3a81052f709434b1cca3bb067bace8af0a2d9d9328",
+    "role": "before",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-dictionary-keyboard.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "fc77543005241c18eef89d2c83a64c888580982a40ba2df8a2c0d146872251f2",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-dictionary-large-keyboard.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "15dfb613dc1690d9de984d3585640ec892585d7f5c6149790c09330409f96dec",
+    "role": "current",
+    "systemDensityDpi": 420
+  },
+  {
+    "file": "reader-fidelity-dictionary-long-expanded.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "e5f2a21df1bdc03620914d70fd66137a674afd6ca629798c245c9aa496527002",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-dictionary-long-large-keyboard.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "2fad79c0d922711f231c549e7d487da95efc8bdf6dd8a27a6d070d93d5348b07",
+    "role": "current",
+    "systemDensityDpi": 420
+  },
+  {
+    "file": "reader-fidelity-dictionary-long.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "42c2de87026fe8086c8c2775e45b9fb610db7a0f358428adf309af16da41fd21",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-dictionary-portrait-keyboard.png",
+    "width": 2272,
+    "height": 3408,
+    "sha256": "b395f5b52330cb1f8769d55d37b18a9501e51b663e9cdc273acbf4291ae76504",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-dictionary-portrait.png",
+    "width": 2272,
+    "height": 3408,
+    "sha256": "46c7a677270c7eaf8ba72e715350220d9867b303c1fc410da5b4c87bfec71978",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-dictionary-scrolled.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "05e3c4add368e8aebb61dc217a72ceaa6a9445661eb429fd208de4a4652ab5c4",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-dictionary-suggestions.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "80bdc306b89a8a99271807638e5e7f7f8a5f2e1ad211b33b44c23aab10d3a334",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-dictionary.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "2ed4d7163ff3ae4d0ed7913a19f67d41c095691db48a4ff810af5591459238bb",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-eraser.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "1b1ba2d0436a04cf1ae9acb721bd1519a03e42de0405d3ab2a5aa5c640207f8f",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-fit.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "d8032f96eeb64b110e2571c302bb6ed4dcc3bdc53f5f3f187e3b4d6c6a370c75",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-guide-zoom.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "52782e63fc34da61ae7157765b763cafb86a3b05d3f0fffbb018948b29e45f84",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-page-menu.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "44a93ec71f0674ab1ec763f691d04b68162d8a7619bf214216deefa57e94c61c",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-pages.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "c03856fa2df7197c6758368a290ac41beaffdf87c7e3486271cf1490e601de40",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-pen-portrait.png",
+    "width": 2272,
+    "height": 3408,
+    "sha256": "b0c6d15b67c41fa29c43c867943371332bda4b9411382422c91e0088270b4b0f",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-pen-sidebar.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "1ff2ea7916c361e5099e9aab536e21c131ee0353d8e041fc70b6ae12f2157a24",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-pen.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "2643571dd039ff87b3eb40fe4e4d7ff4cc4ae12a53155c7bf348868c4ce1216b",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-pencil.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "5dedba6aa2fa0b231a40261c11b64fa36eba7a5b740371a7737e9add328cf9f2",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-ruler.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "c95e05855acd2d3005860d823bc60171beb445c8898bdae77a498ba2a17bca67",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-selection.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "1a6894d47dc26f9198542edc11a4876283e2d8387d6c9fc76c74bc3b778ae740",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-settings.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "adf5208777e9007ae31bd38756c0869f241edec8bb7326c1177fac5d40430ebe",
+    "role": "current",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-zoom-before.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "5d09ffd7934ef6ce01da35272d4b4df6b964bfcf9dca8df6180fc63476ea3ee3",
+    "role": "before",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "reader-fidelity-zoom.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "96f474ab08a35c0884444fb0ea324014694f9428220371695f627dde19d1e077",
+    "role": "current",
+    "systemDensityDpi": 240
+  }
+]

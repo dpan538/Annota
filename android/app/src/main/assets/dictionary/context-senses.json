@@ -1,0 +1,929 @@
+[
+  {
+    "word": "set",
+    "defaults": [
+      {
+        "pos": "n.",
+        "text": "集合；组合"
+      },
+      {
+        "pos": "v.",
+        "text": "设置；放置"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "数据集",
+        "before": [
+          "training",
+          "test",
+          "validation",
+          "development"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "集合",
+        "after": [
+          "of"
+        ],
+        "near": [
+          "union",
+          "intersection",
+          "subset",
+          "elements"
+        ]
+      },
+      {
+        "pos": "v.",
+        "text": "设置；设定",
+        "after": [
+          "parameter",
+          "parameters",
+          "value",
+          "values",
+          "temperature"
+        ],
+        "near": [
+          "parameter",
+          "parameters",
+          "value",
+          "values",
+          "temperature",
+          "threshold",
+          "option",
+          "configuration"
+        ]
+      },
+      {
+        "pos": "v.",
+        "text": "放置",
+        "near": [
+          "book",
+          "table",
+          "shelf"
+        ],
+        "minimum": 2
+      },
+      {
+        "pos": "vi.",
+        "text": "凝固",
+        "near": [
+          "concrete",
+          "cement",
+          "gelatin",
+          "glue"
+        ]
+      },
+      {
+        "pos": "vi.",
+        "text": "日落",
+        "near": [
+          "sun",
+          "horizon",
+          "sunset"
+        ]
+      },
+      {
+        "pos": "a.",
+        "text": "固定的",
+        "near": [
+          "stone",
+          "unchangeable"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "bank",
+    "defaults": [
+      {
+        "pos": "n.",
+        "text": "银行"
+      },
+      {
+        "pos": "n.",
+        "text": "河岸"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "银行",
+        "near": [
+          "account",
+          "money",
+          "deposit",
+          "deposited",
+          "loan",
+          "financial",
+          "cash",
+          "mortgage"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "河岸",
+        "near": [
+          "river",
+          "stream",
+          "shore",
+          "water",
+          "flood"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "attention",
+    "defaults": [
+      {
+        "pos": "n.",
+        "text": "注意力；注意"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "注意力机制",
+        "before": [
+          "self",
+          "multi-head"
+        ],
+        "after": [
+          "mechanism"
+        ],
+        "near": [
+          "query",
+          "keys",
+          "queries",
+          "transformer",
+          "neural"
+        ],
+        "minimum": 2
+      }
+    ]
+  },
+  {
+    "word": "model",
+    "defaults": [
+      {
+        "pos": "n.",
+        "text": "模型"
+      },
+      {
+        "pos": "n.",
+        "text": "模特儿"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "模型",
+        "near": [
+          "training",
+          "trained",
+          "neural",
+          "learning",
+          "parameters",
+          "prediction",
+          "algorithm"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "模特儿",
+        "near": [
+          "fashion",
+          "runway",
+          "clothing",
+          "photographer"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "head",
+    "defaults": [
+      {
+        "pos": "n.",
+        "text": "头部"
+      },
+      {
+        "pos": "n.",
+        "text": "负责人"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "注意力头",
+        "before": [
+          "attention"
+        ],
+        "near": [
+          "attention",
+          "transformer",
+          "queries"
+        ],
+        "minimum": 2
+      },
+      {
+        "pos": "n.",
+        "text": "头部",
+        "near": [
+          "face",
+          "hair",
+          "brain",
+          "eyes"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "负责人",
+        "near": [
+          "department",
+          "company",
+          "chief",
+          "leader"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "key",
+    "defaults": [
+      {
+        "pos": "n.",
+        "text": "钥匙"
+      },
+      {
+        "pos": "n.",
+        "text": "关键"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "键（注意力）",
+        "near": [
+          "query",
+          "value",
+          "attention",
+          "vector"
+        ],
+        "minimum": 2
+      },
+      {
+        "pos": "n.",
+        "text": "按键",
+        "near": [
+          "keyboard",
+          "press",
+          "shortcut"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "钥匙",
+        "near": [
+          "lock",
+          "door",
+          "unlock"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "关键",
+        "near": [
+          "understanding",
+          "success",
+          "solution"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "value",
+    "defaults": [
+      {
+        "pos": "n.",
+        "text": "值"
+      },
+      {
+        "pos": "n.",
+        "text": "价值"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "值（注意力）",
+        "near": [
+          "query",
+          "key",
+          "attention",
+          "vector"
+        ],
+        "minimum": 2
+      },
+      {
+        "pos": "n.",
+        "text": "价值",
+        "near": [
+          "price",
+          "money",
+          "market",
+          "financial"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "数值",
+        "near": [
+          "variable",
+          "number",
+          "function",
+          "parameter"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "query",
+    "defaults": [
+      {
+        "pos": "n.",
+        "text": "查询；疑问"
+      },
+      {
+        "pos": "v.",
+        "text": "询问"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "查询向量",
+        "near": [
+          "attention",
+          "key",
+          "value",
+          "vector"
+        ],
+        "minimum": 2
+      }
+    ]
+  },
+  {
+    "word": "weight",
+    "defaults": [
+      {
+        "pos": "n.",
+        "text": "重量"
+      },
+      {
+        "pos": "n.",
+        "text": "权重"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "权重",
+        "near": [
+          "neural",
+          "parameter",
+          "parameters",
+          "attention",
+          "model",
+          "weighted"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "重量",
+        "near": [
+          "kg",
+          "kilogram",
+          "body",
+          "mass"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "cell",
+    "defaults": [
+      {
+        "pos": "n.",
+        "text": "细胞"
+      },
+      {
+        "pos": "n.",
+        "text": "单元"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "细胞",
+        "near": [
+          "biology",
+          "membrane",
+          "nucleus",
+          "tissue",
+          "organism",
+          "culture"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "电池单元",
+        "near": [
+          "battery",
+          "electrode",
+          "voltage",
+          "current"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "单元格",
+        "near": [
+          "spreadsheet",
+          "row",
+          "column",
+          "excel"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "charge",
+    "defaults": [
+      {
+        "pos": "n.",
+        "text": "费用"
+      },
+      {
+        "pos": "v.",
+        "text": "充电"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "电荷",
+        "near": [
+          "electron",
+          "particle",
+          "electric",
+          "electrical",
+          "coulomb"
+        ]
+      },
+      {
+        "pos": "v.",
+        "text": "充电",
+        "near": [
+          "battery",
+          "power",
+          "charger"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "费用",
+        "near": [
+          "fee",
+          "cost",
+          "price",
+          "money"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "指控",
+        "near": [
+          "accused",
+          "court",
+          "crime",
+          "police"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "lead",
+    "defaults": [
+      {
+        "pos": "v.",
+        "text": "引导；带领"
+      },
+      {
+        "pos": "n.",
+        "text": "铅"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "铅",
+        "near": [
+          "metal",
+          "toxic",
+          "element",
+          "pb",
+          "battery"
+        ]
+      },
+      {
+        "pos": "v.",
+        "text": "导致",
+        "after": [
+          "to"
+        ]
+      },
+      {
+        "pos": "v.",
+        "text": "领导；带领",
+        "near": [
+          "team",
+          "group",
+          "manager"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "present",
+    "defaults": [
+      {
+        "pos": "a.",
+        "text": "当前的"
+      },
+      {
+        "pos": "v.",
+        "text": "提出；呈现"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "v.",
+        "text": "提出；呈现",
+        "before": [
+          "we",
+          "they",
+          "to",
+          "will"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "礼物",
+        "near": [
+          "gift",
+          "birthday",
+          "wrapped"
+        ]
+      },
+      {
+        "pos": "a.",
+        "text": "出席的",
+        "near": [
+          "attend",
+          "meeting",
+          "absent"
+        ]
+      },
+      {
+        "pos": "a.",
+        "text": "当前的",
+        "after": [
+          "study",
+          "work",
+          "paper"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "run",
+    "defaults": [
+      {
+        "pos": "v.",
+        "text": "运行"
+      },
+      {
+        "pos": "v.",
+        "text": "跑步"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "v.",
+        "text": "运行",
+        "near": [
+          "code",
+          "program",
+          "algorithm",
+          "command",
+          "software"
+        ]
+      },
+      {
+        "pos": "v.",
+        "text": "跑步",
+        "near": [
+          "athlete",
+          "race",
+          "marathon",
+          "runner",
+          "kilometer"
+        ]
+      },
+      {
+        "pos": "v.",
+        "text": "经营",
+        "near": [
+          "company",
+          "business",
+          "restaurant"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "plant",
+    "defaults": [
+      {
+        "pos": "n.",
+        "text": "植物"
+      },
+      {
+        "pos": "n.",
+        "text": "工厂"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "植物",
+        "near": [
+          "leaf",
+          "leaves",
+          "roots",
+          "grow",
+          "photosynthesis"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "工厂",
+        "near": [
+          "factory",
+          "manufacturing",
+          "power",
+          "industrial"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "state",
+    "defaults": [
+      {
+        "pos": "n.",
+        "text": "状态"
+      },
+      {
+        "pos": "v.",
+        "text": "陈述"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "状态",
+        "near": [
+          "hidden",
+          "cell",
+          "initial",
+          "memory",
+          "system"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "国家；州",
+        "near": [
+          "country",
+          "government",
+          "federal",
+          "law"
+        ]
+      },
+      {
+        "pos": "v.",
+        "text": "陈述",
+        "before": [
+          "we",
+          "they",
+          "to",
+          "will"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "mean",
+    "defaults": [
+      {
+        "pos": "v.",
+        "text": "意思是"
+      },
+      {
+        "pos": "n.",
+        "text": "平均值"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "平均值",
+        "near": [
+          "sample",
+          "standard",
+          "variance",
+          "average",
+          "population"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "scale",
+    "defaults": [
+      {
+        "pos": "n.",
+        "text": "尺度"
+      },
+      {
+        "pos": "v.",
+        "text": "缩放"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "缩放比例",
+        "near": [
+          "attention",
+          "query",
+          "key",
+          "softmax",
+          "dimension"
+        ],
+        "minimum": 2
+      },
+      {
+        "pos": "n.",
+        "text": "比例尺",
+        "near": [
+          "map",
+          "ratio",
+          "length"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "鳞片",
+        "near": [
+          "fish",
+          "snake"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "match",
+    "defaults": [
+      {
+        "pos": "v.",
+        "text": "匹配"
+      },
+      {
+        "pos": "n.",
+        "text": "比赛"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "v.",
+        "text": "匹配",
+        "near": [
+          "data",
+          "pattern",
+          "query",
+          "exact"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "比赛",
+        "near": [
+          "football",
+          "tennis",
+          "game",
+          "team",
+          "score"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "火柴",
+        "near": [
+          "light",
+          "fire",
+          "flame",
+          "ignite"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "right",
+    "defaults": [
+      {
+        "pos": "a.",
+        "text": "正确的"
+      },
+      {
+        "pos": "n.",
+        "text": "右侧"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "右侧",
+        "near": [
+          "left",
+          "direction",
+          "turn",
+          "hand",
+          "side"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "权利",
+        "near": [
+          "law",
+          "human",
+          "legal",
+          "freedom"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "paper",
+    "defaults": [
+      {
+        "pos": "n.",
+        "text": "论文"
+      },
+      {
+        "pos": "n.",
+        "text": "纸张"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "论文",
+        "near": [
+          "research",
+          "propose",
+          "presents",
+          "results",
+          "method",
+          "study"
+        ]
+      },
+      {
+        "pos": "n.",
+        "text": "纸张",
+        "near": [
+          "blank",
+          "sheet",
+          "print",
+          "fold"
+        ]
+      }
+    ]
+  }
+]

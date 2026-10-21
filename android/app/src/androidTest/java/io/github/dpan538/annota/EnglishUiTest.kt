@@ -264,14 +264,21 @@ class EnglishUiTest {
 
     private fun dialogLabels(): List<String> =
         inst.uiAutomation.rootInActiveWindow
-            ?.let { root -> nodes(root).mapNotNull { it.text?.toString() } }
+            ?.let { root ->
+                nodes(root)
+                    .flatMap {
+                        listOfNotNull(it.text?.toString(), it.contentDescription?.toString())
+                    }
+                    .distinct()
+            }
             .orEmpty()
 
     private fun select(label: String) {
         waitFor { dialogLabels().any { it.equals(label, ignoreCase = true) } }
         val target =
             nodes(inst.uiAutomation.rootInActiveWindow).first {
-                it.text?.toString()?.equals(label, ignoreCase = true) == true
+                it.text?.toString()?.equals(label, ignoreCase = true) == true ||
+                    it.contentDescription?.toString()?.equals(label, ignoreCase = true) == true
             }
         val bounds = android.graphics.Rect()
         target.getBoundsInScreen(bounds)
@@ -316,24 +323,34 @@ class EnglishUiTest {
         select("White")
         select("Create note")
         click(a, "Pen")
+        waitFor { "Pencil" in dialogLabels() }
         assertTrue(
+            "Actual popup labels: ${dialogLabels()}",
             dialogLabels()
                 .containsAll(
-                    listOf("Pen", "Pencil", "Fountain pen", "Highlighter", "Color", "Width")
-                )
+                    listOf(
+                        "Pen",
+                        "Pencil",
+                        "Fountain pen",
+                        "Highlighter",
+                        "Color · Accent",
+                        "Width 1.0 pt",
+                    )
+                ),
         )
         assertFalse(dialogLabels().any { Regex("[\\u4e00-\\u9fff]").containsMatchIn(it) })
-        select("Cancel")
+        select("Close")
         click(a, "Shapes")
         assertTrue(
             dialogLabels().containsAll(listOf("Line", "Rectangle", "Ellipse", "Arrow", "Triangle"))
         )
-        select("Cancel")
+        select("Close")
+        click(a, "Eraser")
         click(a, "Eraser")
         assertTrue(
             dialogLabels().containsAll(listOf("Whole stroke", "Partial", "Highlighter only"))
         )
-        select("Cancel")
+        select("Close")
         click(a, "Library")
         assertTrue(
             ui { all(a.window.decorView).any { it is TextView && it.text.toString() == "Home" } }

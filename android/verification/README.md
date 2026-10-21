@@ -66,3 +66,22 @@ See [acceptance and download checks](../../docs/ENGLISH-APK-ACCEPTANCE.md) for w
 - `continuous-rebuild-check.json`: default version 6 restored after building the local lower-version client fixture. All ZIP payload entries match the published APK; archive/signing metadata change the whole-file hash. The published APK remains the exact originally tested artifact.
 
 See [continuous reader/update acceptance](../../docs/CONTINUOUS-READER-ACCEPTANCE.md) and the [work log](../../log/2026-10-21-continuous-update/README.md). The 316-cycle experiment remains explicitly scoped to 0.1.4, not this renderer.
+
+## 0.1.6-dev local candidate: PDF detail and compact tools
+
+- `reader-fidelity-build.json`: local versionCode 7 identity and source hashes; not a public release. The published 0.1.5 artifact is unchanged.
+- `reader-fidelity-instrumentation-api36.txt`: all 54 regressions passed without skips, including pen-up/history pressure preservation, four source rotations at 400%, complete simultaneous detail residency in a 3408×2272 viewport, actual toolbar touch passthrough, pen/eraser nib retention, ruler lock, pointer order/palm cancellation and in-place theme updates.
+- `reader-fidelity-visual.json`, `reader-fidelity-screenshots.json`, `reader-fidelity-*.png`: separate native visual flow and exact screenshot dimensions/hashes; actual selection tap, thumbnail long press, dictionary/keyboard, aligned definition baselines, enlarged long-entry height, portrait and zoom of both bundled PDFs.
+- `reader-fidelity-focused-large-keyboard-api36.txt`, `reader-fidelity-large-keyboard.json` and `*-large-keyboard.png`: one complete native visual flow at 420 dpi with a tall real IME.
+- `reader-fidelity-motion.mp4`: original recording, no interpolation/retiming, not a Xiaomi latency/frame-rate benchmark.
+- `reader-fidelity-dictionary-before.png`: the earlier sparse dictionary layout, before cards, alignment and height corrections.
+- `reader-fidelity-zoom-before.png`: actual blurry tile hole caught during visual QA, followed by exact allocation planning and a residency regression. `reader-fidelity-regression-before.txt` preserves the earlier page-clip failure and test isolation/interaction expectation corrections.
+- `reader-fidelity-apk-local-check.json`: full local transfer/archive/assets/version/signature check; public HTTPS distribution is not claimed.
+
+See [acceptance](../../docs/READER-FIDELITY-ACCEPTANCE.md) and [work log](../../log/2026-10-21-reader-fidelity/README.md). Physical Xiaomi input, extended large-PDF pressure, production signing and public feedback remain separate.
+
+Context dictionary continuation: `dictionary-context-*.png` shows the native PDF fixture with training-set/sunset/river-bank senses, concise manual fallback and disclosure. See [context acceptance](../../docs/DICTIONARY-CONTEXT-ACCEPTANCE.md) for the offline rule coverage and uncertainty fallback.
+
+## 三档按键与 0.1.7
+
+`ui-sizing-*` 记录最终版三档控件、完整回归、普通/大号键盘及 APK 发布身份；`size-*.png` 为三档横竖屏原生截图，`release-017-*` 为最终包的阅读器与词典记录。`reader-fidelity-*` 继续属于之前的 0.1.6 本地候选；不跨包冒认测试。详见[验收说明](../../docs/UI-SIZING-ACCEPTANCE.md)。

@@ -1,0 +1,163 @@
+
+io.github.dpan538.annota.CoreTest:........
+io.github.dpan538.annota.DesignUiTest:..
+io.github.dpan538.annota.EnglishUiTest:
+Error in actualLanguageSwitchSurvivesReopenAndCreationAndToolMenusAreEnglish(io.github.dpan538.annota.EnglishUiTest):
+java.lang.AssertionError
+	at org.junit.Assert.fail(Assert.java:87)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertTrue(Assert.java:53)
+	at io.github.dpan538.annota.EnglishUiTest.actualLanguageSwitchSurvivesReopenAndCreationAndToolMenusAreEnglish(EnglishUiTest.kt:327)
+..
+io.github.dpan538.annota.InputTest:.....
+io.github.dpan538.annota.ReaderPolishTest:.
+Error in heapBudgetsShrinkForSmallDevicesAndBottomCanvasRemainsEmpty(io.github.dpan538.annota.ReaderPolishTest):
+java.lang.AssertionError: Bottom must contain only the reading canvas expected:<-723724> but was:<-1>
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.failNotEquals(Assert.java:835)
+	at org.junit.Assert.assertEquals(Assert.java:120)
+	at io.github.dpan538.annota.ReaderPolishTest.heapBudgetsShrinkForSmallDevicesAndBottomCanvasRemainsEmpty$lambda$7(ReaderPolishTest.kt:141)
+	at io.github.dpan538.annota.ReaderPolishTest.$r8$lambda$FnaXJnTvLzjEy4KT3KiKnwo9tEY(Unknown Source:0)
+	at io.github.dpan538.annota.ReaderPolishTest$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2616)
+	at android.os.Handler.handleCallback(Handler.java:995)
+	at android.os.Handler.dispatchMessage(Handler.java:103)
+	at android.os.Looper.loopOnce(Looper.java:248)
+	at android.os.Looper.loop(Looper.java:338)
+	at android.app.ActivityThread.main(ActivityThread.java:9067)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+..
+io.github.dpan538.annota.RenderLifecycleTest:
+Error in attachedReaderEvictsAndRebuildsWithoutLosingSavedDocumentOrAddingBottomChrome(io.github.dpan538.annota.RenderLifecycleTest):
+java.lang.IllegalStateException: Timed out waiting for real UI/render state
+	at io.github.dpan538.annota.RenderLifecycleTest.waitUntil(RenderLifecycleTest.kt:36)
+	at io.github.dpan538.annota.RenderLifecycleTest.attachedReaderEvictsAndRebuildsWithoutLosingSavedDocumentOrAddingBottomChrome(RenderLifecycleTest.kt:58)
+
+io.github.dpan538.annota.SeedTest:...
+io.github.dpan538.annota.UpdateTest:....
+io.github.dpan538.annota.ContinuousReaderTest:.......
+io.github.dpan538.annota.MotionTest:.
+io.github.dpan538.annota.ReaderFidelityTest:
+Error in readerMenusAreCompactUndimmedAndDoNotReplaceTheReader(io.github.dpan538.annota.ReaderFidelityTest):
+java.lang.IllegalStateException: Check failed.
+	at io.github.dpan538.annota.Store.book(Store.kt:282)
+	at io.github.dpan538.annota.ReaderFidelityTest.readerMenusAreCompactUndimmedAndDoNotReplaceTheReader$lambda$42(ReaderFidelityTest.kt:360)
+	at io.github.dpan538.annota.ReaderFidelityTest.$r8$lambda$037Ps_9OSoAXIOYalRNvJSRsXK8(Unknown Source:0)
+	at io.github.dpan538.annota.ReaderFidelityTest$$ExternalSyntheticLambda0.invoke(D8$$SyntheticClass:0)
+	at io.github.dpan538.annota.ReaderFidelityTest.ui$lambda$0(ReaderFidelityTest.kt:33)
+	at io.github.dpan538.annota.ReaderFidelityTest.$r8$lambda$0ImnaS2tifM_HOB5tWZqDrTDE-M(Unknown Source:0)
+	at io.github.dpan538.annota.ReaderFidelityTest$$ExternalSyntheticLambda18.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2616)
+	at android.os.Handler.handleCallback(Handler.java:995)
+	at android.os.Handler.dispatchMessage(Handler.java:103)
+	at android.os.Looper.loopOnce(Looper.java:248)
+	at android.os.Looper.loop(Looper.java:338)
+	at android.app.ActivityThread.main(ActivityThread.java:9067)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+.
+Error in oneTapSwitchesPenAndEraserEvenWithMenuOpenAndRemembersNib(io.github.dpan538.annota.ReaderFidelityTest):
+java.lang.IllegalStateException: Check failed.
+	at io.github.dpan538.annota.Store.book(Store.kt:282)
+	at io.github.dpan538.annota.ReaderFidelityTest.oneTapSwitchesPenAndEraserEvenWithMenuOpenAndRemembersNib$lambda$53(ReaderFidelityTest.kt:422)
+	at io.github.dpan538.annota.ReaderFidelityTest.$r8$lambda$ur0Ktl683p19rI6ElxzarPiEI6c(Unknown Source:0)
+	at io.github.dpan538.annota.ReaderFidelityTest$$ExternalSyntheticLambda33.invoke(D8$$SyntheticClass:0)
+	at io.github.dpan538.annota.ReaderFidelityTest.ui$lambda$0(ReaderFidelityTest.kt:33)
+	at io.github.dpan538.annota.ReaderFidelityTest.$r8$lambda$0ImnaS2tifM_HOB5tWZqDrTDE-M(Unknown Source:0)
+	at io.github.dpan538.annota.ReaderFidelityTest$$ExternalSyntheticLambda18.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2616)
+	at android.os.Handler.handleCallback(Handler.java:995)
+	at android.os.Handler.dispatchMessage(Handler.java:103)
+	at android.os.Looper.loopOnce(Looper.java:248)
+	at android.os.Looper.loop(Looper.java:338)
+	at android.app.ActivityThread.main(ActivityThread.java:9067)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+....
+
+Time: 45.917
+There were 5 failures:
+1) actualLanguageSwitchSurvivesReopenAndCreationAndToolMenusAreEnglish(io.github.dpan538.annota.EnglishUiTest)
+java.lang.AssertionError
+	at org.junit.Assert.fail(Assert.java:87)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertTrue(Assert.java:53)
+	at io.github.dpan538.annota.EnglishUiTest.actualLanguageSwitchSurvivesReopenAndCreationAndToolMenusAreEnglish(EnglishUiTest.kt:327)
+2) heapBudgetsShrinkForSmallDevicesAndBottomCanvasRemainsEmpty(io.github.dpan538.annota.ReaderPolishTest)
+java.lang.AssertionError: Bottom must contain only the reading canvas expected:<-723724> but was:<-1>
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.failNotEquals(Assert.java:835)
+	at org.junit.Assert.assertEquals(Assert.java:120)
+	at io.github.dpan538.annota.ReaderPolishTest.heapBudgetsShrinkForSmallDevicesAndBottomCanvasRemainsEmpty$lambda$7(ReaderPolishTest.kt:141)
+	at io.github.dpan538.annota.ReaderPolishTest.$r8$lambda$FnaXJnTvLzjEy4KT3KiKnwo9tEY(Unknown Source:0)
+	at io.github.dpan538.annota.ReaderPolishTest$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2616)
+	at android.os.Handler.handleCallback(Handler.java:995)
+	at android.os.Handler.dispatchMessage(Handler.java:103)
+	at android.os.Looper.loopOnce(Looper.java:248)
+	at android.os.Looper.loop(Looper.java:338)
+	at android.app.ActivityThread.main(ActivityThread.java:9067)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+3) attachedReaderEvictsAndRebuildsWithoutLosingSavedDocumentOrAddingBottomChrome(io.github.dpan538.annota.RenderLifecycleTest)
+java.lang.IllegalStateException: Timed out waiting for real UI/render state
+	at io.github.dpan538.annota.RenderLifecycleTest.waitUntil(RenderLifecycleTest.kt:36)
+	at io.github.dpan538.annota.RenderLifecycleTest.attachedReaderEvictsAndRebuildsWithoutLosingSavedDocumentOrAddingBottomChrome(RenderLifecycleTest.kt:58)
+4) readerMenusAreCompactUndimmedAndDoNotReplaceTheReader(io.github.dpan538.annota.ReaderFidelityTest)
+java.lang.IllegalStateException: Check failed.
+	at io.github.dpan538.annota.Store.book(Store.kt:282)
+	at io.github.dpan538.annota.ReaderFidelityTest.readerMenusAreCompactUndimmedAndDoNotReplaceTheReader$lambda$42(ReaderFidelityTest.kt:360)
+	at io.github.dpan538.annota.ReaderFidelityTest.$r8$lambda$037Ps_9OSoAXIOYalRNvJSRsXK8(Unknown Source:0)
+	at io.github.dpan538.annota.ReaderFidelityTest$$ExternalSyntheticLambda0.invoke(D8$$SyntheticClass:0)
+	at io.github.dpan538.annota.ReaderFidelityTest.ui$lambda$0(ReaderFidelityTest.kt:33)
+	at io.github.dpan538.annota.ReaderFidelityTest.$r8$lambda$0ImnaS2tifM_HOB5tWZqDrTDE-M(Unknown Source:0)
+	at io.github.dpan538.annota.ReaderFidelityTest$$ExternalSyntheticLambda18.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2616)
+	at android.os.Handler.handleCallback(Handler.java:995)
+	at android.os.Handler.dispatchMessage(Handler.java:103)
+	at android.os.Looper.loopOnce(Looper.java:248)
+	at android.os.Looper.loop(Looper.java:338)
+	at android.app.ActivityThread.main(ActivityThread.java:9067)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+5) oneTapSwitchesPenAndEraserEvenWithMenuOpenAndRemembersNib(io.github.dpan538.annota.ReaderFidelityTest)
+java.lang.IllegalStateException: Check failed.
+	at io.github.dpan538.annota.Store.book(Store.kt:282)
+	at io.github.dpan538.annota.ReaderFidelityTest.oneTapSwitchesPenAndEraserEvenWithMenuOpenAndRemembersNib$lambda$53(ReaderFidelityTest.kt:422)
+	at io.github.dpan538.annota.ReaderFidelityTest.$r8$lambda$ur0Ktl683p19rI6ElxzarPiEI6c(Unknown Source:0)
+	at io.github.dpan538.annota.ReaderFidelityTest$$ExternalSyntheticLambda33.invoke(D8$$SyntheticClass:0)
+	at io.github.dpan538.annota.ReaderFidelityTest.ui$lambda$0(ReaderFidelityTest.kt:33)
+	at io.github.dpan538.annota.ReaderFidelityTest.$r8$lambda$0ImnaS2tifM_HOB5tWZqDrTDE-M(Unknown Source:0)
+	at io.github.dpan538.annota.ReaderFidelityTest$$ExternalSyntheticLambda18.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2616)
+	at android.os.Handler.handleCallback(Handler.java:995)
+	at android.os.Handler.dispatchMessage(Handler.java:103)
+	at android.os.Looper.loopOnce(Looper.java:248)
+	at android.os.Looper.loop(Looper.java:338)
+	at android.app.ActivityThread.main(ActivityThread.java:9067)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+
+FAILURES!!!
+Tests run: 45,  Failures: 5
+
+

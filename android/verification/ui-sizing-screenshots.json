@@ -1,0 +1,296 @@
+[
+  {
+    "file": "release-017-continuous.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "3ac384d3bbebef664e757f985be336df2b3d0358f4852338136f88b6137e708f",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-dictionary-context-expanded.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "aacb95e69c12ca7e6cdf0223fd58a2fba432585daa86cc677ad3c8b6b17df322",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-dictionary-context-manual-bank.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "f96cfc3a456f35bfcb62085eb6050c8861f307a88834b7de6ac30c6a9c9ea233",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-dictionary-context-river-bank.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "4600c08782153b88782573dfbd9a7c7e772c5a6fd919443464fcd8ff8f9e248e",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-dictionary-context-sunset.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "5b938c155e188eddd938dc321876970b78331fab1f22c498549a9f44349039ed",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-dictionary-context-training-set.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "94e05e1dbc9e8cd8e2b0ad95f2069142d303fc9970f16c82643ba082e462fb3b",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-dictionary-keyboard.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "8dbf5e2cc0b8599a1f0d474dafc1c73028987f47e87064653a869e248aa3d077",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-dictionary-long-expanded.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "e900db7cd28d42ebbfb50894128bf6e8674dedb39aa73688c46b808a81d2fd8c",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-dictionary-long.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "b408b45a9a02c16a6843fc31c9d4cd0801e45b375113b2862014722bef378be1",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-dictionary-portrait-keyboard.png",
+    "width": 2272,
+    "height": 3408,
+    "sha256": "817551d9891a0edbacd0c5da2beede2124474347181dacd3ad0a4de4ffc7041c",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-dictionary-portrait.png",
+    "width": 2272,
+    "height": 3408,
+    "sha256": "e9e380d1821449272d2cf0ed561470602a6ed1edf7c8c80645eda4dd0ac36b8c",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-dictionary-scrolled.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "11e929aff5a8e9510f81e65aa515327b89534accbe1a63b4ec9e9a79db15a8c6",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-dictionary-suggestions.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "69c708c6f25ecea4cb851067aa05984b646ec545ceb5f41bcebe432eb7698ef5",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-dictionary.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "fb490efaceb210a9d6e75db06717de8a9932e94c4133f3f742b0c7209de887dc",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-eraser.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "584934694676d76087b3589a946da8df89d60a8e6470d79521b04e5ef8b4aebe",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-fit.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "f426ea36eed8002003c6976526e5201cd6fe5e0c1a311c112c72ecb15c2c4b65",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-guide-zoom.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "fa59e4245c2fdc8730d395c414d642339ea3dae3b5fadc4bbf1e0cab98efccd3",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-large-dictionary-keyboard.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "88f9630b7a47a6cbd2902a67a54e1f607d95570084048deb2bc314c70d76ebf2",
+    "systemDensityDpi": 420
+  },
+  {
+    "file": "release-017-large-dictionary-long.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "c040180b9e2d7663e044dfcb7714f0c26fe40f58df8bdd72c1aecb112702e872",
+    "systemDensityDpi": 420
+  },
+  {
+    "file": "release-017-large-pen.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "1792f7eb799bd28752b5fe4e18773ed4f88c58e226bffde14758b2a20ab9d027",
+    "systemDensityDpi": 420
+  },
+  {
+    "file": "release-017-page-menu.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "cb07a13c78f201de92bc12c1f99b3aed9ba8ed28bb452d1b14eb58a1233fc53d",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-pages.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "412531afc2ef9282f235cc5bf5a3f675651cf3c62065c51cbbf80f0238a00e43",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-pen-portrait.png",
+    "width": 2272,
+    "height": 3408,
+    "sha256": "4062b009cfbdcc18dae915f9c99fa39ebe3243845f1027394e459f76b7672799",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-pen-sidebar.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "68f2045c1f5d8941495ae2030853f84acc75d3e41fe29d4b7b5d230a5cd0e7e2",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-pen.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "8e056a34c58e4ef31ba42d2a0fdba1714450fb5cdc94be555ef71380422b1cc6",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-pencil.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "c1e464d79537e9c853d37144c9868b7e32a66ba8d8704d5a04d542b9bc945fc7",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-ruler.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "cae503b1c2464182a6c6f1d4c5d975b7b4bb57f1a7e304246355ec12747f5f3e",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-selection.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "3e70af8c59d4e292981270a8b69a03c9ae2f0733b434dbb5cfcb658997ef5691",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-settings.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "1d93487c83fd33b1c390c31079dec352df21db34d8dded914780f11098094913",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "release-017-zoom.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "4125bc17bfda0a734dcb6850eeef635eed4be687f5f35f884f7327b3bd22c537",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "size-pen-60-landscape.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "6ceb0a389886d530f520c64a4c78941deffd89e5c238689c6ee34d2d6c9d603d",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "size-pen-60-portrait.png",
+    "width": 2272,
+    "height": 3408,
+    "sha256": "14ad520dab388d3e832a712010d3fbe516f4204668e920b61e508689dcc7130d",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "size-pen-68-landscape.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "5a668b3ef7d2062a3a043aa4c5fff3ce081850f84e9a1356da6f1f503d277f1a",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "size-pen-68-portrait.png",
+    "width": 2272,
+    "height": 3408,
+    "sha256": "d1c78f0f79138583e14d96b13605b5a63709d3a4cde8cb2fa57e3cac4b4cdfec",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "size-pen-76-landscape.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "f5bbf43be776f69e329e28c816b6e831dca2273132f107768684d4a2783663e5",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "size-pen-76-portrait.png",
+    "width": 2272,
+    "height": 3408,
+    "sha256": "565d6e4daac458e511538e1d4de95ab261642928fd931b4d3c6dfa5085498157",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "size-settings-60-landscape.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "9960794e65b683ea026079ca00052fbcfd1aaae5372aac61520cbc2ff8e734a6",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "size-settings-60-portrait.png",
+    "width": 2272,
+    "height": 3408,
+    "sha256": "b90dd94028acb180352dec5d9285cb27a1061dfaa7cf5b1fef086896c3e9b9bf",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "size-settings-68-landscape.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "6229cfaedeb79114226d955f5d2c0ec0d06f207e8ebb30aa6e7cba94540502e2",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "size-settings-68-portrait.png",
+    "width": 2272,
+    "height": 3408,
+    "sha256": "170d34a5a5919950600595d543c2f1157f94554bdb139ced755ef5e4294d5fbb",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "size-settings-76-landscape.png",
+    "width": 3408,
+    "height": 2272,
+    "sha256": "321f4f394bf5605086715ef7dcc4281ff04cf8136864c0ad7a4d5b1c5de068da",
+    "systemDensityDpi": 240
+  },
+  {
+    "file": "size-settings-76-portrait.png",
+    "width": 2272,
+    "height": 3408,
+    "sha256": "64068006362e9a566825c596d032dbcd65cedad5244280db011b12b46e64c056",
+    "systemDensityDpi": 240
+  }
+]

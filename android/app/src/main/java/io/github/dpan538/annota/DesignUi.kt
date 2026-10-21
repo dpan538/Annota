@@ -147,13 +147,17 @@ class LucideIcon(context: Context, val iconName: String) : View(context) {
 }
 
 /** Native controls placed using the same units and layout rules as the approved HTML. */
-open class DesignScreen(
-    context: Context,
-    val theme: Int,
-    val buttonSize: Int,
-    val english: Boolean,
-) : FrameLayout(context) {
-    val palette = UiPalette(context, theme)
+open class DesignScreen(context: Context, var theme: Int, buttonSize: Int, val english: Boolean) :
+    FrameLayout(context) {
+    var buttonSize = UiSizing.normalize(buttonSize)
+        private set
+
+    val controlScale
+        get() = UiSizing.scale(buttonSize)
+
+    var palette = UiPalette(context, theme)
+        private set
+
     var unit = 1f
         protected set
 
@@ -212,11 +216,25 @@ open class DesignScreen(
             setOnClickListener { onClick() }
         }
 
-    fun configure(width: Int, height: Int) {
+    fun configure(width: Int, height: Int, controlScale: Float = 1f) {
         portrait = width < height
         designWidth = if (portrait) 682.6667f else 1024f
-        unit = width / designWidth
+        unit = width / designWidth * controlScale
         designHeight = height / unit
+    }
+
+    fun applyTheme(index: Int) {
+        if (theme == index) return
+        theme = index
+        palette = UiPalette(context, index)
+        render()
+    }
+
+    fun applyButtonSize(size: Int) {
+        val next = UiSizing.normalize(size)
+        if (buttonSize == next) return
+        buttonSize = next
+        render()
     }
 
     open fun render() {}
@@ -256,6 +274,7 @@ class LibraryScreen(
     private val covers = CoverRepository(context, pdf)
     private var searchText = query
     var searchVisible = false
+    private var mainScroll: ScrollView? = null
     private lateinit var main: FrameLayout
     private lateinit var body: FrameLayout
     private var sideWidth = 176f
@@ -270,6 +289,7 @@ class LibraryScreen(
     }
 
     override fun render() {
+        val oldScroll = mainScroll?.scrollY ?: 0
         removeAllViews()
         setBackgroundColor(palette.paper)
         sideWidth = if (portrait) 104f else 176f
@@ -379,6 +399,17 @@ class LibraryScreen(
                 isVerticalScrollBarEnabled = false
                 clipToPadding = false
             }
+        mainScroll = sc
+        if (oldScroll > 0)
+            sc.viewTreeObserver.addOnPreDrawListener(
+                object : ViewTreeObserver.OnPreDrawListener {
+                    override fun onPreDraw(): Boolean {
+                        sc.viewTreeObserver.removeOnPreDrawListener(this)
+                        sc.scrollTo(0, oldScroll)
+                        return true
+                    }
+                }
+            )
         box(this, sc, sideWidth, 0f, mainWidth, designHeight)
         main = FrameLayout(context)
         sc.addView(main, FrameLayout.LayoutParams(-1, -2))
@@ -420,7 +451,7 @@ class LibraryScreen(
             mainWidth - 235f,
             headingSize * 1.25f,
         )
-        val utility = max(60f, buttonSize - 8f)
+        val utility = 60f * controlScale
         val right = mainWidth - 48f + (utility - 26f) / 2
         listOf(
                 Triple("filter", "Funnel", tr("筛选", "Filter")),
@@ -430,7 +461,15 @@ class LibraryScreen(
             .filter { section != "settings" || it.first == "language" }
             .forEachIndexed { i, item ->
                 val b = action(item.third) { onAction(item.first) }
-                box(b, icon(item.second), (utility - 26f) / 2, (utility - 26f) / 2, 26f, 26f)
+                val glyph = 26f * controlScale
+                box(
+                    b,
+                    icon(item.second),
+                    (utility - glyph) / 2,
+                    (utility - glyph) / 2,
+                    glyph,
+                    glyph,
+                )
                 box(
                     heading,
                     b,
@@ -527,7 +566,8 @@ class LibraryScreen(
         val widths =
             if (portrait) listOf(available / 3, available / 3, available / 3)
             else listOf(available * 1.12f / 3.1f, available * 1.12f / 3.1f, available * .86f / 3.1f)
-        val height = if (portrait) 120f else 94f
+        val scale = controlScale
+        val height = (if (portrait) 120f else 94f) * scale
         val items =
             listOf(
                 arrayOf("new-note", "Plus", tr("新建笔记", "New note"), tr("空白手写本", "Blank notebook")),
@@ -564,13 +604,48 @@ class LibraryScreen(
                     if (i == 2) palette.color("rule") else null,
                 )
             if (portrait) {
-                box(b, icon(a[1], foreground), 15f, 15f, 26f, 26f)
-                box(b, label(a[2], 16f, foreground, 500), 15f, 65f, widths[i] - 30f, 24f)
-                box(b, label(a[3], 10f, foreground), 15f, 92f, widths[i] - 30f, 15f)
+                box(b, icon(a[1], foreground), 15f, 15f * scale, 26f * scale, 26f * scale)
+                box(
+                    b,
+                    label(a[2], 16f * scale, foreground, 500),
+                    15f,
+                    65f * scale,
+                    widths[i] - 30f,
+                    24f * scale,
+                )
+                box(
+                    b,
+                    label(a[3], 10f * scale, foreground),
+                    15f,
+                    92f * scale,
+                    widths[i] - 30f,
+                    15f * scale,
+                )
             } else {
-                box(b, icon(a[1], foreground), 18f, 34f, 26f, 26f)
-                box(b, label(a[2], 18f, foreground, 500), 58f, 24f, widths[i] - 76f, 27f)
-                box(b, label(a[3], 11f, foreground), 58f, 54f, widths[i] - 76f, 16.5f)
+                box(
+                    b,
+                    icon(a[1], foreground),
+                    18f,
+                    (height - 26f * scale) / 2,
+                    26f * scale,
+                    26f * scale,
+                )
+                box(
+                    b,
+                    label(a[2], 18f * scale, foreground, 500),
+                    58f,
+                    24f * scale,
+                    widths[i] - 76f,
+                    27f * scale,
+                )
+                box(
+                    b,
+                    label(a[3], 11f * scale, foreground),
+                    58f,
+                    54f * scale,
+                    widths[i] - 76f,
+                    16.5f * scale,
+                )
             }
             box(body, b, x, createY, widths[i], height)
             x += widths[i] + gap

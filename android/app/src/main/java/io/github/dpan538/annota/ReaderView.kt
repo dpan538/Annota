@@ -22,9 +22,11 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private val restored =
         runCatching { org.json.JSONObject(positionPrefs.getString(book.id, "")!!) }.getOrNull()
     var onToolChanged: () -> Unit = {}
+    var lastPenTool = "pen"
     var tool = "hand"
         set(value) {
             field = value
+            if (value in setOf("pen", "pencil", "fountain", "highlight")) lastPenTool = value
             onToolChanged()
             invalidate()
         }
@@ -69,12 +71,21 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
 
     private fun tr(zh: String, en: String) = if (english) en else zh
 
-    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
     private val memory = RenderMemory.from(context)
     private val cache =
-        object : LruCache<String, Bitmap>(memory.pages) {
+        object : LruCache<String, Bitmap>(memory.pages / 4) {
             override fun sizeOf(key: String, value: Bitmap) = value.allocationByteCount
         }
+    private val tiles =
+        object : LruCache<String, Bitmap>(memory.pages * 3 / 4) {
+            override fun sizeOf(key: String, value: Bitmap) = value.allocationByteCount
+        }
+
+    private data class Tile(val key: String, val area: Rect, val scale: Float)
+
+    @Volatile private var wantedTiles = emptySet<String>()
+    private var drawnTiles = 0
     private val imageCache =
         object : LruCache<String, Bitmap>(memory.images) {
             override fun sizeOf(key: String, value: Bitmap) = value.allocationByteCount
@@ -135,10 +146,10 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
 
     fun memoryStats() =
         MemoryStats(
-            cache.size(),
+            cache.size() + tiles.size(),
             imageCache.size(),
             words.size(),
-            cache.maxSize(),
+            cache.maxSize() + tiles.maxSize(),
             imageCache.maxSize(),
             words.maxSize(),
             executor.queue.size,
@@ -156,9 +167,12 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         selected = emptyList()
         selectionStart = null
         cache.evictAll()
+        tiles.evictAll()
+        wantedTiles = emptySet()
         imageCache.evictAll()
         words.evictAll()
-        cache.resize(max(1024 * 1024, memory.pages / 2))
+        cache.resize(max(512 * 1024, memory.pages / 8))
+        tiles.resize(max(1024 * 1024, memory.pages * 3 / 8))
         imageCache.resize(max(1024 * 1024, memory.images / 2))
         words.resize(max(512 * 1024, memory.words / 2))
         invalidate()
@@ -168,7 +182,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         if (closed) return
         suspended = false
         constrained = false
-        cache.resize(memory.pages)
+        cache.resize(memory.pages / 4)
+        tiles.resize(memory.pages * 3 / 4)
         imageCache.resize(memory.images)
         words.resize(memory.words)
         invalidate()
@@ -186,6 +201,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private var stroke: Mark? = null
     private var beforeErase: String? = null
     private var stylusSeen = false
+    private var awaitingPalmUp = false
     private var downX = 0f
     private var downY = 0f
     private var lastX = 0f
@@ -202,6 +218,18 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private var rulerX = 0f
     private var rulerY = 0f
     private var rulerAngle = 0f
+    private var rulerEdge: Float? = null
+    private val rulerHalfWidth
+        get() =
+            min(
+                width.toFloat(),
+                placements.firstOrNull { it.index == book.current }?.bounds?.width()
+                    ?: width.toFloat(),
+            ) * .43f
+
+    private val rulerHalfHeight
+        get() = 36 * scale
+
     private var draggingRuler = false
     private var angleStart = 0f
     private var rulerAngleStart = 0f
@@ -226,6 +254,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         executor.shutdownNow()
         epoch++
         cache.evictAll()
+        tiles.evictAll()
         imageCache.evictAll()
         words.evictAll()
         pending.clear()
@@ -392,7 +421,6 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             panY = -destination
             viewportChanged()
             persistPosition()
-            if (animated) UiMotion.enter(this, 0f)
         }
     }
 
@@ -544,6 +572,112 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         }
     }
 
+    private fun pageKey(p: Sheet) = "${book.source}:${p.id}:${p.style}:${p.paper}"
+
+    private fun tilePlan(p: Sheet, matrix: Matrix, inverse: Matrix, quality: Float): List<Tile> {
+        val visible = RectF(0f, 0f, width.toFloat(), height.toFloat())
+        inverse.mapRect(visible)
+        if (!visible.intersect(0f, 0f, p.w, p.h)) return emptyList()
+        // Quantize proportionally at any page size; the caller fits the exact visible tile
+        // allocation to the cache before queuing it. No circular eviction of visible tiles.
+        val raw = max(.000001f, matrix.mapRadius(1f) * quality)
+        val step = 2f.pow(floor(log2(raw)) - 3f)
+        val density = ceil(raw / step) * step
+        val pageWidth = ceil(p.w * density).toInt()
+        val pageHeight = ceil(p.h * density).toInt()
+        val edge = 512
+        val left = floor(visible.left * density / edge).toInt().coerceAtLeast(0)
+        val top = floor(visible.top * density / edge).toInt().coerceAtLeast(0)
+        val right = floor((visible.right * density - .01f) / edge).toInt()
+        val bottom = floor((visible.bottom * density - .01f) / edge).toInt()
+        return (top..bottom).flatMap { y ->
+            (left..right).map { x ->
+                // One-pixel bleed prevents antialiasing seams at tile borders.
+                val area =
+                    Rect(
+                        max(0, x * edge - 1),
+                        max(0, y * edge - 1),
+                        min(pageWidth, (x + 1) * edge + 1),
+                        min(pageHeight, (y + 1) * edge + 1),
+                    )
+                Tile("${pageKey(p)}:tile:$density:$x:$y", area, density)
+            }
+        }
+    }
+
+    private fun requestTile(p: Sheet, tile: Tile) {
+        if (closed || suspended || tiles.get(tile.key) != null || !pending.add(tile.key)) return
+        val generation = epoch
+        try {
+            executor.execute {
+                var bitmap: Bitmap? = null
+                try {
+                    if (tile.key in wantedTiles)
+                        bitmap = pdf.renderTile(book, p, tile.scale, tile.area)
+                    val result = bitmap
+                    post {
+                        if (generation == epoch) pending.remove(tile.key)
+                        if (result != null) {
+                            if (
+                                !closed &&
+                                    !suspended &&
+                                    generation == epoch &&
+                                    tile.key in wantedTiles
+                            )
+                                tiles.put(tile.key, result)
+                            else result.recycle()
+                        }
+                        if (!closed && generation == epoch) invalidate()
+                    }
+                } catch (t: Throwable) {
+                    post {
+                        if (generation == epoch) pending.remove(tile.key)
+                        if (!closed && generation == epoch) onError(t)
+                    }
+                }
+            }
+        } catch (_: RejectedExecutionException) {
+            pending.remove(tile.key)
+            postInvalidateDelayed(40)
+        }
+    }
+
+    data class DetailStats(
+        val tileCount: Int,
+        val tileBytes: Int,
+        val requested: Int,
+        val resident: Int,
+    )
+
+    fun detailStats(): DetailStats {
+        val keys = tiles.snapshot().keys
+        return DetailStats(
+            drawnTiles,
+            tiles.size(),
+            wantedTiles.size,
+            wantedTiles.count { it in keys },
+        )
+    }
+
+    fun selectionBounds(): RectF? {
+        val place =
+            placements.firstOrNull { book.pages[it.index].id == selectionPage } ?: return null
+        if (selected.isEmpty()) return null
+        val bounds = RectF(selected.first().box)
+        selected.drop(1).forEach { bounds.union(it.box) }
+        place.matrix.mapRect(bounds)
+        return bounds
+    }
+
+    fun lookupContext(): LookupContext? =
+        LookupContext.fromWords(words.get(selectionPage).orEmpty(), selected)
+
+    fun clearSelection() {
+        selected = emptyList()
+        selectionStart = null
+        invalidate()
+    }
+
     private fun requestWords(p: Sheet) {
         if (
             closed ||
@@ -600,50 +734,87 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         val lastRow = layout.rowAt((height - panY - layout.margin) / zoom)
         val frames = (firstRow..lastRow).flatMap { layout.rows[it].pages }
         val preload = layout.rows.getOrNull(lastRow + 1)?.pages.orEmpty()
-        val slots = max(2, frames.size + preload.size)
         fun bitmapWidth(index: Int): Int {
             val page = book.pages[index]
-            val target = if (constrained) 1000 else if (zoom > 1.4f) 2200 else 1600
-            return min(target, sqrt(cache.maxSize() / (4f * slots) * page.w / page.h).toInt())
+            return min(
+                    if (constrained) 512 else 768,
+                    sqrt(cache.maxSize() / 16f * page.w / page.h).toInt(),
+                )
                 .coerceAtLeast(100)
         }
+        val plans = mutableMapOf<Int, List<Tile>>()
+        drawnTiles = 0
+        val wanted = mutableSetOf<String>()
+        // Fit the actual grid (including edge tiles, bleed and both pages of a spread).
+        // Estimating from viewport pixels alone can overfill an LRU and leave blurry holes.
+        val tileBudget = (tiles.maxSize() * .88f).toLong()
+        var quality = 1f
+        while (true) {
+            plans.clear()
+            wanted.clear()
+            var bytes = 0L
+            for (frame in frames) {
+                val page = book.pages[frame.index]
+                val bounds = pageBounds(frame.index) ?: continue
+                if (page.source < 0) continue
+                val m = pageMatrix(page, bounds)
+                val inverse = Matrix().also { m.invert(it) }
+                val plan = tilePlan(page, m, inverse, quality)
+                plans[frame.index] = plan
+                wanted.addAll(plan.map { it.key })
+                bytes += plan.sumOf { it.area.width().toLong() * it.area.height() * 4 }
+            }
+            if (bytes <= tileBudget) break
+            quality *= min(.85f, sqrt(tileBudget.toFloat() / bytes) * .95f)
+        }
+        wantedTiles = wanted
         for (frame in frames) {
             val i = frame.index
             val p = book.pages[i]
             val bounds = pageBounds(i) ?: continue
             if (bounds.bottom < 0 || bounds.top > height) continue
-            val x = bounds.left
-            val y = bounds.top
-            val dw = bounds.width()
-            val dh = bounds.height()
-            val m = Matrix()
-            val points = floatArrayOf(0f, 0f, p.w, 0f, 0f, p.h)
-            val dest =
-                when (p.rotation) {
-                    90 -> floatArrayOf(x + dw, y, x + dw, y + dh, x, y)
-                    180 -> floatArrayOf(x + dw, y + dh, x, y + dh, x + dw, y)
-                    270 -> floatArrayOf(x, y + dh, x, y, x + dw, y + dh)
-                    else -> floatArrayOf(x, y, x + dw, y, x, y + dh)
-                }
-            m.setPolyToPoly(points, 0, dest, 0, 3)
+            val m = pageMatrix(p, bounds)
             val inv = Matrix()
             m.invert(inv)
             placements.add(Placement(i, m, inv, bounds))
             val bw = bitmapWidth(i)
-            val key = "${book.source}:${p.id}:${p.style}:${p.paper}:$bw"
+            val key = "${pageKey(p)}:$bw"
             val bitmap = cache.get(key)
-            request(p, bw)
+            if (p.source >= 0) request(p, bw)
             canvas.save()
             canvas.concat(m)
+            canvas.clipRect(0f, 0f, p.w, p.h)
             paint.color = Color.WHITE
             paint.alpha = 255
             canvas.drawRect(0f, 0f, p.w, p.h, paint)
-            if (bitmap != null) {
+            if (p.source < 0) {
+                PdfEngine.drawPaper(canvas, p)
+            } else if (bitmap != null) {
                 canvas.drawBitmap(bitmap, null, RectF(0f, 0f, p.w, p.h), paint)
             } else {
                 paint.color = 0xffa0a0a0.toInt()
                 paint.textSize = 15f
                 canvas.drawText(tr("正在渲染…", "Rendering…"), 30f, 40f, paint)
+            }
+            plans[i].orEmpty().forEach { tile ->
+                val detail = tiles.get(tile.key)
+                if (detail != null) {
+                    paint.color = Color.WHITE
+                    paint.alpha = 255
+                    canvas.drawBitmap(
+                        detail,
+                        null,
+                        RectF(
+                            tile.area.left / tile.scale,
+                            tile.area.top / tile.scale,
+                            tile.area.right / tile.scale,
+                            tile.area.bottom / tile.scale,
+                        ),
+                        paint,
+                    )
+                    drawnTiles++
+                }
+                requestTile(p, tile)
             }
             p.marks.forEach { drawMark(canvas, it) }
             if (active?.index == i) stroke?.let { drawMark(canvas, it) }
@@ -655,8 +826,28 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             canvas.restore()
             if (tool == "hand") requestWords(p)
         }
-        preload.forEach { request(book.pages[it.index], bitmapWidth(it.index)) }
+        preload.forEach {
+            if (book.pages[it.index].source >= 0)
+                request(book.pages[it.index], bitmapWidth(it.index))
+        }
         if (ruler) drawRuler(canvas)
+    }
+
+    private fun pageMatrix(p: Sheet, bounds: RectF): Matrix {
+        val x = bounds.left
+        val y = bounds.top
+        val dw = bounds.width()
+        val dh = bounds.height()
+        val dest =
+            when (p.rotation) {
+                90 -> floatArrayOf(x + dw, y, x + dw, y + dh, x, y)
+                180 -> floatArrayOf(x + dw, y + dh, x, y + dh, x + dw, y)
+                270 -> floatArrayOf(x, y + dh, x, y, x + dw, y + dh)
+                else -> floatArrayOf(x, y, x + dw, y, x, y + dh)
+            }
+        return Matrix().apply {
+            setPolyToPoly(floatArrayOf(0f, 0f, p.w, 0f, 0f, p.h), 0, dest, 0, 3)
+        }
     }
 
     private fun drawMark(c: Canvas, m: Mark) {
@@ -719,7 +910,9 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                     paint.style = Paint.Style.FILL
                     c.drawCircle(a.x, a.y, m.width / 2, paint)
                 } else
-                    m.points.zipWithNext().forEach { (p, q) ->
+                    for (i in 1 until m.points.size) {
+                        val p = m.points[i - 1]
+                        val q = m.points[i]
                         paint.strokeWidth = PdfEngine.strokeWidth(m, (p.p + q.p) / 2)
                         c.drawLine(p.x, p.y, q.x, q.y, paint)
                     }
@@ -758,22 +951,30 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         paint.color = 0xbbd9e2df.toInt()
         paint.style = Paint.Style.FILL
         c.drawRoundRect(
-            RectF(-160 * scale, -22 * scale, 160 * scale, 22 * scale),
+            RectF(-rulerHalfWidth, -rulerHalfHeight, rulerHalfWidth, rulerHalfHeight),
             5 * scale,
             5 * scale,
             paint,
         )
         paint.color = 0xff52675f.toInt()
         paint.strokeWidth = scale
-        for (i in -15..15) c.drawLine(
-            i * 10 * scale,
-            -22 * scale,
-            i * 10 * scale,
-            (-22 + if (i % 5 == 0) 14 else 7) * scale,
-            paint,
-        )
-        paint.textSize = 10 * scale
-        c.drawText(tr("拖动 · 双指旋转", "Drag · two-finger rotate"), -40 * scale, 14 * scale, paint)
+        val ticks = (rulerHalfWidth / (10 * scale)).toInt()
+        for (i in -ticks..ticks) {
+            c.drawLine(
+                i * 10 * scale,
+                -rulerHalfHeight,
+                i * 10 * scale,
+                -rulerHalfHeight + (if (i % 5 == 0) 18 else 9) * scale,
+                paint,
+            )
+            if (i % 5 == 0) {
+                paint.textSize = 11 * scale
+                c.drawText((i + ticks).toString(), i * 10 * scale - 4 * scale, -8 * scale, paint)
+            }
+        }
+        paint.textSize = 13 * scale
+        val caption = tr("拖动 · 双指旋转", "Drag · two-finger rotate")
+        c.drawText(caption, -paint.measureText(caption) / 2, 22 * scale, paint)
         c.restore()
     }
 
@@ -787,14 +988,11 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private fun point(place: Placement, x: Float, y: Float, pressure: Float): Point {
         var sx = x
         var sy = y
-        if (ruler && tool in setOf("pen", "pencil", "fountain", "highlight", "line")) {
+        rulerEdge?.let { edge ->
             val r = rulerLocal(x, y)
-            if (abs(r.x) < 170 * scale && abs(abs(r.y) - 22 * scale) < 24 * scale) {
-                val a = rulerAngle * PI.toFloat() / 180
-                val ry = if (r.y > 0) 22 * scale else -22 * scale
-                sx = rulerX + r.x * cos(a) - ry * sin(a)
-                sy = rulerY + r.x * sin(a) + ry * cos(a)
-            }
+            val a = rulerAngle * PI.toFloat() / 180
+            sx = rulerX + r.x * cos(a) - edge * sin(a)
+            sy = rulerY + r.x * sin(a) + edge * cos(a)
         }
         val pt = floatArrayOf(sx, sy)
         place.inverse.mapPoints(pt)
@@ -878,6 +1076,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
 
     private fun cancelStroke() {
         stroke = null
+        rulerEdge = null
         beforeErase?.let { state ->
             val a = org.json.JSONArray(state)
             book.pages.clear()
@@ -889,6 +1088,91 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     override fun onTouchEvent(e: MotionEvent): Boolean {
+        val index =
+            (0 until e.pointerCount).firstOrNull {
+                e.getToolType(it) == MotionEvent.TOOL_TYPE_STYLUS ||
+                    e.getToolType(it) == MotionEvent.TOOL_TYPE_ERASER
+            }
+        if (index == null && awaitingPalmUp) {
+            if (
+                e.actionMasked == MotionEvent.ACTION_UP ||
+                    e.actionMasked == MotionEvent.ACTION_CANCEL
+            )
+                awaitingPalmUp = false
+            return true
+        }
+        if (
+            index != null &&
+                (e.actionMasked == MotionEvent.ACTION_DOWN ||
+                    (e.actionMasked == MotionEvent.ACTION_POINTER_DOWN && e.actionIndex == index))
+        ) {
+            // Deliver pen samples immediately; finger scrolling keeps normal event batching.
+            requestUnbufferedDispatch(e)
+        }
+        if (index != null && e.pointerCount > 1) {
+            // A palm may be pointer zero or change index. Keep the pen ID and all history.
+            if (e.actionMasked == MotionEvent.ACTION_POINTER_UP && e.actionIndex != index)
+                return true
+            if (e.actionMasked == MotionEvent.ACTION_POINTER_UP && e.actionIndex == index)
+                awaitingPalmUp = true
+            val pen = penEvent(e, index)
+            try {
+                if (pen.actionMasked == MotionEvent.ACTION_DOWN) cancelStroke()
+                return handleTouchEvent(pen)
+            } finally {
+                pen.recycle()
+            }
+        }
+        return handleTouchEvent(e)
+    }
+
+    private fun penEvent(event: MotionEvent, index: Int): MotionEvent {
+        val properties =
+            arrayOf(MotionEvent.PointerProperties().also { event.getPointerProperties(index, it) })
+        val coords = arrayOf(MotionEvent.PointerCoords())
+        val history = event.historySize
+        if (history > 0) event.getHistoricalPointerCoords(index, 0, coords[0])
+        else event.getPointerCoords(index, coords[0])
+        val action =
+            when (event.actionMasked) {
+                MotionEvent.ACTION_POINTER_DOWN ->
+                    if (event.actionIndex == index) MotionEvent.ACTION_DOWN
+                    else MotionEvent.ACTION_MOVE
+                MotionEvent.ACTION_POINTER_UP ->
+                    if (event.actionIndex == index) MotionEvent.ACTION_UP
+                    else MotionEvent.ACTION_MOVE
+                else -> event.actionMasked
+            }
+        val result =
+            MotionEvent.obtain(
+                event.downTime,
+                if (history > 0) event.getHistoricalEventTime(0) else event.eventTime,
+                MotionEvent.ACTION_MOVE,
+                1,
+                properties,
+                coords,
+                event.metaState,
+                event.buttonState,
+                event.xPrecision,
+                event.yPrecision,
+                event.deviceId,
+                event.edgeFlags,
+                event.source,
+                event.flags,
+            )
+        for (h in 1 until history) {
+            event.getHistoricalPointerCoords(index, h, coords[0])
+            result.addBatch(event.getHistoricalEventTime(h), coords, event.metaState)
+        }
+        if (history > 0) {
+            event.getPointerCoords(index, coords[0])
+            result.addBatch(event.eventTime, coords, event.metaState)
+        }
+        result.action = action
+        return result
+    }
+
+    private fun handleTouchEvent(e: MotionEvent): Boolean {
         val stylus =
             e.getToolType(e.actionIndex) in
                 setOf(MotionEvent.TOOL_TYPE_STYLUS, MotionEvent.TOOL_TYPE_ERASER)
@@ -924,12 +1208,27 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 active = placements.firstOrNull { it.bounds.contains(e.x, e.y) }
                 active?.let { onActivePage(it.index) }
                 val r = rulerLocal(e.x, e.y)
-                draggingRuler = ruler && !stylus && abs(r.x) < 160 * scale && abs(r.y) < 24 * scale
+                draggingRuler =
+                    ruler && !stylus && abs(r.x) < rulerHalfWidth && abs(r.y) < rulerHalfHeight
+                rulerEdge =
+                    if (
+                        ruler &&
+                            tool in setOf("pen", "pencil", "fountain", "highlight", "line") &&
+                            abs(r.x) < rulerHalfWidth + 24 * scale &&
+                            abs(abs(r.y) - rulerHalfHeight) < 32 * scale
+                    )
+                        (if (r.y > 0) rulerHalfHeight else -rulerHalfHeight)
+                    else null
                 val draw = stylus || !stylusSeen
-                if (active != null && tool != "hand" && draw && !draggingRuler) {
+                val temporaryEraser =
+                    e.getToolType(0) == MotionEvent.TOOL_TYPE_ERASER ||
+                        (stylus && e.buttonState and MotionEvent.BUTTON_STYLUS_PRIMARY != 0)
+                if (
+                    active != null && (tool != "hand" || temporaryEraser) && draw && !draggingRuler
+                ) {
                     book.current = active!!.index
                     val p = point(active!!, e.x, e.y, e.pressure)
-                    if (tool == "eraser" || e.getToolType(0) == MotionEvent.TOOL_TYPE_ERASER) {
+                    if (tool == "eraser" || temporaryEraser) {
                         beforeErase = book.state()
                         erase(p)
                     } else
@@ -1060,6 +1359,21 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 velocity?.addMovement(e)
                 if (!cancelled) {
                     if (stroke != null && active != null) {
+                        // UP may contain a final sample not delivered by MOVE (especially fast
+                        // strokes).
+                        val p = point(active!!, e.x, e.y, e.pressure)
+                        stroke?.let { mark ->
+                            val last = mark.points.last()
+                            if (p.x != last.x || p.y != last.y) {
+                                if (
+                                    mark.tool in
+                                        setOf("rectangle", "ellipse", "triangle", "line", "arrow")
+                                ) {
+                                    if (mark.points.size == 1) mark.points.add(p)
+                                    else mark.points[1] = p
+                                } else mark.points.add(p)
+                            }
+                        }
                         book.pages[active!!.index].marks.add(stroke!!)
                         stroke = null
                         saveChange()
@@ -1137,6 +1451,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 persistPosition()
                 active = null
                 draggingRuler = false
+                rulerEdge = null
                 invalidate()
                 performClick()
                 return true

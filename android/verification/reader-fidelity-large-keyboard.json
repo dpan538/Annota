@@ -1,0 +1,15 @@
+{
+  "device": "API36 ARM64 dedicated emulator",
+  "screenPixels": [
+    3408,
+    2272
+  ],
+  "systemDensityDpi": 420,
+  "imeActuallyVisible": true,
+  "definitionVisible": true,
+  "definitionColumnsAndBaselinesAligned": true,
+  "expandedDefinitionViewportVerified": true,
+  "focusedRegressionsAndVisualTestsPassed": 1,
+  "apkSha256": "9117f4365f171739d960226fe7d9de1420da0456d0dd2220bd99f31900342b6c",
+  "physicalXiaomiEvidence": false
+}

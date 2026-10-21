@@ -7,3 +7,7 @@
 其他功能回归与界面截图仍保存在 [Android verification](../android/verification/README.md)。
 
 - [2026-10-21：连续阅读、动效与测试版更新](2026-10-21-continuous-update/README.md)：38 项回归、真实界面流程与原始录屏。
+
+- [2026-10-21：PDF 清晰度与阅读工具](2026-10-21-reader-fidelity/README.md)：高清分块、小菜单、笔橡皮切换、54 项回归、上下文简释与原生视觉纠偏。
+
+- [2026-10-21：三档按键与新版本交付](2026-10-21-ui-sizing-release/README.md)：真实尺寸、设置/画笔菜单稳定更新与 0.1.7 测试发布。

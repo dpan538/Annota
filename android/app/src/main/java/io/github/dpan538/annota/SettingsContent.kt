@@ -9,10 +9,10 @@ import kotlin.math.*
 
 class SettingsContent(
     val tab: String,
-    val haptics: Boolean,
-    val doubleTap: String,
-    val twoFinger: String,
-    val threeFinger: String,
+    var haptics: Boolean,
+    var doubleTap: String,
+    var twoFinger: String,
+    var threeFinger: String,
     val onEvent: (String) -> Unit,
 ) {
     fun render(ui: LibraryScreen, parent: FrameLayout, width: Float): Float =
@@ -250,7 +250,7 @@ class SettingsContent(
                     box(
                         parent,
                         label(
-                            tr("图标、文字和点击区域一起放大。", "Icons, text and touch targets scale together."),
+                            tr("即时调整书库、阅读工具和小菜单。", "Applies to the library, reader and menus."),
                             13f,
                             palette.color("muted"),
                         ),
@@ -262,8 +262,9 @@ class SettingsContent(
                     val sy = if (portrait) y + 76f else y
                     val sw = if (portrait) (width - 20f) / 3 else 86f
                     val sx = if (portrait) 0f else width - 278f
-                    intArrayOf(60, 68, 76).forEachIndexed { i, n ->
+                    UiSizing.choices.forEachIndexed { i, n ->
                         val b = action("$n") { onEvent("size:$n") }
+                        b.tag = "button-size:$n"
                         val selected = buttonSize == n
                         b.isSelected = selected
                         b.background =
@@ -278,7 +279,7 @@ class SettingsContent(
                             b,
                             label(n.toString(), 16f, tint, 500).apply { gravity = Gravity.CENTER },
                             0f,
-                            10f,
+                            (n - 44f) / 2,
                             sw,
                             24f,
                         )
@@ -295,13 +296,13 @@ class SettingsContent(
                                 )
                                 .apply { gravity = Gravity.CENTER },
                             0f,
-                            37f,
+                            (n - 44f) / 2 + 27f,
                             sw,
                             17f,
                         )
-                        box(parent, b, sx + i * (sw + 10f), sy, sw, size)
+                        box(parent, b, sx + i * (sw + 10f), sy + (76f - n) / 2, sw, n.toFloat())
                     }
-                    y = sy + size
+                    y = sy + 76f
                     fontCredit()
                 }
                 "stylus" -> {
