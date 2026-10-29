@@ -30,4 +30,6 @@
 
 结果：完整回归 23 项通过；追加的原生拖动、等比缩放与确认流程 1 项通过。Debug、测试包、Lint 和非调试 Release 构建成功；安装证书与公开 1.0.1 一致。包身份、测试及公开交付校验记录见 `android/verification/pdf-signature-1.0.2/release.json`。
 
+公开交付已验证：`v1.0.2` 为最新稳定 Release；APK、`SHA256SUMS.txt` 与 `annota-update.json` 均通过匿名下载和完整校验。公开 APK SHA-256 为 `c03189fd583a82075fa934fc1c0cd1cded26981a14704c3351825c3c554a53f7`，与通过验收的非调试构建一致。
+
 新增签名流程的自动化验收来自模拟器；目标平板与具体待签文件的兼容性仍需实际使用复核，不以模拟器结果代替真机笔感。

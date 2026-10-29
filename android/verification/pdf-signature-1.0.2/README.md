@@ -7,3 +7,4 @@
 - 两张 PNG 是原生 Android 界面的实际布局截图，测试线条是合成输入，不是真实用户签名或手写笔硬件验收。
 - 测试包仅新装在没有 Annota 数据的模拟器中；使用独立虚拟显示器，不展示或清理其他应用。
 - [GitHub Release](https://github.com/dpan538/Annota/releases/tag/v1.0.2) 分发签名包与更新清单。目标小米平板与实际待签文件仍需复核。
+- 已匿名完整下载 APK、SHA-256 文件和更新清单，均与上传原件一致；稳定版 `releases/latest` 已指向 `v1.0.2`。发布源提交为 `4bd3c663fe1df6d999264f5003930a003befc4f7`，完整回执见 `release.json`。
