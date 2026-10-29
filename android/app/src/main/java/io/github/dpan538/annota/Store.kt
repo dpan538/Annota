@@ -141,11 +141,12 @@ data class Book(
     var revision: Long = 0,
     var cursor: Long = 0,
     val pages: MutableList<Sheet>,
+    var pdfInfo: PdfInfo = PdfInfo(),
 ) {
     fun state() = JSONArray().also { a -> pages.forEach { a.put(it.json()) } }.toString()
 }
 
-class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", null, 1) {
+class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", null, 2) {
     val assetsDir = File(context.filesDir, "documents").apply { mkdirs() }
     private val statesDir = File(context.filesDir, "states").apply { mkdirs() }
 
@@ -182,7 +183,7 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
 
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(
-            "CREATE TABLE books(id TEXT PRIMARY KEY,title TEXT NOT NULL,source TEXT NOT NULL,folder TEXT NOT NULL,favorite INTEGER NOT NULL,trash INTEGER NOT NULL,opened INTEGER NOT NULL,current INTEGER NOT NULL,revision INTEGER NOT NULL,cursor INTEGER NOT NULL,state TEXT NOT NULL)"
+            "CREATE TABLE books(id TEXT PRIMARY KEY,title TEXT NOT NULL,source TEXT NOT NULL,folder TEXT NOT NULL,favorite INTEGER NOT NULL,trash INTEGER NOT NULL,opened INTEGER NOT NULL,current INTEGER NOT NULL,revision INTEGER NOT NULL,cursor INTEGER NOT NULL,state TEXT NOT NULL,pdfInfo TEXT NOT NULL DEFAULT '{}')"
         )
         db.execSQL("CREATE TABLE folders(id TEXT PRIMARY KEY,title TEXT NOT NULL)")
         db.execSQL(
@@ -192,7 +193,7 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
     }
 
     override fun onUpgrade(db: SQLiteDatabase, old: Int, new: Int) {
-        error("Unsupported database migration $old → $new")
+        if (old < 2) db.execSQL("ALTER TABLE books ADD COLUMN pdfInfo TEXT NOT NULL DEFAULT '{}'")
     }
 
     private fun values(b: Book) =
@@ -208,6 +209,7 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
             put("revision", b.revision)
             put("cursor", b.cursor)
             put("state", writeState(b.state()))
+            put("pdfInfo", b.pdfInfo.json().toString())
         }
 
     private fun decode(c: android.database.Cursor, preview: Boolean = false): Book {
@@ -235,6 +237,7 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
             n("revision"),
             n("cursor"),
             sheets,
+            PdfInfo.from(JSONObject(s("pdfInfo"))),
         )
     }
 
@@ -482,6 +485,7 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
                 System.currentTimeMillis(),
                 b.current,
                 pages = pages,
+                pdfInfo = b.pdfInfo,
             )
         insert(copy)
         val saved = bookmarks(b)
@@ -675,6 +679,7 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
                                     .put("id", b.id)
                                     .put("title", b.title)
                                     .put("source", b.source)
+                                    .put("pdfInfo", b.pdfInfo.json())
                                     .put("folder", b.folder)
                                     .put("favorite", b.favorite)
                                     .put("trash", b.trash)
@@ -695,7 +700,10 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
                     },
                 )
         val names =
-            bs.flatMap { b -> listOf(b.source) + b.pages.flatMap { p -> p.marks.map { it.image } } }
+            bs.flatMap { b ->
+                    listOf(b.source, b.pdfInfo.viewingSource) +
+                        b.pages.flatMap { p -> p.marks.map { it.image } }
+                }
                 .filter { it.isNotBlank() }
                 .toSet()
         manifest.put(
@@ -811,6 +819,14 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
                             j.optLong("opened"),
                             j.optInt("current").coerceIn(0, pages.lastIndex),
                             pages = pages,
+                            pdfInfo =
+                                PdfInfo.from(j.optJSONObject("pdfInfo")).let { info ->
+                                    info.copy(
+                                        viewingSource =
+                                            if (info.viewingSource.isBlank()) ""
+                                            else remap[info.viewingSource] ?: error("缺少 PDF 阅读副本")
+                                    )
+                                },
                         )
                     val bookmarked = j.optJSONArray("bookmarks") ?: JSONArray()
                     val oldIds =

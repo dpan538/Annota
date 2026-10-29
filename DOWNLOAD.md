@@ -1,25 +1,26 @@
 # 下载 Annota
 
-当前版本：**1.0.1 正式版**。同一个 APK 支持中文和英文，在首页右上角切换。
+当前版本：**1.0.2 正式版**。同一个 APK 支持中文和英文，在首页右上角切换。
 
 ## 下载安装包
 
-[**点击下载 Annota APK ↗**](https://github.com/dpan538/Annota/releases/download/v1.0.1/Annota-1.0.1.apk)
+[**点击下载 Annota APK ↗**](https://github.com/dpan538/Annota/releases/download/v1.0.2/Annota-1.0.2.apk)
 
 在平板上直接点击上面的链接，或复制下面的链接到浏览器打开：
 
 ```text
-https://github.com/dpan538/Annota/releases/download/v1.0.1/Annota-1.0.1.apk
+https://github.com/dpan538/Annota/releases/download/v1.0.2/Annota-1.0.2.apk
 ```
 
 下载完成后打开 APK，按 Android 提示允许浏览器或文件管理器安装应用，再完成安装。安装本身不需要注册账号。
 
-[版本说明](https://github.com/dpan538/Annota/releases/tag/v1.0.1) · [SHA-256 校验文件](https://github.com/dpan538/Annota/releases/download/v1.0.1/SHA256SUMS.txt)
+[版本说明](https://github.com/dpan538/Annota/releases/tag/v1.0.2) · [SHA-256 校验文件](https://github.com/dpan538/Annota/releases/download/v1.0.2/SHA256SUMS.txt)
 
-1.0.0 为首个正式版；1.0.1 是阅读颜色修正补丁。
+1.0.0 为首个正式版；1.0.1 修正阅读颜色；1.0.2 增加手写签名并改善已签名 / 受限 PDF 的兼容性。
 
 ## 关于这个版本
 
+- 「更多 → 手写签名」支持录入、移动、等比缩放、确认、撤销与 PDF 导出。受限 PDF 可只读打开，原件保留；修改已签名 PDF 后另存副本会提示数字签名不保留。
 - 非调试 release 构建，沿用原有证书；已有开发版可以直接覆盖安装，无需卸载或迁移。
 - 支持高清 PDF、手写批注、只读阅读、离线查词、文内搜索、目录、书签、跳页与按页批注预览。阅读顶栏中央留空，选区仅“复制 / 查词”。
 - 从其他应用“打开 / 分享”PDF 到 Annota，加入可调整大小的“继续阅读”安卓小组件。

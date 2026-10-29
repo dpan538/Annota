@@ -4,13 +4,13 @@
 
 为 Android 平板设计，围绕小米平板 9 Pro Max 优化。PDF、笔迹、阅读位置和设置保存在设备上；阅读、书写和英汉 / 汉英查词均可离线使用，无需账号。
 
-[![Release](https://img.shields.io/badge/release-1.0.1_正式版-4460CE)](https://github.com/dpan538/Annota/releases/tag/v1.0.1)
+[![Release](https://img.shields.io/badge/release-1.0.2_正式版-4460CE)](https://github.com/dpan538/Annota/releases/tag/v1.0.2)
 ![Android](https://img.shields.io/badge/Android-10%2B-4460CE)
 [![License](https://img.shields.io/badge/code-MIT-4460CE)](LICENSE)
 
-[**下载 Android APK**](https://github.com/dpan538/Annota/releases/download/v1.0.1/Annota-1.0.1.apk) · [版本说明](https://github.com/dpan538/Annota/releases/tag/v1.0.1) · [下载与安装](DOWNLOAD.md) · [English](#english)
+[**下载 Android APK**](https://github.com/dpan538/Annota/releases/download/v1.0.2/Annota-1.0.2.apk) · [版本说明](https://github.com/dpan538/Annota/releases/tag/v1.0.2) · [下载与安装](DOWNLOAD.md) · [English](#english)
 
-1.0.0 是 Annota 的首个正式版。当前 1.0.1 修正阅读页面偏黄：新文档默认原始白底，“柔和”改为中性浅灰。正式包沿用已有签名，可直接覆盖升级，保留本地文档与批注。
+当前 **1.0.2 正式版** 增加「更多 → 手写签名」，支持移动、等比缩放、撤销与 PDF 导出；修复权限检查导致的部分已签名及受限 PDF 导入失败。正式包沿用已有证书，可覆盖升级并保留文档与批注。1.0.0 是首个正式版，1.0.1 修正阅读偏黄。详见 [签名验收说明](docs/PDF-SIGNATURE-ACCEPTANCE.md)。
 
 ## 从书库到阅读
 
@@ -61,6 +61,7 @@
 | --- | --- |
 | PDF 阅读 | 原始 PDF 高清分块渲染、连续滚动、惯性滑动、双指缩放、单页 / 相邻双页、阅读位置恢复 |
 | 手写批注 | 笔、铅笔、钢笔、荧光笔；压感与历史采样、整笔 / 局部橡皮、直尺辅助、图形与图片、撤销 / 重做 |
+| 手写签名 | 独立签名画布、移动与等比缩放、单步撤销；签名随 PDF 导出，受限文件只读打开 |
 | 离线查词 | 随包英汉 / 汉英 SQLite 词库，支持词形、拼写候选、局部语境简释；选区手柄可扩展同页跨行文字 |
 | 文档整理 | 文件夹、搜索、收藏、重命名、复制、移动与废纸篓；真实首页封面、PDF 目录、页书签、批注预览 |
 | 新建与导出 | 空白、点阵、格子、横线纸；白 / 灰 / 黑底色；导出 PDF、本地 `.annota.zip` 备份与合并恢复 |
@@ -74,6 +75,8 @@
 1. **打开文档**：在书库导入 PDF，或先打开示例论文。其他应用提供“用其他应用打开 / 分享”时，也可选择 Annota；实际入口取决于发送方提供的文件权限。
 2. **阅读与记录**：阅读模式专注浏览；点击笔图标进入批注，手形工具用于批注时拖动页面。工具切换后保留原有阅读位置。
 3. **查找与保存**：长按选词查词；通过侧栏或“更多”搜索、跳页和添加书签。本地内容自动保存，需要带走文档时导出 PDF 或备份。
+
+需要签字时，在「更多 → 手写签名」录入，放到页面上调整位置与大小后确认。已带数字签名的文件若另存批注副本，应用会提示原数字签名的验证效力不随副本保留；原件不改写。
 
 阅读显示只保留“原始 / 柔和 / 清晰”三个预设，位于“更多 → 阅读显示”，按文档记住选择。新文档默认原始白底；柔和只做中性的明暗调整，清晰略微增强对比。显示预设不修改源 PDF、笔迹或导出颜色。
 
@@ -142,8 +145,9 @@ python3 -m unittest discover -s feedback-service -p test_github_relay.py -v
 
 - High-resolution original PDF rendering, continuous scrolling, zoom and single / adjacent-page layouts.
 - Pen tools, pressure input, erasing, ruler, shapes, images and undo / redo.
+- Handwritten signatures with positioning, proportional resizing and PDF export; signed/restricted PDF compatibility with original-file preservation.
 - Context-aware offline lookup, document search, PDF outline, bookmarks and annotation previews.
 - PDF open / share intents, local backup / restore and a resizable continue-reading home widget.
 - GitHub updates with verified in-place installation; automatic feedback acknowledgement after a real GitHub Issue is created.
 
-[Download the stable APK](https://github.com/dpan538/Annota/releases/download/v1.0.1/Annota-1.0.1.apk). Version 1.0.0 was the first stable release; 1.0.1 removes the warm color cast and defaults new documents to original white. All screenshots above use the same blue theme and the bundled original *Attention Is All You Need* PDF. Code is MIT; original artwork and guide are CC BY-NC 4.0.
+[Download the stable APK](https://github.com/dpan538/Annota/releases/download/v1.0.2/Annota-1.0.2.apk). Version 1.0.2 adds handwritten signatures and fixes permission-based PDF import failures. Version 1.0.0 was the first stable release; 1.0.1 removed the warm color cast. All screenshots above use the same blue theme and the bundled original *Attention Is All You Need* PDF. Code is MIT; original artwork and guide are CC BY-NC 4.0.

@@ -1,0 +1,6 @@
+
+io.github.dpan538.annota.PdfSignatureTest:.
+
+Time: 6.335
+
+OK (1 test)

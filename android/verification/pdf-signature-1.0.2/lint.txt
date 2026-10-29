@@ -1,0 +1,440 @@
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/GitHubFeedback.kt:22: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+            prefs.edit().putString("feedbackBody", body).putString("feedbackId", uid()).commit()
+                                                                                        ~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/GitHubFeedback.kt:28: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+        prefs.edit().putString("feedbackPending", draft.id).commit()
+                                                            ~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/GitHubFeedback.kt:45: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+        edit.commit()
+             ~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2615: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+                        .commit()
+                         ~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2641: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+        prefs.edit().remove("pendingUpdate").remove("awaitInstallPermission").commit()
+                                                                              ~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2710: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+                prefs.edit().putBoolean("awaitInstallPermission", true).commit()
+                                                                        ~~~~~~~~
+
+   Explanation for issues of type "ApplySharedPref":
+   Consider using apply() instead of commit on shared preferences. Whereas
+   commit blocks and writes its data to persistent storage immediately, apply
+   will handle it in the background.
+
+/Users/jarlgiovanni/Desktop/O3/Annota/android/.tooling/gradle-home/caches/modules-2/files-2.1/org.bouncycastle/bcpkix-jdk15to18/1.86/39bc0c0d7d42684c2532f0bf503b344cc091e5d3/bcpkix-jdk15to18-1.86.jar: Warning: checkServerTrusted is empty, which could cause insecure network traffic due to trusting arbitrary TLS/SSL certificates presented by peers [TrustAllX509TrustManager]
+
+   Explanation for issues of type "TrustAllX509TrustManager":
+   This check looks for X509TrustManager implementations whose
+   checkServerTrusted or checkClientTrusted methods do nothing (thus trusting
+   any certificate chain) which could result in insecure network traffic
+   caused by trusting arbitrary TLS/SSL certificates presented by peers.
+
+   https://goo.gle/TrustAllX509TrustManager
+
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/DocumentCover.kt:188: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+        canvas.drawBitmap(cover.bitmap, source, RectF(x, y, x + drawW, y + drawH), paint)
+                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/PaperMenu.kt:286: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+        val box = RectF(1f, 1f, width - 1f, height - 1f)
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderPopover.kt:306: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+                    Path().apply {
+                    ~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderPopover.kt:334: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+                    Path().apply {
+                    ~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderPopover.kt:344: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+                    Path().apply {
+                    ~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderPopover.kt:359: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+                    Path().apply {
+                    ~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:1030: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+                val inverse = Matrix().also { m.invert(it) }
+                              ~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:1046: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+            val inv = Matrix()
+                      ~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:1048: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+            placements.add(Placement(i, m, inv, bounds))
+                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:1071: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+                canvas.drawBitmap(bitmap, null, RectF(0f, 0f, p.w, p.h), documentPaint)
+                                                ~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:1085: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+                        RectF(
+                        ^
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/SettingsContent.kt:450: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+        c.drawRoundRect(RectF(0f, 0f, 52f, 30f), 15f, 15f, paint)
+                        ~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/SettingsContent.kt:468: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+            c.drawRoundRect(RectF(x, y, x + ww, y + hh), 2 * u, 2 * u, p)
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ToolButton.kt:98: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+                RectF((width - s) / 2, (height - s) / 2, (width + s) / 2, (height + s) / 2),
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ToolButton.kt:116: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+                RectF(
+                ^
+
+   Explanation for issues of type "DrawAllocation":
+   You should avoid allocating objects during a drawing or layout operation.
+   These are called frequently, so a smooth UI can be interrupted by garbage
+   collection pauses caused by the object allocations.
+
+   The way this is generally handled is to allocate the needed objects up
+   front and to reuse them for each drawing operation.
+
+   Some methods allocate memory on your behalf (such as Bitmap.create), and
+   these should be handled in the same way.
+
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/res/drawable-v26: Warning: This folder configuration (v26) is unnecessary; minSdkVersion is 29. Merge all the resources in this folder into drawable. [ObsoleteSdkInt]
+
+   Explanation for issues of type "ObsoleteSdkInt":
+   This check flags version checks that are not necessary, because the
+   minSdkVersion (or surrounding known API level) is already at least as high
+   as the version checked for.
+
+   Similarly, it also looks for resources in -vNN folders, such as values-v14
+   where the version qualifier is less than or equal to the minSdkVersion,
+   where the contents should be merged into the best folder.
+
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/Network.kt:223: Warning: Consider also using StorageManager#getAllocatableBytes and allocateBytes which will consider clearable cached data [UsableSpace]
+                        require(dir.usableSpace > 16L * 1024 * 1024) { "本地空间不足" }
+                                    ~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/Store.kt:550: Warning: Consider also using StorageManager#getAllocatableBytes and allocateBytes which will consider clearable cached data [UsableSpace]
+            if (assetsDir.usableSpace < 16L * 1024 * 1024) throw IOException("本地空间不足，至少保留 16 MiB")
+                          ~~~~~~~~~~~
+
+   Explanation for issues of type "UsableSpace":
+   When you need to allocate disk space for large files, consider using the
+   new allocateBytes(FileDescriptor, long) API, which will automatically clear
+   cached files belonging to other apps (as needed) to meet your request.
+
+   When deciding if the device has enough disk space to hold your new data,
+   call getAllocatableBytes(UUID) instead of using getUsableSpace(), since the
+   former will consider any cached data that the system is willing to clear on
+   your behalf.
+
+   Note that these methods require API level 26. If your app is running on
+   older devices, you will probably need to use both APIs, conditionally
+   switching on Build.VERSION.SDK_INT. Lint only looks in the same compilation
+   unit to see if you are already using both APIs, so if it warns even though
+   you are already using the new API, consider moving the calls to the same
+   file or suppressing the warning.
+
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/AnnotationPreview.kt:9: Warning: Custom view AnnotationPreview is missing constructor used by tools: (Context) or (Context,AttributeSet) or (Context,AttributeSet,int) [ViewConstructor]
+class AnnotationPreview(context: Context, private val page: Sheet) : View(context) {
+      ~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt:58: Warning: Custom view LucideIcon is missing constructor used by tools: (Context) or (Context,AttributeSet) or (Context,AttributeSet,int) [ViewConstructor]
+class LucideIcon(context: Context, val iconName: String) : View(context) {
+      ~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt:150: Warning: Custom view DesignScreen is missing constructor used by tools: (Context) or (Context,AttributeSet) or (Context,AttributeSet,int) [ViewConstructor]
+open class DesignScreen(context: Context, var theme: Int, buttonSize: Int, val english: Boolean) :
+           ~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt:254: Warning: Custom view LibraryScreen is missing constructor used by tools: (Context) or (Context,AttributeSet) or (Context,AttributeSet,int) [ViewConstructor]
+class LibraryScreen(
+      ~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/DocumentCover.kt:146: Warning: Custom view DocumentCoverView is missing constructor used by tools: (Context) or (Context,AttributeSet) or (Context,AttributeSet,int) [ViewConstructor]
+class DocumentCoverView(
+      ~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/PaperMenu.kt:277: Warning: Custom view PaperSample is missing constructor used by tools: (Context) or (Context,AttributeSet) or (Context,AttributeSet,int) [ViewConstructor]
+private class PaperSample(
+              ~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderPopover.kt:256: Warning: Custom view ReaderGlyph is missing constructor used by tools: (Context) or (Context,AttributeSet) or (Context,AttributeSet,int) [ViewConstructor]
+class ReaderGlyph(context: android.content.Context, private val name: String) : View(context) {
+      ~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:18: Warning: Custom view ReaderView is missing constructor used by tools: (Context) or (Context,AttributeSet) or (Context,AttributeSet,int) [ViewConstructor]
+class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var book: Book) :
+      ~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/SettingsContent.kt:437: Warning: Custom view SwitchDrawing is missing constructor used by tools: (Context) or (Context,AttributeSet) or (Context,AttributeSet,int) [ViewConstructor]
+private class SwitchDrawing(
+              ~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/SettingsContent.kt:457: Warning: Custom view ThemePreview is missing constructor used by tools: (Context) or (Context,AttributeSet) or (Context,AttributeSet,int) [ViewConstructor]
+private class ThemePreview(context: Context, index: Int) : View(context) {
+              ~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/SignaturePad.kt:13: Warning: Custom view SignaturePad is missing constructor used by tools: (Context) or (Context,AttributeSet) or (Context,AttributeSet,int) [ViewConstructor]
+class SignaturePad(context: Context, private val unit: Float = 1f) : View(context) {
+      ~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ToolButton.kt:8: Warning: Custom view ToolButton is missing constructor used by tools: (Context) or (Context,AttributeSet) or (Context,AttributeSet,int) [ViewConstructor]
+class ToolButton(context: Context, val name: String) : View(context) {
+      ~~~~~~~~~~
+
+   Explanation for issues of type "ViewConstructor":
+   Some layout tools (such as the Android layout editor) need to find a
+   constructor with one of the following signatures:
+   * View(Context context)
+   * View(Context context, AttributeSet attrs)
+   * View(Context context, AttributeSet attrs, int defStyle)
+
+   If your custom view needs to perform initialization which does not apply
+   when used in a layout editor, you can surround the given code with a check
+   to see if View#isInEditMode() is false, since that method will return false
+   at runtime but true within a user interface editor.
+
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/AnnotationPreview.kt:28: Warning: Use the KTX extension function Canvas.withTranslation instead? [UseKtx]
+        canvas.save()
+        ~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ContinueReadingWidget.kt:33: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
+            context
+            ^
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ContinueReadingWidget.kt:61: Warning: Use the KTX extension function String.toUri instead? [UseKtx]
+                data = Uri.parse("annota://continue-reading")
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ContinueReadingWidget.kt:61: Warning: Use the KTX extension function String.toUri instead? [UseKtx]
+                data = Uri.parse("annota://continue-reading")
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt:25: Warning: Use the KTX extension function String.toColorInt instead? [UseKtx]
+    fun color(role: String): Int = Color.parseColor(json.getString(role))
+                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt:135: Warning: Use the KTX extension function Canvas.withTranslation instead? [UseKtx]
+        canvas.save()
+        ~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/DocumentCover.kt:186: Warning: Use the KTX extension function Canvas.withClip instead? [UseKtx]
+        canvas.save()
+        ~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/GitHubFeedback.kt:16: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
+                ?: uid().also { prefs.edit().putString("feedbackId", it).commit() },
+                                ~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/GitHubFeedback.kt:22: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
+            prefs.edit().putString("feedbackBody", body).putString("feedbackId", uid()).commit()
+            ~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/GitHubFeedback.kt:28: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
+        prefs.edit().putString("feedbackPending", draft.id).commit()
+        ~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/GitHubFeedback.kt:41: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
+        val edit = prefs.edit().putString("feedbackReceipt", url)
+                   ~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:613: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
+                            prefs.edit().putBoolean("english", !english).apply()
+                            ~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:997: Warning: Use the KTX extension property View.isVisible instead? [UseKtx]
+            } else bar.visibility = if (bar.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:997: Warning: Use the KTX extension property View.isVisible instead? [UseKtx]
+            } else bar.visibility = if (bar.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2048: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
+                    prefs.edit().putString(key, value).apply()
+                    ~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2077: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
+                        prefs
+                        ^
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2115: Warning: Use the KTX extension function String.toUri instead? [UseKtx]
+                                Uri.parse("https://github.com/dpan538/Annota"),
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2175: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
+                            prefs.edit().putBoolean("english", !english).apply()
+                            ~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2602: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
+                    prefs
+                    ^
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2641: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
+        prefs.edit().remove("pendingUpdate").remove("awaitInstallPermission").commit()
+        ~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2710: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
+                prefs.edit().putBoolean("awaitInstallPermission", true).commit()
+                ~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2714: Warning: Use the KTX extension function String.toUri instead? [UseKtx]
+                        Uri.parse("package:$packageName"),
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:2745: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
+            prefs.edit().putBoolean("awaitInstallPermission", false).apply()
+            ~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/PaperMenu.kt:180: Warning: Use the KTX extension function Int.toDrawable instead? [UseKtx]
+        popup.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/PdfEngine.kt:99: Warning: Use the KTX function createBitmap instead? [UseKtx]
+            Bitmap.createBitmap(
+            ^
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/PdfEngine.kt:126: Warning: Use the KTX function createBitmap instead? [UseKtx]
+        val result = Bitmap.createBitmap(area.width(), area.height(), Bitmap.Config.ARGB_8888)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderPopover.kt:47: Warning: Use the KTX extension function Int.toDrawable instead? [UseKtx]
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderPopover.kt:296: Warning: Use the KTX extension function Canvas.withScale instead? [UseKtx]
+        c.save()
+        ~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:489: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
+        displayPrefs.edit().putString(book.id, value.toString()).apply()
+        ~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:496: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
+        positionPrefs
+        ^
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:1053: Warning: Use the KTX extension function Canvas.withMatrix instead? [UseKtx]
+            canvas.save()
+            ~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:1257: Warning: Use the KTX extension function Canvas.withTranslation instead? [UseKtx]
+        c.save()
+        ~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/SettingsContent.kt:447: Warning: Use the KTX extension function Canvas.withScale instead? [UseKtx]
+        c.save()
+        ~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/SignaturePad.kt:154: Warning: Use the KTX function createBitmap instead? [UseKtx]
+            Bitmap.createBitmap(
+            ^
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/SignaturePad.kt:248: Warning: Use the KTX extension function Int.toDrawable instead? [UseKtx]
+    dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ToolButton.kt:109: Warning: Use the KTX extension function Canvas.withTranslation instead? [UseKtx]
+        canvas.save()
+        ~~~~~~~~~~~~~
+
+   Explanation for issues of type "UseKtx":
+   The Android KTX libraries decorates the Android platform SDK as well as
+   various libraries with more convenient extension functions available from
+   Kotlin, allowing you to use default parameters, named parameters, and
+   more.
+
+   Available options:
+
+   **remove-defaults** (default is true):
+   Whether to skip arguments that match the defaults provided by the extension.
+
+   Extensions often provide default values for some of the parameters. For example:
+   ```kotlin
+   fun Path.readLines(charset: Charset = Charsets.UTF_8): List<String> { return Files.readAllLines(this, charset) }
+   ```
+   This lint check will by default automatically omit parameters that match the default, so if your code was calling
+
+   ```kotlin
+   Files.readAllLines(file, Charset.UTF_8)
+   ```
+   lint would replace this with
+   ```kotlin
+   file.readLines()
+   ```
+   rather than
+
+   ```kotlin
+   file.readLines(Charset.UTF_8
+   ```
+   You can turn this behavior off using this option.
+
+   To configure this option, use a `lint.xml` file with an <option> like this:
+
+   ```xml
+   <lint>
+       <issue id="UseKtx">
+           <option name="remove-defaults" value="true" />
+       </issue>
+   </lint>
+   ```
+
+   **require-present** (default is true):
+   Whether to only offer extensions already available.
+
+   This option lets you only have lint suggest extension replacements if those extensions are already available on the class path (in other words, you're already depending on the library containing the extension method.)
+
+   To configure this option, use a `lint.xml` file with an <option> like this:
+
+   ```xml
+   <lint>
+       <issue id="UseKtx">
+           <option name="require-present" value="true" />
+       </issue>
+   </lint>
+   ```
+
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt:1399: Warning: ReaderView#onTouchEvent should call ReaderView#performClick when a click is detected [ClickableViewAccessibility]
+    override fun onTouchEvent(e: MotionEvent): Boolean {
+                 ~~~~~~~~~~~~
+
+   Explanation for issues of type "ClickableViewAccessibility":
+   If a View that overrides onTouchEvent or uses an OnTouchListener does not
+   also implement performClick and call it when clicks are detected, the View
+   may not handle accessibility actions properly. Logic handling the click
+   actions should ideally be placed in View#performClick as some accessibility
+   services invoke performClick when a click action should occur.
+
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/DictionaryPanel.kt:315: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                caption.text = title + if (expanded) "" else " · ${entry.alternatives.size}"
+                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt:1182: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                    text = "Aa"
+                            ~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderNavigator.kt:348: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+        currentLabel.text = "${book.current+1} / ${book.pages.size}  ›"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderNavigator.kt:348: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+        currentLabel.text = "${book.current+1} / ${book.pages.size}  ›"
+                               ~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderNavigator.kt:367: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                setText((book.current + 1).toString())
+                         ~~~~~~~~~~~~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderNavigator.kt:367: Warning: Number formatting does not take into account locale settings. Consider using String.format instead. [SetTextI18n]
+                setText((book.current + 1).toString())
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "SetTextI18n":
+   When calling TextView#setText
+   * Never call Number#toString() to format numbers; it will not handle
+   fraction separators and locale-specific digits properly. Consider using
+   String#format with proper format specifications (%d or %f) instead.
+   * Do not pass a string literal (e.g. "Hello") to display text. Hardcoded
+   text can not be properly translated to other languages. Consider using
+   Android resource strings instead.
+   * Do not build messages by concatenating text chunks. Such messages can not
+   be properly translated.
+
+   https://developer.android.com/guide/topics/resources/localization.html
+
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/res/layout/continue_reading_widget.xml:7: Warning: Hardcoded string "Annota", should use @string resource [HardcodedText]
+        android:text="Annota" android:textSize="16sp" android:textStyle="bold" android:textColor="@color/widget_ink"
+        ~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "HardcodedText":
+   Hardcoding text attributes directly in layout files is bad for several
+   reasons:
+
+   * When creating configuration variations (for example for landscape or
+   portrait) you have to repeat the actual text (and keep it up to date when
+   making changes)
+
+   * The application cannot be translated to other languages by just adding
+   new translations for existing string resources.
+
+   There are quickfixes to automatically extract this hardcoded string into a
+   resource lookup.
+
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt:711: Warning: Use "Gravity.END" instead of "Gravity.RIGHT" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+                        gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL
+                                          ~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt:711: Warning: Use "Gravity.END" instead of "Gravity.RIGHT" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+                        gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL
+                                          ~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt:864: Warning: Use "Gravity.END" instead of "Gravity.RIGHT" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+                gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL
+                                  ~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/DesignUi.kt:864: Warning: Use "Gravity.END" instead of "Gravity.RIGHT" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+                gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL
+                                  ~~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/PaperMenu.kt:265: Warning: Use "Gravity.START" instead of "Gravity.LEFT" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+            popup.showAtLocation(host, Gravity.TOP or Gravity.LEFT, x, y)
+                                                              ~~~~
+/Users/jarlgiovanni/Desktop/O3/Annota/android/app/src/main/java/io/github/dpan538/annota/ReaderPopover.kt:249: Warning: Use "Gravity.START" instead of "Gravity.LEFT" to ensure correct behavior in right-to-left locales [RtlHardcoded]
+            popup.showAtLocation(host, Gravity.TOP or Gravity.LEFT, x, y)
+                                                              ~~~~
+
+   Explanation for issues of type "RtlHardcoded":
+   Using Gravity#LEFT and Gravity#RIGHT can lead to problems when a layout is
+   rendered in locales where text flows from right to left. Use Gravity#START
+   and Gravity#END instead. Similarly, in XML gravity and layout_gravity
+   attributes, use start rather than left.
+
+   For XML attributes such as paddingLeft and layout_marginLeft, use
+   paddingStart and layout_marginStart. NOTE: If your minSdkVersion is less
+   than 17, you should add both the older left/right attributes as well as the
+   new start/end attributes. On older platforms, where RTL is not supported
+   and the start/end attributes are unknown and therefore ignored, you need
+   the older left/right attributes. There is a separate lint check which
+   catches that type of error.
+
+   (Note: For Gravity#LEFT and Gravity#START, you can use these constants even
+   when targeting older platforms, because the start bitmask is a superset of
+   the left bitmask. Therefore, you can use gravity="start" rather than
+   gravity="left|start".)
+
+0 errors, 87 warnings

@@ -59,7 +59,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         }
 
     val readOnly
-        get() = reading || searching
+        get() = reading || searching || !book.pdfInfo.annotate
 
     private val browsing
         get() = readOnly || tool == "hand"
@@ -106,6 +106,60 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     var panX = 0f
     var panY = 0f
     var onChanged: () -> Unit = {}
+    private var signature: SignaturePlacement? = null
+    val placingSignature
+        get() = signature != null
+
+    var onSignaturePlacementChanged: () -> Unit = {}
+    private var signatureStart: RectF? = null
+    private var signatureDown = PointF()
+    private var signatureResizing = false
+
+    fun beginSignature(image: String, aspect: Float) {
+        check(!readOnly)
+        require(aspect.isFinite() && aspect > 0)
+        finishSignature(false)
+        stopMotion()
+        cancelStroke()
+        clearSelection()
+        val page = book.pages[book.current]
+        var w = page.w * .36f
+        var h = w / aspect
+        if (h > page.h * .25f) {
+            h = page.h * .25f
+            w = h * aspect
+        }
+        val location = floatArrayOf(width / 2f, height / 2f)
+        placements.firstOrNull { it.index == book.current }?.inverse?.mapPoints(location)
+        val x = (location[0] - w / 2).coerceIn(0f, page.w - w)
+        val y = (location[1] - h / 2).coerceIn(0f, page.h - h)
+        signature = SignaturePlacement(page.id, image, RectF(x, y, x + w, y + h))
+        onSignaturePlacementChanged()
+        onToolChanged()
+        invalidate()
+    }
+
+    fun finishSignature(apply: Boolean) {
+        val pending = signature ?: return
+        val page = book.pages.firstOrNull { it.id == pending.pageId }
+        if (apply && page != null && !readOnly) {
+            val mark = pending.mark()
+            page.marks.add(mark)
+            try {
+                store.commit(book)
+            } catch (t: Throwable) {
+                page.marks.remove(mark)
+                throw t
+            }
+            onChanged()
+        } else store.file(pending.image).delete()
+        signature = null
+        signatureStart = null
+        onSignaturePlacementChanged()
+        onToolChanged()
+        invalidate()
+    }
+
     var onSelection: (String) -> Unit = {}
     var onError: (Throwable) -> Unit = {}
     var onActivePage: (Int) -> Unit = {}
@@ -299,6 +353,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     fun dispose() {
+        finishSignature(false)
         persistPosition()
         stopMotion()
         removeCallbacks(longPress)
@@ -1040,6 +1095,23 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 requestTile(p, tile)
             }
             p.marks.forEach { drawMark(canvas, it) }
+            signature
+                ?.takeIf { it.pageId == p.id }
+                ?.let { pending ->
+                    drawMark(canvas, pending.mark())
+                    val pixel = p.w / placements.first { it.index == i }.bounds.width()
+                    paint.color = 0xff435dc2.toInt()
+                    paint.style = Paint.Style.STROKE
+                    paint.strokeWidth = 1.5f * scale * pixel
+                    canvas.drawRect(pending.bounds, paint)
+                    paint.style = Paint.Style.FILL
+                    canvas.drawCircle(
+                        pending.bounds.right,
+                        pending.bounds.bottom,
+                        7f * scale * pixel,
+                        paint,
+                    )
+                }
             if (active?.index == i) stroke?.let { drawMark(canvas, it) }
             searchHits.forEachIndexed { n, hit ->
                 if (hit.pageId == p.id) {
@@ -1410,6 +1482,55 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     private fun handleTouchEvent(e: MotionEvent): Boolean {
+        signature?.let { pending ->
+            val place =
+                placements.firstOrNull { book.pages[it.index].id == pending.pageId } ?: return true
+            val page = book.pages[place.index]
+            val point = floatArrayOf(e.x, e.y).also { place.inverse.mapPoints(it) }
+            when (e.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    val hit = 20f * scale * page.w / place.bounds.width()
+                    signatureResizing =
+                        hypot(point[0] - pending.bounds.right, point[1] - pending.bounds.bottom) <
+                            hit
+                    if (
+                        signatureResizing ||
+                            RectF(pending.bounds)
+                                .apply { inset(-hit, -hit) }
+                                .contains(point[0], point[1])
+                    ) {
+                        signatureStart = RectF(pending.bounds)
+                        signatureDown.set(point[0], point[1])
+                    }
+                }
+                MotionEvent.ACTION_MOVE ->
+                    if (e.pointerCount == 1)
+                        signatureStart?.let { start ->
+                            if (signatureResizing)
+                                pending.resize(
+                                    start,
+                                    point[0] - signatureDown.x,
+                                    point[1] - signatureDown.y,
+                                    page,
+                                )
+                            else
+                                pending.move(
+                                    start,
+                                    point[0] - signatureDown.x,
+                                    point[1] - signatureDown.y,
+                                    page,
+                                )
+                            invalidate()
+                        }
+                MotionEvent.ACTION_CANCEL -> {
+                    signatureStart?.let { pending.bounds.set(it) }
+                    signatureStart = null
+                    invalidate()
+                }
+                MotionEvent.ACTION_UP -> signatureStart = null
+            }
+            return true
+        }
         val stylus =
             e.getToolType(e.actionIndex) in
                 setOf(MotionEvent.TOOL_TYPE_STYLUS, MotionEvent.TOOL_TYPE_ERASER)

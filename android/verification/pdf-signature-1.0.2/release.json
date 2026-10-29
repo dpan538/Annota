@@ -1,0 +1,36 @@
+{
+  "version": "1.0.2",
+  "versionCode": 13,
+  "package": "io.github.dpan538.annota",
+  "nonDebuggable": true,
+  "certificateMatchesPublished1_0_1": true,
+  "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18",
+  "sha256": "c03189fd583a82075fa934fc1c0cd1cded26981a14704c3351825c3c554a53f7",
+  "bytes": 70367849,
+  "build": "assembleDebug assembleDebugAndroidTest lintDebug assembleRelease: successful",
+  "regression": {
+    "api": 36,
+    "passed": 23,
+    "failures": 0,
+    "tests": [
+      "PdfSignatureTest",
+      "CoreTest",
+      "ReaderPolishTest",
+      "InputTest"
+    ]
+  },
+  "nativeTouchFlow": {
+    "passed": 1,
+    "failures": 0,
+    "isolatedDisplay": true,
+    "checks": [
+      "capture",
+      "placement",
+      "drag",
+      "proportional resize",
+      "confirm"
+    ]
+  },
+  "tag": "v1.0.2",
+  "releaseUrl": "https://github.com/dpan538/Annota/releases/tag/v1.0.2"
+}

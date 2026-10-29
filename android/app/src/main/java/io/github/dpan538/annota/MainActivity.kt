@@ -37,6 +37,7 @@ class MainActivity : Activity() {
     private var search = ""
     private var libraryFilter = "all"
     private var pendingExport: Book? = null
+    private var signatureDialog: Dialog? = null
     private var paperPopup: PopupWindow? = null
     private var readerPopup: PopupWindow? = null
     private var readerPanelKey = ""
@@ -318,6 +319,7 @@ class MainActivity : Activity() {
     }
 
     override fun onDestroy() {
+        signatureDialog?.dismiss()
         feedbackDialog?.dismiss()
         operationCancel?.set(true)
         navigationPanel?.dispose()
@@ -776,6 +778,10 @@ class MainActivity : Activity() {
     }
 
     private fun open(b: Book) {
+        if (b.source.isNotEmpty() && !b.pdfInfo.inspected) {
+            work(tr("检查文档…", "Checking document…"), { pdf.inspect(b) }) { open(b) }
+            return
+        }
         reader?.persistPosition()
         if (book != null && book?.id != b.id) restoringSession = null
         book = b
@@ -784,6 +790,8 @@ class MainActivity : Activity() {
         ContinueReadingWidget.remember(this, b)
         activePage = b.current
         showReader()
+        if (!b.pdfInfo.annotate)
+            toast(tr("此 PDF 限制修改，已只读打开", "This PDF restricts changes. Opened read-only."))
     }
 
     private fun showReader() {
@@ -912,6 +920,7 @@ class MainActivity : Activity() {
         }
         add(right, "add", tr("新增纸页", "Add page")) { addPage() }
         add(right, "book", tr("阅读模式", "Read")) {
+            if (!b.pdfInfo.annotate) return@add
             readerPopup?.dismiss()
             paperPopup?.dismiss()
             closeNavigation()
@@ -936,9 +945,11 @@ class MainActivity : Activity() {
             view.color = if (b.pages[b.current].paper == "black") Color.WHITE else colors[2]
         view.onToolChanged = {
             if (!view.reading) chromeHidden = false
-            center.visibility = if (view.readOnly) View.GONE else View.VISIBLE
+            center.visibility =
+                if (view.readOnly || view.placingSignature) View.GONE else View.VISIBLE
             toolButtons["add"]?.visibility = if (view.readOnly) View.GONE else View.VISIBLE
             toolButtons["book"]?.let { button ->
+                button.visibility = if (b.pdfInfo.annotate) View.VISIBLE else View.GONE
                 button.annotationAction = view.reading
                 button.contentDescription =
                     if (view.reading) tr("开始批注", "Annotate") else tr("阅读模式", "Read")
@@ -951,6 +962,7 @@ class MainActivity : Activity() {
                 if (view.reading && chromeHidden) view.readingStyle.surround else colors[3]
             )
             toolButtons.forEach { (name, button) ->
+                button.isEnabled = !view.placingSignature || name == "back"
                 button.isSelected =
                     when (name) {
                         "pen" -> view.tool in setOf("pen", "pencil", "fountain", "highlight")
@@ -1031,6 +1043,61 @@ class MainActivity : Activity() {
                     rightMargin = returnUi.px(16f)
                 },
         )
+        val signatureBar =
+            LinearLayout(this).apply {
+                visibility = View.GONE
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(returnUi.px(12f), returnUi.px(6f), returnUi.px(8f), returnUi.px(6f))
+                background =
+                    returnUi.background(
+                        returnUi.palette.color("panel"),
+                        14f,
+                        returnUi.palette.color("rule"),
+                    )
+                elevation = returnUi.px(8f).toFloat()
+            }
+        signatureBar.addView(
+            returnUi.label(
+                tr("拖动签名，拖右下角缩放", "Drag to move; drag corner to resize"),
+                13f,
+                returnUi.palette.color("muted"),
+            ),
+            LinearLayout.LayoutParams(0, -1, 1f),
+        )
+        fun placementButton(title: String, apply: Boolean) {
+            val button =
+                returnUi.action(title) {
+                    try {
+                        view.finishSignature(apply)
+                    } catch (t: Throwable) {
+                        error(t)
+                    }
+                }
+            button.addView(
+                returnUi.label(title, 15f, returnUi.palette.accent, 500).apply {
+                    gravity = Gravity.CENTER
+                },
+                FrameLayout.LayoutParams(-1, -1),
+            )
+            signatureBar.addView(button, LinearLayout.LayoutParams(returnUi.px(62f), -1))
+        }
+        placementButton(tr("取消", "Cancel"), false)
+        placementButton(tr("确认", "Done"), true)
+        canvas.addView(
+            signatureBar,
+            FrameLayout.LayoutParams(
+                    min(
+                        returnUi.px(if (english) 530f else 420f),
+                        resources.displayMetrics.widthPixels - returnUi.px(24f),
+                    ),
+                    returnUi.px(54f),
+                    Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL,
+                )
+                .apply { bottomMargin = returnUi.px(16f) },
+        )
+        view.onSignaturePlacementChanged = {
+            signatureBar.visibility = if (view.placingSignature) View.VISIBLE else View.GONE
+        }
         view.onNavigationChanged = { hasBack ->
             returnChip.visibility = if (hasBack && !view.searching) View.VISIBLE else View.GONE
         }
@@ -1415,6 +1482,8 @@ class MainActivity : Activity() {
                 "redo",
             )
         menu.item("search", tr("文内搜索", "Find in document")) { showNavigation(true) }
+        if (b.pdfInfo.annotate && reader?.searching != true)
+            menu.item("pen", tr("手写签名", "Handwritten signature")) { signature() }
         if (reader?.reading == true)
             menu.item("fit", tr("阅读显示", "Reading display")) {
                 readingOptions(readerTools["more"] ?: root)
@@ -1642,7 +1711,69 @@ class MainActivity : Activity() {
         startActivityForResult(intent, 11)
     }
 
-    private fun export(b: Book) {
+    private fun signature() {
+        val r = reader ?: return
+        if (!r.book.pdfInfo.annotate || r.searching) return
+        signatureDialog?.dismiss()
+        signatureDialog =
+            showSignaturePad(
+                this,
+                prefs.getInt("theme", 0),
+                english,
+                prefs.getInt("buttonSize", 68),
+            ) { bitmap ->
+                val aspect = bitmap.width.toFloat() / bitmap.height
+                val file = store.file("${uid()}.png")
+                workDetailed(
+                    tr("准备签名…", "Preparing signature…"),
+                    { cancelled, _ ->
+                        try {
+                            if (cancelled()) throw java.io.InterruptedIOException("已取消")
+                            atomicWrite(file) {
+                                check(bitmap.compress(Bitmap.CompressFormat.PNG, 100, it))
+                            }
+                        } finally {
+                            bitmap.recycle()
+                        }
+                    },
+                    {
+                        if (reader !== r || r.book !== book) file.delete()
+                        else {
+                            r.reading = false
+                            r.beginSignature(file.name, aspect)
+                        }
+                    },
+                    onFailure = { file.delete() },
+                )
+            }
+    }
+
+    private fun confirmSignedCopy(b: Book, proceed: () -> Unit) {
+        val changed =
+            b.pages.size != b.pdfInfo.pageCount ||
+                b.pages.withIndex().any { (i, p) ->
+                    p.source != i || p.rotation != 0 || p.marks.isNotEmpty()
+                }
+        if (b.pdfInfo.signatures == 0 || !changed) {
+            proceed()
+            return
+        }
+        AlertDialog.Builder(this)
+            .setTitle(tr("导出批注副本", "Export annotated copy"))
+            .setMessage(
+                tr(
+                    "副本保留原有签名的外观，但不保留原数字签名的验证效力。书库中的原件保持不变。",
+                    "The copy preserves signature appearances, but not the original digital signature validation. The library original stays unchanged.",
+                )
+            )
+            .setNegativeButton(tr("取消", "Cancel"), null)
+            .setPositiveButton(tr("继续", "Continue")) { _, _ -> proceed() }
+            .display()
+    }
+
+    private fun export(b: Book) = confirmSignedCopy(b) { exportDocument(b) }
+
+    private fun exportDocument(b: Book) {
         pendingExport = b
         startActivityForResult(
             Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
@@ -1654,7 +1785,9 @@ class MainActivity : Activity() {
         )
     }
 
-    private fun share(b: Book) {
+    private fun share(b: Book) = confirmSignedCopy(b) { shareDocument(b) }
+
+    private fun shareDocument(b: Book) {
         val dir = File(cacheDir, "exports").apply { mkdirs() }
         val target = File(dir, "${uid()}.pdf")
         workDetailed(

@@ -31,7 +31,7 @@ data class SearchProgress(
 // No shared PDDocument: each worker owns and closes its parser.
 private fun <T> PdfEngine.readBook(book: Book, body: (PDDocument) -> T): T =
     PDDocument.load(
-            store.file(book.source),
+            readingFile(book),
             MemoryUsageSetting.setupMixed(24L * 1024 * 1024).setTempDir(context.cacheDir),
         )
         .use(body)
@@ -133,7 +133,7 @@ fun PdfEngine.pageContent(book: Book, page: Sheet): PageContent {
                     }
                     .getOrNull()
             }
-        PageContent(words(doc, page), links)
+        PageContent(if (book.pdfInfo.extract) words(doc, page) else emptyList(), links)
     }
 }
 
@@ -145,7 +145,7 @@ fun PdfEngine.search(
 ) {
     val pages = book.pages.toList()
     val hits = mutableListOf<SearchHit>()
-    if (book.source.isEmpty()) {
+    if (book.source.isEmpty() || !book.pdfInfo.extract) {
         progress(SearchProgress(emptyList(), pages.size, pages.size, true, false))
         return
     }

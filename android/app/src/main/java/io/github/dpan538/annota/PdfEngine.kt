@@ -34,43 +34,38 @@ class PdfEngine(val context: Context, val store: Store) {
         cancelled: () -> Boolean = { false },
         progress: (Int, Int) -> Unit = { _, _ -> },
     ): Book {
+        var viewing: File? = null
         try {
+            var info = PdfInfo()
             PDDocument.load(file, password, memory()).use { doc ->
                 require(doc.numberOfPages in 1..10000) { "PDF 页数不受支持" }
-                require(
-                    doc.currentAccessPermission.canModify() &&
-                        doc.currentAccessPermission.canExtractContent()
-                ) {
-                    "PDF 权限限制，无法导入为可批注文档"
-                }
+                info = PdfInfo.inspect(doc)
                 if (doc.isEncrypted) {
+                    // PdfRenderer on Android 10 needs an unlocked copy. Never rewrite signed bytes.
+                    val unlocked = store.file("${uid()}.pdf")
+                    viewing = unlocked
                     doc.isAllSecurityToBeRemoved = true
-                    val decrypted = File(file.parentFile, "${uid()}.pdf")
-                    try {
-                        doc.save(decrypted)
-                        check(!cancelled())
-                        atomicWrite(file) { out -> decrypted.inputStream().use { it.copyTo(out) } }
-                    } finally {
-                        decrypted.delete()
-                    }
+                    doc.save(unlocked)
+                    info = info.copy(viewingSource = unlocked.name)
                 }
             }
             if (cancelled()) throw InterruptedIOException("已取消")
             val pages =
-                ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY).use { fd ->
-                    PdfRenderer(fd).use { r ->
-                        MutableList(r.pageCount) { n ->
-                            if (cancelled()) throw InterruptedIOException("已取消")
-                            progress(n + 1, r.pageCount)
-                            r.openPage(n).use { p ->
-                                require(p.width in 1..20000 && p.height in 1..20000) {
-                                    "PDF 纸张尺寸异常"
+                ParcelFileDescriptor.open(viewing ?: file, ParcelFileDescriptor.MODE_READ_ONLY)
+                    .use { fd ->
+                        PdfRenderer(fd).use { r ->
+                            MutableList(r.pageCount) { n ->
+                                if (cancelled()) throw InterruptedIOException("已取消")
+                                progress(n + 1, r.pageCount)
+                                r.openPage(n).use { p ->
+                                    require(p.width in 1..20000 && p.height in 1..20000) {
+                                        "PDF 纸张尺寸异常"
+                                    }
+                                    Sheet(source = n, w = p.width.toFloat(), h = p.height.toFloat())
                                 }
-                                Sheet(source = n, w = p.width.toFloat(), h = p.height.toFloat())
                             }
                         }
                     }
-                }
             if (cancelled()) throw InterruptedIOException("已取消")
             return Book(
                     uid(),
@@ -78,10 +73,23 @@ class PdfEngine(val context: Context, val store: Store) {
                     file.name,
                     opened = System.currentTimeMillis(),
                     pages = pages,
+                    pdfInfo = info,
                 )
                 .also { store.insert(it) }
         } catch (t: Throwable) {
+            viewing?.delete()
             throw t
+        }
+    }
+
+    fun readingFile(book: Book): File =
+        store.file(book.pdfInfo.viewingSource.ifEmpty { book.source })
+
+    fun inspect(book: Book) {
+        if (book.source.isEmpty() || book.pdfInfo.inspected) return
+        PDDocument.load(readingFile(book), memory()).use { doc ->
+            book.pdfInfo = PdfInfo.inspect(doc).copy(viewingSource = book.pdfInfo.viewingSource)
+            store.metadata(book)
         }
     }
 
@@ -96,14 +104,14 @@ class PdfEngine(val context: Context, val store: Store) {
         val canvas = Canvas(result)
         canvas.drawColor(Color.WHITE)
         if (page.source >= 0) {
-            ParcelFileDescriptor.open(store.file(book.source), ParcelFileDescriptor.MODE_READ_ONLY)
-                .use { fd ->
-                    PdfRenderer(fd).use { r ->
-                        r.openPage(page.source).use { p ->
-                            p.render(result, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-                        }
+            ParcelFileDescriptor.open(readingFile(book), ParcelFileDescriptor.MODE_READ_ONLY).use {
+                fd ->
+                PdfRenderer(fd).use { r ->
+                    r.openPage(page.source).use { p ->
+                        p.render(result, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
                     }
                 }
+            }
         } else {
             canvas.scale(scale, scale)
             drawPaper(canvas, page)
@@ -124,10 +132,7 @@ class PdfEngine(val context: Context, val store: Store) {
             }
         try {
             if (page.source >= 0) {
-                ParcelFileDescriptor.open(
-                        store.file(book.source),
-                        ParcelFileDescriptor.MODE_READ_ONLY,
-                    )
+                ParcelFileDescriptor.open(readingFile(book), ParcelFileDescriptor.MODE_READ_ONLY)
                     .use { fd ->
                         PdfRenderer(fd).use { renderer ->
                             renderer.openPage(page.source).use {
@@ -153,8 +158,8 @@ class PdfEngine(val context: Context, val store: Store) {
     }
 
     fun words(book: Book, page: Sheet): List<Word> {
-        if (page.source < 0) return emptyList()
-        PDDocument.load(store.file(book.source), memory()).use { doc ->
+        if (page.source < 0 || !book.pdfInfo.extract) return emptyList()
+        PDDocument.load(readingFile(book), memory()).use { doc ->
             return words(doc, page)
         }
     }
@@ -242,10 +247,34 @@ class PdfEngine(val context: Context, val store: Store) {
         cancelled: () -> Boolean = { false },
         progress: (Int, Int) -> Unit = { _, _ -> },
     ) {
+        inspect(book)
+        require(
+            target.canonicalFile != store.file(book.source.ifEmpty { "unused.pdf" }).canonicalFile
+        ) {
+            "不能覆盖 PDF 原件"
+        }
         val source =
-            if (book.source.isNotEmpty()) PDDocument.load(store.file(book.source), memory())
-            else null
+            if (book.source.isNotEmpty()) PDDocument.load(readingFile(book), memory()) else null
         try {
+            val unchanged =
+                source != null &&
+                    book.pages.size == source.numberOfPages &&
+                    book.pages.withIndex().all { (i, page) ->
+                        page.source == i && page.rotation == 0 && page.marks.isEmpty()
+                    }
+            if (unchanged) {
+                store.file(book.source).inputStream().use { input ->
+                    target.outputStream().use {
+                        store.copyLimited(input, it, 1024L * 1024 * 1024, cancelled)
+                    }
+                }
+                progress(book.pages.size, book.pages.size)
+                return
+            }
+            require(book.pdfInfo.annotate) { "此 PDF 限制修改，仅可导出原件" }
+            // An annotated derivative is a new document, not a cryptographically signed original.
+            // Bake existing widget appearances into its pages before copying them.
+            source?.documentCatalog?.acroForm?.flatten()
             PDDocument(memory()).use { out ->
                 book.pages.forEachIndexed { index, p ->
                     if (cancelled()) throw InterruptedIOException("已取消")
