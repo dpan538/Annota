@@ -25,6 +25,68 @@ class DictionaryReadings(context: Context) {
             }
         )
 
+    private val acronyms =
+        JSONArray(
+            context.assets.open("dictionary/technical-acronyms.json").bufferedReader().use {
+                it.readText()
+            }
+        )
+
+    /** Case is evidence: an uppercase initialism must not collapse into an English pronoun. */
+    fun acronym(query: String, context: LookupContext?): DictionaryReading? {
+        val raw =
+            java.text.Normalizer.normalize(query, java.text.Normalizer.Form.NFKC)
+                .trim()
+                .trim { !it.isLetterOrDigit() }
+                .removeSuffix("s")
+        if (!raw.matches(Regex("[A-Z]{2,6}"))) return null
+        val item =
+            (0 until acronyms.length())
+                .map { acronyms.getJSONObject(it) }
+                .firstOrNull { it.getString("word") == raw } ?: return null
+        val active = context?.takeIf { it.matches(query) }
+        // ALL-CAPS prose still contains pronouns; explicit grammatical evidence beats casing.
+        if (
+            raw == "IT" &&
+                active?.after?.take(2)?.joinToString(" ") in
+                    setOf(
+                        "is raining",
+                        "was raining",
+                        "is snowing",
+                        "was snowing",
+                        "is a",
+                        "was a",
+                        "will be",
+                    )
+        )
+            return null
+        val window = active?.let { it.before.takeLast(8) + it.after.take(8) }.orEmpty()
+        val variants = item.getJSONArray("senses")
+        val ranked =
+            (0 until variants.length())
+                .map { i ->
+                    val v = variants.getJSONObject(i)
+                    val cues = v.getJSONArray("near")
+                    Triple((0 until cues.length()).count { cues.getString(it) in window }, i, v)
+                }
+                .sortedWith(
+                    compareByDescending<Triple<Int, Int, org.json.JSONObject>> { it.first }
+                        .thenBy { it.second }
+                )
+        val confident =
+            ranked.first().first > 0 && ranked.first().first > (ranked.getOrNull(1)?.first ?: 0)
+        val chosen = if (confident) ranked.take(1) else ranked.take(2)
+        fun sense(v: org.json.JSONObject) = DictionarySense("abbr.", v.getString("text"))
+        return DictionaryReading(
+            raw,
+            "",
+            chosen.map { sense(it.third) },
+            ranked.filterNot { it in chosen }.map { sense(it.third) },
+            confident,
+            chosen.joinToString(" / ") { it.third.getString("expansion") },
+        )
+    }
+
     private fun senses(entry: Dictionary.Entry): List<DictionarySense> {
         val prefix = Regex("^(?:[a-z]{1,6}\\.(?:/[a-z]{1,6}\\.)?|\\[[^]]{1,8}])(?:\\s+|$)")
         return entry.meaning
@@ -70,6 +132,9 @@ class DictionaryReadings(context: Context) {
         context: LookupContext?,
         phrase: Pair<String, Dictionary.Entry>?,
     ): DictionaryReading? {
+        acronym(query, context)?.let {
+            return it
+        }
         val entry = result.entries.firstOrNull() ?: return null
         val all = result.entries.flatMap(::senses).distinctBy { it.text }
         val active = context?.takeIf { it.matches(query) }

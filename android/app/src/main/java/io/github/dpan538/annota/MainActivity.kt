@@ -848,7 +848,13 @@ class MainActivity : Activity() {
         val toolButtons = readerTools
         bar.addView(left, android.widget.FrameLayout.LayoutParams(-2, -1, Gravity.START))
         bar.addView(center, android.widget.FrameLayout.LayoutParams(-2, -1, Gravity.CENTER))
-        bar.addView(right, android.widget.FrameLayout.LayoutParams(-2, -1, Gravity.END))
+        right.tag = "reader-trailing-actions"
+        bar.addView(
+            right,
+            android.widget.FrameLayout.LayoutParams(-2, -1, Gravity.END).apply {
+                marginEnd = rp(16f)
+            },
+        )
         fun add(group: LinearLayout, n: String, label: String, action: () -> Unit) {
             group.addView(
                 icon(n, label, action).apply {

@@ -6,13 +6,16 @@
 
 Local PDF reading and handwritten annotation, designed around **Xiaomi Pad 9 Pro Max**. No account required. Documents, ink, reading progress and dictionary queries stay on your device.
 
-[![Android](https://img.shields.io/badge/Android-10%2B-4460CE)](DOWNLOAD.md)
-[![Beta](https://img.shields.io/badge/Beta-1.0.6--preview-4460CE)](https://github.com/dpan538/Annota/releases/tag/v1.0.6-preview)
-[![License](https://img.shields.io/badge/code-MIT-4460CE)](LICENSE)
+[![Android](https://img.shields.io/badge/Android-10%2B-3DDC84)](DOWNLOAD.md)
+[![Beta](https://img.shields.io/badge/Beta-1.0.7--preview-F59E0B)](https://github.com/dpan538/Annota/releases/tag/v1.0.7-preview)
+[![Stable](https://img.shields.io/badge/Stable-1.0.2-16A34A)](https://github.com/dpan538/Annota/releases/tag/v1.0.2)
+[![License](https://img.shields.io/badge/License-MIT-8B5CF6)](LICENSE)
+![Offline](https://img.shields.io/badge/Dictionary-Offline-0891B2)
+![Local](https://img.shields.io/badge/Storage-On_device-DB2777)
+![No account](https://img.shields.io/badge/Account-Not_required-64748B)
+![Device](https://img.shields.io/badge/Xiaomi-Pad_9_Pro_Max_only-FF6900)
 
-[**Download Beta APK**](https://github.com/dpan538/Annota/releases/download/v1.0.6-preview/Annota-1.0.6-preview.apk) · [Stable 1.0.2](https://github.com/dpan538/Annota/releases/download/v1.0.2/Annota-1.0.2.apk) · [Installation](DOWNLOAD.md) · [Changelog](CHANGELOG.md)
-
-![Annota reading the original paper in its blue theme](docs/images/readme-reading-blue.png)
+[**Download Beta APK**](https://github.com/dpan538/Annota/releases/download/v1.0.7-preview/Annota-1.0.7-preview.apk) · [Stable 1.0.2](https://github.com/dpan538/Annota/releases/download/v1.0.2/Annota-1.0.2.apk) · [Installation](DOWNLOAD.md) · [Changelog](CHANGELOG.md)
 
 ## Features
 
@@ -47,7 +50,7 @@ Actual app screenshots in the same blue theme. Select an image to view full size
 
 Reading, writing and dictionary lookup are fully offline. Network access is used only when checking for updates, downloading an APK or submitting feedback. Feedback becomes a public GitHub Issue; do not include private documents. Back up before uninstalling or clearing app data.
 
-**1.0.6-preview is a Beta**, offered by the default update check. Download and installation require confirmation. It uses the existing signing certificate for in-place upgrades. The latest stable version remains **1.0.2**.
+**1.0.7-preview is a Beta**, offered by the default update check. Download and installation require confirmation. It uses the existing signing certificate for in-place upgrades. The latest stable version remains **1.0.2**.
 
 ## Build
 

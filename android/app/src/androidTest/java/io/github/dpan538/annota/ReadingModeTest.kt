@@ -659,7 +659,14 @@ class ReadingModeTest {
                         all(panel.contentView).filter {
                             it.isClickable && it.contentDescription in setOf("原始", "柔和", "清晰")
                         }
-                    choices.size == 3 &&
+                    var ancestor: View? = panel.contentView
+                    var settled = true
+                    while (ancestor != null) {
+                        if (ancestor.translationY != 0f || ancestor.scaleY != 1f) settled = false
+                        ancestor = ancestor.parent as? View
+                    }
+                    settled &&
+                        choices.size == 3 &&
                         choices.all { choice ->
                             val visible = Rect()
                             choice.getGlobalVisibleRect(visible) &&

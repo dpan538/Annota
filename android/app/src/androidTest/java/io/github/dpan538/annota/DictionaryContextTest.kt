@@ -23,6 +23,61 @@ class DictionaryContextTest {
             .reading!!
 
     @Test
+    fun technicalAcronymsPreserveCaseAndResolveAmbiguityConservatively() {
+        assertEquals("信息技术", reading("IT").primary.single().text)
+        assertEquals("Information Technology", reading("IT").phrase)
+        for (q in listOf("it", "It")) assertTrue(reading(q).primary.any { it.text.contains("它") })
+        assertFalse(reading("IT", "", "was raining yesterday").primary.any { it.text == "信息技术" })
+        assertEquals("中央处理器", reading("CPU").primary.single().text)
+        assertEquals("虚拟机", reading("VMs").primary.single().text)
+        assertEquals("域名系统", reading("DNS").primary.single().text)
+        assertEquals(2, reading("IP").primary.size)
+        assertFalse(reading("IP").contextual)
+        assertEquals("网际协议", reading("IP", "network", "address").primary.single().text)
+        assertEquals("知识产权", reading("IP", "copyright", "rights").primary.single().text)
+        assertTrue(
+            reading("RAM", "available", "memory capacity").primary.single().text.contains("存储器")
+        )
+        assertFalse(reading("ram").primary.any { it.text == "随机存取存储器" })
+        val unknown = dictionary.lookup("ZZQXY")
+        assertNull(unknown.reading)
+    }
+
+    @Test
+    fun technicalMeaningsApplyInsideAPhraseAndRemainAvailableAfterDrillingDown() {
+        val q = "scalable and measured"
+        val local =
+            LookupContext(
+                q,
+                LookupContext.tokens("remotely provisioning"),
+                LookupContext.tokens("IT resources"),
+            )
+        val parts = dictionary.lookup(q, local).parts
+        assertEquals("可扩展的", parts.first { it.text == "scalable" }.reading!!.primary.single().text)
+        val measured = parts.first { it.text == "measured" }
+        assertEquals("可计量的", measured.reading!!.primary.single().text)
+        assertEquals(
+            "可计量的",
+            dictionary.lookup(measured.text, measured.context).reading!!.primary.single().text,
+        )
+        assertEquals(
+            "慎重的；有分寸的",
+            reading("measured", "a", "response to criticism").primary.single().text,
+        )
+        assertEquals(
+            "测得的；测量的",
+            reading("measured", "the", "temperature was recorded").primary.single().text,
+        )
+        assertEquals("可攀登的", reading("scalable", "a", "cliff").primary.single().text)
+        val combination = dictionary.lookup("scalable IT and CPU").parts
+        assertEquals("信息技术", combination.first { it.text == "IT" }.reading!!.primary.single().text)
+        assertEquals(
+            "中央处理器",
+            combination.first { it.text == "CPU" }.reading!!.primary.single().text,
+        )
+    }
+
+    @Test
     fun oneWordChangesMeaningWithItsLocalSentence() {
         assertEquals(
             "训练集",

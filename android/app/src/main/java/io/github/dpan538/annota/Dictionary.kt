@@ -15,7 +15,11 @@ class Dictionary(private val context: Context) {
         val source: String = "",
     )
 
-    data class Part(val text: String, val reading: DictionaryReading?)
+    data class Part(
+        val text: String,
+        val reading: DictionaryReading?,
+        val context: LookupContext? = null,
+    )
 
     data class Result(
         val entries: List<Entry>,
@@ -29,6 +33,20 @@ class Dictionary(private val context: Context) {
     private val dir = File(context.filesDir, "dictionary").apply { mkdirs() }
 
     fun lookup(text: String, context: LookupContext? = null): Result {
+        readings.acronym(text, context)?.let { reading ->
+            return Result(
+                listOf(
+                    Entry(
+                        reading.word,
+                        "",
+                        reading.primary.joinToString("；") { it.text },
+                        "annota-terminology",
+                    )
+                ),
+                emptyList(),
+                reading,
+            )
+        }
         val result = query(text)
         val active = context?.takeIf { it.matches(text) }
         val phrase = if (active == null || text.length > MAX_QUERY_LENGTH) null else phrase(active)
@@ -54,6 +72,15 @@ class Dictionary(private val context: Context) {
         if (!value.matches(Regex("[a-z0-9' -]+"))) return emptyList()
         val tokens = value.split(Regex("[ -]+"))
         if (tokens.size !in 2..16) return emptyList()
+        val originalTokens =
+            Regex("[A-Za-z0-9']+")
+                .findAll(
+                    java.text.Normalizer.normalize(text, java.text.Normalizer.Form.NFKC)
+                        .replace("\u00ad", "")
+                )
+                .map { it.value }
+                .toList()
+                .takeIf { it.size == tokens.size } ?: tokens
         SQLiteDatabase.openDatabase(
                 File(dir, "en-zh.sqlite").path,
                 null,
@@ -134,7 +161,7 @@ class Dictionary(private val context: Context) {
                     best[start] = chosen
                 }
                 return best[0]!!.chunks.map { chunk ->
-                    val selected = tokens.subList(chunk.start, chunk.end).joinToString(" ")
+                    val selected = originalTokens.subList(chunk.start, chunk.end).joinToString(" ")
                     val local =
                         LookupContext(
                             selected,
@@ -143,9 +170,16 @@ class Dictionary(private val context: Context) {
                         )
                     Part(
                         selected,
-                        chunk.entry?.let {
-                            readings.present(selected, Result(listOf(it), emptyList()), local, null)
-                        },
+                        readings.acronym(selected, local)
+                            ?: chunk.entry?.let {
+                                readings.present(
+                                    selected,
+                                    Result(listOf(it), emptyList()),
+                                    local,
+                                    null,
+                                )
+                            },
+                        local,
                     )
                 }
             }

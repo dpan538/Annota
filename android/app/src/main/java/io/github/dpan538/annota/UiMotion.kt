@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.animation.LinearInterpolator
+import android.view.animation.PathInterpolator
 import java.util.WeakHashMap
 import kotlin.math.min
 
@@ -17,7 +18,8 @@ import kotlin.math.min
 object UiMotion {
     const val PRESS = 100L
     const val PANEL = 160L
-    const val SCREEN = 180L
+    const val SCREEN = 320L
+    val smooth = PathInterpolator(.22f, .0f, .18f, 1f)
     val linear = LinearInterpolator()
 
     fun enabled() = ValueAnimator.areAnimatorsEnabled()
@@ -50,8 +52,9 @@ object UiMotion {
     private val screenChanges = WeakHashMap<ViewGroup, ScreenChange>()
 
     /**
-     * Keeps the previous screen opaque while the next screen slides alongside it. No frame-by-frame
-     * layout or PDF rerendering; bitmap memory is capped at 1440px longest edge.
+     * Combines a short vertical lift and subtle depth change with an outgoing snapshot dissolve.
+     * Live content stays opaque; never sweep a full tablet width. No frame-by-frame layout or PDF
+     * rerendering; bitmap memory is capped at 1440px longest edge.
      */
     fun captureScreen(host: ViewGroup, forward: Boolean = true): ScreenChange? {
         screenChanges.remove(host)?.finish()
@@ -104,7 +107,27 @@ object UiMotion {
             if (closed) return
             incoming = (0 until host.childCount).map(host::getChildAt)
             val direction = if (forward) 1f else -1f
-            incoming.forEach { it.translationX = direction * host.width }
+            val distance = 20f * host.resources.displayMetrics.density
+            fun position(progress: Float) {
+                incoming.forEach { child ->
+                    child.translationY = direction * distance * (1f - progress)
+                    child.scaleX = 1f - direction * .015f * (1f - progress)
+                    child.scaleY = child.scaleX
+                }
+                val depth = 1f + direction * .012f * progress
+                val insetX = (host.width * (1f - depth) / 2f).toInt()
+                val insetY =
+                    (host.height * (1f - depth) / 2f - direction * distance * .4f * progress)
+                        .toInt()
+                drawable.setBounds(
+                    insetX,
+                    insetY,
+                    host.width - insetX,
+                    insetY + (host.height * depth).toInt(),
+                )
+                drawable.alpha = (255 * (1f - progress)).toInt()
+            }
+            position(0f)
             host.overlay.add(drawable)
             host.addOnAttachStateChangeListener(detach)
             val deadline = android.os.SystemClock.uptimeMillis() + 800
@@ -123,16 +146,8 @@ object UiMotion {
                         animator =
                             ValueAnimator.ofFloat(0f, 1f).apply {
                                 duration = SCREEN
-                                interpolator = linear
-                                addUpdateListener {
-                                    val progress = it.animatedValue as Float
-                                    val offset = (-direction * host.width * progress).toInt()
-                                    drawable.setBounds(offset, 0, offset + host.width, host.height)
-                                    incoming.forEach { child ->
-                                        child.translationX =
-                                            direction * host.width * (1f - progress)
-                                    }
-                                }
+                                interpolator = smooth
+                                addUpdateListener { position(it.animatedValue as Float) }
                                 addListener(
                                     object : android.animation.AnimatorListenerAdapter() {
                                         override fun onAnimationEnd(
@@ -157,7 +172,12 @@ object UiMotion {
             }
             listener = null
             animator?.cancel()
-            incoming.forEach { it.translationX = 0f }
+            incoming.forEach {
+                it.translationX = 0f
+                it.translationY = 0f
+                it.scaleX = 1f
+                it.scaleY = 1f
+            }
             incoming = emptyList()
             host.overlay.remove(drawable)
             host.removeOnAttachStateChangeListener(detach)

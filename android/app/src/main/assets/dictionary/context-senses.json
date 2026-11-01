@@ -1011,5 +1011,113 @@
         ]
       }
     ]
+  },
+  {
+    "word": "scalable",
+    "defaults": [
+      {
+        "pos": "adj.",
+        "text": "可扩展的"
+      },
+      {
+        "pos": "adj.",
+        "text": "可攀登的"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "adj.",
+        "text": "可扩展的",
+        "near": [
+          "resources",
+          "resource",
+          "systems",
+          "system",
+          "computing",
+          "cloud",
+          "software",
+          "network",
+          "networks",
+          "infrastructure",
+          "service",
+          "services",
+          "applications"
+        ]
+      },
+      {
+        "pos": "adj.",
+        "text": "可攀登的",
+        "near": [
+          "wall",
+          "walls",
+          "cliff",
+          "cliffs",
+          "mountain"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "measured",
+    "defaults": [
+      {
+        "pos": "adj.",
+        "text": "测量的；计量的"
+      },
+      {
+        "pos": "adj.",
+        "text": "慎重的；有分寸的"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "adj.",
+        "text": "可计量的",
+        "after": [
+          "service",
+          "services",
+          "resources"
+        ],
+        "near": [
+          "cloud",
+          "resource",
+          "resources",
+          "metering",
+          "usage",
+          "provisioning",
+          "it"
+        ],
+        "minimum": 2
+      },
+      {
+        "pos": "adj.",
+        "text": "测得的；测量的",
+        "near": [
+          "temperature",
+          "pressure",
+          "distance",
+          "height",
+          "length",
+          "velocity",
+          "experiment",
+          "instrument"
+        ]
+      },
+      {
+        "pos": "adj.",
+        "text": "慎重的；有分寸的",
+        "after": [
+          "response",
+          "reply",
+          "tone",
+          "words",
+          "approach"
+        ],
+        "near": [
+          "calm",
+          "careful"
+        ]
+      }
+    ]
   }
 ]

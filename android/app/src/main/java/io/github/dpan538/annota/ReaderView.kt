@@ -1850,8 +1850,12 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             }
             MotionEvent.ACTION_MOVE -> {
                 if (dragHandle >= 0 && e.pointerCount == 1) {
-                    moved = true
-                    adjustSelection(e.x, e.y)
+                    if (
+                        hypot(e.x - downX, e.y - downY) >
+                            ViewConfiguration.get(context).scaledTouchSlop
+                    )
+                        moved = true
+                    if (moved) adjustSelection(e.x, e.y)
                     return true
                 }
                 velocity?.addMovement(e)
@@ -1950,6 +1954,25 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             }
             MotionEvent.ACTION_UP -> {
                 if (dragHandle >= 0) {
+                    // A generous handle hit area may overlap the next short word (e.g. IT).
+                    // A stationary tap on that word selects it; actual drags still adjust handles.
+                    if (!moved)
+                        active?.let { place ->
+                            val p = point(place, e.x, e.y, 1f)
+                            val page = book.pages[place.index]
+                            words
+                                .get(page.id)
+                                .orEmpty()
+                                .firstOrNull { it.box.contains(p.x, p.y) }
+                                ?.takeIf { it !in selected }
+                                ?.let { word ->
+                                    selected = listOf(word)
+                                    selectionPage = page.id
+                                    selectionText = null
+                                    selectionStart = null
+                                    invalidate()
+                                }
+                        }
                     dragHandle = -1
                     magnifier?.dismiss()
                     magnifier = null

@@ -4,9 +4,9 @@
 
 ## 当前版本
 
-- [1.0.6-preview 修复与验证](1.0.6-PREVIEW-NOTES.md)
-- [1.0.6-preview 真机测试清单](BETA-1.0.6-PREVIEW-CHECKLIST.md)
-- [自动化原始记录](../android/verification/preview-1.0.6/)
+- [1.0.7-preview 修复与验证](1.0.7-PREVIEW-NOTES.md)
+- [1.0.7-preview 真机测试清单](BETA-1.0.7-PREVIEW-CHECKLIST.md)
+- [自动化原始记录](../android/verification/preview-1.0.7/)
 
 ## 开发检查
 

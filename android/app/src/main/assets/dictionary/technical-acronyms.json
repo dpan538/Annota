@@ -1,0 +1,152 @@
+[
+  {
+    "word": "IT",
+    "source": "https://csrc.nist.gov/glossary/term/it",
+    "senses": [
+      {
+        "expansion": "Information Technology",
+        "text": "信息技术",
+        "near": [
+          "resources",
+          "resource",
+          "computing",
+          "software",
+          "hardware",
+          "environment",
+          "industry"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "ICT",
+    "source": "https://csrc.nist.gov/glossary/term/ict",
+    "senses": [
+      {
+        "expansion": "Information and Communications Technology",
+        "text": "信息与通信技术",
+        "near": []
+      }
+    ]
+  },
+  {
+    "word": "CPU",
+    "source": "https://csrc.nist.gov/glossary/term/cpu",
+    "senses": [
+      {
+        "expansion": "Central Processing Unit",
+        "text": "中央处理器",
+        "near": []
+      }
+    ]
+  },
+  {
+    "word": "RAM",
+    "source": "https://csrc.nist.gov/glossary/term/ram",
+    "senses": [
+      {
+        "expansion": "Random Access Memory",
+        "text": "随机存取存储器",
+        "near": [
+          "memory",
+          "storage",
+          "capacity",
+          "gb"
+        ]
+      },
+      {
+        "expansion": "Random Access Machine",
+        "text": "随机存取机",
+        "near": [
+          "model",
+          "computation",
+          "algorithm",
+          "complexity"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "VM",
+    "source": "https://csrc.nist.gov/glossary/term/vm",
+    "senses": [
+      {
+        "expansion": "Virtual Machine",
+        "text": "虚拟机",
+        "near": []
+      }
+    ]
+  },
+  {
+    "word": "DNS",
+    "source": "https://csrc.nist.gov/glossary/term/dns",
+    "senses": [
+      {
+        "expansion": "Domain Name System",
+        "text": "域名系统",
+        "near": []
+      }
+    ]
+  },
+  {
+    "word": "SLA",
+    "source": "https://csrc.nist.gov/glossary/term/sla",
+    "senses": [
+      {
+        "expansion": "Service Level Agreement",
+        "text": "服务级别协议",
+        "near": []
+      }
+    ]
+  },
+  {
+    "word": "AI",
+    "source": "https://csrc.nist.gov/glossary/term/ai",
+    "senses": [
+      {
+        "expansion": "Artificial Intelligence",
+        "text": "人工智能",
+        "near": []
+      }
+    ]
+  },
+  {
+    "word": "IP",
+    "source": "https://csrc.nist.gov/glossary/term/ip",
+    "senses": [
+      {
+        "expansion": "Internet Protocol",
+        "text": "网际协议",
+        "near": [
+          "address",
+          "addresses",
+          "packet",
+          "packets",
+          "network",
+          "routing"
+        ]
+      },
+      {
+        "expansion": "Intellectual Property",
+        "text": "知识产权",
+        "near": [
+          "patent",
+          "patents",
+          "copyright",
+          "rights",
+          "licensing"
+        ]
+      },
+      {
+        "expansion": "Ingress Protection",
+        "text": "外壳防护等级",
+        "near": [
+          "water",
+          "dust",
+          "rating",
+          "enclosure"
+        ]
+      }
+    ]
+  }
+]

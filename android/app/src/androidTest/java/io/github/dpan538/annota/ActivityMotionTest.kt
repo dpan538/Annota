@@ -51,6 +51,8 @@ class ActivityMotionTest {
         val bitmap: Bitmap,
         val offset: Float,
         val opaque: Boolean,
+        val scale: Float = 1f,
+        val horizontal: Float = 0f,
     )
 
     private fun frame(root: ViewGroup): Bitmap {
@@ -87,8 +89,11 @@ class ActivityMotionTest {
                             Frame(
                                 elapsed,
                                 frame(root),
-                                (root.getChildAt(0)?.translationX ?: 0f) / root.width,
+                                (root.getChildAt(0)?.translationY ?: 0f) /
+                                    (20f * root.resources.displayMetrics.density),
                                 (0 until root.childCount).all { root.getChildAt(it).alpha == 1f },
+                                root.getChildAt(0)?.scaleX ?: 1f,
+                                root.getChildAt(0)?.translationX ?: 0f,
                             )
                         if (elapsed >= 1000) done.countDown()
                         else choreographer.postFrameCallback(this)
@@ -132,7 +137,13 @@ class ActivityMotionTest {
                 }
             val positions = frames.drop(1).map { abs(it.offset) }
             assertTrue("Screens remain fully opaque", frames.all { it.opaque })
+            assertTrue("Never sweep the screen horizontally", frames.all { it.horizontal == 0f })
+            assertTrue("Depth change stays subtle", frames.all { it.scale in .98f..1.02f })
             if (animated) {
+                assertTrue(
+                    "Mix depth with the short lift",
+                    frames.any { abs(it.scale - 1f) > .001f },
+                )
                 assertTrue(
                     "$name needs intermediate positions: $positions",
                     positions.any { it in 0.03f..0.97f },
@@ -154,7 +165,8 @@ class ActivityMotionTest {
                 .put("animated", animated)
                 .put("point", JSONArray(listOf(point.first, point.second)))
                 .put("frameMs", JSONArray(frames.map { it.ms }))
-                .put("screenOffsets", JSONArray(frames.map { it.offset }))
+                .put("normalizedVerticalLift", JSONArray(frames.map { it.offset }))
+                .put("depthScales", JSONArray(frames.map { it.scale }))
                 .put("intermediateFrames", positions.count { it in 0.03f..0.97f })
         } finally {
             frames.forEach { it.bitmap.recycle() }
@@ -209,6 +221,11 @@ class ActivityMotionTest {
             val opening = record(root) { assertTrue(button(title).performClick()) }
             val point = ui {
                 val toolbar = all(root).first { it.tag == "reader-toolbar" }
+                val trailing = all(root).first { it.tag == "reader-trailing-actions" }
+                assertTrue(
+                    "Trailing tools need an inset",
+                    toolbar.width - trailing.right >= toolbar.width * .014f,
+                )
                 assertTrue(all(root).any { it is ReaderView })
                 val at = IntArray(2).also(toolbar::getLocationOnScreen)
                 val rootAt = IntArray(2).also(root::getLocationOnScreen)

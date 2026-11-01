@@ -107,16 +107,21 @@ class InteractionMotionTest {
             val samples = mutableListOf<Float>()
             val deadline = SystemClock.uptimeMillis() + 500
             while (SystemClock.uptimeMillis() < deadline) {
-                samples += ui { host.getChildAt(0).translationX }
+                samples += ui { host.getChildAt(0).translationY }
                 SystemClock.sleep(16)
             }
             assertTrue(
                 "Must contain visible intermediate frames: $samples",
                 samples.any { it > 0f && it < 500f },
             )
-            assertEquals(0f, samples.last(), .01f)
             assertTrue(
-                "Slide should proceed without reversing: $samples",
+                "Travel must stay short",
+                samples.all { it <= 24f * host.resources.displayMetrics.density },
+            )
+            assertEquals(0f, samples.last(), .01f)
+            ui { assertEquals(1f, host.getChildAt(0).scaleX, 0f) }
+            assertTrue(
+                "Lift should proceed without reversing: $samples",
                 samples.zipWithNext().all { (a, b) -> b <= a },
             )
             val output =

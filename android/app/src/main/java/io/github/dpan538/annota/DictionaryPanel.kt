@@ -32,7 +32,7 @@ class DictionaryPanel(
     private var pending: Runnable? = null
     private lateinit var statusBadge: TextView
     private lateinit var footer: TextView
-    private var useSurrounding = true
+    private var queryContext = surrounding
     private val results = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL }
     private val scroll =
         ScrollView(activity).apply {
@@ -163,8 +163,8 @@ class DictionaryPanel(
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     generation++
-                    if (surrounding != null && !surrounding.matches(s?.toString().orEmpty())) {
-                        useSurrounding = false
+                    if (queryContext != null && !queryContext!!.matches(s?.toString().orEmpty())) {
+                        queryContext = null
                         onManualQuery()
                     }
                     pending?.let(handler::removeCallbacks)
@@ -268,6 +268,22 @@ class DictionaryPanel(
                 }
             )
         if (entry.phrase.isNotBlank()) card.addView(menu.label(entry.phrase, 13f, true))
+        // Keep one aligned label column, wide enough for pron. / abbr. at the current text scale.
+        val labelPaint =
+            badge("")
+                .apply { setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, 12f * ui.unit) }
+                .paint
+        val labelWidth =
+            maxOf(
+                ui.px(40f),
+                kotlin.math
+                    .ceil(
+                        (entry.primary + entry.alternatives).maxOfOrNull {
+                            android.text.Layout.getDesiredWidth(it.label, labelPaint)
+                        } ?: 0f
+                    )
+                    .toInt() + 2 * ui.px(6f) + 2,
+            )
         fun addSense(parent: LinearLayout, value: DictionarySense) {
             val sense =
                 LinearLayout(activity).apply {
@@ -283,7 +299,7 @@ class DictionaryPanel(
                         maxLines = 1
                         ellipsize = TextUtils.TruncateAt.END
                     },
-                    LinearLayout.LayoutParams(ui.px(40f), -2).apply { rightMargin = ui.px(8f) },
+                    LinearLayout.LayoutParams(labelWidth, -2).apply { rightMargin = ui.px(8f) },
                 )
             sense.addView(
                 menu.label(value.text, 15f).apply {
@@ -337,10 +353,9 @@ class DictionaryPanel(
             render(Dictionary.Result(emptyList(), emptyList()), true)
             return
         }
+        val activeContext = queryContext
         lookup.execute {
-            val result = runCatching {
-                dictionary.lookup(q, surrounding?.takeIf { useSurrounding })
-            }
+            val result = runCatching { dictionary.lookup(q, activeContext) }
             handler.post {
                 if (!open || id != generation) return@post
                 result.fold(
@@ -393,7 +408,9 @@ class DictionaryPanel(
                 row.isClickable = part.reading != null
                 row.setOnClickListener {
                     edit.setText(part.text)
+                    queryContext = part.context
                     edit.setSelection(part.text.length)
+                    query()
                 }
                 results.addView(row)
             }

@@ -1,0 +1,31 @@
+{
+  "version": "1.0.7-preview",
+  "versionCode": 19,
+  "productChannel": "Beta",
+  "apkSha256": "a725088bd9f657f2e7cb1c0f55e425b1d461dd9f63a1d17367c808aaf7cc8cdb",
+  "instrumentation": {
+    "passed": 121,
+    "seconds": 194.248,
+    "androidApi": 36,
+    "serial": "emulator-5584",
+    "wifiAndMobileDataDisabled": true
+  },
+  "dictionaryPythonTests": 12,
+  "validatedSourceUnits": 21,
+  "builds": [
+    "assembleDebug",
+    "assembleDebugAndroidTest",
+    "lintDebug",
+    "assembleRelease"
+  ],
+  "targetPhysicalDeviceVerified": false,
+  "privatePdfNotPublished": true,
+  "newCases": [
+    "Uppercase and mixed-case acronyms, ambiguous IP/RAM",
+    "Local measured/scalable senses and ordinary-meaning counterexamples",
+    "Actual adjacent short-word selection followed by dictionary lookup",
+    "Phrase drill-down retains context; manual changes clear it",
+    "Real screen lift/depth, sidebar width, interrupted and disabled transitions",
+    "Acronym labels render without ellipsis"
+  ]
+}

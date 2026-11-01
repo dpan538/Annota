@@ -106,6 +106,7 @@ class DictionaryContextUiTest {
                     line("The sun will set beyond the horizon.", 40f, 680f)
                     line("The river bank was flooded.", 40f, 640f)
                     line("money deposit account", 340f, 640f)
+                    line("Cloud systems provide scalable and measured IT resources.", 40f, 600f)
                 }
                 doc.save(source)
             }
@@ -145,7 +146,14 @@ class DictionaryContextUiTest {
                 tap(xy.first, xy.second)
                 waitFor { ui { popup()?.isShowing == true } }
                 click("查词")
-                waitFor { definitions() == listOf(expected) }
+                try {
+                    waitFor { definitions() == listOf(expected) }
+                } catch (failure: IllegalStateException) {
+                    capture("dictionary-failure-${word.text}")
+                    error(
+                        "${word.text}: selected=${ui { v.selectedText() }} context=${ui { v.lookupContext() }} labels=${ui { nodes().filterIsInstance<TextView>().map { it.text.toString() } }}"
+                    )
+                }
                 assertTrue(
                     ui { nodes().filterIsInstance<TextView>().any { it.text.toString() == "当前语境" } }
                 )
@@ -195,6 +203,37 @@ class DictionaryContextUiTest {
             )
             select(words.filter { it.text == "set" }[1], "日落", "dictionary-context-sunset")
             select(words.first { it.text == "bank" }, "河岸", "dictionary-context-river-bank")
+            select(words.first { it.text == "scalable" }, "可扩展的", "dictionary-scalable-context")
+            select(words.first { it.text == "measured" }, "可计量的", "dictionary-measured-context")
+            select(words.first { it.text == "IT" }, "信息技术", "dictionary-it-context")
+            ui {
+                val label =
+                    nodes().filterIsInstance<TextView>().single {
+                        it.tag == "dictionary-sense-label"
+                    }
+                assertEquals("abbr.", label.text.toString())
+                assertEquals(
+                    "Acronym label must remain readable: width=${label.width}, padding=${label.compoundPaddingLeft + label.compoundPaddingRight}, text=${label.paint.measureText(label.text.toString())}, layout=${label.layout.width}",
+                    0,
+                    label.layout.getEllipsisCount(0),
+                )
+            }
+            ui {
+                nodes()
+                    .filterIsInstance<EditText>()
+                    .single()
+                    .setText("scalable and measured IT resources")
+            }
+            waitFor {
+                ui {
+                    nodes().any {
+                        it.tag == "dictionary-part" && it.contentDescription == "measured"
+                    }
+                }
+            }
+            click("measured")
+            waitFor { definitions() == listOf("可计量的") }
+            capture("dictionary-measured-drilldown")
             for ((index, phrase) in
                 listOf(
                         "virtual instances",
