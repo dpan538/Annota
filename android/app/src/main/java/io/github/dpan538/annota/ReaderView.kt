@@ -70,6 +70,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     var tool = displaySaved?.optString("tool", "hand") ?: "hand"
         set(value) {
             if (readOnly) return
+            if (field != value) cancelStroke()
             annotationSelection.clear()
             field = value
             if (value in setOf("pen", "pencil", "fountain", "highlight")) lastPenTool = value
@@ -91,6 +92,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     var spread = restored?.optBoolean("spread", false) ?: false
         set(value) {
             if (field == value) return
+            cancelStroke()
             pendingAnchor = captureAnchor()
             field = value
             geometry = null
@@ -188,6 +190,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private data class Tile(val key: String, val area: Rect, val scale: Float)
 
     @Volatile private var wantedTiles = emptySet<String>()
+    @Volatile private var wantedPages = emptySet<String>()
     private var drawnTiles = 0
     private val imageCache =
         object : LruCache<String, Bitmap>(memory.images) {
@@ -208,7 +211,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     var onSelectionAdjust: () -> Unit = {}
     var onNavigationChanged: (Boolean) -> Unit = {}
     private val backLocations = ArrayDeque<Viewport>()
-    private var epoch = 0
+    @Volatile private var epoch = 0
     private var suspended = false
     private var constrained = false
     private var closed = false
@@ -269,6 +272,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         )
 
     fun trimMemory(background: Boolean) {
+        if (background) cancelStroke()
         persistPosition()
         stopMotion()
         epoch++
@@ -314,6 +318,56 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private val placements = mutableListOf<Placement>()
     private var active: Placement? = null
     private var stroke: Mark? = null
+    private val holdHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private var strokeHeld = false
+    private var holdPending = false
+    private var holdX = 0f
+    private var holdY = 0f
+    private var holdPointCount = 0
+    private val straightenStroke = Runnable {
+        holdPending = false
+        val current = stroke
+        val placement = active
+        if (!closed && !readOnly && current != null && placement != null && rulerEdge == null) {
+            val size = floatArrayOf(24 * scale, 0f)
+            placement.inverse.mapVectors(size)
+            // The stationary tail may contain many tiny hardware jitter packets. Fit the
+            // actual drawn path plus its latest endpoint, not accumulated rest-time noise.
+            val fitting = current.points.take(holdPointCount).toMutableList()
+            current.points.lastOrNull()?.let { if (fitting.lastOrNull() != it) fitting.add(it) }
+            StrokeHold.straighten(current.copy(points = fitting), hypot(size[0], size[1]))?.let {
+                stroke = it
+                strokeHeld = true
+                invalidate()
+            }
+        }
+    }
+
+    private fun updateStrokeHold(x: Float, y: Float) {
+        val current = stroke ?: return
+        if (
+            strokeHeld ||
+                rulerEdge != null ||
+                current.tool !in setOf("pen", "pencil", "fountain", "highlight")
+        )
+            return
+        if (!holdPending || hypot(x - holdX, y - holdY) > 3 * scale) {
+            holdHandler.removeCallbacks(straightenStroke)
+            holdX = x
+            holdY = y
+            holdPending = true
+            holdPointCount = current.points.size
+            holdHandler.postDelayed(straightenStroke, StrokeHold.DELAY_MS)
+        }
+    }
+
+    private fun clearStrokeHold() {
+        holdHandler.removeCallbacks(straightenStroke)
+        holdPending = false
+        holdPointCount = 0
+        strokeHeld = false
+    }
+
     private var beforeErase: String? = null
     private var stylusSeen = false
     private var awaitingPalmUp = false
@@ -383,6 +437,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     fun refresh() {
+        cancelStroke()
         inkRenderer.invalidate()
         stopMotion()
         selected = emptyList()
@@ -394,6 +449,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     fun fit() {
+        cancelStroke()
         stopMotion()
         fitToWidth = false
         zoom = 1f
@@ -406,6 +462,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     fun fitWidth() {
+        cancelStroke()
         stopMotion()
         fitToWidth = true
         zoom = 1f
@@ -579,6 +636,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     fun restoreViewport(value: Viewport) {
+        cancelStroke()
         stopMotion()
         clearSelection()
         zoom = value.zoom
@@ -647,6 +705,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     fun goToPage(index: Int, animated: Boolean = true) {
+        cancelStroke()
         val layout = ensureGeometry() ?: return
         val page = index.coerceIn(0, book.pages.lastIndex)
         scrollToPosition(layout.rowForPage(page).top * zoom, animated)
@@ -656,6 +715,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        cancelStroke()
         pendingAnchor = captureAnchor()
         if (geometry != null) restorePan = panX / max(1, oldw)
         geometry = null
@@ -773,13 +833,15 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         try {
             executor.execute {
                 try {
-                    val bitmap = pdf.render(book, p, width)
+                    val bitmap =
+                        if (generation == epoch && p.id in wantedPages) pdf.render(book, p, width)
+                        else null
                     post {
                         if (generation == epoch) pending.remove(key)
-                        if (!closed && !suspended && generation == epoch) {
-                            cache.put(key, bitmap)
+                        if (!closed && !suspended && generation == epoch && p.id in wantedPages) {
+                            if (bitmap != null) cache.put(key, bitmap)
                             invalidate()
-                        } else bitmap.recycle()
+                        } else bitmap?.recycle()
                     }
                 } catch (t: Throwable) {
                     post {
@@ -834,7 +896,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             executor.execute {
                 var bitmap: Bitmap? = null
                 try {
-                    if (tile.key in wantedTiles)
+                    if (generation == epoch && tile.key in wantedTiles)
                         bitmap = pdf.renderTile(book, p, tile.scale, tile.area)
                     val result = bitmap
                     post {
@@ -1046,6 +1108,13 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             quality *= min(.85f, sqrt(tileBudget.toFloat() / bytes) * .95f)
         }
         wantedTiles = wanted
+        wantedPages = (frames + preload).map { book.pages[it.index].id }.toSet()
+        // Give every visible page its readable base before queueing any detail tiles.
+        // In a spread the first page's tiles must not keep the second page blank.
+        frames.forEach { frame ->
+            val p = book.pages[frame.index]
+            if (p.source >= 0) request(p, bitmapWidth(frame.index))
+        }
         for (frame in frames) {
             val i = frame.index
             val p = book.pages[i]
@@ -1058,7 +1127,6 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             val bw = bitmapWidth(i)
             val key = "${pageKey(p)}:$bw"
             val bitmap = cache.get(key)
-            if (p.source >= 0) request(p, bw)
             canvas.save()
             canvas.concat(m)
             canvas.clipRect(0f, 0f, p.w, p.h)
@@ -1174,6 +1242,21 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     private fun drawMark(c: Canvas, m: Mark) {
+        if (m.rotation == 0f || m.points.isEmpty()) {
+            drawUnrotatedMark(c, m)
+            return
+        }
+        val center = AnnotationSelection.center(m)
+        c.save()
+        try {
+            c.rotate(m.rotation, center.x, center.y)
+            drawUnrotatedMark(c, m)
+        } finally {
+            c.restore()
+        }
+    }
+
+    private fun drawUnrotatedMark(c: Canvas, m: Mark) {
         if (m.points.isEmpty()) return
         if (inkRenderer.draw(c, m)) return
         paint.color = m.color
@@ -1349,6 +1432,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             if (m.tool in setOf("image", "rectangle", "ellipse", "triangle")) {
                 val a = m.points.first()
                 val b = m.points.last()
+                val localFrom = AnnotationSelection.localPoint(m, from)
+                val localTo = AnnotationSelection.localPoint(m, p)
                 val box =
                     RectF(
                         min(a.x, b.x) - radius,
@@ -1366,10 +1451,19 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                     )
                 val crossed =
                     edges.zipWithNext().any { (u, v) ->
-                        InkEditing.erase(Mark("line", 0, 0f, mutableListOf(u, v)), from, p, .01f)
+                        InkEditing.erase(
+                                Mark("line", 0, 0f, mutableListOf(u, v)),
+                                localFrom,
+                                localTo,
+                                .01f,
+                            )
                             .let { pieces -> pieces.size != 1 || pieces[0].points != listOf(u, v) }
                     }
-                if (!box.contains(p.x, p.y) && !box.contains(from.x, from.y) && !crossed)
+                if (
+                    !box.contains(localTo.x, localTo.y) &&
+                        !box.contains(localFrom.x, localFrom.y) &&
+                        !crossed
+                )
                     result.add(m)
             } else {
                 val pieces = InkEditing.erase(m, from, p, radius)
@@ -1399,7 +1493,10 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         }
     }
 
+    internal fun cancelInput() = cancelStroke()
+
     private fun cancelStroke() {
+        clearStrokeHold()
         annotationSelection.clear()
         stroke = null
         rulerEdge = null
@@ -1609,6 +1706,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 downY = e.y
                 lastX = e.x
                 lastY = e.y
+                clearStrokeHold()
                 downTime = e.eventTime
                 maxPointers = 1
                 moved = false
@@ -1775,7 +1873,9 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                         if (beforeErase != null) erase(p)
                         else
                             stroke?.let { m ->
-                                if (
+                                if (strokeHeld) {
+                                    m.points[1] = p.copy(w = m.points.first().w)
+                                } else if (
                                     m.tool in
                                         setOf("rectangle", "ellipse", "triangle", "line", "arrow")
                                 ) {
@@ -1783,6 +1883,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                 } else m.points.add(p)
                             }
                     }
+                    updateStrokeHold(e.x, e.y)
                 } else if (browsing && active != null && selectionStart != null) {
                     val p = point(active!!, e.x, e.y, 1f)
                     val page = book.pages[active!!.index]
@@ -1824,6 +1925,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                     return true
                 }
                 val writing = stroke != null || beforeErase != null
+                holdHandler.removeCallbacks(straightenStroke)
+                holdPending = false
                 removeCallbacks(longPress)
                 velocity?.addMovement(e)
                 if (!cancelled) {
@@ -1844,7 +1947,9 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                             stroke?.let { mark ->
                                 val last = mark.points.last()
                                 if (p.x != last.x || p.y != last.y || p.p != last.p) {
-                                    if (
+                                    if (strokeHeld) {
+                                        mark.points[1] = p.copy(w = mark.points.first().w)
+                                    } else if (
                                         mark.tool in
                                             setOf(
                                                 "rectangle",
@@ -1862,6 +1967,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                         }
                         book.pages[active!!.index].marks.add(stroke!!)
                         stroke = null
+                        clearStrokeHold()
                         saveChange()
                         onChanged()
                     } else if (beforeErase != null) {

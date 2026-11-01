@@ -891,6 +891,33 @@ class LibraryScreen(
 
 internal class UiButton(context: Context) : FrameLayout(context) {
     private var wasPressed = false
+    private val focusPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = 0xff435dc2.toInt()
+            style = Paint.Style.STROKE
+            strokeWidth = 2 * resources.displayMetrics.density
+        }
+
+    init {
+        defaultFocusHighlightEnabled = false
+    }
+
+    override fun dispatchDraw(canvas: Canvas) {
+        super.dispatchDraw(canvas)
+        if (isFocused) {
+            val inset = focusPaint.strokeWidth
+            val radius = 12 * resources.displayMetrics.density
+            canvas.drawRoundRect(
+                inset,
+                inset,
+                width - inset,
+                height - inset,
+                radius,
+                radius,
+                focusPaint,
+            )
+        }
+    }
 
     override fun drawableStateChanged() {
         super.drawableStateChanged()
@@ -898,6 +925,7 @@ internal class UiButton(context: Context) : FrameLayout(context) {
             wasPressed = isPressed
             UiMotion.press(this, isPressed)
         }
+        invalidate()
     }
 
     override fun onInitializeAccessibilityNodeInfo(

@@ -20,8 +20,8 @@ class VersionIdentityTest {
     @Test
     fun installedVersionAndVisibleLibraryAboutAndUpdateIdentityAgree() {
         val installed = context.packageManager.getPackageInfo(context.packageName, 0)
-        assertEquals("1.0.4-preview", installed.versionName)
-        assertEquals(16L, installed.longVersionCode)
+        assertEquals("1.0.5-preview", installed.versionName)
+        assertEquals(17L, installed.longVersionCode)
         assertEquals(installed.versionName, BuildConfig.VERSION_NAME)
         assertTrue(Network.previewUpdates())
         // Preview identity must work in the signed non-debuggable APK too.
@@ -77,7 +77,7 @@ class VersionIdentityTest {
                             }
                             val labels = all(screen).filterIsInstance<TextView>()
                             val footerText =
-                                if (portrait) "Beta · 1.0.4" else "1.0.4-preview · Beta"
+                                if (portrait) "Beta · 1.0.5" else "1.0.5-preview · Beta"
                             val footer = labels.first { it.text.toString() == footerText }
                             assertEquals(View.VISIBLE, footer.visibility)
                             assertTrue(footer.width > 0 && footer.height > 0)
@@ -94,12 +94,12 @@ class VersionIdentityTest {
                             if (section == "settings") {
                                 val identity = if (english) "Beta build" else "Beta 测试版"
                                 assertTrue(
-                                    labels.any { it.text.toString() == "1.0.4-preview · $identity" }
+                                    labels.any { it.text.toString() == "1.0.5-preview · $identity" }
                                 )
                                 val current = if (english) "Current version" else "当前版本"
                                 assertTrue(
                                     labels.any {
-                                        it.text.toString() == "$current · 1.0.4-preview · $identity"
+                                        it.text.toString() == "$current · 1.0.5-preview · $identity"
                                     }
                                 )
                             }

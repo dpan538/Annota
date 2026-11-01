@@ -51,6 +51,21 @@ class ReaderPopover(
             inputMethodMode = PopupWindow.INPUT_METHOD_NEEDED
             softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
             animationStyle = 0
+            // Native popup transitions also cover outside-tap and programmatic dismissals.
+            enterTransition =
+                if (UiMotion.enabled())
+                    android.transition.Fade().apply {
+                        duration = UiMotion.PANEL
+                        interpolator = UiMotion.linear
+                    }
+                else null
+            exitTransition =
+                if (UiMotion.enabled())
+                    android.transition.Fade().apply {
+                        duration = 120L
+                        interpolator = UiMotion.linear
+                    }
+                else null
         }
     private val host = activity.window.decorView
     private var selection: RectF? = null
@@ -247,7 +262,6 @@ class ReaderPopover(
             popup.width = width
             popup.height = height
             popup.showAtLocation(host, Gravity.TOP or Gravity.LEFT, x, y)
-            UiMotion.enter(shell, 0f)
         }
     }
 }

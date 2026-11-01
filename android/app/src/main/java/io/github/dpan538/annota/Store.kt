@@ -67,6 +67,7 @@ data class Mark(
     val filled: Boolean = false,
     val inkVersion: Int = 0,
     val refined: Boolean = true,
+    val rotation: Float = 0f,
 ) {
     fun json() =
         JSONObject()
@@ -76,6 +77,7 @@ data class Mark(
             .put("points", JSONArray().also { a -> points.forEach { a.put(it.json()) } })
             .put("image", image)
             .put("filled", filled)
+            .also { if (rotation != 0f) it.put("rotation", rotation.toDouble()) }
             .also { if (inkVersion > 0) it.put("inkVersion", inkVersion).put("refined", refined) }
 
     companion object {
@@ -100,6 +102,7 @@ data class Mark(
                 j.optBoolean("filled"),
                 j.optInt("inkVersion", 0),
                 j.optBoolean("refined", true),
+                j.optDouble("rotation", 0.0).toFloat().let { if (it.isFinite()) it % 360f else 0f },
             )
         }
     }

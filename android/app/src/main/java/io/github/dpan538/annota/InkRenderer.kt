@@ -15,7 +15,9 @@ class InkRenderer {
 
     private class Cached(mark: Mark) {
         val stream = InkGeometry.Stream(mark)
-        val grainStream = if (mark.tool == "pencil") InkGeometry.GrainStream(mark.width) else null
+        val grainStream =
+            if (mark.tool == "pencil") InkGeometry.GrainStream(mark.width, mark.inkVersion)
+            else null
         val path = Path()
         val grains = if (grainStream != null) Path() else null
         var count = 0
@@ -72,7 +74,7 @@ class InkRenderer {
                 cached.sampleCount++
                 if (grainSink != null) {
                     cached.grainStream!!.add(sample).forEach {
-                        InkGeometry.circle(it.x, it.y, it.radius, grainSink)
+                        InkGeometry.grainPath(it, grainSink)
                         cached.grainCount++
                     }
                 }
@@ -93,7 +95,7 @@ class InkRenderer {
         paint.alpha = (255 * InkGeometry.opacity(mark)).toInt()
         canvas.drawPath(cached.path, paint)
         cached.grains?.let {
-            paint.alpha = 48
+            paint.alpha = (255 * InkGeometry.grainOpacity(mark)).toInt()
             canvas.drawPath(it, paint)
         }
         return true

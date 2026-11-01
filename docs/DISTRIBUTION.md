@@ -1,14 +1,14 @@
 # APK 与应用内更新
 
-> **1.0.4-preview · Beta 测试版**（versionCode 16）。本轮不是正式稳定版；沿用现有证书，可覆盖升级。按维护者要求提供给默认更新检查，最近正式版仍为 1.0.2。
+> **1.0.5-preview · Beta 测试版**（versionCode 17）。本轮不是正式稳定版；沿用现有证书，可覆盖升级。按维护者要求提供给默认更新检查，最近正式版仍为 1.0.2。
 
 ## 当前稳定版与测试版
 
-最近正式稳定版为 [1.0.2](https://github.com/dpan538/Annota/releases/tag/v1.0.2)，versionCode **13**。本轮发布 [1.0.4-preview Beta](https://github.com/dpan538/Annota/releases/tag/v1.0.4-preview)，versionCode **16**，沿用原证书。
+最近正式稳定版为 [1.0.2](https://github.com/dpan538/Annota/releases/tag/v1.0.2)，versionCode **13**。本轮发布 [1.0.5-preview Beta](https://github.com/dpan538/Annota/releases/tag/v1.0.5-preview)，versionCode **17**，沿用原证书。
 
 按维护者此前要求，正式版用户的默认更新检查也提供 Beta。为兼容已安装 1.0.2 的 `/releases/latest` 查询，GitHub 使用 Latest 与 `prerelease=false` 元数据；标题、应用内与文档明确标注 Beta，不将它表述为正式稳定版。用户仍需主动检查、确认下载并完成系统安装。
 
-旧 1.0.3-test Beta（14）保留历史附件，不再作为 Latest。新包已移除其下载式翻译方案，词库全部随 APK。后续正式版 versionCode 必须大于 **16**，以便测试用户覆盖升级。
+旧 1.0.3-test Beta（14）保留历史附件，不再作为 Latest。新包已移除其下载式翻译方案，词库全部随 APK。后续正式版 versionCode 必须大于 **17**，以便测试用户覆盖升级。
 
 
 1.0.0 是首个正式版，1.0.1 修正阅读颜色，1.0.2 增加手写签名与受限 PDF 兼容性；其历史证据保留在[签名验收](PDF-SIGNATURE-ACCEPTANCE.md)。
@@ -48,7 +48,7 @@
 ## GitHub 端
 
 - 正式标签：`vX.Y.Z`，附清晰的版本说明。
-- 本轮测试标签：`v1.0.4-preview`，`prerelease=false`、设为 Latest 以兼容已安装的正式版更新器，标题和应用保留 Beta 标识；附件和更新清单均使用真实测试包的名称、versionCode 与摘要。
+- 本轮测试标签：`v1.0.5-preview`，`prerelease=false`、设为 Latest 以兼容已安装的正式版更新器，标题和应用保留 Beta 标识；附件和更新清单均使用真实测试包的名称、versionCode 与摘要。
 - 附件：签名 `Annota-X.Y.Z.apk`、`SHA256SUMS.txt`，以及客户端必需的 `annota-update.json`（由 `android/scripts/make-update-manifest.py` 从真实签名 APK 生成）。
 - 使用公开 Releases API：`GET https://api.github.com/repos/dpan538/Annota/releases/latest`，没有 Token 也能读取公开发布信息，但需处理限流。
 - `latest` 是已安装正式版的默认入口；本轮明确授权向该入口提供 Beta。后续正式包必须使用更高 versionCode 并替换 Latest；不按预计一小时时限自动宣称正式发布。

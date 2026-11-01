@@ -4,19 +4,25 @@ import kotlin.math.*
 
 /** Versioned, deterministic ink geometry shared by the canvas and PDF exporter. */
 object InkGeometry {
-    const val VERSION = 1
+    const val VERSION = 2
     private val tools = setOf("pen", "fountain", "pencil", "highlight")
 
     data class Sample(val x: Float, val y: Float, val p: Float, val width: Float, val t: Long)
 
-    data class Grain(val x: Float, val y: Float, val radius: Float)
+    data class Grain(
+        val x: Float,
+        val y: Float,
+        val radius: Float,
+        val halfLength: Float = 0f,
+        val angle: Float = 0f,
+    )
 
-    fun supports(mark: Mark) = mark.inkVersion == VERSION && mark.tool in tools
+    fun supports(mark: Mark) = mark.inkVersion in 1..VERSION && mark.tool in tools
 
     fun opacity(mark: Mark): Float =
         when (mark.tool) {
             "highlight" -> 82f / 255f
-            "pencil" -> .58f
+            "pencil" -> if (mark.inkVersion >= 2) .48f else .58f
             else -> 1f
         }
 
@@ -67,6 +73,11 @@ object InkGeometry {
                 val dx = point.x - before.x
                 val dy = point.y - before.y
                 val distance = hypot(dx, dy)
+                // Stationary pressure packets must not stamp a larger pencil dot at a pause.
+                if (
+                    mark.inkVersion >= 2 && mark.tool == "pencil" && distance < .03f && last != null
+                )
+                    return null
                 speed += .35f * ((distance / dt).coerceAtMost(5000f) - speed)
                 var corner = false
                 earlierRaw?.let { earlier ->
@@ -135,14 +146,18 @@ object InkGeometry {
     }
 
     /** Subtle grain anchored to page space, preserved across frames, export, and eraser cuts. */
-    fun grains(samples: List<Sample>, baseWidth: Float): List<Grain> {
-        val stream = GrainStream(baseWidth)
+    fun grains(samples: List<Sample>, baseWidth: Float, version: Int = VERSION): List<Grain> {
+        val stream = GrainStream(baseWidth, version)
         return samples.flatMap { stream.add(it) }
     }
 
-    class GrainStream(baseWidth: Float) {
-        private val spacing = max(.65f, baseWidth * .72f)
-        private val grainRadius = max(.055f, baseWidth * .075f)
+    class GrainStream(baseWidth: Float, private val version: Int = VERSION) {
+        // Fine, short paper fibres rather than sparse dark circular particles. Old marks retain v1.
+        private val spacing =
+            if (version >= 2) max(.25f, baseWidth * .24f) else max(.65f, baseWidth * .72f)
+        private val grainRadius =
+            if (version >= 2) max(.018f, baseWidth * .012f) else max(.055f, baseWidth * .075f)
+        private val halfLength = if (version >= 2) max(.065f, baseWidth * .07f) else 0f
         private var previous: Sample? = null
         private val added = HashSet<Long>()
 
@@ -169,14 +184,40 @@ object InkGeometry {
                     val y = (gy + .2f + ((hash ushr 8) and 255) / 425f) * spacing
                     val f = (((x - a.x) * dx + (y - a.y) * dy) / (length * length)).coerceIn(0f, 1f)
                     val w = a.width + (sample.width - a.width) * f
-                    if (hypot(x - a.x - dx * f, y - a.y - dy * f) + grainRadius <= w / 2f) {
-                        grains.add(Grain(x, y, grainRadius))
+                    if (
+                        hypot(x - a.x - dx * f, y - a.y - dy * f) + max(grainRadius, halfLength) <=
+                            w / 2f
+                    ) {
+                        val variation =
+                            if (version >= 2) .6f + ((hash ushr 16) and 127) / 255f else 1f
+                        val angle = if (version >= 2) -.6f + ((hash ushr 23) and 127) / 106f else 0f
+                        grains.add(
+                            Grain(x, y, grainRadius * variation, halfLength * variation, angle)
+                        )
                         added.add(key)
                     }
                 }
             }
             return grains
         }
+    }
+
+    fun grainOpacity(mark: Mark): Float = if (mark.inkVersion >= 2) 30f / 255f else 48f / 255f
+
+    fun grainPath(grain: Grain, sink: PathSink) {
+        if (grain.halfLength <= 0f) {
+            circle(grain.x, grain.y, grain.radius, sink)
+            return
+        }
+        val dx = cos(grain.angle) * grain.halfLength
+        val dy = sin(grain.angle) * grain.halfLength
+        val nx = -sin(grain.angle) * grain.radius
+        val ny = cos(grain.angle) * grain.radius
+        sink.move(grain.x - dx, grain.y - dy)
+        sink.line(grain.x + nx, grain.y + ny)
+        sink.line(grain.x + dx, grain.y + dy)
+        sink.line(grain.x - nx, grain.y - ny)
+        sink.close()
     }
 
     interface PathSink {

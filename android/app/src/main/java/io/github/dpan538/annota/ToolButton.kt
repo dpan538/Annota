@@ -16,6 +16,7 @@ class ToolButton(context: Context, val name: String) : View(context) {
             wasPressed = isPressed
             UiMotion.press(this, isPressed)
         }
+        invalidate()
     }
 
     override fun setSelected(selected: Boolean) {
@@ -86,11 +87,42 @@ class ToolButton(context: Context, val name: String) : View(context) {
     init {
         isClickable = true
         isFocusable = true
-        setBackgroundResource(android.R.drawable.list_selector_background)
+        // Platform list selectors may render a full orange rectangle on stylus hover.
+        // All input states use the same bounded, rounded product surface instead.
+        background = null
+        defaultFocusHighlightEnabled = false
+    }
+
+    override fun onInitializeAccessibilityNodeInfo(
+        info: android.view.accessibility.AccessibilityNodeInfo
+    ) {
+        super.onInitializeAccessibilityNodeInfo(info)
+        info.className = "android.widget.Button"
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        if (isPressed || isHovered || isFocused) {
+            paint.color = tint
+            paint.alpha = if (isPressed) 28 else 18
+            val stateSize = 28 * unit
+            val bounds =
+                RectF(
+                    (width - stateSize) / 2,
+                    (height - stateSize) / 2,
+                    (width + stateSize) / 2,
+                    (height + stateSize) / 2,
+                )
+            canvas.drawRoundRect(bounds, 8 * unit, 8 * unit, paint)
+            if (isFocused) {
+                paint.style = Paint.Style.STROKE
+                paint.strokeWidth = unit
+                paint.alpha = 150
+                canvas.drawRoundRect(bounds, 8 * unit, 8 * unit, paint)
+                paint.style = Paint.Style.FILL
+            }
+            paint.alpha = 255
+        }
         if (selectionProgress > 0) {
             paint.color = selectedFill
             paint.alpha = (Color.alpha(selectedFill) * selectionProgress).toInt()

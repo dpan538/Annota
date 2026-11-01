@@ -1,0 +1,22 @@
+{
+  "manifest": {
+    "schemaVersion": 1,
+    "packageName": "io.github.dpan538.annota",
+    "versionCode": 17,
+    "versionName": "1.0.5-preview",
+    "apk": "Annota-1.0.5-preview.apk",
+    "sha256": "2a777cb8e4f2a940e8fb69cc796b1185d194c3962f7f478b47c6be79a33712f4",
+    "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18"
+  },
+  "bytes": 77022325,
+  "releaseNonDebuggable": true,
+  "zipCrcPassed": true,
+  "noMlKitClasses": true,
+  "noGoogleTranslationDownloadAssets": true,
+  "dictionaryHashes": {
+    "en-zh.sqlite": "534f5aadb45fba2edb06eee8e442cde106710b2a6c4e09d1e5b1f814612fddd5",
+    "zh-en.sqlite": "bda7b4c5fd8742ed776445e59bcdbb651086e20e1f76ea2954b62b24f54a8a35"
+  },
+  "build": "Debug, AndroidTest, Release and lintDebug successful",
+  "device": "API 36 ARM64 dedicated emulator; not physical Xiaomi"
+}

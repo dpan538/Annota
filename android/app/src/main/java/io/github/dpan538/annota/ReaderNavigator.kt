@@ -124,6 +124,7 @@ class ReaderNavigator(
                     }
                 when (item) {
                     is Int -> {
+                        column.tag = "navigation-page:$item"
                         column.contentDescription = "${tr("页面","Page")} ${item+1}"
                         if (tab == 3) {
                             column.addView(
@@ -145,6 +146,7 @@ class ReaderNavigator(
                                     activity,
                                     book.copy(pages = mutableListOf(book.pages[item])),
                                     covers,
+                                    fullPage = true,
                                 ),
                                 LinearLayout.LayoutParams(-1, ui.px(128f)),
                             )
@@ -356,7 +358,19 @@ class ReaderNavigator(
                 if (marked) ui.palette.color("side-active") else ui.palette.color("thumb"),
                 8f,
             )
-        adapter.notifyDataSetChanged()
+        // A viewport page change only changes selection colour. Rebuilding every row
+        // repeatedly detaches pending thumbnail subscribers during continuous scrolling.
+        for (i in 0 until list.childCount) {
+            val child = list.getChildAt(i)
+            val index = child.tag?.toString()?.removePrefix("navigation-page:")?.toIntOrNull()
+            if (index != null)
+                child.background =
+                    ui.background(
+                        if (index == book.current) ui.palette.color("side-active")
+                        else Color.TRANSPARENT,
+                        9f,
+                    )
+        }
     }
 
     private fun jumpToPage() {

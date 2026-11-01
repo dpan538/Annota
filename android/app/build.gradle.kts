@@ -10,8 +10,8 @@ android {
         applicationId = "io.github.dpan538.annota"
         minSdk = 29
         targetSdk = 36
-        versionCode = providers.gradleProperty("annotaVersionCode").orElse("16").get().toInt()
-        versionName = providers.gradleProperty("annotaVersionName").orElse("1.0.4-preview").get()
+        versionCode = providers.gradleProperty("annotaVersionCode").orElse("17").get().toInt()
+        versionName = providers.gradleProperty("annotaVersionName").orElse("1.0.5-preview").get()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "FEEDBACK_ENDPOINT", "\"https://annota-feedback-dpan538s-projects.vercel.app/v1/feedback\"")
     }

@@ -15,7 +15,7 @@ data class DocumentCover(val bitmap: Bitmap, val content: Rect) {
     companion object {
         fun load(pdf: PdfEngine, book: Book, width: Int = 640): DocumentCover {
             val page = book.pages.first()
-            var bitmap = pdf.render(book, page, width)
+            var bitmap = pdf.render(book, page, width, preview = true)
             if (page.rotation % 360 != 0) {
                 val rotated =
                     Bitmap.createBitmap(
@@ -65,7 +65,7 @@ data class DocumentCover(val bitmap: Bitmap, val content: Rect) {
     }
 }
 
-/** One bounded worker, no bitmap retained per card, and no rendering of offscreen cards. */
+/** Shared bounded cache and worker; detached queued cards release their render requests. */
 class CoverRepository(context: Context, private val pdf: PdfEngine) {
     private val main = android.os.Handler(android.os.Looper.getMainLooper())
     private val budget = RenderMemory.from(context).covers
@@ -77,6 +77,8 @@ class CoverRepository(context: Context, private val pdf: PdfEngine) {
     private val worker =
         ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, ArrayBlockingQueue<Runnable>(6))
     private val pending = mutableSetOf<String>()
+    private val jobs = mutableMapOf<String, Runnable>()
+    private val failures = mutableMapOf<String, Long>()
     private val listeners = mutableMapOf<String, java.util.WeakHashMap<View, Boolean>>()
     private var epoch = 0
     private var paused = false
@@ -99,42 +101,73 @@ class CoverRepository(context: Context, private val pdf: PdfEngine) {
         if (closed || paused) return
         val key = key(book)
         if (cache.get(key) != null) return
+        val retryAt = failures[key] ?: 0L
+        if (android.os.SystemClock.uptimeMillis() < retryAt) {
+            target.postInvalidateDelayed(500)
+            return
+        }
         listeners.getOrPut(key) { java.util.WeakHashMap() }[target] = true
         if (!pending.add(key)) return
         val generation = epoch
-        try {
-            worker.execute {
-                try {
-                    val p = book.pages.first()
-                    val width =
-                        min(640, sqrt(cache.maxSize() / 8f * p.w / p.h).toInt()).coerceAtLeast(100)
-                    val cover = DocumentCover.load(pdf, book, width)
-                    main.post {
-                        if (generation == epoch) pending.remove(key)
-                        if (!closed && !paused && generation == epoch) {
-                            cache.put(key, cover)
-                            listeners.remove(key)?.keys?.toList()?.forEach { it.invalidate() }
-                        } else cover.bitmap.recycle()
-                    }
-                } catch (_: Exception) {
-                    main.post {
-                        if (generation == epoch) {
-                            pending.remove(key)
-                            listeners.remove(key)?.keys?.toList()?.forEach {
-                                it.postInvalidateDelayed(300)
+        val job = Runnable {
+            var cover: DocumentCover? = null
+            try {
+                val p = book.pages.first()
+                val width =
+                    min(640, sqrt(cache.maxSize() / 8f * p.w / p.h).toInt()).coerceAtLeast(100)
+                cover = DocumentCover.load(pdf, book, width)
+            } catch (t: Throwable) {
+                android.util.Log.w(
+                    "AnnotaCover",
+                    "Preview render failed for page ${book.pages.first().source}",
+                    t,
+                )
+            } finally {
+                val result = cover
+                main.post {
+                    if (generation == epoch) {
+                        pending.remove(key)
+                        jobs.remove(key)
+                        val targets = listeners.remove(key)?.keys?.toList().orEmpty()
+                        if (!closed && !paused && result != null) {
+                            failures.remove(key)
+                            cache.put(key, result)
+                            targets.forEach { it.invalidate() }
+                        } else {
+                            result?.bitmap?.recycle()
+                            if (!closed && !paused) {
+                                failures[key] = android.os.SystemClock.uptimeMillis() + 1000
+                                targets.forEach { it.postInvalidateDelayed(1000) }
                             }
                         }
-                    }
+                    } else result?.bitmap?.recycle()
                 }
             }
+        }
+        jobs[key] = job
+        try {
+            worker.execute(job)
         } catch (_: RejectedExecutionException) {
             pending.remove(key)
+            jobs.remove(key)
             target.postInvalidateDelayed(100)
         }
     }
 
     fun release(book: Book, target: View) {
-        listeners[key(book)]?.remove(target)
+        val key = key(book)
+        val targets = listeners[key] ?: return
+        targets.remove(target)
+        if (targets.isEmpty()) {
+            listeners.remove(key)
+            // Scrolled-away queued pages must not delay the newly visible pages.
+            jobs[key]?.let { job ->
+                if (worker.remove(job)) {
+                    jobs.remove(key)
+                    pending.remove(key)
+                }
+            }
+        }
     }
 
     fun trim(background: Boolean) {
@@ -142,6 +175,8 @@ class CoverRepository(context: Context, private val pdf: PdfEngine) {
         paused = background
         worker.queue.clear()
         pending.clear()
+        jobs.clear()
+        failures.clear()
         listeners.clear()
         cache.evictAll()
         cache.resize(max(1024 * 1024, budget / 2))
@@ -163,16 +198,22 @@ class DocumentCoverView(
     context: Context,
     private val book: Book,
     private val covers: CoverRepository,
+    private val fullPage: Boolean = false,
 ) : View(context) {
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
-    private val visible = Rect()
 
     init {
         val english =
             context
                 .getSharedPreferences("settings", Context.MODE_PRIVATE)
                 .getBoolean("english", false)
-        contentDescription = "${book.title} · ${if (english) "First-page cover" else "首页封面"}"
+        val label =
+            if (fullPage) {
+                if (english) "Page preview" else "页面预览"
+            } else {
+                if (english) "First-page cover" else "首页封面"
+            }
+        contentDescription = "${book.title} · $label"
     }
 
     override fun onDetachedFromWindow() {
@@ -186,18 +227,21 @@ class DocumentCoverView(
     }
 
     override fun onDraw(canvas: Canvas) {
-        if (!getLocalVisibleRect(visible)) return
+        // ListView may record this child while it is just outside the viewport, then
+        // reuse that display list as it scrolls in. Recording nothing here leaves a
+        // permanently blank thumbnail even when its bitmap is already cached.
         val cover = covers.cached(book)
         if (cover == null) {
             covers.request(book, this)
             return
         }
-        val source = cover.content
+        val source =
+            if (fullPage) Rect(0, 0, cover.bitmap.width, cover.bitmap.height) else cover.content
         val inset = 10 * resources.displayMetrics.density
         val availableW = max(1f, width - inset * 2)
         val availableH = max(1f, height - inset * 2)
         val scale =
-            if (source.width() > source.height())
+            if (fullPage || source.width() > source.height())
                 min(availableW / source.width(), availableH / source.height())
             else availableW / source.width()
         val drawW = source.width() * scale

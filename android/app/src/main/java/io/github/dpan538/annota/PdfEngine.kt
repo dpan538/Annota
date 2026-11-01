@@ -25,8 +25,13 @@ class PdfEngine(val context: Context, val store: Store) {
     }
 
     private val rasterPool = PdfRasterPool()
+    // Thumbnail work must not queue behind a screenful of high resolution tiles.
+    private val previewRasterPool = PdfRasterPool()
 
-    fun trimRasterMemory() = rasterPool.trim()
+    fun trimRasterMemory() {
+        rasterPool.trim()
+        previewRasterPool.trim()
+    }
 
     private fun memory() =
         MemoryUsageSetting.setupMixed(24L * 1024 * 1024).setTempDir(context.cacheDir)
@@ -97,7 +102,7 @@ class PdfEngine(val context: Context, val store: Store) {
         }
     }
 
-    fun render(book: Book, page: Sheet, width: Int = 1400): Bitmap {
+    fun render(book: Book, page: Sheet, width: Int = 1400, preview: Boolean = false): Bitmap {
         val scale = min(width.coerceIn(100, 2500) / page.w, 2500f / page.h)
         val result =
             Bitmap.createBitmap(
@@ -105,17 +110,25 @@ class PdfEngine(val context: Context, val store: Store) {
                 max(1, (page.h * scale).toInt()),
                 Bitmap.Config.ARGB_8888,
             )
-        val canvas = Canvas(result)
-        canvas.drawColor(Color.WHITE)
-        if (page.source >= 0) {
-            rasterPool.page(readingFile(book), page.source) { p ->
-                p.render(result, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+        try {
+            val canvas = Canvas(result)
+            canvas.drawColor(Color.WHITE)
+            if (page.source >= 0) {
+                (if (preview) previewRasterPool else rasterPool).page(
+                    readingFile(book),
+                    page.source,
+                ) { p ->
+                    p.render(result, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                }
+            } else {
+                canvas.scale(scale, scale)
+                drawPaper(canvas, page)
             }
-        } else {
-            canvas.scale(scale, scale)
-            drawPaper(canvas, page)
+            return result
+        } catch (t: Throwable) {
+            result.recycle()
+            throw t
         }
-        return result
     }
 
     /** Rasterize this region directly from the PDF at the current display scale, never a JPEG. */
@@ -297,6 +310,22 @@ class PdfEngine(val context: Context, val store: Store) {
                             p.marks.forEach { m ->
                                 if (m.points.isEmpty()) return@forEach
                                 cs.saveGraphicsState()
+                                if (m.rotation != 0f) {
+                                    val center = AnnotationSelection.center(m)
+                                    val a = Math.toRadians(m.rotation.toDouble())
+                                    val co = kotlin.math.cos(a).toFloat()
+                                    val si = kotlin.math.sin(a).toFloat()
+                                    cs.transform(
+                                        Matrix(
+                                            co,
+                                            si,
+                                            -si,
+                                            co,
+                                            center.x - co * center.x + si * center.y,
+                                            center.y - si * center.x - co * center.y,
+                                        )
+                                    )
+                                }
                                 val alpha =
                                     if (m.tool == "highlight") 0.32f
                                     else if (m.tool == "pencil") 0.65f else 1f
@@ -446,10 +475,12 @@ class PdfEngine(val context: Context, val store: Store) {
         cs.fill()
         if (mark.tool == "pencil") {
             cs.setGraphicsStateParameters(
-                PDExtendedGraphicsState().apply { nonStrokingAlphaConstant = 48f / 255f }
+                PDExtendedGraphicsState().apply {
+                    nonStrokingAlphaConstant = InkGeometry.grainOpacity(mark)
+                }
             )
-            InkGeometry.grains(samples, mark.width).forEach {
-                InkGeometry.circle(it.x, it.y, it.radius, sink)
+            InkGeometry.grains(samples, mark.width, mark.inkVersion).forEach {
+                InkGeometry.grainPath(it, sink)
             }
             cs.fill()
         }

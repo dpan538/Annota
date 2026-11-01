@@ -1,0 +1,22 @@
+{
+  "fromVersionName": "1.0.4-preview",
+  "fromVersionCode": 16,
+  "toVersionName": "1.0.5-preview",
+  "toVersionCode": 17,
+  "published": false,
+  "dataUnchanged": true,
+  "apkSha256": "4625af4c5410d92177496f9d321b0d5ed5e29174ee45299fbf233299058686ad",
+  "noMlKitClassesInApkDex": true,
+  "dictionaryDatabasesBundled": true,
+  "noGoogleTranslationAttributionAssets": true,
+  "snapshotSha256": "f6517fe98858fe9ebad1a7a0a7ce4d94cbc6cf85eb03fec3edad2d64d5570b66",
+  "snapshotComparedFields": [
+    "books",
+    "flags",
+    "settings",
+    "reading-viewports",
+    "reading-display",
+    "pendingUpdateCleared"
+  ],
+  "note": "Comparison performed on disposable emulator fixtures before private lecture import; original full snapshots were equal. Final candidate package is verified separately."
+}

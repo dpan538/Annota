@@ -1,0 +1,6 @@
+{
+  "command": "python3 design/dictionary/test_lookup.py",
+  "tests": 12,
+  "passed": true,
+  "durationSeconds": 2.513
+}

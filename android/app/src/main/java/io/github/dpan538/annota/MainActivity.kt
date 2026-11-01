@@ -555,6 +555,7 @@ class MainActivity : Activity() {
     private var searchVisible = false
 
     private fun library() {
+        val transition = if (reader != null) UiMotion.captureScreen(root) else null
         closeNavigation()
         reader?.persistPosition()
         book?.let { ContinueReadingWidget.remember(this, it) }
@@ -650,6 +651,7 @@ class MainActivity : Activity() {
         screen.typeFilter = libraryFilter
         root.addView(screen, LinearLayout.LayoutParams(-1, -1))
         root.requestApplyInsets()
+        transition?.start()
     }
 
     private fun libraryFilterMenu() {
@@ -786,6 +788,7 @@ class MainActivity : Activity() {
             work(tr("检查文档…", "Checking document…"), { pdf.inspect(b) }) { open(b) }
             return
         }
+        val transition = UiMotion.captureScreen(root)
         reader?.persistPosition()
         if (book != null && book?.id != b.id) restoringSession = null
         book = b
@@ -794,6 +797,7 @@ class MainActivity : Activity() {
         ContinueReadingWidget.remember(this, b)
         activePage = b.current
         showReader()
+        transition?.start()
         if (!b.pdfInfo.annotate)
             toast(tr("此 PDF 限制修改，已只读打开", "This PDF restricts changes. Opened read-only."))
     }
@@ -1124,6 +1128,7 @@ class MainActivity : Activity() {
 
     private fun undo(redo: Boolean) {
         if (reader?.readOnly == true) return
+        reader?.cancelInput()
         book?.let {
             if (!store.undo(it, redo)) toast(tr("没有更多历史", "No more history"))
             reader?.refresh()
@@ -1503,7 +1508,8 @@ class MainActivity : Activity() {
         showPanel(menu)
     }
 
-    private fun closeNavigation() {
+    private fun closeNavigation(animated: Boolean = false) {
+        val transition = if (animated) readerHost?.let { UiMotion.captureScreen(it) } else null
         navigationPanel?.dispose()
         navigationPanel = null
         pageSidebar?.let { readerHost?.removeView(it) }
@@ -1512,10 +1518,11 @@ class MainActivity : Activity() {
         pageCovers?.close()
         pageCovers = null
         readerTools["list"]?.isSelected = false
+        transition?.start()
     }
 
     private fun pages() {
-        if (pageSidebar != null) closeNavigation() else showNavigation()
+        if (pageSidebar != null) closeNavigation(true) else showNavigation()
     }
 
     private fun showNavigation(search: Boolean = false, restored: ReaderNavigator.State? = null) {
@@ -1537,24 +1544,27 @@ class MainActivity : Activity() {
                 store,
                 menu.ui,
                 covers,
-                ::closeNavigation,
+                { closeNavigation(true) },
                 { index, anchor -> pageMenu(index, anchor) },
                 search,
                 origin,
                 restored,
             )
+        val transition =
+            if (restored == null) readerHost?.let { UiMotion.captureScreen(it) } else null
         navigationPanel = panel
         pageSidebar = panel.view
         val width =
             menu.ui.px(264f).coerceAtMost((resources.displayMetrics.widthPixels * .46f).toInt())
         readerHost?.addView(panel.view, FrameLayout.LayoutParams(width, -1, Gravity.START))
-        UiMotion.enter(panel.view, 0f)
         r.layoutParams = FrameLayout.LayoutParams(-1, -1).apply { leftMargin = width }
         readerTools["list"]?.isSelected = true
+        transition?.start()
     }
 
     private fun addPage() {
         if (reader?.readOnly == true) return
+        reader?.cancelInput()
         val b = book ?: return
         paperMenu(tr("新增纸页", "Add page"), tr("新增纸页", "Add page")) { style, paper, _ ->
             if (reader?.readOnly == true) return@paperMenu
@@ -1568,6 +1578,7 @@ class MainActivity : Activity() {
 
     private fun pageMenu(i: Int, anchor: View? = null) {
         if (reader?.readOnly == true) return
+        reader?.cancelInput()
         val b = book ?: return
         val p = b.pages[i]
         val menu = readerPanel("list", 224f, anchor)
@@ -2286,7 +2297,7 @@ class MainActivity : Activity() {
             root.clearFocus()
         } else if (paperPopup?.isShowing == true) paperPopup?.dismiss()
         else if (readerPopup?.isShowing == true) readerPopup?.dismiss()
-        else if (navigationPanel != null) closeNavigation()
+        else if (navigationPanel != null) closeNavigation(true)
         else if (book != null) library()
         else if (section == "settings") {
             section = "home"

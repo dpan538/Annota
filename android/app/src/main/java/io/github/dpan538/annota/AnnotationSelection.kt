@@ -14,9 +14,17 @@ class AnnotationSelection {
     private var start = PointF()
     private var initial = RectF()
     private var box: RectF? = null
-    private var mode = 0 // 1 marquee, 2 move, 3 resize
+    private var mode = 0 // 1 marquee, 2 move, 3 resize, 4 rotate
+    private var handleOffset = 28f
     private var changed = false
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+    private fun rotationY(b: RectF): Float =
+        when {
+            b.top >= handleOffset + 8f -> b.top - handleOffset
+            b.bottom + handleOffset + 8f < (page?.h ?: Float.MAX_VALUE) -> b.bottom + handleOffset
+            else -> (b.top + handleOffset).coerceAtMost((page?.h ?: b.bottom) - 8f)
+        }
 
     fun clear() {
         cancel()
@@ -26,7 +34,7 @@ class AnnotationSelection {
     }
 
     fun cancel() {
-        if (mode in 2..3)
+        if (mode in 2..4)
             page?.let { p ->
                 indices.zip(originals).forEach { (i, m) -> if (i < p.marks.size) p.marks[i] = m }
                 box = RectF(initial)
@@ -40,8 +48,10 @@ class AnnotationSelection {
         page = p
         start.set(x, y)
         val b = box
+        handleOffset = hit * 2f
         mode =
             when {
+                b != null && hypot(x - b.centerX(), y - rotationY(b)) <= hit -> 4
                 b != null && hypot(x - b.right, y - b.bottom) <= hit -> 3
                 b != null && b.contains(x, y) -> 2
                 else -> 1
@@ -61,6 +71,24 @@ class AnnotationSelection {
         if (mode == 0) return
         if (mode == 1) {
             box = RectF(min(start.x, x), min(start.y, y), max(start.x, x), max(start.y, y))
+            return
+        }
+        if (mode == 4) {
+            val cx = initial.centerX()
+            val cy = initial.centerY()
+            val delta =
+                Math.toDegrees(
+                        (atan2(y - cy, x - cx) - atan2(start.y - cy, start.x - cx)).toDouble()
+                    )
+                    .toFloat()
+            changed = abs(delta) > .05f
+            indices.zip(originals).forEach { (i, m) ->
+                p.marks[i] = if (changed) rotate(m, cx, cy, delta) else m
+            }
+            box =
+                indices
+                    .mapNotNull { bounds(p.marks[it]) }
+                    .reduceOrNull { a, b -> a.apply { union(b) } }
             return
         }
         val factor =
@@ -119,7 +147,7 @@ class AnnotationSelection {
                     .mapNotNull { bounds(p.marks[it]) }
                     .reduceOrNull { a, b -> a.apply { union(b) } }
         }
-        val commit = mode in 2..3 && changed
+        val commit = mode in 2..4 && changed
         mode = 0
         changed = false
         originals = emptyList()
@@ -134,6 +162,7 @@ class AnnotationSelection {
             return
         }
         val b = box ?: return
+        handleOffset = 44f * unit
         paint.color = 0xff435dc2.toInt()
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 1.5f * unit
@@ -141,15 +170,81 @@ class AnnotationSelection {
         canvas.drawRect(b, paint)
         paint.pathEffect = null
         if (indices.isNotEmpty()) {
+            paint.style = Paint.Style.STROKE
+            val ry = rotationY(b)
+            canvas.drawLine(
+                b.centerX(),
+                if (ry < b.top) b.top else b.bottom,
+                b.centerX(),
+                ry,
+                paint,
+            )
+            canvas.drawCircle(b.centerX(), ry, 7 * unit, paint)
+            canvas.drawArc(
+                RectF(b.centerX() - 3 * unit, ry - 3 * unit, b.centerX() + 3 * unit, ry + 3 * unit),
+                20f,
+                270f,
+                false,
+                paint,
+            )
             paint.style = Paint.Style.FILL
             canvas.drawCircle(b.right, b.bottom, 6 * unit, paint)
         }
     }
 
     companion object {
+        fun center(mark: Mark): PointF =
+            PointF(
+                (mark.points.first().x + mark.points.last().x) / 2f,
+                (mark.points.first().y + mark.points.last().y) / 2f,
+            )
+
+        private fun rotatedPoint(p: Point, cx: Float, cy: Float, degrees: Float): Point {
+            val a = Math.toRadians(degrees.toDouble())
+            val co = cos(a).toFloat()
+            val si = sin(a).toFloat()
+            return p.copy(
+                x = cx + co * (p.x - cx) - si * (p.y - cy),
+                y = cy + si * (p.x - cx) + co * (p.y - cy),
+            )
+        }
+
+        fun localPoint(mark: Mark, p: Point): Point {
+            if (mark.rotation == 0f) return p
+            val c = center(mark)
+            return rotatedPoint(p, c.x, c.y, -mark.rotation)
+        }
+
+        fun rotate(mark: Mark, cx: Float, cy: Float, degrees: Float): Mark {
+            if (mark.tool in setOf("image", "rectangle", "ellipse", "triangle")) {
+                val c = center(mark)
+                val moved = rotatedPoint(Point(c.x, c.y), cx, cy, degrees)
+                return mark.copy(
+                    rotation = (mark.rotation + degrees) % 360f,
+                    points =
+                        mark.points
+                            .map { it.copy(x = it.x + moved.x - c.x, y = it.y + moved.y - c.y) }
+                            .toMutableList(),
+                )
+            }
+            val frozen = transform(mark, 0f, 0f, 0f, 0f, 1f)
+            return frozen.copy(
+                points = frozen.points.map { rotatedPoint(it, cx, cy, degrees) }.toMutableList()
+            )
+        }
+
         fun bounds(mark: Mark): RectF? {
             if (mark.points.isEmpty()) return null
-            val p = mark.points
+            val c = center(mark)
+            val p =
+                if (mark.rotation == 0f) mark.points
+                else {
+                    val a = mark.points.first()
+                    val b = mark.points.last()
+                    listOf(Point(a.x, a.y), Point(a.x, b.y), Point(b.x, a.y), Point(b.x, b.y)).map {
+                        rotatedPoint(it, c.x, c.y, mark.rotation)
+                    }
+                }
             return RectF(p.minOf { it.x }, p.minOf { it.y }, p.maxOf { it.x }, p.maxOf { it.y })
                 .apply {
                     val padding = if (mark.tool == "image") 0f else max(.5f, mark.width * 2)
