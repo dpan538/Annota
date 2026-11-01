@@ -7,7 +7,7 @@
   "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18",
   "apkSha256": "66dd5b62f18caf80260163f4bdbf66712748444ddf1004cae81816eb9ddfc1d7",
   "bytes": 143073620,
-  "published": false,
+  "published": true,
   "physicalDevice": false,
   "stableChannel": "1.0.2",
   "build": "assembleDebug, assembleDebugAndroidTest, lintDebug, assembleRelease passed",
@@ -25,5 +25,37 @@
     "offline": true,
     "installedBuild": "non-debuggable 1.0.3-test",
     "academicTerminologyValidated": false
-  }
+  },
+  "publishedAt": "2026-11-01T10:38:22Z",
+  "releaseId": 430512242,
+  "sourceCommit": "8ef3da1f5f3508baf77c6272cd39dbd8ed170c14",
+  "latestStable": false,
+  "stableTag": "v1.0.2",
+  "publicAssets": [
+    {
+      "name": "Annota-1.0.3-test.apk",
+      "bytes": 143073620,
+      "sha256": "66dd5b62f18caf80260163f4bdbf66712748444ddf1004cae81816eb9ddfc1d7",
+      "url": "https://github.com/dpan538/Annota/releases/download/v1.0.3-test/Annota-1.0.3-test.apk",
+      "anonymousDownload": true
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "bytes": 88,
+      "sha256": "fe962a14a1bcfcd62ceb4870daa629444672bd584f56089fa9a700b262cc6a05",
+      "url": "https://github.com/dpan538/Annota/releases/download/v1.0.3-test/SHA256SUMS.txt",
+      "anonymousDownload": true
+    },
+    {
+      "name": "annota-update.json",
+      "bytes": 327,
+      "sha256": "b1c642a8bfa46e2d31b40a51da2fbd97ef7f007d17e4819c751434611f5383f4",
+      "url": "https://github.com/dpan538/Annota/releases/download/v1.0.3-test/annota-update.json",
+      "anonymousDownload": true
+    }
+  ],
+  "publicApkInstalled": true,
+  "publicApkColdLaunch": true,
+  "publicInstallDataUnchanged": true,
+  "betaLabelVisible": true
 }

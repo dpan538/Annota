@@ -48,7 +48,8 @@ Android 回归覆盖笔迹版本与原始采样、慢速抖动与快速轨迹、
 ## 最终记录
 
 - 最终 Beta：93 项 Android 回归全部通过，12 项 Python 词库回归通过；Debug、测试包、Lint 与非调试 Release 构建通过。Beta 标识的中英文横竖屏、稳定 / 测试更新通道隔离也在回归内。
-- 非调试 Beta 包身份、同证书覆盖升级、公开 APK / SHA256SUMS / 更新清单一致性、GitHub Pre-release 标记与稳定通道仍为 1.0.2：由最终测试包验证补记。
+- 已发布 [1.0.3-test Beta](https://github.com/dpan538/Annota/releases/tag/v1.0.3-test)，源代码提交为 `8ef3da1f5f3508baf77c6272cd39dbd8ed170c14`。公开 APK、SHA256SUMS 与更新清单均已匿名重新下载，字节数、SHA-256 和版本一致；GitHub 标记为 Pre-release，稳定通道仍为 1.0.2。
+- 公开下载的非调试 APK 已在专用模拟器重新覆盖安装、冷启动；安装前后测试书库快照一致，界面显示 `1.0.3-test · Beta`。固定签名证书与 1.0.2 一致。完整包身份、校验值和下载结果见[发布验证 JSON](../android/verification/handwriting-1.0.3-test/release.json)，启动后的界面见[Beta 标识截图](../android/verification/handwriting-1.0.3-test/beta-library.png)。
 - Xiaomi Pad 9 Pro Max 真机：仍待实际笔型号、中文小字、英文连写、钩折 / 公式、模型下载和断网翻译验收。此前版本的真机通过记录不覆盖本轮变化。
 
 调研与未实施方案保留在[研究记录](HANDWRITING-LOOKUP-RESEARCH-2026-11-01.md)；研究中的字形整理、厂商预测 / 触觉能力没有作为本版已实现功能。
