@@ -12,7 +12,8 @@
 | AndroidX / Android apksig | Apache 2.0；原生系统集成、APK 密码学签名校验。版本由 Gradle 固定。 |
 | Gunicorn | 反馈服务运行器，MIT；仅服务端依赖，不随 APK 运行。依赖版本固定在 `feedback-service/requirements.txt`。 |
 | Lucide / Feather | Lucide contributors 的 ISC，以及其保留的 Feather MIT 声明。使用于界面功能图标；原文见 `licenses/Lucide-LICENSE`。不是 Annota 原创 Logo 的来源。 |
-| ECDICT 核心子集 | 上游 skywind3000/ECDICT 标注 MIT；保留原许可、源数据哈希及筛选方法。公开 APK 发布前复核上游外部数据来源范围，不承诺全部专业词汇。 |
+| ECDICT 英汉数据 | 上游 skywind3000/ECDICT 标注 MIT；保留原许可、源数据哈希及筛选方法。公开 APK 发布前复核上游外部数据来源范围，不承诺全部专业词汇。 |
+| Princeton WordNet 3.0 / Chinese Open WordNet | Princeton University、Francis Bond 与 Shan Wang；各自宽松许可完整保存在 `design/dictionary/licenses/` 并随 APK 提供。词义关联、固定来源与转换方法见 [开放词库说明](design/dictionary/OPEN-LEXICON-RESEARCH.md)。 |
 | CC-CEDICT | 社区维护、MDBG 发布；当前随来源保存的头部标注 CC BY-SA 4.0。汉英源数据与 SQLite 转换结果沿用该许可，保留署名、版本、转换方法及可重建源。此数据的 SA 条件不把无关代码自动改为同一许可。 |
 | Attention Is All You Need | Ashish Vaswani 等，NIPS 2017。按项目所有者明确要求，将其提供的原始 11 页 PDF 作为初始化示例。文件及哈希见 `android/app/src/main/assets/seed.json`；原权利人保留权利，不适用本项目 MIT / CC BY-NC。随包来源声明见 `SAMPLE-PAPER-NOTICE.md`；正式广泛分发前仍须复核再分发权利。 |
 

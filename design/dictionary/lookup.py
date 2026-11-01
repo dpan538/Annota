@@ -65,9 +65,10 @@ def lookup(query, limit=12):
                 if not rows:
                     rows = db.execute("SELECT DISTINCT e.* FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.boundary_key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT ?",
                                       (boundary_key(candidate), limit)).fetchall()
-                if not rows:
-                    rows = db.execute("SELECT DISTINCT e.* FROM entries e JOIN forms f ON e.id=f.entry_id WHERE f.key=? LIMIT ?",
-                                      (candidate, limit)).fetchall()
+                forms = db.execute("SELECT DISTINCT e.* FROM entries e JOIN forms f ON e.id=f.entry_id WHERE f.key=? LIMIT ?",
+                                   (candidate, limit)).fetchall()
+                ids = {r['id'] for r in rows}
+                rows += [r for r in forms if r['id'] not in ids]
                 if rows:
                     break
             suggestions = [] if rows or not compact else [r[0] for r in db.execute(

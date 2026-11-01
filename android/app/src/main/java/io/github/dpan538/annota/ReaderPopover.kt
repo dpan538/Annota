@@ -95,6 +95,14 @@ class ReaderPopover(
     }
 
     init {
+        // Let the anchor handle its own second tap. Otherwise PopupWindow dismisses on
+        // ACTION_OUTSIDE before the underlying button receives ACTION_UP and reopens it.
+        popup.setTouchInterceptor { _, event ->
+            val bounds = Rect()
+            event.actionMasked == MotionEvent.ACTION_OUTSIDE &&
+                anchor.getGlobalVisibleRect(bounds) &&
+                bounds.contains(event.rawX.toInt(), event.rawY.toInt())
+        }
         popup.setOnDismissListener {
             if (observer.isAlive) observer.removeOnGlobalLayoutListener(reposition)
             (activity.getSystemService(Activity.INPUT_METHOD_SERVICE)

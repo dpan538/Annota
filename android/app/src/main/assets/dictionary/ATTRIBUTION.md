@@ -21,7 +21,7 @@ Copyright (c) 2026 Dai Pan and Annota contributors. MIT License.
 
 Linwei / skywind3000, ECDICT，项目许可 MIT。
 来源：https://github.com/skywind3000/ECDICT
-完整许可：licenses/ECDICT-MIT.txt；完整中文释义记录：sources/ecdict-core.csv.gz。
+完整许可：licenses/ECDICT-MIT.txt；完整中文释义记录：sources/ecdict-core.csv。
 Annota 保留全部有中文释义的 770,238 条记录，进行换行标准化及 SQLite 索引转换，不按词频或考试标签筛选。
 上游包含多种资料来源；仓库代码许可不等于所有外部材料的单独授权证明。
 
@@ -31,9 +31,19 @@ CC-CEDICT 社区维护，MDBG 发布；来源版本 2026-10-19。
 来源：https://www.mdbg.net/chinese/dictionary?page=cc-cedict
 许可：Creative Commons Attribution-ShareAlike 4.0 International（CC BY-SA 4.0）。
 包括 Paul Andrew Denisowski 的贡献，原始署名见 licenses/CC-CEDICT-header.txt。
-完整许可：licenses/CC-BY-SA-4.0.txt；原始源数据：sources/cedict.txt.gz。
+完整许可：licenses/CC-BY-SA-4.0.txt；原始源数据：sources/cedict.txt。
 原始释义保持不变；zh-en.sqlite 的格式转换和数据组合按 CC BY-SA 4.0 分发。
 
 ## 字体与输入法
 
 界面和指南所用字体许可另附。系统手写使用设备已安装的输入法，其网络行为由输入法管理。
+
+## WordNet / Chinese Open WordNet
+
+Princeton WordNet 3.0，Copyright Princeton University；Chinese Open WordNet，Copyright (c) 2013, 2014 Francis Bond and Shan Wang。
+完整许可：licenses/WordNet-3.0.txt、licenses/Chinese-Open-WordNet.txt。
+来源：https://wordnet.princeton.edu/ 与 https://github.com/omwn/omw-data/tree/406bf83b3c507a3d1f26e88252d5d66893fd36bf/wns/cow 。
+随包 sources/wordnet-cow.json 按同义词集关联中英文，保留英文释义、词义顺序及不规则词形；wordnet.sqlite 提供独立只读索引，展示时去除中文分词标记“+”。
+共有 61,340 个英文词头、77,708 条词义关联、6,053 条不规则词形关联，与主词库存在重叠，不计为同等数量的新增单词。
+
+仓库保留上述来源的 .gz 压缩文件；Android 打包时自动展开，APK 内使用不带 .gz 的文件名。

@@ -13,6 +13,7 @@ class Dictionary(private val context: Context) {
         val pronunciation: String,
         val meaning: String,
         val source: String = "",
+        val lemma: Boolean = false,
     )
 
     data class Part(
@@ -28,11 +29,14 @@ class Dictionary(private val context: Context) {
         val parts: List<Part> = emptyList(),
     )
 
+    private val wordnet by lazy { WordNetDictionary(File(dir, "wordnet.sqlite")) }
+
     private val readings by lazy { DictionaryReadings(context) }
 
     private val dir = File(context.filesDir, "dictionary").apply { mkdirs() }
 
     fun lookup(text: String, context: LookupContext? = null): Result {
+        if (text.length > MAX_QUERY_LENGTH) return Result(emptyList(), emptyList())
         readings.acronym(text, context)?.let { reading ->
             return Result(
                 listOf(
@@ -48,14 +52,23 @@ class Dictionary(private val context: Context) {
             )
         }
         val result = query(text)
+        val lexical = wordnet.lookup(text, result.entries.map { it.word }, context)
         val active = context?.takeIf { it.matches(text) }
         val phrase = if (active == null || text.length > MAX_QUERY_LENGTH) null else phrase(active)
-        val resolved =
-            if (result.entries.isEmpty() && phrase != null)
-                Result(listOf(phrase.second), emptyList())
+        val base =
+            if (result.entries.isEmpty() && lexical.isNotEmpty())
+                Result(
+                    lexical.map { Entry(it.word, "", it.label + " " + it.text, "wordnet") },
+                    emptyList(),
+                )
             else result
+        val resolved =
+            if (base.entries.isEmpty() && phrase != null) Result(listOf(phrase.second), emptyList())
+            else base
         if (resolved.entries.isNotEmpty())
-            return resolved.copy(reading = readings.present(text, resolved, active, phrase))
+            return resolved.copy(
+                reading = readings.present(text, resolved, active, phrase, lexical)
+            )
         val parts = decompose(text, active)
         return if (parts.any { it.reading != null })
             resolved.copy(suggestions = emptyList(), parts = parts)
@@ -177,6 +190,7 @@ class Dictionary(private val context: Context) {
                                     Result(listOf(it), emptyList()),
                                     local,
                                     null,
+                                    wordnet.lookup(selected, listOf(it.word), local),
                                 )
                             },
                         local,
@@ -251,7 +265,7 @@ class Dictionary(private val context: Context) {
                     }
                 )
                 .getJSONObject("files")
-        listOf("en-zh.sqlite", "zh-en.sqlite").forEach { name ->
+        listOf("en-zh.sqlite", "zh-en.sqlite", "wordnet.sqlite").forEach { name ->
             val f = File(dir, name)
             val hash = manifest.getJSONObject(name).getString("sha256")
             if (!f.exists() || sha256(f) != hash) {
@@ -327,12 +341,13 @@ class Dictionary(private val context: Context) {
                                     "SELECT DISTINCT e.* FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.boundary_key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 12",
                                     arrayOf(boundaryKey(candidate)),
                                 )
-                        if (rows.isEmpty())
-                            rows =
-                                entries(
-                                    "SELECT DISTINCT e.* FROM entries e JOIN forms f ON e.id=f.entry_id WHERE f.key=? LIMIT 12",
+                        val lemmas =
+                            entries(
+                                    "SELECT DISTINCT e.* FROM entries e JOIN forms f ON e.id=f.entry_id WHERE f.key=? ORDER BY e.id LIMIT 12",
                                     arrayOf(candidate),
                                 )
+                                .filter { base -> rows.none { it.word == base.word } }
+                        rows = rows + lemmas.map { it.copy(lemma = rows.isNotEmpty()) }
                         if (rows.isNotEmpty()) break
                     }
                 }

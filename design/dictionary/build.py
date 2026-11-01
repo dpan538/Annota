@@ -8,6 +8,7 @@ import json
 import re
 import sqlite3
 import unicodedata
+from wordnet import build_wordnet
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -117,6 +118,15 @@ def build(ecdict_path):
                 kind, sep, value = form.partition(":")
                 if sep and kind in {"p", "d", "i", "3", "r", "t", "s"} and value:
                     en.execute("INSERT INTO forms VALUES(?,?)", (normalize(value), ident))
+    # Reverse lemma links are explicit in ECDICT's `0:` field. Preserve them even
+    # when the inflected form itself is also a headword.
+    with gzip.open(ROOT / "sources/ecdict-core.csv.gz", "rt", encoding="utf-8", newline="") as src:
+        for row in csv.DictReader(src):
+            for form in row["exchange"].split("/"):
+                if form.startswith("0:") and form[2:]:
+                    en.execute("INSERT INTO forms SELECT ?,id FROM entries WHERE key=?",
+                               (normalize(row["word"]), normalize(form[2:])))
+    en.execute("DELETE FROM forms WHERE rowid NOT IN (SELECT min(rowid) FROM forms GROUP BY key,entry_id)")
     base_en_count = en.execute("SELECT count(*) FROM entries").fetchone()[0]
     for row in phrases:
         compact = re.sub(r"[^a-z0-9]", "", row["key"])
@@ -163,7 +173,9 @@ def build(ecdict_path):
     zh_count = zh.execute("SELECT count(*) FROM entries").fetchone()[0]
     finish(zh, temp, out / "zh-en.sqlite")
     (ROOT / "licenses/CC-CEDICT-header.txt").write_text("".join(header))
+    wordnet = build_wordnet()
     manifest = {
+        "wordnet": wordnet,
         "schemaVersion": 3, "networkRequired": False,
         "en-zh": {"entries": en_count, "baseEntries": base_en_count,
                   "source": "ECDICT complete translated vocabulary + Annota authored phrases",

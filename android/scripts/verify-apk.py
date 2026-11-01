@@ -67,7 +67,7 @@ try:
             for key, file in [('guide', 'guide.pdf'), ('attention', 'attention-is-all-you-need.pdf')]:
                 assert hashlib.sha256(package.read('assets/' + file)).hexdigest() == seed[key]['sha256']
             dictionaries = json.loads(package.read('assets/dictionary/manifest.json'))['files']
-            for file in ('en-zh.sqlite', 'zh-en.sqlite'):
+            for file in (name for name in dictionaries if name.endswith('.sqlite')):
                 import gzip
                 asset = dictionaries[file].get('asset', file)
                 data = package.read('assets/dictionary/' + asset)

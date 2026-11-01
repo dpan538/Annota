@@ -87,14 +87,20 @@ class DictionaryReadings(context: Context) {
         )
     }
 
+    private val parsed = android.util.LruCache<Dictionary.Entry, List<DictionarySense>>(256)
+
     private fun senses(entry: Dictionary.Entry): List<DictionarySense> {
+        parsed.get(entry)?.let {
+            return it
+        }
         val prefix = Regex("^(?:[a-z]{1,6}\\.(?:/[a-z]{1,6}\\.)?|\\[[^]]{1,8}])(?:\\s+|$)")
         return entry.meaning
             .replace("\\n", "\n")
             .lines()
             .filter { it.isNotBlank() }
-            .mapNotNull { line ->
-                if (line.startsWith("CL:") || line.startsWith("variant of ")) return@mapNotNull null
+            .flatMap { line ->
+                if (line.startsWith("CL:") || line.startsWith("variant of "))
+                    return@flatMap emptyList()
                 val label = prefix.find(line)?.value?.trim().orEmpty()
                 val meaning = line.removePrefix(label).trim()
                 // Keep complete short equivalents; omit long usage notes and obsolete command
@@ -105,18 +111,25 @@ class DictionaryReadings(context: Context) {
                         .map { it.replace(Regex("\\([^)]*\\)|（[^）]*）"), "").trim() }
                         .filter { it.isNotEmpty() }
                         .distinct()
-                val short =
-                    terms
-                        .filter {
-                            it.length <=
-                                if (meaning.any { ch -> ch in '\u3400'..'\u9fff' }) 20 else 68
-                        }
-                        .ifEmpty { terms.take(1) }
-                        .take(2)
-                        .joinToString(if (meaning.any { it in '\u3400'..'\u9fff' }) "；" else "; ")
-                if (short.isBlank()) null else DictionarySense(label, compact(short))
+                terms
+                    .filter {
+                        it.length <= if (meaning.any { ch -> ch in '\u3400'..'\u9fff' }) 20 else 68
+                    }
+                    .ifEmpty { terms.take(1) }
+                    .chunked(2)
+                    .map { chunk ->
+                        DictionarySense(
+                            label,
+                            compact(
+                                chunk.joinToString(
+                                    if (meaning.any { it in '\u3400'..'\u9fff' }) "；" else "; "
+                                )
+                            ),
+                        )
+                    }
             }
             .distinctBy { it.text }
+            .also { parsed.put(entry, it) }
     }
 
     private fun compact(value: String): String {
@@ -131,12 +144,20 @@ class DictionaryReadings(context: Context) {
         result: Dictionary.Result,
         context: LookupContext?,
         phrase: Pair<String, Dictionary.Entry>?,
+        lexical: List<WordNetDictionary.Sense> = emptyList(),
     ): DictionaryReading? {
         acronym(query, context)?.let {
             return it
         }
         val entry = result.entries.firstOrNull() ?: return null
-        val all = result.entries.flatMap(::senses).distinctBy { it.text }
+        val sourceSenses = result.entries.flatMap(::senses).distinctBy { it.text }
+        val lexicalSenses =
+            lexical.flatMap { sense ->
+                sense.text.split("；").chunked(2).map {
+                    DictionarySense(sense.label, compact(it.joinToString("；")))
+                }
+            }
+        val all = (sourceSenses + lexicalSenses).distinctBy { it.text }
         val active = context?.takeIf { it.matches(query) }
         val key = LookupContext.key(entry.word)
         val rule =
@@ -156,6 +177,17 @@ class DictionaryReadings(context: Context) {
             defaults.ifEmpty {
                 all.filterNot { it.label.startsWith("[") }.ifEmpty { all }.take(primaryLimit)
             }
+        // Rank independently corroborated equivalents by WordNet's sense order. Additional
+        // meanings remain available; do not let a broad synonym silently replace the source.
+        if (defaults.isEmpty()) {
+            val first = lexical.firstOrNull()
+            val terms = first?.text?.split("；").orEmpty().toSet()
+            val corroborated =
+                sourceSenses.filter { sense ->
+                    sense.text.split(Regex("[；;，,]")).any { it.trim() in terms }
+                }
+            if (corroborated.isNotEmpty()) primary = corroborated.take(primaryLimit)
+        }
         var contextual = false
         var selectedPhrase = ""
         if (active != null && rule != null) {
@@ -194,6 +226,109 @@ class DictionaryReadings(context: Context) {
                 contextual = true
             }
         }
+        if (active != null && !contextual) {
+            val fields =
+                mapOf(
+                    "[计]" to
+                        setOf(
+                            "computer",
+                            "computing",
+                            "software",
+                            "hardware",
+                            "it",
+                            "resource",
+                            "resources",
+                            "server",
+                            "servers",
+                            "cloud",
+                            "memory",
+                            "processor",
+                            "network",
+                            "data",
+                            "database",
+                            "algorithm",
+                            "virtual",
+                            "system",
+                            "systems",
+                        ),
+                    "[医]" to
+                        setOf(
+                            "patient",
+                            "patients",
+                            "clinical",
+                            "disease",
+                            "treatment",
+                            "symptom",
+                            "symptoms",
+                            "blood",
+                            "diagnosis",
+                            "medical",
+                            "hospital",
+                        ),
+                    "[法]" to
+                        setOf(
+                            "court",
+                            "judge",
+                            "legal",
+                            "law",
+                            "contract",
+                            "plaintiff",
+                            "defendant",
+                            "trial",
+                            "statute",
+                        ),
+                    "[经]" to
+                        setOf(
+                            "financial",
+                            "finance",
+                            "stock",
+                            "stocks",
+                            "investment",
+                            "investor",
+                            "income",
+                            "revenue",
+                            "capital",
+                            "market",
+                            "profit",
+                        ),
+                    "[化]" to
+                        setOf(
+                            "chemical",
+                            "chemistry",
+                            "reaction",
+                            "molecule",
+                            "molecular",
+                            "compound",
+                            "acid",
+                            "solution",
+                            "catalyst",
+                            "polymer",
+                        ),
+                )
+            val window = (active.before.takeLast(16) + active.after.take(16)).toSet()
+            val ranked =
+                fields
+                    .map { (label, cues) -> label to (cues intersect window).size }
+                    .sortedByDescending { it.second }
+            val best = ranked.first()
+            val matching = sourceSenses.filter { it.label == best.first }
+            if (best.second >= 2 && best.second > ranked[1].second && matching.isNotEmpty()) {
+                primary = matching.take(1)
+                contextual = true
+            } else
+                lexical
+                    .firstOrNull { it.contextual }
+                    ?.let { sense ->
+                        primary =
+                            listOf(
+                                DictionarySense(
+                                    sense.label,
+                                    compact(sense.text.split("；").take(2).joinToString("；")),
+                                )
+                            )
+                        contextual = true
+                    }
+        }
         // Curated context rules retain authority over broad upstream collocations; otherwise
         // a phrase such as "river bank" would override deliberately ambiguous local evidence.
         if (
@@ -223,7 +358,7 @@ class DictionaryReadings(context: Context) {
                 .filter { sense ->
                     primary.none { equivalents(it.text).containsAll(equivalents(sense.text)) }
                 }
-                .take(12)
+                .take(48)
         return DictionaryReading(
             entry.word,
             entry.pronunciation,

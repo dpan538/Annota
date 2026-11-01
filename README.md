@@ -7,15 +7,14 @@
 本地 PDF 阅读与手写批注应用，围绕 **Xiaomi Pad 9 Pro Max** 优化。无需账号，文档、笔迹、阅读进度和查词都留在设备上。
 
 [![Android](https://img.shields.io/badge/Android-10%2B-3DDC84)](DOWNLOAD.md)
-[![Beta](https://img.shields.io/badge/Beta-1.0.7--preview-F59E0B)](https://github.com/dpan538/Annota/releases/tag/v1.0.7-preview)
-[![Stable](https://img.shields.io/badge/Stable-1.0.2-16A34A)](https://github.com/dpan538/Annota/releases/tag/v1.0.2)
+[![Stable](https://img.shields.io/badge/Stable-1.1.0-16A34A)](https://github.com/dpan538/Annota/releases/tag/v1.1.0)
 [![License](https://img.shields.io/badge/License-MIT-8B5CF6)](LICENSE)
 ![Offline](https://img.shields.io/badge/Dictionary-Offline-0891B2)
 ![Local](https://img.shields.io/badge/Storage-On_device-DB2777)
 ![No account](https://img.shields.io/badge/Account-Not_required-64748B)
 ![Device](https://img.shields.io/badge/Xiaomi-Pad_9_Pro_Max_only-FF6900)
 
-[**下载 Beta APK**](https://github.com/dpan538/Annota/releases/download/v1.0.7-preview/Annota-1.0.7-preview.apk) · [下载正式版](https://github.com/dpan538/Annota/releases/download/v1.0.2/Annota-1.0.2.apk) · [安装说明](DOWNLOAD.md) · [更新日志](CHANGELOG.md)
+[**下载 1.1.0 正式版 APK**](https://github.com/dpan538/Annota/releases/download/v1.1.0/Annota-1.1.0.apk) · [安装说明](DOWNLOAD.md) · [更新日志](CHANGELOG.md)
 
 [特色](#特色) · [快速开始](#快速开始) · [功能预览](#功能预览) · [开发](#开发) · [许可](#许可)
 
@@ -23,10 +22,10 @@
 
 - **专注阅读** — 原始 PDF 分块渲染、连续滚动、双指缩放与相邻双页；文内搜索、目录、书签和阅读位置恢复。
 - **自然批注** — 笔、铅笔、钢笔与荧光笔；压感、停笔拉直、水平吸附直尺，框选移动 / 缩放 / 旋转，撤销与重做。支持手写签名及 PDF 导出。
-- **离线查词** — 内置约 **77 万条英汉、12.6 万条汉英记录**，支持词形、词组和局部语境简释。未整体收录的词组可分段查看；词库随 APK 更新，无需下载语言包。暂不提供整句翻译。
+- **离线查词** — 内置约 **77 万条英汉、12.6 万条汉英记录**，支持词形、词组和局部语境简释，并内置 WordNet / Chinese Open WordNet 词义索引。未整体收录的词组可分段查看；词库随 APK 更新，无需下载语言包。暂不提供整句翻译。
 - **本地书库** — 文件夹、收藏、搜索与废纸篓；接收其他应用分享的 PDF，本地 `.annota.zip` 备份与恢复，桌面小组件继续阅读。
 
-以上描述以当前 Beta 为准。[版本差异与已知范围](CHANGELOG.md)。
+以上描述以 1.1.0 正式版为准。[版本差异与已知范围](CHANGELOG.md)。
 
 ## 快速开始
 
@@ -54,7 +53,7 @@
 
 阅读、书写及查词完全离线；仅主动检查应用更新、下载 APK 或提交反馈使用网络。反馈会提交为公开 GitHub Issue，请勿附上私人内容。卸载或清除应用数据前，请先备份。
 
-当前 **1.0.7-preview 为 Beta 测试版**，默认更新检查会提供此版本；下载和安装均需用户确认。沿用已有安装证书，支持覆盖升级。最近正式版为 **1.0.2**。
+当前 **1.1.0 为正式版**，默认更新检查提供此版本；下载和安装均需用户确认。沿用已有安装证书，可从此前正式版及 Preview 覆盖升级。
 
 ## 开发
 

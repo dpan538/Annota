@@ -6,6 +6,22 @@ from build import authored_phrases, normalize
 
 
 class OfflineDictionaryTests(unittest.TestCase):
+    def test_exact_inflections_keep_their_attested_base_words(self):
+        for query, base in [('scaling', 'scale'), ('mice', 'mouse'), ('went', 'go'),
+                            ('written', 'write'), ('better', 'good')]:
+            self.assertIn(base, [r['word'] for r in lookup(query)['entries']], query)
+
+    def test_wordnet_senses_use_indexed_local_queries(self):
+        with closing(sqlite3.connect(f'file:{ROOT / "bundle/wordnet.sqlite"}?mode=ro', uri=True)) as db:
+            self.assertEqual(db.execute('SELECT count(*) FROM senses').fetchone()[0], 77708)
+            for word in ['photosynthesis', 'democracy', 'orchestra', 'enzyme', 'planet', 'mortgage']:
+                self.assertTrue(db.execute('SELECT meaning FROM senses WHERE word=?', (word,)).fetchall(), word)
+            plan = db.execute('EXPLAIN QUERY PLAN SELECT * FROM senses WHERE word=?', ('planet',)).fetchall()
+            self.assertIn('sense_word', str(plan))
+            self.assertFalse(db.execute('SELECT meaning FROM senses WHERE word=?', ('symphony',)).fetchall())
+            self.assertTrue(lookup('symphony')['entries'])
+            self.assertIn('光合作用', db.execute('SELECT meaning FROM senses WHERE word=?', ('photosynthesis',)).fetchone()[0])
+
     def test_english_and_forms(self):
         self.assertTrue(lookup("attention")["entries"])
         self.assertEqual(lookup("ATTENTION")["entries"], lookup("attention")["entries"])

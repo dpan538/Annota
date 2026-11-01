@@ -4,6 +4,11 @@
 
 ## 当前版本
 
+- [1.1.0 正式版记录与真机复核](1.1.0-RELEASE-NOTES.md)
+- [1.1.0 自动化记录](../android/verification/stable-1.1.0/)
+
+## 上一轮预览版
+
 - [1.0.7-preview 修复与验证](1.0.7-PREVIEW-NOTES.md)
 - [1.0.7-preview 真机测试清单](BETA-1.0.7-PREVIEW-CHECKLIST.md)
 - [自动化原始记录](../android/verification/preview-1.0.7/)

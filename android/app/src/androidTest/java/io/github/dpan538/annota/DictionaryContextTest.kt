@@ -23,6 +23,53 @@ class DictionaryContextTest {
             .reading!!
 
     @Test
+    fun indexedSensesAndInflectionsWorkAcrossSubjectsWithoutDocumentSpecificRules() {
+        val scaling = reading("Scaling:", "", "the ability of IT resources to handle demand")
+        assertTrue(scaling.primary.any { "缩放" in it.text })
+        assertTrue(scaling.alternatives.any { "鱼鳞" in it.text })
+        val related = dictionary.lookup("IT-related").parts.first { it.text == "related" }.reading!!
+        assertTrue(related.primary.any { "关系" in it.text || "关联" in it.text })
+        for ((form, base) in
+            listOf(
+                "mice" to "mouse",
+                "went" to "go",
+                "written" to "write",
+                "better" to "good",
+                "scaling" to "scale",
+            )) {
+            assertTrue(form, dictionary.query(form).entries.any { it.word == base })
+        }
+        for (word in
+            listOf(
+                "photosynthesis",
+                "algorithm",
+                "democracy",
+                "symphony",
+                "enzyme",
+                "planet",
+                "mortgage",
+            )) {
+            val r = reading(word)
+            assertTrue(word, r.primary.isNotEmpty())
+            assertTrue(word, (r.primary + r.alternatives).all { it.text.length <= 69 })
+        }
+        // Expanded meanings must not discard the third and later equivalents of a source line.
+        val all = reading("scaling").let { it.primary + it.alternatives }
+        assertTrue(all.any { "测量" in it.text })
+        assertTrue(all.any { "缩放" in it.text })
+        val wn =
+            WordNetDictionary(
+                java.io.File(
+                    InstrumentationRegistry.getInstrumentation().targetContext.filesDir,
+                    "dictionary/wordnet.sqlite",
+                )
+            )
+        assertTrue(wn.lookup("photosynthesis", emptyList(), null).any { "光合作用" in it.text })
+        assertTrue(wn.lookup("related", emptyList(), null).first().text.contains("关系"))
+        assertTrue(wn.lookup("qzxwunknown", emptyList(), null).isEmpty())
+    }
+
+    @Test
     fun technicalAcronymsPreserveCaseAndResolveAmbiguityConservatively() {
         assertEquals("信息技术", reading("IT").primary.single().text)
         assertEquals("Information Technology", reading("IT").phrase)
@@ -246,5 +293,6 @@ class DictionaryContextTest {
         assertTrue(result.entries.isEmpty())
         assertTrue(result.suggestions.isEmpty())
         assertNull(result.reading)
+        assertTrue(dictionary.lookup("IT" + " ".repeat(Dictionary.MAX_QUERY_LENGTH)).entries.isEmpty())
     }
 }

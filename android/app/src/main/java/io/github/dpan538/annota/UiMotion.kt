@@ -19,6 +19,7 @@ object UiMotion {
     const val PRESS = 100L
     const val PANEL = 160L
     const val SCREEN = 320L
+    const val DOCUMENT = 460L
     val smooth = PathInterpolator(.22f, .0f, .18f, 1f)
     val linear = LinearInterpolator()
 
@@ -52,9 +53,9 @@ object UiMotion {
     private val screenChanges = WeakHashMap<ViewGroup, ScreenChange>()
 
     /**
-     * Combines a short vertical lift and subtle depth change with an outgoing snapshot dissolve.
-     * Live content stays opaque; never sweep a full tablet width. No frame-by-frame layout or PDF
-     * rerendering; bitmap memory is capped at 1440px longest edge.
+     * Combines a short vertical lift and subtle depth change with a covered hand-off between
+     * screens. Live content stays opaque; never sweep a full tablet width. No frame-by-frame layout
+     * or PDF rerendering; bitmap memory is capped at 1440px longest edge.
      */
     fun captureScreen(host: ViewGroup, forward: Boolean = true): ScreenChange? {
         screenChanges.remove(host)?.finish()
@@ -89,6 +90,13 @@ object UiMotion {
             BitmapDrawable(host.resources, bitmap).apply {
                 setBounds(0, 0, host.width, host.height)
             }
+        private val cover =
+            android.graphics.drawable
+                .ColorDrawable(
+                    (host.background as? android.graphics.drawable.ColorDrawable)?.color
+                        ?: 0xfff5f5f5.toInt()
+                )
+                .apply { setBounds(0, 0, host.width, host.height) }
         private var animator: ValueAnimator? = null
         private var incoming = emptyList<View>()
         private var closed = false
@@ -107,27 +115,21 @@ object UiMotion {
             if (closed) return
             incoming = (0 until host.childCount).map(host::getChildAt)
             val direction = if (forward) 1f else -1f
-            val distance = 20f * host.resources.displayMetrics.density
+            val distance = 12f * host.resources.displayMetrics.density
             fun position(progress: Float) {
+                // The outgoing text is gone before incoming text is revealed. Keeping the
+                // snapshot still avoids resampling and eliminates two overlapping text layers.
+                val motion = smooth.getInterpolation(((progress - .18f) / .82f).coerceIn(0f, 1f))
                 incoming.forEach { child ->
-                    child.translationY = direction * distance * (1f - progress)
-                    child.scaleX = 1f - direction * .015f * (1f - progress)
+                    child.translationY = direction * distance * (1f - motion)
+                    child.scaleX = 1f - direction * .008f * (1f - motion)
                     child.scaleY = child.scaleX
                 }
-                val depth = 1f + direction * .012f * progress
-                val insetX = (host.width * (1f - depth) / 2f).toInt()
-                val insetY =
-                    (host.height * (1f - depth) / 2f - direction * distance * .4f * progress)
-                        .toInt()
-                drawable.setBounds(
-                    insetX,
-                    insetY,
-                    host.width - insetX,
-                    insetY + (host.height * depth).toInt(),
-                )
-                drawable.alpha = (255 * (1f - progress)).toInt()
+                drawable.alpha = (255 * (1f - progress / .22f).coerceIn(0f, 1f)).toInt()
+                cover.alpha = (255 * (1f - (progress - .22f) / .20f).coerceIn(0f, 1f)).toInt()
             }
             position(0f)
+            host.overlay.add(cover)
             host.overlay.add(drawable)
             host.addOnAttachStateChangeListener(detach)
             val deadline = android.os.SystemClock.uptimeMillis() + 800
@@ -145,8 +147,8 @@ object UiMotion {
                     if (!closed) {
                         animator =
                             ValueAnimator.ofFloat(0f, 1f).apply {
-                                duration = SCREEN
-                                interpolator = smooth
+                                duration = DOCUMENT
+                                interpolator = linear
                                 addUpdateListener { position(it.animatedValue as Float) }
                                 addListener(
                                     object : android.animation.AnimatorListenerAdapter() {
@@ -180,6 +182,7 @@ object UiMotion {
             }
             incoming = emptyList()
             host.overlay.remove(drawable)
+            host.overlay.remove(cover)
             host.removeOnAttachStateChangeListener(detach)
             if (screenChanges[host] === this) screenChanges.remove(host)
             bitmap.recycle()

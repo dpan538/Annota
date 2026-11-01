@@ -96,18 +96,36 @@ class InteractionMotionTest {
         try {
             assertEquals(0, sample())
             ui {
+                host.addView(
+                    android.view.View(activity).apply { setBackgroundColor(Color.RED) },
+                    FrameLayout.LayoutParams(-1, -1),
+                )
+            }
+            ui {
                 val transition = UiMotion.captureScreen(host)
                 assertNotNull(transition)
+                host.removeAllViews()
                 host.addView(
-                    android.view.View(activity).apply { setBackgroundColor(Color.WHITE) },
+                    android.view.View(activity).apply { setBackgroundColor(Color.BLUE) },
                     FrameLayout.LayoutParams(-1, -1),
                 )
                 transition!!.start()
             }
             val samples = mutableListOf<Float>()
-            val deadline = SystemClock.uptimeMillis() + 500
+            val deadline = SystemClock.uptimeMillis() + 650
             while (SystemClock.uptimeMillis() < deadline) {
                 samples += ui { host.getChildAt(0).translationY }
+                ui {
+                    assertEquals(1f, host.getChildAt(0).alpha, 0f)
+                    val frame = Bitmap.createBitmap(500, 500, Bitmap.Config.ARGB_8888)
+                    host.draw(Canvas(frame))
+                    val pixel = frame.getPixel(250, 250)
+                    assertFalse(
+                        "Outgoing and incoming content must not overlap",
+                        Color.red(pixel) > 10 && Color.blue(pixel) > 10,
+                    )
+                    frame.recycle()
+                }
                 SystemClock.sleep(16)
             }
             assertTrue(

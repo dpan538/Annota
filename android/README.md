@@ -1,16 +1,16 @@
 # Annota Android
 
-> **1.0.7-preview · Beta 测试版**（versionCode 19）。本轮不是正式稳定版；沿用现有证书，可覆盖升级。按维护者要求提供给默认更新检查，最近正式版仍为 1.0.2。
+> **1.1.0 · 正式版**（versionCode 20）。沿用原证书，支持旧正式版及 Preview 覆盖升级。
 
-Native Kotlin application ID: `io.github.dpan538.annota`. Minimum Android 10 / API 29, compile / target API 36. Current source targets **1.0.7-preview Beta (19)**; the last stable version remains **1.0.2 (13)**. Version 1.0.0 was the first stable release. The earlier 0.1.0-dev build used a simplified functional-test interface and did not meet the approved design. This folder contains the native implementation; distribution follows the verified GitHub Release workflow in [distribution notes](../docs/DISTRIBUTION.md).
+Native Kotlin application ID: `io.github.dpan538.annota`. Minimum Android 10 / API 29, compile / target API 36. Current source targets **1.1.0 stable (20)**. Version 1.0.0 was the first stable release. The earlier 0.1.0-dev build used a simplified functional-test interface and did not meet the approved design. This folder contains the native implementation; distribution follows the verified GitHub Release workflow in [distribution notes](../docs/DISTRIBUTION.md).
 
-Version 1.0.7-preview Beta (19) uses a 320 ms eased, short vertical lift and subtle depth change with an outgoing snapshot dissolve. The sidebar keeps its width animation and live reader. Offline lookup preserves uppercase acronyms and carries local context into phrase drill-down. Version 1.0.6 introduced denser version-4 graphite and the complete translated ECDICT vocabulary; stored marks retain their appearance. See [acceptance](../docs/1.0.7-PREVIEW-NOTES.md).
+Version 1.1.0 stable (20) uses a 460 ms short lift/depth transition with a covered hand-off to avoid overlapping text. Toolbar popovers close on a second anchor tap. Bundled WordNet / Chinese Open WordNet sense indices supplement the existing offline dictionaries, attested inflections and conservative local-context ranking. See [release verification](../docs/1.1.0-RELEASE-NOTES.md).
 
 Version 1.0.3-test Beta (14) refines the existing pens with adaptive stabilization, smoothed pressure/speed response, versioned variable-width vector geometry and subtle deterministic pencil grain. Canvas and PDF export share geometry; old marks retain the legacy renderer. It also fixes swept local erasing, signature palm takeover, blank-notebook PDF export and proportional placement of tall images. No automatic glyph rewriting, handwriting layout changes or proprietary pen haptics are enabled. Target-device review follows the [Beta checklist](../docs/BETA-1.0.7-PREVIEW-CHECKLIST.md).
 
 The bundled dictionaries add 942 authored phrases/terms and 682 explicit aliases. All dictionary data ships with the APK. Full-sentence translation is not provided.
 
-Version 1.0.2 (13) introduced handwritten signatures and signed/restricted PDF compatibility. More → Handwritten signature captures transparent ink, then allows moving and proportional resizing before a single undoable insertion. Restricted PDFs open read-only; original signed bytes are retained, including when a private unlocked viewing copy is needed. Unchanged exports preserve the original bytes. Annotated derivatives preserve visible form/signature appearances and explicitly do not preserve original digital-signature validation. No certificate signing/trust verification is implemented. See [signature acceptance](../docs/PDF-SIGNATURE-ACCEPTANCE.md). Run `PdfSignatureTest` alongside the PDF/input regressions; update fixtures for the current source must use a versionCode greater than 19.
+Version 1.0.2 (13) introduced handwritten signatures and signed/restricted PDF compatibility. More → Handwritten signature captures transparent ink, then allows moving and proportional resizing before a single undoable insertion. Restricted PDFs open read-only; original signed bytes are retained, including when a private unlocked viewing copy is needed. Unchanged exports preserve the original bytes. Annotated derivatives preserve visible form/signature appearances and explicitly do not preserve original digital-signature validation. No certificate signing/trust verification is implemented. See [signature acceptance](../docs/PDF-SIGNATURE-ACCEPTANCE.md). Run `PdfSignatureTest` alongside the PDF/input regressions; update fixtures for the current source must use a versionCode greater than 20.
 
 ## Build
 
@@ -37,7 +37,7 @@ PDF rendering uses Android PdfRenderer. PDFBox-Android extracts text and compose
 
 The packaged English–Chinese database has 771,180 records (770,238 translated ECDICT records plus 942 authored entries); Chinese–English has 126,272 records (125,301 CC-CEDICT plus 971 authored reverse equivalents). Another 682 explicit spelling/inflection aliases do not count as new entries. Boundary-preserving matching distinguishes `set up` from `setup`, handles Unicode/line-break variants, and prefers unambiguous contextual phrases. SQLite queries run in a worker with bound arguments and stale-request isolation. Schema 3 databases, original source TSV, provenance, hashes and licenses are included offline. Run `python3 ../design/dictionary/test_lookup.py` to exercise every authored entry and alias.
 
-Dictionary data ships in the APK and works offline on first use. No translation SDK or model downloader is included in 1.0.7-preview. Network operations are limited to user-requested app updates and feedback.
+Dictionary data ships in the APK and works offline on first use. No translation SDK or model downloader is included in 1.1.0. Network operations are limited to user-requested app updates and feedback.
 
 ## Ink and lookup regression scope
 
@@ -59,9 +59,9 @@ Feedback posts to the deployed Vercel HTTPS relay only when the user clicks Subm
 
 Public stable APKs are non-debuggable release builds. The existing certificate is retained by explicit user decision so development users can upgrade in place. Local debug builds normally use the developer machine's own key and cannot overwrite a public install if the certificate differs. No signing material is committed.
 
-The historical 1.0.3-test Beta (14) used the existing certificate and a non-debuggable Release build. Its default rollout is now paused and it is marked as a prerelease. The authorized 1.0.7-preview Beta (19) retains that certificate for in-place upgrades. Publish the APK, SHA256SUMS.txt and annota-update.json together.
+The historical 1.0.3-test Beta (14) used the existing certificate and a non-debuggable Release build. Its default rollout is now paused and it is marked as a prerelease. The current 1.1.0 stable (20) retains that certificate for in-place upgrades. Publish the APK, SHA256SUMS.txt and annota-update.json together.
 
-The `-test` channel reads the latest 30 releases, allows non-draft prereleases, and chooses a higher integer versionCode. Stable 1.0.2 continues to read `/releases/latest`; that endpoint offers the authorized 1.0.7-preview Beta rollout. Checking, downloading and installation remain user-triggered. A future stable release must have versionCode greater than 19 to upgrade Beta installations in place. No extra channel setting is introduced.
+The `-test` channel reads the latest 30 releases, allows non-draft prereleases, and chooses a higher integer versionCode. Stable 1.0.2 continues to read `/releases/latest`; that endpoint now offers 1.1.0 stable. Checking, downloading and installation remain user-triggered. Subsequent releases must have versionCode greater than 20. No extra channel setting is introduced.
 
 Production signing uses only environment variables:
 
@@ -77,7 +77,7 @@ python3 scripts/make-update-manifest.py app/build/outputs/apk/release/app-releas
 
 Signing material is supplied locally and kept outside Git. Without the environment variables `assembleRelease` produces an unsigned artifact, which must not be distributed as installable. Keep the production key and an offline backup permanently; future updates must use it.
 
-A real stable Release at `dpan538/Annota` must include the signed APK **and** the generated `annota-update.json`. App check reads GitHub Latest (the authorized 1.0.7-preview Beta rollout) only on user request, shows notes, and waits for a download action. Download permits only HTTPS GitHub asset hosts, enforces size and cancellation, checks SHA-256, cryptographic APK signature (apksig), exact package/version and the currently installed signer before asking the Android installer. Install permission refusal leaves the verified file available for retry. Every in-place upgrade must retain the installed signing identity. Gradle builds the artifact; publishing is a separate verified Release step.
+A real stable Release at `dpan538/Annota` must include the signed APK **and** the generated `annota-update.json`. App check reads GitHub Latest (1.1.0 stable) only on user request, shows notes, and waits for a download action. Download permits only HTTPS GitHub asset hosts, enforces size and cancellation, checks SHA-256, cryptographic APK signature (apksig), exact package/version and the currently installed signer before asking the Android installer. Install permission refusal leaves the verified file available for retry. Every in-place upgrade must retain the installed signing identity. Gradle builds the artifact; publishing is a separate verified Release step.
 
 404, rate limit, offline/network error, cancellation, hash/signature mismatch and installation permission states have explicit messages. Public stable releases, anonymous downloads and real Android installer upgrades are recorded in `../docs/INTEGRATION-ACCEPTANCE.md` and `../docs/NEUTRAL-READING-ACCEPTANCE.md`; local fixtures alone do not establish publication.
 
@@ -85,9 +85,9 @@ See `../docs/IMPLEMENTATION-STATUS.md` for actual build/test evidence, artifact 
 
 ## Onboarding and regression fixtures
 
-Current Beta build: `1.0.7-preview` / versionCode 19; stable is `1.0.2` / 13. Both seed PDFs are bundled and verified by SHA-256 and page count. They publish together in a database transaction. Any earlier initialization marker is final, including the old guide-only development build. No sample is added back on restart or upgrade, even after removal. Paper rights are separate: see `app/src/main/assets/SAMPLE-PAPER-NOTICE.md`; redistribution clearance remains a public-release checklist item.
+Current stable build: `1.1.0` / versionCode 20. Both seed PDFs are bundled and verified by SHA-256 and page count. They publish together in a database transaction. Any earlier initialization marker is final, including the old guide-only development build. No sample is added back on restart or upgrade, even after removal. Paper rights are separate: see `app/src/main/assets/SAMPLE-PAPER-NOTICE.md`; redistribution clearance remains a public-release checklist item.
 
-The update tests require a same-development-key versionCode 20 / versionName `update-test-fixture` APK at the target app's `cache/update-test.apk`. Build it with Gradle property overrides, keep it outside Git and stage it with `adb shell run-as io.github.dpan538.annota ...` on the dedicated emulator. Without it, those two tests are explicitly skipped; do not report them as passed. No fixture is a published update. Test APKs reset library data and must never run on a user's tablet.
+The update tests require a same-development-key versionCode 21 / versionName `update-test-fixture` APK at the target app's `cache/update-test.apk`. Build it with Gradle property overrides, keep it outside Git and stage it with `adb shell run-as io.github.dpan538.annota ...` on the dedicated emulator. Without it, those two tests are explicitly skipped; do not report them as passed. No fixture is a published update. Test APKs reset library data and must never run on a user's tablet.
 
 ## Reader design, lifecycle and memory acceptance
 

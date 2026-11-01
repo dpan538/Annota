@@ -7,24 +7,23 @@
 Local PDF reading and handwritten annotation, designed around **Xiaomi Pad 9 Pro Max**. No account required. Documents, ink, reading progress and dictionary queries stay on your device.
 
 [![Android](https://img.shields.io/badge/Android-10%2B-3DDC84)](DOWNLOAD.md)
-[![Beta](https://img.shields.io/badge/Beta-1.0.7--preview-F59E0B)](https://github.com/dpan538/Annota/releases/tag/v1.0.7-preview)
-[![Stable](https://img.shields.io/badge/Stable-1.0.2-16A34A)](https://github.com/dpan538/Annota/releases/tag/v1.0.2)
+[![Stable](https://img.shields.io/badge/Stable-1.1.0-16A34A)](https://github.com/dpan538/Annota/releases/tag/v1.1.0)
 [![License](https://img.shields.io/badge/License-MIT-8B5CF6)](LICENSE)
 ![Offline](https://img.shields.io/badge/Dictionary-Offline-0891B2)
 ![Local](https://img.shields.io/badge/Storage-On_device-DB2777)
 ![No account](https://img.shields.io/badge/Account-Not_required-64748B)
 ![Device](https://img.shields.io/badge/Xiaomi-Pad_9_Pro_Max_only-FF6900)
 
-[**Download Beta APK**](https://github.com/dpan538/Annota/releases/download/v1.0.7-preview/Annota-1.0.7-preview.apk) · [Stable 1.0.2](https://github.com/dpan538/Annota/releases/download/v1.0.2/Annota-1.0.2.apk) · [Installation](DOWNLOAD.md) · [Changelog](CHANGELOG.md)
+[**Download 1.1.0 stable APK**](https://github.com/dpan538/Annota/releases/download/v1.1.0/Annota-1.1.0.apk) · [Installation](DOWNLOAD.md) · [Changelog](CHANGELOG.md)
 
 ## Features
 
 - **Focused reading.** Tiled PDF rendering, continuous scrolling, pinch zoom, adjacent pages, document search, outlines, bookmarks and restored reading positions.
 - **Handwritten annotation.** Pen, pencil, fountain pen and highlighter; pressure response, hold-to-straighten, ruler snapping, selection move / scale / rotation and undo / redo. Handwritten signatures and PDF export.
-- **Offline dictionaries.** Around 771,000 English–Chinese and 126,000 Chinese–English records. Inflections, phrase lookup and local context help with meaning; unknown phrases can be broken into dictionary segments. All data ships with the APK. No language-pack download or full-sentence translation.
+- **Offline dictionaries.** Around 771,000 English–Chinese and 126,000 Chinese–English records. Bundled WordNet / Chinese Open WordNet sense indices, inflections, phrase lookup and local context help with meaning; unknown phrases can be broken into dictionary segments. All data ships with the APK. No language-pack download or full-sentence translation.
 - **Local library.** Folders, favorites, search and trash; PDF sharing from other apps, `.annota.zip` backup / restore and a continue-reading home widget.
 
-Features describe the current Beta; see the [changelog](CHANGELOG.md) for release differences.
+Features describe stable 1.1.0; see the [changelog](CHANGELOG.md) for release differences.
 
 ## Get started
 
@@ -50,7 +49,7 @@ Actual app screenshots in the same blue theme. Select an image to view full size
 
 Reading, writing and dictionary lookup are fully offline. Network access is used only when checking for updates, downloading an APK or submitting feedback. Feedback becomes a public GitHub Issue; do not include private documents. Back up before uninstalling or clearing app data.
 
-**1.0.7-preview is a Beta**, offered by the default update check. Download and installation require confirmation. It uses the existing signing certificate for in-place upgrades. The latest stable version remains **1.0.2**.
+**1.1.0 is a stable release**, offered by the default update check. Download and installation require confirmation. The existing signing certificate is retained for in-place upgrades from earlier stable and Preview builds.
 
 ## Build
 

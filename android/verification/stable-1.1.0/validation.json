@@ -1,0 +1,38 @@
+{
+  "version": "1.1.0",
+  "versionCode": 20,
+  "productChannel": "Stable",
+  "apkSha256": "3ac1489ba0fef1c26486df9cdb465a99b168440df1230008a7f078e6995a68f3",
+  "instrumentation": {
+    "passed": 123,
+    "seconds": 203.577,
+    "androidApi": 36,
+    "serial": "emulator-5584",
+    "wifiAndMobileDataDisabled": true
+  },
+  "dictionaryPythonTests": 14,
+  "validatedSourceUnits": 21,
+  "builds": [
+    "assembleDebug",
+    "assembleDebugAndroidTest",
+    "lintDebug",
+    "assembleRelease"
+  ],
+  "lint": {
+    "errors": 0,
+    "warnings": 96
+  },
+  "targetPhysicalDeviceVerified": false,
+  "privatePdfNotPublished": true,
+  "finalPackagingChange": "Attribution asset paths corrected after full test; all DEX hashes identical to tested APK.",
+  "testedDex": {
+    "classes.dex": "d4dd001faa216e573c7958d958a1415f83c1ed974c07c671a89283a0642a3cd4",
+    "classes2.dex": "875dbf3739af3e971a37ed857211f687830ac9a2e4b530331774a183ee030664"
+  },
+  "newCases": [
+    "Actual outside-touch anchor toggles: More, Shapes, Offline dictionary, Pen, Eraser",
+    "Independent word families and subjects, WordNet sense indices, unknown terms",
+    "Exact inflection plus lemma, retained alternative senses, local domain ranking",
+    "Motion intermediate lift/depth, no old/new pixel overlap, interrupted and disabled transitions"
+  ]
+}

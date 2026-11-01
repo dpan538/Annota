@@ -17,6 +17,8 @@
 
 例如 `set up`、`take into account`、`in terms of`、`recurrent neural network`、`scaled dot-product attention`、`confidence interval`、`palm rejection`。释义以完整的短等价表达为主，不堆长解释。词库并非穷尽所有领域；条目数也不是去重后的单词数。
 
+1.1.0 另内置 WordNet / Chinese Open WordNet 独立语义索引，覆盖 61,340 个英文词头、77,708 条英中词义关联。与主词库存在重叠；来源、筛选与算法边界见 [开放词库调研](OPEN-LEXICON-RESEARCH.md)。
+
 ## 匹配规则
 
 1. 优先精确词条 / 显式别名，再按保留词边界的连字符与空格等价匹配。

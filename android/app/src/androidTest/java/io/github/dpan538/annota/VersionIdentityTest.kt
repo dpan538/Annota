@@ -20,12 +20,12 @@ class VersionIdentityTest {
     @Test
     fun installedVersionAndVisibleLibraryAboutAndUpdateIdentityAgree() {
         val installed = context.packageManager.getPackageInfo(context.packageName, 0)
-        assertEquals("1.0.7-preview", installed.versionName)
-        assertEquals(19L, installed.longVersionCode)
+        assertEquals("1.1.0", installed.versionName)
+        assertEquals(20L, installed.longVersionCode)
         assertEquals(installed.versionName, BuildConfig.VERSION_NAME)
-        assertTrue(Network.previewUpdates())
+        assertEquals(BuildConfig.DEBUG, Network.previewUpdates())
         // Preview identity must work in the signed non-debuggable APK too.
-        assertTrue(Network.previewUpdates(installed.versionName!!, debug = false))
+        assertFalse(Network.previewUpdates(installed.versionName!!, debug = false))
 
         val store = Store(context)
         val pdf = PdfEngine(context, store)
@@ -77,7 +77,9 @@ class VersionIdentityTest {
                             }
                             val labels = all(screen).filterIsInstance<TextView>()
                             val footerText =
-                                if (portrait) "Beta · 1.0.7" else "1.0.7-preview · Beta"
+                                if (BuildConfig.DEBUG) {
+                                    if (portrait) "Beta · 1.1.0" else "1.1.0 · Beta"
+                                } else "1.1.0 · ${if (english) "Stable" else "正式版"}"
                             val footer = labels.first { it.text.toString() == footerText }
                             assertEquals(View.VISIBLE, footer.visibility)
                             assertTrue(footer.width > 0 && footer.height > 0)
@@ -89,17 +91,23 @@ class VersionIdentityTest {
                             )
                             assertTrue(
                                 "A preview must visibly identify itself as Beta",
-                                labels.any { it.text.contains("Beta") },
+                                labels.any {
+                                    it.text.contains(
+                                        if (BuildConfig.DEBUG) "Beta"
+                                        else if (english) "Stable" else "正式版"
+                                    )
+                                },
                             )
                             if (section == "settings") {
-                                val identity = if (english) "Beta build" else "Beta 测试版"
-                                assertTrue(
-                                    labels.any { it.text.toString() == "1.0.7-preview · $identity" }
-                                )
+                                val identity =
+                                    if (BuildConfig.DEBUG) {
+                                        if (english) "Beta build" else "Beta 测试版"
+                                    } else if (english) "Stable release" else "正式版"
+                                assertTrue(labels.any { it.text.toString() == "1.1.0 · $identity" })
                                 val current = if (english) "Current version" else "当前版本"
                                 assertTrue(
                                     labels.any {
-                                        it.text.toString() == "$current · 1.0.7-preview · $identity"
+                                        it.text.toString() == "$current · 1.1.0 · $identity"
                                     }
                                 )
                             }

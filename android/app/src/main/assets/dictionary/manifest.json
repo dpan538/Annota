@@ -1,4 +1,12 @@
 {
+  "wordnet": {
+    "senses": 77708,
+    "headwords": 61340,
+    "source": "Princeton WordNet 3.0 + Chinese Open WordNet",
+    "license": "WordNet / Chinese Open WordNet permissive notices",
+    "sourceRevision": "406bf83b3c507a3d1f26e88252d5d66893fd36bf",
+    "url": "https://github.com/omwn/omw-data/tree/main/wns/cow"
+  },
   "schemaVersion": 3,
   "networkRequired": false,
   "en-zh": {
@@ -34,20 +42,26 @@
   },
   "files": {
     "en-zh.sqlite": {
-      "bytes": 238567424,
-      "sha256": "ab0466d55d815b258555c4831f0930da6f6d62af33010b0774da9d7909c3802e",
-      "asset": "en-zh.sqlite.pack"
+      "asset": "en-zh.sqlite.pack",
+      "bytes": 238063616,
+      "sha256": "3a368b24aabe3924cec4c6aa2f5da895dd837bf7ba8b4b763443d4c4c862b6cc"
+    },
+    "wordnet.sqlite": {
+      "asset": "wordnet.sqlite",
+      "bytes": 12988416,
+      "sha256": "ebbf62b21ede0aa6719663a53dc8681ce380a31655d36b139602efb0ce965e3f"
     },
     "zh-en.sqlite": {
+      "asset": "zh-en.sqlite",
       "bytes": 15622144,
-      "sha256": "bda7b4c5fd8742ed776445e59bcdbb651086e20e1f76ea2954b62b24f54a8a35",
-      "asset": "zh-en.sqlite"
+      "sha256": "bda7b4c5fd8742ed776445e59bcdbb651086e20e1f76ea2954b62b24f54a8a35"
     }
   },
   "sources": {
     "annota-phrases.tsv": "47fad91cc431ba663ab3320298e8e94312d8574fcd936dd372241ebfd0333582",
     "cedict.txt.gz": "2d42d41f75df8708d9d9b236d8ae15ecf1cef525aef8ebb8499a74cb09e1b096",
     "ecdict-core.csv.gz": "790881495775749e17433898b2d85608f985b5bdbaef3e4dbc8b6b5ae592f931",
-    "provenance.json": "171cb01b5f8be59b7e01098867a6eed7f5afe13fd489ce83ba29578ec7db8453"
+    "provenance.json": "171cb01b5f8be59b7e01098867a6eed7f5afe13fd489ce83ba29578ec7db8453",
+    "wordnet-cow.json.gz": "e3d739bed1c8741e1ae5d1fddfab5ea10ff718a14a65e467990282136b554f0d"
   }
 }

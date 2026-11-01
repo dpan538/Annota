@@ -1148,6 +1148,12 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun closePanelIfOpen(key: String): Boolean {
+        if (readerPanelKey != key || readerPopup?.isShowing != true) return false
+        readerPopup?.dismiss()
+        return true
+    }
+
     private fun readerPanel(
         anchor: String,
         width: Float = 250f,
@@ -1433,6 +1439,7 @@ class MainActivity : Activity() {
     }
 
     private fun shapeOptions() {
+        if (closePanelIfOpen("shape")) return
         val r = reader ?: return
         if (r.readOnly) return
         val menu = readerPanel("shape", 256f)
@@ -1455,6 +1462,7 @@ class MainActivity : Activity() {
     }
 
     private fun readerMenu() {
+        if (closePanelIfOpen("more")) return
         val b = book ?: return
         val menu = readerPanel("more", 236f)
         val action: (Int) -> Unit = {
@@ -1754,6 +1762,7 @@ class MainActivity : Activity() {
     }
 
     private fun dictionaryDialog(initial: String = "") {
+        if (initial.isEmpty() && closePanelIfOpen("dictionary")) return
         val menu = readerPanel("dictionary", 344f)
         val surrounding = reader?.lookupContext()
         val query = initial.ifBlank { surrounding?.selected.orEmpty() }
@@ -2366,6 +2375,8 @@ class MainActivity : Activity() {
             listOf(
                 "dictionary/ATTRIBUTION.md",
                 "dictionary/licenses/ECDICT-MIT.txt",
+                "dictionary/licenses/WordNet-3.0.txt",
+                "dictionary/licenses/Chinese-Open-WordNet.txt",
                 "dictionary/licenses/Annota-phrases-MIT.txt",
                 "dictionary/licenses/CC-CEDICT-header.txt",
                 "dictionary/licenses/CC-BY-SA-4.0.txt",
