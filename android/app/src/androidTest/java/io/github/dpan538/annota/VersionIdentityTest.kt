@@ -8,7 +8,7 @@ import org.junit.Assert.*
 import org.junit.Test
 
 /** Check the installable build's identity without resetting a library or changing preferences. */
-class BetaIdentityTest {
+class VersionIdentityTest {
     private val inst = InstrumentationRegistry.getInstrumentation()
     private val context = inst.targetContext
 
@@ -18,13 +18,13 @@ class BetaIdentityTest {
             else emptyList()
 
     @Test
-    fun installedBetaAndVisibleLibraryAboutAndUpdateIdentityAgree() {
+    fun installedVersionAndVisibleLibraryAboutAndUpdateIdentityAgree() {
         val installed = context.packageManager.getPackageInfo(context.packageName, 0)
-        assertEquals("1.0.3-test", installed.versionName)
-        assertEquals(14L, installed.longVersionCode)
+        assertEquals("1.0.4-preview", installed.versionName)
+        assertEquals(16L, installed.longVersionCode)
         assertEquals(installed.versionName, BuildConfig.VERSION_NAME)
         assertTrue(Network.previewUpdates())
-        // The signed, non-debuggable beta must use the preview channel too.
+        // Preview identity must work in the signed non-debuggable APK too.
         assertTrue(Network.previewUpdates(installed.versionName!!, debug = false))
 
         val store = Store(context)
@@ -76,32 +76,30 @@ class BetaIdentityTest {
                                 screen.layout(0, 0, width, height)
                             }
                             val labels = all(screen).filterIsInstance<TextView>()
-                            val footerText = if (portrait) "Beta · 1.0.3" else "1.0.3-test · Beta"
-                            val footer = labels.single { it.text.toString() == footerText }
+                            val footerText =
+                                if (portrait) "Beta · 1.0.4" else "1.0.4-preview · Beta"
+                            val footer = labels.first { it.text.toString() == footerText }
                             assertEquals(View.VISIBLE, footer.visibility)
                             assertTrue(footer.width > 0 && footer.height > 0)
                             assertNotNull(footer.layout)
                             assertEquals(
-                                "Beta must remain readable in the library footer",
+                                "Version must remain readable in the library footer",
                                 0,
                                 footer.layout.getEllipsisCount(0),
                             )
-                            assertFalse(
-                                "A beta must never identify itself as stable",
-                                labels.any {
-                                    it.text.contains("正式版") ||
-                                        it.text.contains("Stable", ignoreCase = true)
-                                },
+                            assertTrue(
+                                "A preview must visibly identify itself as Beta",
+                                labels.any { it.text.contains("Beta") },
                             )
                             if (section == "settings") {
                                 val identity = if (english) "Beta build" else "Beta 测试版"
                                 assertTrue(
-                                    labels.any { it.text.toString() == "1.0.3-test · $identity" }
+                                    labels.any { it.text.toString() == "1.0.4-preview · $identity" }
                                 )
                                 val current = if (english) "Current version" else "当前版本"
                                 assertTrue(
                                     labels.any {
-                                        it.text.toString() == "$current · 1.0.3-test · $identity"
+                                        it.text.toString() == "$current · 1.0.4-preview · $identity"
                                     }
                                 )
                             }

@@ -67,6 +67,7 @@ data class DocumentCover(val bitmap: Bitmap, val content: Rect) {
 
 /** One bounded worker, no bitmap retained per card, and no rendering of offscreen cards. */
 class CoverRepository(context: Context, private val pdf: PdfEngine) {
+    private val main = android.os.Handler(android.os.Looper.getMainLooper())
     private val budget = RenderMemory.from(context).covers
     private val cache =
         object : LruCache<String, DocumentCover>(budget) {
@@ -76,6 +77,7 @@ class CoverRepository(context: Context, private val pdf: PdfEngine) {
     private val worker =
         ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, ArrayBlockingQueue<Runnable>(6))
     private val pending = mutableSetOf<String>()
+    private val listeners = mutableMapOf<String, java.util.WeakHashMap<View, Boolean>>()
     private var epoch = 0
     private var paused = false
     private var closed = false
@@ -96,7 +98,9 @@ class CoverRepository(context: Context, private val pdf: PdfEngine) {
     fun request(book: Book, target: View) {
         if (closed || paused) return
         val key = key(book)
-        if (cache.get(key) != null || !pending.add(key)) return
+        if (cache.get(key) != null) return
+        listeners.getOrPut(key) { java.util.WeakHashMap() }[target] = true
+        if (!pending.add(key)) return
         val generation = epoch
         try {
             worker.execute {
@@ -105,15 +109,22 @@ class CoverRepository(context: Context, private val pdf: PdfEngine) {
                     val width =
                         min(640, sqrt(cache.maxSize() / 8f * p.w / p.h).toInt()).coerceAtLeast(100)
                     val cover = DocumentCover.load(pdf, book, width)
-                    target.post {
+                    main.post {
                         if (generation == epoch) pending.remove(key)
                         if (!closed && !paused && generation == epoch) {
                             cache.put(key, cover)
-                            target.invalidate()
+                            listeners.remove(key)?.keys?.toList()?.forEach { it.invalidate() }
                         } else cover.bitmap.recycle()
                     }
                 } catch (_: Exception) {
-                    target.post { if (generation == epoch) pending.remove(key) }
+                    main.post {
+                        if (generation == epoch) {
+                            pending.remove(key)
+                            listeners.remove(key)?.keys?.toList()?.forEach {
+                                it.postInvalidateDelayed(300)
+                            }
+                        }
+                    }
                 }
             }
         } catch (_: RejectedExecutionException) {
@@ -122,11 +133,16 @@ class CoverRepository(context: Context, private val pdf: PdfEngine) {
         }
     }
 
+    fun release(book: Book, target: View) {
+        listeners[key(book)]?.remove(target)
+    }
+
     fun trim(background: Boolean) {
         epoch++
         paused = background
         worker.queue.clear()
         pending.clear()
+        listeners.clear()
         cache.evictAll()
         cache.resize(max(1024 * 1024, budget / 2))
     }
@@ -157,6 +173,11 @@ class DocumentCoverView(
                 .getSharedPreferences("settings", Context.MODE_PRIVATE)
                 .getBoolean("english", false)
         contentDescription = "${book.title} · ${if (english) "First-page cover" else "首页封面"}"
+    }
+
+    override fun onDetachedFromWindow() {
+        covers.release(book, this)
+        super.onDetachedFromWindow()
     }
 
     override fun onWindowVisibilityChanged(visibility: Int) {

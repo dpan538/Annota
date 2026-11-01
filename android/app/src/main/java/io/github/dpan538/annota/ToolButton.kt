@@ -66,6 +66,7 @@ class ToolButton(context: Context, val name: String) : View(context) {
                 "pen" -> "PenLine"
                 "eraser" -> "Eraser"
                 "shape" -> "Shapes"
+                "select" -> "Selection"
                 "image" -> "Image"
                 "ruler" -> "Ruler"
                 "undo" -> "Undo2"

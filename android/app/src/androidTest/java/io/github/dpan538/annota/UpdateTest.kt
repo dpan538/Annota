@@ -105,6 +105,7 @@ class UpdateTest {
                 .put(release("v1.0.4-test", true, draft = true))
                 .put(release("v1.0.5-test", true, withManifest = false))
         assertTrue(Network.previewUpdates("1.0.3-test", false))
+        assertTrue(Network.previewUpdates("1.0.4-preview", false))
         assertTrue(Network.previewUpdates("1.0.3-TEST", false))
         assertFalse(Network.previewUpdates("1.0.2", false))
         assertFalse(Network.previewUpdates("1.0.3", false))

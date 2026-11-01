@@ -1,8 +1,6 @@
 package io.github.dpan538.annota
 
 import android.app.Activity
-import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -24,9 +22,6 @@ class DictionaryPanel(
     private val lookup: Executor,
     initial: String,
     private val surrounding: LookupContext? = null,
-    private val translationFactory: () -> SentenceTranslator = {
-        DeviceSentenceTranslator(activity)
-    },
     private val onManualQuery: () -> Unit = {},
 ) {
     private val ui = menu.ui
@@ -35,9 +30,6 @@ class DictionaryPanel(
     private var generation = 0
     private var open = true
     private var pending: Runnable? = null
-    private var translator: SentenceTranslator? = null
-    private var translationTimeout: Runnable? = null
-    private var translationOperation = 0
     private lateinit var statusBadge: TextView
     private lateinit var footer: TextView
     private var useSurrounding = true
@@ -54,7 +46,7 @@ class DictionaryPanel(
             tag = "dictionary-query"
             setSingleLine()
             // Android adds a 5,000-character filter for single-line editors. Keep the full
-            // selection and report our translation limit explicitly in the result area instead.
+            // selection intact; long passages get an explicit local-lookup hint.
             filters = filters.filterNot { it is InputFilter.LengthFilter }.toTypedArray()
             hint = ui.tr("英汉 / 汉英离线查词", "English ↔ Chinese, offline")
             typeface = UiFonts.get(activity)
@@ -151,9 +143,6 @@ class DictionaryPanel(
             open = false
             generation++
             pending?.let(handler::removeCallbacks)
-            cancelTranslation()
-            translator?.close()
-            translator = null
         }
         edit.setOnEditorActionListener { _, action, _ ->
             if (action == EditorInfo.IME_ACTION_SEARCH) {
@@ -174,7 +163,6 @@ class DictionaryPanel(
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     generation++
-                    cancelTranslation()
                     if (surrounding != null && !surrounding.matches(s?.toString().orEmpty())) {
                         useSurrounding = false
                         onManualQuery()
@@ -343,7 +331,6 @@ class DictionaryPanel(
 
     private fun query() {
         pending?.let(handler::removeCallbacks)
-        cancelTranslation()
         val id = ++generation
         val q = edit.text.toString()
         if (q.isBlank()) {
@@ -357,11 +344,7 @@ class DictionaryPanel(
             handler.post {
                 if (!open || id != generation) return@post
                 result.fold(
-                    {
-                        if (it.entries.isEmpty() && SentenceText.canOffer(q))
-                            offerTranslation(q, id)
-                        else render(it, false)
-                    },
+                    { render(it, false) },
                     {
                         results.removeAllViews()
                         results.addView(
@@ -426,6 +409,8 @@ class DictionaryPanel(
                 menu
                     .label(
                         if (empty) ui.tr("离线查词", "Offline lookup")
+                        else if (edit.text.length > Dictionary.MAX_QUERY_LENGTH)
+                            ui.tr("请选取单词或词组", "Select a word or phrase")
                         else ui.tr("未找到词条", "No matching entry"),
                         17f,
                     )
@@ -440,298 +425,14 @@ class DictionaryPanel(
                         if (empty) ui.tr("输入单词或词组", "Enter a word or phrase")
                         else
                             ui.tr(
-                                "词库未收录，试试完整词组或检查拼写",
-                                "No entry. Try a complete phrase or check the spelling.",
+                                "词库随应用内置。请选取单词或词组，暂不提供整句翻译。",
+                                "Dictionary included in the app. Select a word or phrase; full-sentence translation is not available.",
                             ),
                         14f,
                         true,
                     )
                     .apply { setPadding(ui.px(8f), ui.px(8f), ui.px(8f), ui.px(12f)) }
             )
-        }
-        menu.refreshSize()
-    }
-
-    private fun cancelTranslation() {
-        translationOperation++
-        translationTimeout?.let(handler::removeCallbacks)
-        translationTimeout = null
-    }
-
-    private fun current(q: String, id: Int) = open && generation == id && edit.text.toString() == q
-
-    private fun offerTranslation(q: String, id: Int) {
-        if (q.length > SentenceText.MAX_LENGTH) {
-            translationMessage(
-                q,
-                ui.tr("请选取较短的句子", "Select a shorter passage"),
-                ui.tr(
-                    "原文已完整保留。一次最多翻译 4,000 个字符。",
-                    "The full text is kept. Translate up to 4,000 characters at a time.",
-                ),
-            )
-            return
-        }
-        val card =
-            translationMessage(
-                q,
-                ui.tr("句子翻译", "Sentence translation"),
-                ui.tr(
-                    "英汉互译，在设备上处理，文本不上传。首次使用需下载翻译包；Google ML Kit 可能发送使用与性能指标。",
-                    "English ↔ Chinese on this device; text is not uploaded. A pack is needed on first use. Google ML Kit may send usage and performance metrics.",
-                ),
-            )
-        translationButton(card, ui.tr("使用 Google Translate 翻译", "Translate with Google")) {
-            if (current(q, id)) checkTranslation(q, id)
-        }
-        menu.refreshSize()
-    }
-
-    private fun translationMessage(q: String, title: String, message: String): LinearLayout {
-        results.removeAllViews()
-        scroll.scrollTo(0, 0)
-        statusBadge.text = ui.tr("翻译", "Translate")
-        footer.text = ui.tr("英汉句子翻译 · 设备内处理", "EN ↔ ZH · on-device translation")
-        val card =
-            LinearLayout(activity).apply {
-                orientation = LinearLayout.VERTICAL
-                setPadding(ui.px(8f), ui.px(8f), ui.px(8f), ui.px(8f))
-            }
-        card.addView(menu.label(title, 17f).apply { typeface = UiFonts.get(activity, 500) })
-        if (message.isNotBlank())
-            card.addView(
-                menu.label(message, 14f, true).apply {
-                    tag = "translation-status"
-                    accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
-                }
-            )
-        divider(card, 8f)
-        card.addView(
-            menu.label(q, 14f, true).apply {
-                tag = "translation-source"
-                setTextIsSelectable(true)
-                setLineSpacing(ui.px(3f).toFloat(), 1f)
-            }
-        )
-        results.addView(card, LinearLayout.LayoutParams(-1, -2))
-        menu.refreshSize()
-        return card
-    }
-
-    private fun translationButton(parent: LinearLayout, caption: String, action: () -> Unit) {
-        val button = ui.action(caption, action)
-        button.addView(
-            menu.label(caption, 14f).apply {
-                setTextColor(palette.accent)
-                gravity = Gravity.CENTER_VERTICAL
-                minHeight = ui.px(44f)
-            },
-            FrameLayout.LayoutParams(-1, -2),
-        )
-        // Keep the action above long source passages while retaining every source character.
-        parent.addView(button, 2, LinearLayout.LayoutParams(-1, -2).apply { topMargin = ui.px(5f) })
-    }
-
-    private fun backend(): SentenceTranslator =
-        translator ?: translationFactory().also { translator = it }
-
-    private fun <T> translationTask(
-        q: String,
-        id: Int,
-        timeoutMs: Long,
-        timeoutText: String,
-        task: ((Result<T>) -> Unit) -> Unit,
-        done: (Result<T>) -> Unit,
-    ) {
-        cancelTranslation()
-        val operation = translationOperation
-        translationTimeout =
-            Runnable {
-                    if (current(q, id) && operation == translationOperation) {
-                        cancelTranslation()
-                        translationFailure(q, id, timeoutText)
-                    }
-                }
-                .also { handler.postDelayed(it, timeoutMs) }
-        try {
-            task { result ->
-                handler.post {
-                    if (!current(q, id) || operation != translationOperation) return@post
-                    cancelTranslation()
-                    done(result)
-                }
-            }
-        } catch (_: Exception) {
-            cancelTranslation()
-            done(Result.failure(IllegalStateException("Translation unavailable")))
-        }
-    }
-
-    private fun busy(q: String, message: String) {
-        val card = translationMessage(q, ui.tr("句子翻译", "Sentence translation"), message)
-        card.addView(
-            ProgressBar(activity).apply { isIndeterminate = true },
-            2,
-            LinearLayout.LayoutParams(ui.px(24f), ui.px(24f)).apply {
-                gravity = Gravity.CENTER_HORIZONTAL
-                topMargin = ui.px(8f)
-            },
-        )
-        menu.refreshSize()
-    }
-
-    private fun checkTranslation(q: String, id: Int) {
-        busy(q, ui.tr("正在检查离线翻译包…", "Checking the translation pack…"))
-        translationTask<Boolean>(
-            q,
-            id,
-            15_000,
-            ui.tr("翻译包检查超时，请重试。", "The model check timed out. Please retry."),
-            { backend().modelReady(it) },
-        ) { result ->
-            result.fold(
-                { ready -> if (ready) translate(q, id) else offerDownload(q, id) },
-                {
-                    translationFailure(
-                        q,
-                        id,
-                        ui.tr("无法读取翻译包，请重试。", "Couldn't read the translation pack. Please retry."),
-                    )
-                },
-            )
-        }
-    }
-
-    private fun offerDownload(q: String, id: Int) {
-        val card =
-            translationMessage(
-                q,
-                ui.tr("下载离线翻译包", "Download translation pack"),
-                ui.tr(
-                    "约 30 MB，通过 Wi-Fi 下载，完成后可断网翻译。文本和译文不会上传；Google ML Kit 可能联网发送使用与性能指标。",
-                    "About 30 MB over Wi-Fi; works offline after download. Text and translations stay on this device. Google ML Kit may send usage and performance metrics.",
-                ),
-            )
-        statusBadge.text = ui.tr("待下载", "Not ready")
-        translationButton(
-            card,
-            ui.tr("下载并使用 Google Translate 翻译", "Download and translate with Google"),
-        ) {
-            if (!current(q, id)) return@translationButton
-            busy(
-                q,
-                ui.tr("正在下载翻译包，需要 Wi-Fi…", "Downloading the translation pack; Wi-Fi is required…"),
-            )
-            translationTask<Unit>(
-                q,
-                id,
-                120_000,
-                ui.tr(
-                    "下载未完成，请检查 Wi-Fi 或稍后重试。离线查词仍可用。",
-                    "Download didn't finish. Check Wi-Fi or retry later. Offline lookup still works.",
-                ),
-                { backend().download(it) },
-            ) { result ->
-                result.fold(
-                    { translate(q, id) },
-                    {
-                        translationFailure(
-                            q,
-                            id,
-                            ui.tr(
-                                "翻译包下载失败，请检查网络后重试。离线查词仍可用。",
-                                "Couldn't download the pack. Check the connection and retry. Offline lookup still works.",
-                            ),
-                        )
-                    },
-                )
-            }
-        }
-        menu.refreshSize()
-    }
-
-    private fun translate(q: String, id: Int) {
-        busy(q, ui.tr("正在设备上翻译…", "Translating on this device…"))
-        statusBadge.text = ui.tr("离线", "Offline")
-        translationTask<String>(
-            q,
-            id,
-            30_000,
-            ui.tr("翻译超时，请缩短选区后重试。", "Translation timed out. Try a shorter selection."),
-            { backend().translate(q, it) },
-        ) { result ->
-            result.fold(
-                { translated ->
-                    val card = translationMessage(q, ui.tr("句子翻译", "Sentence translation"), "")
-                    statusBadge.text = ui.tr("离线", "Offline")
-                    card.addView(
-                        menu.label(translated, 16f).apply {
-                            tag = "translation-result"
-                            setTextIsSelectable(true)
-                            setLineSpacing(ui.px(4f).toFloat(), 1f)
-                            accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
-                        },
-                        1,
-                    )
-                    val dark = ColorUtils.calculateLuminance(palette.color("panel")) < .35
-                    card.addView(
-                        ImageView(activity).apply {
-                            tag = "translation-attribution"
-                            contentDescription = "Powered by Google Translate"
-                            setImageResource(
-                                if (dark) R.drawable.google_translate_attribution_white
-                                else R.drawable.google_translate_attribution
-                            )
-                            scaleType = ImageView.ScaleType.FIT_START
-                            adjustViewBounds = true
-                            setOnClickListener {
-                                runCatching {
-                                    activity.startActivity(
-                                        Intent(
-                                            Intent.ACTION_VIEW,
-                                            Uri.parse("https://translate.google.com"),
-                                        )
-                                    )
-                                }
-                            }
-                        },
-                        2,
-                        LinearLayout.LayoutParams(ui.px(146f), ui.px(22f)).apply {
-                            topMargin = ui.px(12f)
-                            bottomMargin = ui.px(8f)
-                        },
-                    )
-                    card.addView(
-                        menu.label(
-                            ui.tr(
-                                "机器翻译仅供参考，请结合原文。",
-                                "Machine translation; check against the original.",
-                            ),
-                            12f,
-                            true,
-                        ),
-                        3,
-                    )
-                    menu.refreshSize()
-                },
-                {
-                    translationFailure(
-                        q,
-                        id,
-                        ui.tr(
-                            "翻译未完成，请重试或缩短选区。",
-                            "Translation failed. Retry or select a shorter passage.",
-                        ),
-                    )
-                },
-            )
-        }
-    }
-
-    private fun translationFailure(q: String, id: Int, message: String) {
-        val card = translationMessage(q, ui.tr("暂时无法翻译", "Translation unavailable"), message)
-        translationButton(card, ui.tr("使用 Google Translate 重试", "Retry with Google Translate")) {
-            if (current(q, id)) checkTranslation(q, id)
         }
         menu.refreshSize()
     }

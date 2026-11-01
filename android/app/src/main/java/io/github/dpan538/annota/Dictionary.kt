@@ -109,7 +109,7 @@ class Dictionary(private val context: Context) {
     }
 
     fun query(text: String): Result {
-        // Sentence translation owns longer input. Never truncate it into a different query.
+        // Long passages are not dictionary entries. Never silently truncate a selection.
         if (text.length > MAX_QUERY_LENGTH) return Result(emptyList(), emptyList())
         val keys = queryKeys(text)
         val key = normalize(text)

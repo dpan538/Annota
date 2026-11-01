@@ -12,9 +12,9 @@ data class RenderMemory(val pages: Int, val images: Int, val covers: Int, val wo
             val heap = megabytes.coerceAtLeast(32)
             val divisor = if (lowRam) 2 else 1
             return RenderMemory(
-                (heap / 4 / divisor).coerceIn(4, 64) * MIB,
+                (heap / 3 / divisor).coerceIn(4, 128) * MIB,
                 (heap / 24 / divisor).coerceIn(2, 12) * MIB,
-                (heap / 32 / divisor).coerceIn(1, 8) * MIB,
+                (heap / 16 / divisor).coerceIn(1, 24) * MIB,
                 (heap / 64 / divisor).coerceIn(1, 4) * MIB,
             )
         }

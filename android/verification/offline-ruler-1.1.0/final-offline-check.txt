@@ -1,0 +1,6 @@
+
+io.github.dpan538.annota.OfflineDictionaryTest:..
+
+Time: 4.992
+
+OK (2 tests)

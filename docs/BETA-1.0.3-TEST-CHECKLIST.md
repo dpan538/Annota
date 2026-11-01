@@ -1,5 +1,7 @@
 # 1.0.3-test Beta 真机测试清单
 
+> 历史 Beta 记录：其中模型下载与外部翻译方案已废弃，相关旧源码链接可能不再存在。1.0.4-preview 仅采用随 APK 提供的本地词典，当前规范见[本地词典说明](TRANSLATION.md)。
+
 本轮测试版：**1.0.3-test / versionCode 14**；最近正式版为 **1.0.2 / 13**；默认更新入口现提供本 Beta。本表用于 Xiaomi Pad 9 Pro Max 和实际手写笔验收，目前没有填写为已通过。自动化证据另见[本轮验收记录](HANDWRITING-LOOKUP-ACCEPTANCE.md)。
 
 先在旧版导出 `.annota.zip` 备份并保存到应用外，然后优先在 **1.0.2 的「设置 → 关于 → 检查更新」** 验证发现 `1.0.3-test`、显示 Beta 说明、下载校验及系统覆盖安装；也可从[Beta Release](https://github.com/dpan538/Annota/releases/tag/v1.0.3-test)下载同一 APK。不要卸载旧版或清除数据。Beta 的 versionCode 更高，不能将 1.0.2 当作普通覆盖更新装回；后续正式升级需高于 14。

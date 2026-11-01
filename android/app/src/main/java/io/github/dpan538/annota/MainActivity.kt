@@ -329,13 +329,17 @@ class MainActivity : Activity() {
         reader?.dispose()
         pageCovers?.close()
         liveTask?.cancel()
-        io.execute { store.close() }
+        io.execute {
+            pdf.trimRasterMemory()
+            store.close()
+        }
         io.shutdown()
         lookup.shutdown()
         super.onDestroy()
     }
 
     private fun trimRenderMemory(background: Boolean) {
+        if (!io.isShutdown) io.execute { pdf.trimRasterMemory() }
         reader?.trimMemory(background)
         pageCovers?.trim(background)
         if (::root.isInitialized) (root.getChildAt(0) as? LibraryScreen)?.trimMemory(background)
@@ -913,6 +917,10 @@ class MainActivity : Activity() {
             pickImage()
         }
         add(center, "shape", tr("图形", "Shapes")) { shapeOptions() }
+        add(center, "select", tr("框选批注", "Select annotations")) {
+            readerPopup?.dismiss()
+            reader?.tool = "select"
+        }
         add(center, "hand", tr("手形", "Hand")) {
             readerPopup?.dismiss()
             reader?.tool = "hand"
@@ -2290,7 +2298,6 @@ class MainActivity : Activity() {
         val files =
             listOf(
                 "dictionary/ATTRIBUTION.md",
-                "TRANSLATION-NOTICE.txt",
                 "dictionary/licenses/ECDICT-MIT.txt",
                 "dictionary/licenses/Annota-phrases-MIT.txt",
                 "dictionary/licenses/CC-CEDICT-header.txt",

@@ -1,0 +1,61 @@
+
+io.github.dpan538.annota.InkQualityTest:........
+io.github.dpan538.annota.InkEditingTest:.......
+io.github.dpan538.annota.InkReaderIntegrationTest:...
+io.github.dpan538.annota.InputTest:.....
+io.github.dpan538.annota.PdfSignatureTest:......
+io.github.dpan538.annota.OfflineDictionaryTest:..
+io.github.dpan538.annota.RulerRotationTest:...
+io.github.dpan538.annota.CoreTest:........
+io.github.dpan538.annota.ReaderFidelityTest:.........
+io.github.dpan538.annota.RenderLifecycleTest:
+Cache before trim: MemoryStats(pageBytes=26078800, imageBytes=0, wordBytes=30760, pageLimit=50331648, imageLimit=8388608, wordLimit=3145728, queued=0)
+Cache after trim: MemoryStats(pageBytes=0, imageBytes=0, wordBytes=0, pageLimit=25165824, imageLimit=4194304, wordLimit=1572864, queued=0)
+.
+io.github.dpan538.annota.ReadingModeTest:......
+io.github.dpan538.annota.DictionaryContextTest:............
+io.github.dpan538.annota.DictionaryContextUiTest:.
+io.github.dpan538.annota.ContinuousReaderTest:.......
+io.github.dpan538.annota.ReaderPolishTest:....
+io.github.dpan538.annota.VersionIdentityTest:
+Error in installedVersionAndVisibleLibraryAboutAndUpdateIdentityAgree(io.github.dpan538.annota.VersionIdentityTest):
+java.lang.IllegalArgumentException: Collection contains more than one matching element.
+	at io.github.dpan538.annota.VersionIdentityTest.installedVersionAndVisibleLibraryAboutAndUpdateIdentityAgree$lambda$15(VersionIdentityTest.kt:136)
+	at io.github.dpan538.annota.VersionIdentityTest.$r8$lambda$BWfaiGm1IDc-FB93NA_1FLdQhis(Unknown Source:0)
+	at io.github.dpan538.annota.VersionIdentityTest$$ExternalSyntheticLambda8.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2616)
+	at android.os.Handler.handleCallback(Handler.java:995)
+	at android.os.Handler.dispatchMessage(Handler.java:103)
+	at android.os.Looper.loopOnce(Looper.java:248)
+	at android.os.Looper.loop(Looper.java:338)
+	at android.app.ActivityThread.main(ActivityThread.java:9067)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+
+io.github.dpan538.annota.UpdateTest:...
+io.github.dpan538.annota.DocumentNavigationTest:........
+
+Time: 103.334
+There was 1 failure:
+1) installedVersionAndVisibleLibraryAboutAndUpdateIdentityAgree(io.github.dpan538.annota.VersionIdentityTest)
+java.lang.IllegalArgumentException: Collection contains more than one matching element.
+	at io.github.dpan538.annota.VersionIdentityTest.installedVersionAndVisibleLibraryAboutAndUpdateIdentityAgree$lambda$15(VersionIdentityTest.kt:136)
+	at io.github.dpan538.annota.VersionIdentityTest.$r8$lambda$BWfaiGm1IDc-FB93NA_1FLdQhis(Unknown Source:0)
+	at io.github.dpan538.annota.VersionIdentityTest$$ExternalSyntheticLambda8.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2616)
+	at android.os.Handler.handleCallback(Handler.java:995)
+	at android.os.Handler.dispatchMessage(Handler.java:103)
+	at android.os.Looper.loopOnce(Looper.java:248)
+	at android.os.Looper.loop(Looper.java:338)
+	at android.app.ActivityThread.main(ActivityThread.java:9067)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+
+FAILURES!!!
+Tests run: 94,  Failures: 1

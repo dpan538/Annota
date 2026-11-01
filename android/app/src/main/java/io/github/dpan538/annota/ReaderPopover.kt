@@ -354,14 +354,18 @@ class ReaderGlyph(context: android.content.Context, private val name: String) : 
                     paint,
                 )
             "highlight" -> {
-                c.drawLine(4f, 21f, 15f, 21f, paint)
+                c.drawLine(3f, 22f, 12f, 22f, paint)
                 c.drawPath(
                     Path().apply {
-                        moveTo(5f, 17f)
+                        moveTo(7f, 14f)
                         lineTo(16f, 3f)
-                        lineTo(22f, 9f)
-                        lineTo(11f, 20f)
+                        lineTo(21f, 8f)
+                        lineTo(12f, 18f)
                         close()
+                        moveTo(7f, 14f)
+                        lineTo(4f, 18f)
+                        lineTo(8f, 19f)
+                        lineTo(12f, 18f)
                     },
                     paint,
                 )

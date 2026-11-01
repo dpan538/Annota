@@ -1,0 +1,32 @@
+{
+  "published": false,
+  "package": {
+    "schemaVersion": 1,
+    "packageName": "io.github.dpan538.annota",
+    "versionCode": 16,
+    "versionName": "1.0.4-preview",
+    "apk": "Annota-1.0.4-preview.apk",
+    "sha256": "88bd388579685bc2180fa8d658b3cf466305d6ad6a3a0a049d0a32f29eed4811",
+    "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18"
+  },
+  "bytes": 77005653,
+  "noTranslationSdkOrDownloader": true,
+  "dictionaryHashesVerified": true,
+  "zipCrcVerified": true,
+  "nonDebuggable": true,
+  "sameCertificate": true,
+  "physicalDeviceTested": false,
+  "verification": {
+    "androidTests": 102,
+    "androidLog": "regression.txt",
+    "pythonDictionaryTests": 12,
+    "build": [
+      "assembleDebug",
+      "assembleDebugAndroidTest",
+      "lintDebug",
+      "assembleRelease"
+    ],
+    "upgradeLog": "upgrade-and-package.json",
+    "networkDuringDictionaryTests": "Wi-Fi and mobile data disabled"
+  }
+}

@@ -24,6 +24,10 @@ class PdfEngine(val context: Context, val store: Store) {
         PDFBoxResourceLoader.init(context)
     }
 
+    private val rasterPool = PdfRasterPool()
+
+    fun trimRasterMemory() = rasterPool.trim()
+
     private fun memory() =
         MemoryUsageSetting.setupMixed(24L * 1024 * 1024).setTempDir(context.cacheDir)
 
@@ -104,13 +108,8 @@ class PdfEngine(val context: Context, val store: Store) {
         val canvas = Canvas(result)
         canvas.drawColor(Color.WHITE)
         if (page.source >= 0) {
-            ParcelFileDescriptor.open(readingFile(book), ParcelFileDescriptor.MODE_READ_ONLY).use {
-                fd ->
-                PdfRenderer(fd).use { r ->
-                    r.openPage(page.source).use { p ->
-                        p.render(result, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-                    }
-                }
+            rasterPool.page(readingFile(book), page.source) { p ->
+                p.render(result, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
             }
         } else {
             canvas.scale(scale, scale)
@@ -132,19 +131,9 @@ class PdfEngine(val context: Context, val store: Store) {
             }
         try {
             if (page.source >= 0) {
-                ParcelFileDescriptor.open(readingFile(book), ParcelFileDescriptor.MODE_READ_ONLY)
-                    .use { fd ->
-                        PdfRenderer(fd).use { renderer ->
-                            renderer.openPage(page.source).use {
-                                it.render(
-                                    result,
-                                    null,
-                                    transform,
-                                    PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY,
-                                )
-                            }
-                        }
-                    }
+                rasterPool.page(readingFile(book), page.source) { p ->
+                    p.render(result, null, transform, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                }
             } else
                 Canvas(result).apply {
                     concat(transform)

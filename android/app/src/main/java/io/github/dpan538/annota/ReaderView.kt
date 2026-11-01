@@ -64,10 +64,13 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private val browsing
         get() = readOnly || tool == "hand"
 
+    private val annotationSelection = AnnotationSelection()
+
     var lastPenTool = displaySaved?.optString("lastPen", "pen") ?: "pen"
     var tool = displaySaved?.optString("tool", "hand") ?: "hand"
         set(value) {
             if (readOnly) return
+            annotationSelection.clear()
             field = value
             if (value in setOf("pen", "pencil", "fountain", "highlight")) lastPenTool = value
             onToolChanged()
@@ -230,9 +233,12 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 val p = point(place, downX, downY, 1f)
                 val page = book.pages[place.index]
                 selectionStart =
-                    words.get(page.id).orEmpty().firstOrNull {
-                        RectF(it.box).apply { inset(-6f, -6f) }.contains(p.x, p.y)
-                    }
+                    TextSelectionHit.nearest(
+                        words.get(page.id).orEmpty(),
+                        p.x,
+                        p.y,
+                        16f * scale * page.w / place.bounds.width(),
+                    )
                 selected = listOfNotNull(selectionStart)
                 selectionText = PageText(words.get(page.id).orEmpty())
                 selectionPage = page.id
@@ -343,8 +349,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         get() = 36 * scale
 
     private var draggingRuler = false
-    private var angleStart = 0f
-    private var rulerAngleStart = 0f
+    private val rulerRotation = RulerRotation()
     private val scale = resources.displayMetrics.density
 
     init {
@@ -1099,6 +1104,11 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 requestTile(p, tile)
             }
             p.marks.forEach { drawMark(canvas, it) }
+            annotationSelection.draw(
+                canvas,
+                p,
+                scale * p.w / placements.first { it.index == i }.bounds.width(),
+            )
             signature
                 ?.takeIf { it.pageId == p.id }
                 ?.let { pending ->
@@ -1390,6 +1400,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     private fun cancelStroke() {
+        annotationSelection.clear()
         stroke = null
         rulerEdge = null
         beforeErase?.let { state ->
@@ -1557,6 +1568,37 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             cancelStroke()
             return true
         }
+        if (!readOnly && tool == "select" && e.pointerCount == 1) {
+            val place =
+                if (e.actionMasked == MotionEvent.ACTION_DOWN)
+                    placements.firstOrNull { it.bounds.contains(e.x, e.y) }
+                else placements.firstOrNull { book.pages[it.index] === annotationSelection.page }
+            if (place != null) {
+                val page = book.pages[place.index]
+                val location = point(place, e.x, e.y, 1f)
+                val hit = 22f * scale * page.w / place.bounds.width()
+                when (e.actionMasked) {
+                    MotionEvent.ACTION_DOWN -> {
+                        stopMotion()
+                        removeCallbacks(longPress)
+                        clearSelection()
+                        draggingRuler = false
+                        onActivePage(place.index)
+                        annotationSelection.down(page, location.x, location.y, hit)
+                    }
+                    MotionEvent.ACTION_MOVE -> annotationSelection.move(location.x, location.y)
+                    MotionEvent.ACTION_UP -> {
+                        annotationSelection.move(location.x, location.y)
+                        if (annotationSelection.up(hit)) {
+                            saveChange()
+                            onChanged()
+                        }
+                    }
+                }
+                invalidate()
+                return true
+            }
+        }
         when (e.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
                 stopMotion()
@@ -1579,7 +1621,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                         }
                     if (
                         hit != null &&
-                            hypot(handles[hit].x - e.x, handles[hit].y - e.y) < 24 * scale
+                            hypot(handles[hit].x - e.x, handles[hit].y - e.y) < 32 * scale
                     ) {
                         active = placements.firstOrNull { book.pages[it.index].id == selectionPage }
                         if (active != null) {
@@ -1669,8 +1711,10 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                         gestureZoom = zoom
                         pinchX = (e.getX(0) + e.getX(1)) / 2
                         pinchY = (e.getY(0) + e.getY(1)) / 2
-                        angleStart = atan2(e.getY(1) - e.getY(0), e.getX(1) - e.getX(0))
-                        rulerAngleStart = rulerAngle
+                        rulerRotation.begin(
+                            rulerAngle,
+                            atan2(e.getY(1) - e.getY(0), e.getX(1) - e.getX(0)) * 180 / PI.toFloat(),
+                        )
                     }
                 }
                 return true
@@ -1691,9 +1735,11 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 if (e.pointerCount >= 2 && !stylus) {
                     if (draggingRuler) {
                         rulerAngle =
-                            rulerAngleStart +
-                                (atan2(e.getY(1) - e.getY(0), e.getX(1) - e.getX(0)) - angleStart) *
-                                    180 / PI.toFloat()
+                            rulerRotation.move(
+                                atan2(e.getY(1) - e.getY(0), e.getX(1) - e.getX(0)) * 180 /
+                                    PI.toFloat(),
+                                hypot(e.getX(1) - e.getX(0), e.getY(1) - e.getY(0)) >= 48 * scale,
+                            )
                     } else if (pinchDistance > 0) {
                         val distance = hypot(e.getX(0) - e.getX(1), e.getY(0) - e.getY(1))
                         val x = (e.getX(0) + e.getX(1)) / 2

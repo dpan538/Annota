@@ -1,19 +1,21 @@
 # Annota
 
+> **1.0.4-preview · Beta 测试版**（versionCode 16）。本轮不是正式稳定版；沿用现有证书，可覆盖升级。按维护者要求提供给默认更新检查，最近正式版仍为 1.0.2。
+
 **本地 PDF 阅读与手写批注。打开文档，专注阅读，随手记录。**
 
 为 Android 平板设计，围绕小米平板 9 Pro Max 优化。PDF、笔迹、阅读位置和设置保存在设备上；阅读、书写和英汉 / 汉英查词均可离线使用，无需账号。
 
-[![Beta](https://img.shields.io/badge/beta-1.0.3--test_测试版-DC8A32)](https://github.com/dpan538/Annota/releases/tag/v1.0.3-test)
+[![Beta](https://img.shields.io/badge/beta-1.0.4--preview_Beta-DC8A32)](https://github.com/dpan538/Annota/releases/tag/v1.0.4-preview)
 [![Stable](https://img.shields.io/badge/stable-1.0.2_正式版-4460CE)](https://github.com/dpan538/Annota/releases/tag/v1.0.2)
 ![Android](https://img.shields.io/badge/Android-10%2B-4460CE)
 [![License](https://img.shields.io/badge/code-MIT-4460CE)](LICENSE)
 
-[**下载 1.0.3-test Beta APK**](https://github.com/dpan538/Annota/releases/download/v1.0.3-test/Annota-1.0.3-test.apk) · [下载 1.0.2 正式版](https://github.com/dpan538/Annota/releases/download/v1.0.2/Annota-1.0.2.apk) · [下载与安装](DOWNLOAD.md) · [真机测试清单](docs/BETA-1.0.3-TEST-CHECKLIST.md) · [English](#english)
+[**下载 1.0.4-preview Beta APK**](https://github.com/dpan538/Annota/releases/download/v1.0.4-preview/Annota-1.0.4-preview.apk) · [下载 1.0.2 正式版](https://github.com/dpan538/Annota/releases/download/v1.0.2/Annota-1.0.2.apk) · [下载与安装](DOWNLOAD.md) · [真机测试清单](docs/BETA-1.0.4-PREVIEW-CHECKLIST.md) · [English](#english)
 
-本轮为 **1.0.3-test Beta 测试版**（versionCode 14），现已通过 GitHub Latest 向正式版用户的默认更新检查提供。**本包仍是 Beta，不是正式稳定版**；最近正式版为 1.0.2（versionCode 13）。测试包沿用已有证书，可覆盖升级；安装前请先制作本地备份。
+当前测试版为 **1.0.4-preview Beta**（versionCode 16），最近正式版为 **1.0.2**（versionCode 13）。默认更新检查提供本 Beta；下载和安装仍需用户确认。安装前请制作本地备份。
 
-Beta 改善现有笔种的稳定性、压感和笔触质感，扩充 **942 条离线词组与术语、682 个词形 / 拼写别名**；修正局部橡皮、签名掌触、空白笔记导出和竖长图片比例。可选英汉句子翻译由 [Google Translate](https://cloud.google.com/translate) 提供，使用 ML Kit 端侧模型并复用查词面板，首次需下载模型。详见 [更新记录](CHANGELOG.md) 与 [句子翻译说明](docs/TRANSLATION.md)。
+本轮恢复安装即用的纯离线词典，移除翻译 SDK 和模型下载；新增批注框选、移动与等比缩放，优化直尺水平吸附、选词命中、缩略图刷新和 PDF 放大渲染。沿用上一轮的笔触优化与 **942 条词组 / 术语、682 个别名**。详见[更新记录](CHANGELOG.md)与[本地词典说明](docs/TRANSLATION.md)。
 
 ## 从书库到阅读
 
@@ -60,15 +62,14 @@ Beta 改善现有笔种的稳定性、压感和笔触质感，扩充 **942 条�
 
 ## 可以做什么
 
-以下能力表描述当前 Beta；新增笔触、扩充词组和句子翻译尚不属于 1.0.2 稳定版。
+以下能力包含本 Beta 的笔触与词组优化；不代表 1.0.2 稳定版具备所有新增能力。
 
 | 场景 | 功能 |
 | --- | --- |
 | PDF 阅读 | 原始 PDF 高清分块渲染、连续滚动、惯性滑动、双指缩放、单页 / 相邻双页、阅读位置恢复 |
-| 手写批注 | 笔、铅笔、钢笔、荧光笔；自适应稳定、压力与速度响应、轻微铅笔颗粒、连续扫擦；直尺、图形、图片与撤销 / 重做 |
+| 手写批注 | 笔、铅笔、钢笔、荧光笔；自适应稳定、压力与速度响应、轻微铅笔颗粒、连续扫擦；水平吸附直尺、图形、图片、批注框选移动 / 缩放与撤销 / 重做 |
 | 手写签名 | 独立签名画布、移动与等比缩放、单步撤销；签名随 PDF 导出，受限文件只读打开 |
 | 离线查词 | 英汉 58,783 条、汉英 126,272 条；完整词组、显式词形、拼写建议与局部语境简释，选区支持同页跨行 |
-| 句子翻译 | 可选英汉互译，首次确认后通过 Wi-Fi 下载约 30 MB 模型；下载后在设备上处理原文与译文 |
 | 文档整理 | 文件夹、搜索、收藏、重命名、复制、移动与废纸篓；真实首页封面、PDF 目录、页书签、批注预览 |
 | 新建与导出 | 空白、点阵、格子、横线纸；白 / 灰 / 黑底色；导出 PDF、本地 `.annota.zip` 备份与合并恢复 |
 | 外部打开 | 接收其他应用的 PDF“打开 / 分享”，复制到私有书库；重复分享复用已有文档，支持导入进度、取消和失败重试 |
@@ -82,7 +83,7 @@ Beta 改善现有笔种的稳定性、压感和笔触质感，扩充 **942 条�
 2. **阅读与记录**：阅读模式专注浏览；点击笔图标进入批注，手形工具用于批注时拖动页面。工具切换后保留原有阅读位置。
 3. **查找与保存**：长按选词查词；通过侧栏或“更多”搜索、跳页和添加书签。本地内容自动保存，需要带走文档时导出 PDF 或备份。
 
-词组优先查随包词库，例如 `neural network`、`take into account`；`set up` 与 `setup` 分开匹配。需要翻译句子时，在同一面板选择翻译并按需下载模型。原文完整保留，超过 4,000 字符时提示缩短选区。
+词组优先查随包词库，例如 `neural network`、`take into account`；`set up` 与 `setup` 分开匹配。长选区完整保留，查询时请选取单词或词组；暂不提供整句翻译。
 
 需要签字时，在「更多 → 手写签名」录入，放到页面上调整位置与大小后确认。已带数字签名的文件若另存批注副本，应用会提示原数字签名的验证效力不随副本保留；原件不改写。
 
@@ -91,18 +92,18 @@ Beta 改善现有笔种的稳定性、压感和笔触质感，扩充 **942 条�
 ## 数据、更新与反馈
 
 - **本地优先**：没有账号、云同步或协作服务，文档与手写内容不上传。卸载或清除数据前，请先导出或制作本地备份；恢复时校验内容并合并导入。
-- **GitHub 更新**：在“设置 → 关于”检查版本。下载后校验包名、版本、SHA-256 与签名，再交给 Android 系统覆盖安装。本轮默认更新提供 1.0.3-test，并明确标明“Beta 测试版”；检查后由用户确认下载与安装，无需手动切换通道。
+- **GitHub 更新**：在“设置 → 关于”检查版本。下载后校验包名、版本、SHA-256 与签名，再交给 Android 系统覆盖安装。本轮默认更新提供 1.0.4-preview，并明确标注 Beta 测试版。下载与安装均由用户确认。
 - **自动反馈**：在应用内填写并点击提交，由 Vercel 接收服务创建公开 GitHub Issue。真实收到后自动提示“已收到反馈”；网络或服务失败会提示并保留草稿，无需手动检查结果。请勿填写私人文档或联系方式。
 
-普通阅读、书写和词典查询不初始化翻译 SDK。启用句子翻译后，Google ML Kit 需要联网下载模型，也可能发送 API 使用与性能指标；输入与译文在设备上处理，不上传到 Google。首次安装并不自带句子模型。应用另有用户主动触发的更新与反馈联网。详见 [隐私说明](docs/PRIVACY.md)、[分发与签名](docs/DISTRIBUTION.md) 和 [首版验收](docs/INTEGRATION-ACCEPTANCE.md)。
+阅读、书写和查词完全在本机完成；所有词库和词库更新随 APK 交付，无需另行下载。仅主动检查应用更新和提交反馈使用网络。
 
 ## 平台与范围
 
 Android 10 及以上，首期面向大屏平板；设计与交互围绕小米平板 9 Pro Max。标准触控笔压感、历史采样、笔尾 / 侧键与触摸手势已接入，厂商专有双击、轻捏和笔震动尚未启用。
 
-保留原始 PDF 版式，不提供 OCR 或在线大模型。可选英汉句子翻译使用端侧模型；学术术语、长句和否定关系仍需结合原文核对。扫描件可以阅读和批注，可选文字取决于 PDF 是否有文本层。当前不提供 iPad 版、手机版专门适配或跨端同步。
+保留原始 PDF 版式，不提供 OCR 或在线大模型。不提供整句翻译。扫描件可以阅读和批注，可选文字取决于 PDF 是否有文本层。当前不提供 iPad 版、手机版专门适配或跨端同步。
 
-1.0.3-test 的词库回归、实际模型下载与断网推理、覆盖升级基线见[手写与查词验收记录](docs/HANDWRITING-LOOKUP-ACCEPTANCE.md)。这些证据来自 Android 16 / API 36 ARM64 专用模拟器；新笔感与句子模型仍需在目标平板验证，不能将自动化测试视为手感或国行网络验收。用户已完成此前版本的真机测试；[首版验收记录](docs/INTEGRATION-ACCEPTANCE.md)仅记录当时的公开下载、覆盖升级和自动 GitHub 反馈，不代表 1.0.3-test 新增能力已通过真机测试。
+1.0.4-preview 的离线查词、框选、直尺和渲染回归见[本轮修复记录](docs/1.0.4-PREVIEW-NOTES.md)。自动化验证使用 Android 16 / API 36 ARM64 模拟器，不代表目标平板的手感或性能验收。此前版本的公开下载、覆盖升级及反馈验证见[首版验收记录](docs/INTEGRATION-ACCEPTANCE.md)。
 
 ## 开发与验证
 
@@ -155,9 +156,8 @@ python3 -m unittest discover -s feedback-service -p test_github_relay.py -v
 - Existing pen tools gain adaptive stabilization, pressure/speed response and subtle pencil grain, with shared vector geometry for rendering and PDF export.
 - Handwritten signatures with positioning, proportional resizing and PDF export; signed/restricted PDF compatibility with original-file preservation.
 - Offline lookup adds 942 authored phrases/terms and 682 explicit aliases, preserving word boundaries and using local context.
-- Optional English ↔ Chinese sentence translation after an explicit Wi-Fi model download; input/output stay on the device, while ML Kit may send SDK usage/performance metrics.
 - Document search, PDF outline, bookmarks and annotation previews.
 - PDF open / share intents, local backup / restore and a resizable continue-reading home widget.
 - GitHub updates with verified in-place installation; automatic feedback acknowledgement after a real GitHub Issue is created.
 
-[Download 1.0.3-test Beta](https://github.com/dpan538/Annota/releases/download/v1.0.3-test/Annota-1.0.3-test.apk) · [Download 1.0.2 stable](https://github.com/dpan538/Annota/releases/download/v1.0.2/Annota-1.0.2.apk). The features above describe the Beta, versionCode 14, now offered through GitHub Latest to existing stable installations when they check for updates. It remains a Beta; the last stable version is 1.0.2 (13). It refines ink and phrase lookup and fixes swept erasing, signature palm handling, blank-notebook export and tall-image proportions. Back up before testing; use the [device checklist](docs/BETA-1.0.3-TEST-CHECKLIST.md). Target-device validation remains separate from automated tests. Version 1.0.2 added handwritten signatures; 1.0.0 was the first stable release and 1.0.1 removed the warm color cast. All screenshots above use the same blue theme and the bundled original *Attention Is All You Need* PDF. Code is MIT; original artwork and guide are CC BY-NC 4.0.
+[Download 1.0.4-preview Beta](https://github.com/dpan538/Annota/releases/download/v1.0.4-preview/Annota-1.0.4-preview.apk) · [Download 1.0.2 stable](https://github.com/dpan538/Annota/releases/download/v1.0.2/Annota-1.0.2.apk). This is a **Beta**, versionCode 16, offered through the default update check at the maintainer's request. The latest stable product version remains 1.0.2. This update removes translation SDKs and model downloads, bundles all dictionary data, adds annotation selection/move/resize, horizontal ruler snapping, easier word selection and rendering/cache fixes. Full-sentence translation is not provided. Back up before testing; follow the [device checklist](docs/BETA-1.0.4-PREVIEW-CHECKLIST.md). Emulator tests do not replace target-device validation. All screenshots above use the blue theme and the bundled original *Attention Is All You Need* PDF. Code is MIT; original artwork and guide are CC BY-NC 4.0.
