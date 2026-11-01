@@ -1,5 +1,5 @@
 {
-  "published": false,
+  "published": true,
   "package": {
     "schemaVersion": 1,
     "packageName": "io.github.dpan538.annota",
@@ -28,5 +28,6 @@
     ],
     "upgradeLog": "upgrade-and-package.json",
     "networkDuringDictionaryTests": "Wi-Fi and mobile data disabled"
-  }
+  },
+  "publicVerification": "release.json"
 }

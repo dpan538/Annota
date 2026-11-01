@@ -1,0 +1,41 @@
+{
+  "published": true,
+  "release": "https://github.com/dpan538/Annota/releases/tag/v1.0.4-preview",
+  "publishedAt": "2026-11-01T11:27:33Z",
+  "sourceCommit": "f6efbaa65a5a240492f55f3091534f37ab2fe5cc",
+  "tag": "v1.0.4-preview",
+  "productChannel": "Beta",
+  "latestForDefaultUpdate": true,
+  "githubPrereleaseMetadata": false,
+  "metadataReason": "Maintainer-authorized beta rollout to existing stable clients using /releases/latest; app and release explicitly identify Beta.",
+  "versionCode": 16,
+  "versionName": "1.0.4-preview",
+  "manifest": {
+    "schemaVersion": 1,
+    "packageName": "io.github.dpan538.annota",
+    "versionCode": 16,
+    "versionName": "1.0.4-preview",
+    "apk": "Annota-1.0.4-preview.apk",
+    "sha256": "88bd388579685bc2180fa8d658b3cf466305d6ad6a3a0a049d0a32f29eed4811",
+    "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18"
+  },
+  "anonymousManifestAndChecksumVerified": true,
+  "anonymousApkCheck": "public-apk.json",
+  "assets": [
+    {
+      "name": "Annota-1.0.4-preview.apk",
+      "url": "https://github.com/dpan538/Annota/releases/download/v1.0.4-preview/Annota-1.0.4-preview.apk",
+      "bytes": 77005653
+    },
+    {
+      "name": "annota-update.json",
+      "url": "https://github.com/dpan538/Annota/releases/download/v1.0.4-preview/annota-update.json",
+      "bytes": 333
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "url": "https://github.com/dpan538/Annota/releases/download/v1.0.4-preview/SHA256SUMS.txt",
+      "bytes": 91
+    }
+  ]
+}
