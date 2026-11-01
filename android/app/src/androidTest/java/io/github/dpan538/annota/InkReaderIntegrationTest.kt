@@ -38,7 +38,7 @@ class InkReaderIntegrationTest {
         if (::store.isInitialized) store.close()
     }
 
-    private fun input(action: Int, x: Float, y: Float) {
+    private fun input(action: Int, x: Float, y: Float, batch: Boolean = false) {
         time += 16
         val properties =
             arrayOf(
@@ -53,13 +53,14 @@ class InkReaderIntegrationTest {
                     this.x = x
                     this.y = y
                     pressure = .7f
+                    setAxisValue(MotionEvent.AXIS_TILT, .8f)
                 }
             )
         val e =
             MotionEvent.obtain(
                 time - 100,
                 time,
-                action,
+                if (batch) MotionEvent.ACTION_MOVE else action,
                 1,
                 properties,
                 coords,
@@ -72,6 +73,12 @@ class InkReaderIntegrationTest {
                 InputDevice.SOURCE_STYLUS,
                 0,
             )
+        if (batch) {
+            time += 8
+            coords[0].x += 20f
+            e.addBatch(time, coords, 0)
+            e.action = action
+        }
         inst.runOnMainSync { reader.onTouchEvent(e) }
         e.recycle()
     }
@@ -85,7 +92,18 @@ class InkReaderIntegrationTest {
         assertEquals(InkGeometry.VERSION, ink.inkVersion)
         assertEquals(3, ink.points.size)
         assertTrue(ink.points.zipWithNext().all { (a, b) -> b.t > a.t })
-        assertTrue(ink.points.all { it.w == 0f && it.p == .7f })
+        assertTrue(ink.points.all { it.w == 0f && it.p == .7f && it.tilt == .8f })
+    }
+
+    @Test
+    fun pencilRetainsTiltInBatchedMoveAndUpSamples() {
+        inst.runOnMainSync { reader.tool = "pencil" }
+        input(MotionEvent.ACTION_DOWN, 300f, 300f)
+        input(MotionEvent.ACTION_MOVE, 450f, 320f, batch = true)
+        input(MotionEvent.ACTION_UP, 700f, 300f, batch = true)
+        val ink = store.book(book.id).pages[0].marks.single()
+        assertEquals(5, ink.points.size)
+        assertTrue(ink.points.all { it.tilt == .8f })
     }
 
     @Test

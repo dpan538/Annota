@@ -350,7 +350,7 @@ class PdfEngine(val context: Context, val store: Store) {
                                 val a = m.points.first()
                                 val b = m.points.last()
                                 if (InkGeometry.supports(m)) {
-                                    exportInk(cs, m)
+                                    exportInk(out, cs, m)
                                     cs.restoreGraphicsState()
                                     return@forEach
                                 }
@@ -462,7 +462,11 @@ class PdfEngine(val context: Context, val store: Store) {
         }
     }
 
-    private fun exportInk(cs: PDPageContentStream, mark: Mark) {
+    private fun exportInk(document: PDDocument, cs: PDPageContentStream, mark: Mark) {
+        if (mark.tool == "pencil" && mark.inkVersion >= 3) {
+            exportGraphite(document, cs, mark)
+            return
+        }
         val samples = InkGeometry.samples(mark)
         val sink = inkSink(cs)
         cs.setGraphicsStateParameters(
@@ -483,6 +487,46 @@ class PdfEngine(val context: Context, val store: Store) {
                 InkGeometry.grainPath(it, sink)
             }
             cs.fill()
+        }
+    }
+
+    /** Rasterize only the textured pencil, in bounded 256 pt tiles at 576 dpi. */
+    private fun exportGraphite(document: PDDocument, cs: PDPageContentStream, mark: Mark) {
+        val samples = InkGeometry.samples(mark)
+        if (samples.isEmpty()) return
+        val padding = samples.maxOf { it.width } / 2f + 1f
+        val left = floor(samples.minOf { it.x } - padding)
+        val top = floor(samples.minOf { it.y } - padding)
+        val right = ceil(samples.maxOf { it.x } + padding)
+        val bottom = ceil(samples.maxOf { it.y } + padding)
+        val graphite = Graphite().also { g -> samples.forEach(g::add) }
+        cs.setGraphicsStateParameters(
+            PDExtendedGraphicsState().apply { nonStrokingAlphaConstant = 1f }
+        )
+        var y = top
+        while (y < bottom) {
+            val h = min(256f, bottom - y)
+            var x = left
+            while (x < right) {
+                val w = min(256f, right - x)
+                val bitmap =
+                    Bitmap.createBitmap((w * 8).toInt(), (h * 8).toInt(), Bitmap.Config.ARGB_8888)
+                try {
+                    val canvas = Canvas(bitmap)
+                    canvas.scale(8f, 8f)
+                    canvas.translate(-x, -y)
+                    graphite.draw(canvas, mark.color)
+                    val image = LosslessFactory.createFromImage(document, bitmap)
+                    cs.saveGraphicsState()
+                    cs.transform(Matrix(1f, 0f, 0f, -1f, x, y + h))
+                    cs.drawImage(image, 0f, 0f, w, h)
+                    cs.restoreGraphicsState()
+                } finally {
+                    bitmap.recycle()
+                }
+                x += w
+            }
+            y += h
         }
     }
 

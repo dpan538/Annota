@@ -15,8 +15,10 @@ class InkRenderer {
 
     private class Cached(mark: Mark) {
         val stream = InkGeometry.Stream(mark)
+        val graphite = if (mark.tool == "pencil" && mark.inkVersion >= 3) Graphite() else null
         val grainStream =
-            if (mark.tool == "pencil") InkGeometry.GrainStream(mark.width, mark.inkVersion)
+            if (mark.tool == "pencil" && graphite == null)
+                InkGeometry.GrainStream(mark.width, mark.inkVersion)
             else null
         val path = Path()
         val grains = if (grainStream != null) Path() else null
@@ -26,7 +28,7 @@ class InkRenderer {
         var sampleCount = 0
         var grainCount = 0
         val weight: Int
-            get() = 128 + sampleCount * 256 + grainCount * 256
+            get() = 128 + sampleCount * (if (graphite != null) 2048 else 256) + grainCount * 256
     }
 
     private val cache = LinkedHashMap<Key, Cached>(64, .75f, true)
@@ -70,7 +72,8 @@ class InkRenderer {
             val sample = cached.stream.add(point)
             processedInputs++
             if (sample != null) {
-                InkGeometry.appendOutline(previous, sample, pathSink)
+                if (cached.graphite != null) cached.graphite.add(sample)
+                else InkGeometry.appendOutline(previous, sample, pathSink)
                 cached.sampleCount++
                 if (grainSink != null) {
                     cached.grainStream!!.add(sample).forEach {
@@ -90,6 +93,10 @@ class InkRenderer {
             val oldest = cache.entries.iterator()
             cacheWeight -= oldest.next().value.weight
             oldest.remove()
+        }
+        cached.graphite?.let {
+            it.draw(canvas, mark.color)
+            return true
         }
         paint.color = mark.color
         paint.alpha = (255 * InkGeometry.opacity(mark)).toInt()

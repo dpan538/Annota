@@ -4,7 +4,7 @@ import kotlin.math.*
 
 /** Versioned, deterministic ink geometry shared by the canvas and PDF exporter. */
 object InkGeometry {
-    const val VERSION = 2
+    const val VERSION = 3
     private val tools = setOf("pen", "fountain", "pencil", "highlight")
 
     data class Sample(val x: Float, val y: Float, val p: Float, val width: Float, val t: Long)
@@ -117,7 +117,11 @@ object InkGeometry {
             }
             earlierRaw = before
             previousRaw = point
-            val w = width(mark.tool, base, pressure, speed)
+            val tilt = if (point.tilt.isFinite()) point.tilt.coerceIn(0f, 1.4f) else 0f
+            val shading =
+                if (mark.tool == "pencil" && mark.inkVersion >= 3) 1f + 2.2f * sin(tilt).pow(3f)
+                else 1f
+            val w = width(mark.tool, base, pressure, speed) * shading
             val previous = last
             if (
                 previous != null &&

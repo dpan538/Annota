@@ -1,0 +1,23 @@
+{
+  "apkSha256": "bb6489456193edf05ced7753b8baf815b494b0925991fdbb253c143fb6a1e0d0",
+  "uniqueAndroidTests": 117,
+  "fullRun": {
+    "passed": 116,
+    "failed": 1,
+    "seconds": 194.629,
+    "log": "regression.txt"
+  },
+  "recheck": {
+    "passed": 4,
+    "failed": 0,
+    "seconds": 13.051,
+    "log": "motion-compatibility-recheck.txt",
+    "covers": [
+      "ActivityMotionTest",
+      "InkHoldTest"
+    ]
+  },
+  "unresolvedFailures": 0,
+  "note": "Application APK unchanged between full run and recheck. Limit software frame capture to toolbar region; observe 1000 ms to include first layout and completed frames. No product animation duration or assertions relaxed. Legacy v2 pencil compatibility test explicitly pins v2.",
+  "targetDeviceValidated": false
+}

@@ -46,14 +46,14 @@ class InkHoldTest {
     }
 
     @Test
-    fun pencilFibresAreFineNonCircularAndStationaryPressureDoesNotMakeABlob() {
+    fun legacyV2FibresAndStationaryPressureRemainCompatible() {
         val mark =
             Mark(
                 "pencil",
                 Color.BLACK,
                 8f,
                 mutableListOf(Point(20f, 40f, .4f, 1000), Point(160f, 40f, .4f, 1100)),
-                inkVersion = InkGeometry.VERSION,
+                inkVersion = 2,
             )
         val samples = InkGeometry.samples(mark)
         val fibres = InkGeometry.grains(samples, mark.width, mark.inkVersion)
@@ -84,15 +84,21 @@ class InkHoldTest {
         val bitmap = Bitmap.createBitmap(1800, 1440, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         canvas.drawColor(Color.WHITE)
-        val text = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.rgb(32, 36, 43)
-            textSize = 36f
-            typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
-        }
+        val text =
+            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = Color.rgb(32, 36, 43)
+                textSize = 36f
+                typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+            }
         canvas.drawText("Pencil rendering: stored v1 / new v2", 60f, 62f, text)
         text.typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
         text.textSize = 25f
-        canvas.drawText("Actual InkRenderer output at 4x zoom; identical input and pressure", 60f, 108f, text)
+        canvas.drawText(
+            "Actual InkRenderer output at 4x zoom; identical input and pressure",
+            60f,
+            108f,
+            text,
+        )
         canvas.drawText("v1: existing marks preserved", 80f, 165f, text)
         canvas.drawText("v2: finer graphite fibres", 960f, 165f, text)
         val renderer = InkRenderer()
@@ -101,9 +107,10 @@ class InkHoldTest {
             text.textSize = 24f
             canvas.drawText("${width} pt", 60f, y, text)
             for (version in 1..2) {
-                val points = MutableList(81) { i ->
-                    Point(i * 2f, 12f * sin(i * .065f), .35f + i / 160f, 1000L + i * 8)
-                }
+                val points =
+                    MutableList(81) { i ->
+                        Point(i * 2f, 12f * sin(i * .065f), .35f + i / 160f, 1000L + i * 8)
+                    }
                 // Real stylus pressure can rise while the endpoint remains still.
                 points.add(points.last().copy(p = 1f, t = 1700))
                 points.add(points.last().copy(p = 1f, t = 1750))
@@ -116,7 +123,9 @@ class InkHoldTest {
             }
         }
         val output = java.io.File(context.getExternalFilesDir(null), "pencil-v1-v2-comparison.png")
-        output.outputStream().use { assertTrue(bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)) }
+        output.outputStream().use {
+            assertTrue(bitmap.compress(Bitmap.CompressFormat.PNG, 100, it))
+        }
         assertTrue(output.length() > 0)
         bitmap.recycle()
         renderer.invalidate()
@@ -233,8 +242,15 @@ class InkHoldTest {
             SystemClock.sleep(StrokeHold.DELAY_MS + 100)
             input(MotionEvent.ACTION_UP, 600f, 550f)
             val afterNavigation = store.book(book.id)
-            assertEquals("Navigation cancels held ink on its original page", 1, afterNavigation.pages[0].marks.size)
-            assertTrue("The subsequent UP must not add ink to the destination page", afterNavigation.pages[1].marks.isEmpty())
+            assertEquals(
+                "Navigation cancels held ink on its original page",
+                1,
+                afterNavigation.pages[0].marks.size,
+            )
+            assertTrue(
+                "The subsequent UP must not add ink to the destination page",
+                afterNavigation.pages[1].marks.isEmpty(),
+            )
         } finally {
             inst.runOnMainSync { reader.dispose() }
             store.close()

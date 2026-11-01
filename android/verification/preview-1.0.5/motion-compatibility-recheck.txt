@@ -1,0 +1,6 @@
+io.github.dpan538.annota.ActivityMotionTest:.
+io.github.dpan538.annota.InkHoldTest:...
+
+Time: 13.051
+
+OK (4 tests)

@@ -50,11 +50,13 @@ data class Point(
     val p: Float = 1f,
     val t: Long = 0,
     val w: Float = 0f,
+    val tilt: Float = 0f,
 ) {
     fun json() =
         JSONArray().put(x.toDouble()).put(y.toDouble()).put(p.toDouble()).also {
-            if (t > 0 || w > 0f) it.put(t)
-            if (w > 0f) it.put(w.toDouble())
+            if (t > 0 || w > 0f || tilt > 0f) it.put(t)
+            if (w > 0f || tilt > 0f) it.put(w.toDouble())
+            if (tilt > 0f) it.put(tilt.toDouble())
         }
 }
 
@@ -95,6 +97,9 @@ data class Mark(
                             it.optDouble(2, 1.0).toFloat(),
                             it.optLong(3, 0),
                             it.optDouble(4, 0.0).toFloat(),
+                            it.optDouble(5, 0.0).toFloat().let { v ->
+                                if (v.isFinite()) v.coerceIn(0f, 1.4f) else 0f
+                            },
                         )
                     }
                 },

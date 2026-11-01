@@ -1398,6 +1398,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         y: Float,
         pressure: Float,
         time: Long = 0L,
+        tilt: Float = 0f,
     ): Point {
         var sx = x
         var sy = y
@@ -1415,6 +1416,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             pt[1].coerceIn(0f, page.h),
             pressure.coerceIn(0f, 1f),
             time,
+            tilt = if (tilt.isFinite()) tilt.coerceIn(0f, 1.4f) else 0f,
         )
     }
 
@@ -1764,7 +1766,15 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                     active != null && (tool != "hand" || temporaryEraser) && draw && !draggingRuler
                 ) {
                     book.current = active!!.index
-                    val p = point(active!!, e.x, e.y, e.pressure, e.eventTime)
+                    val p =
+                        point(
+                            active!!,
+                            e.x,
+                            e.y,
+                            e.pressure,
+                            e.eventTime,
+                            if (stylus) e.getAxisValue(MotionEvent.AXIS_TILT) else 0f,
+                        )
                     if (tool == "eraser" || temporaryEraser) {
                         beforeErase = book.state()
                         previousErase = null
@@ -1869,7 +1879,12 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                             if (i == e.historySize) e.pressure else e.getHistoricalPressure(i)
                         val sampleTime =
                             if (i == e.historySize) e.eventTime else e.getHistoricalEventTime(i)
-                        val p = point(active!!, x, y, pressure, sampleTime)
+                        val tilt =
+                            if (stylus) {
+                                if (i == e.historySize) e.getAxisValue(MotionEvent.AXIS_TILT)
+                                else e.getHistoricalAxisValue(MotionEvent.AXIS_TILT, i)
+                            } else 0f
+                        val p = point(active!!, x, y, pressure, sampleTime, tilt)
                         if (beforeErase != null) erase(p)
                         else
                             stroke?.let { m ->
@@ -1935,7 +1950,14 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                         for (i in 0..e.historySize) {
                             val p =
                                 if (i == e.historySize)
-                                    point(active!!, e.x, e.y, e.pressure, e.eventTime)
+                                    point(
+                                        active!!,
+                                        e.x,
+                                        e.y,
+                                        e.pressure,
+                                        e.eventTime,
+                                        if (stylus) e.getAxisValue(MotionEvent.AXIS_TILT) else 0f,
+                                    )
                                 else
                                     point(
                                         active!!,
@@ -1943,6 +1965,9 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                         e.getHistoricalY(i),
                                         e.getHistoricalPressure(i),
                                         e.getHistoricalEventTime(i),
+                                        if (stylus)
+                                            e.getHistoricalAxisValue(MotionEvent.AXIS_TILT, i)
+                                        else 0f,
                                     )
                             stroke?.let { mark ->
                                 val last = mark.points.last()
@@ -1975,7 +2000,15 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                             for (i in 0..e.historySize) {
                                 val p =
                                     if (i == e.historySize)
-                                        point(active!!, e.x, e.y, e.pressure, e.eventTime)
+                                        point(
+                                            active!!,
+                                            e.x,
+                                            e.y,
+                                            e.pressure,
+                                            e.eventTime,
+                                            if (stylus) e.getAxisValue(MotionEvent.AXIS_TILT)
+                                            else 0f,
+                                        )
                                     else
                                         point(
                                             active!!,
@@ -1983,6 +2016,9 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                             e.getHistoricalY(i),
                                             e.getHistoricalPressure(i),
                                             e.getHistoricalEventTime(i),
+                                            if (stylus)
+                                                e.getHistoricalAxisValue(MotionEvent.AXIS_TILT, i)
+                                            else 0f,
                                         )
                                 erase(p)
                             }

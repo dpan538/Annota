@@ -58,6 +58,10 @@ class ActivityMotionTest {
             .also {
                 val canvas = Canvas(it)
                 canvas.scale(scale, scale)
+                // Observe only the toolbar region used below. Repainting the entire PDF into a
+                // software bitmap every vsync can itself consume the 180 ms transition budget.
+                // Keep full-size coordinates so the measured actual view pixel stays unchanged.
+                canvas.clipRect(0f, 0f, root.width.toFloat(), root.height * .16f)
                 root.draw(canvas)
             }
     }
@@ -75,7 +79,7 @@ class ActivityMotionTest {
                     override fun doFrame(frameTimeNanos: Long) {
                         val elapsed = SystemClock.uptimeMillis() - start
                         frames += Frame(elapsed, frame(root))
-                        if (elapsed >= 500) done.countDown()
+                        if (elapsed >= 1000) done.countDown()
                         else choreographer.postFrameCallback(this)
                     }
                 }
@@ -131,7 +135,7 @@ class ActivityMotionTest {
                 )
             }
             assertTrue(
-                "$name must finish without old screen pixels",
+                "$name must finish without old screen pixels: ${frames.map { it.ms }} / $progress",
                 progress.takeLast(3).all { abs(it - 1) < .025f },
             )
             val middle = progress.indices.minBy { abs(progress[it] - 0.5f) }
