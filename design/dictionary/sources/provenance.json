@@ -8,5 +8,15 @@
   "cedict": {
     "url": "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.txt.gz",
     "version": "2026-10-19T05:01:26Z"
+  },
+  "annota-phrases": {
+    "authored": "2026-11-01",
+    "file": "annota-phrases.tsv",
+    "copyright": "2026 Dai Pan and Annota contributors",
+    "license": "MIT",
+    "source": "Original short bilingual equivalents authored for Annota. No external dictionary definitions copied.",
+    "scope": "Paper reading, attention/ML, mathematics/statistics, common phrases, software and science. Coverage is curated, not exhaustive.",
+    "transformation": "Preserve canonical word boundaries; record explicit spelling/inflection aliases; generate concise Chinese reverse equivalents except ellipsis constructions. Original source entries retained.",
+    "review": "Build validates unique canonical keys, short meanings, bounded input and category counts. Regression cases cover contextual terms, inflected phrases, line breaks and non-equivalent concatenations."
   }
 }

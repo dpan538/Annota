@@ -50,7 +50,20 @@ class ReadingModeTest {
     private fun waitFor(body: () -> Boolean) {
         val until = SystemClock.uptimeMillis() + 25000
         while (!body()) {
-            check(SystemClock.uptimeMillis() < until) { "Reading mode did not settle" }
+            if (SystemClock.uptimeMillis() >= until) {
+                val diagnostic = ui {
+                    popup()?.let { p ->
+                        "showing=${p.isShowing}, size=${p.width}x${p.height}, views=" +
+                            all(p.contentView)
+                                .map { v ->
+                                    "${v.tag}:${v.contentDescription}:${(v as? TextView)?.text}"
+                                }
+                                .joinToString("|")
+                    } ?: "no popup"
+                }
+                capture("reading-timeout")
+                error("Reading mode did not settle: $diagnostic")
+            }
             SystemClock.sleep(50)
         }
         inst.waitForIdleSync()
@@ -292,6 +305,28 @@ class ReadingModeTest {
     }
 
     private fun tap(name: String) {
+        // A PopupWindow can report isShowing before its first layout/entrance transition.
+        // Inject at the settled visible control, never its initial zero-size coordinates.
+        var previous: List<Int>? = null
+        var stable = 0
+        waitFor {
+            ui {
+                val v = control(name)
+                val bounds = Rect()
+                val at = IntArray(2).also(v::getLocationOnScreen)
+                val current = listOf(at[0], at[1], v.width, v.height)
+                val ready =
+                    v.isLaidOut &&
+                        v.width > 0 &&
+                        v.height > 0 &&
+                        v.getGlobalVisibleRect(bounds) &&
+                        bounds.width() >= v.width &&
+                        bounds.height() >= v.height
+                stable = if (ready && current == previous) stable + 1 else 0
+                previous = current
+                stable >= 2
+            }
+        }
         val point = ui {
             val v = control(name)
             IntArray(2).also {

@@ -1,42 +1,52 @@
 # Annota 离线词典包
 
-词库随安装包发布，查词只读本机 SQLite。应用运行时不下载词库、不请求翻译接口，不上传查询词、手写轨迹或 PDF。当前仓库为交互原型；这里已生成真实数据库及 Python 参考查询器，尚未打成 Android APK，也未接入原生查询宿主。
+英汉 / 汉英词库随 APK 提供，查词只读本机 SQLite。不会上传查询词、手写轨迹或 PDF，也不会在查无词条时自动请求在线词典。
 
-## 本次已生成
+## 数据与覆盖
 
-| 方向 | 数据 | 条目数 | 未压缩大小 |
-| --- | --- | ---: | ---: |
-| 英 → 中 | ECDICT 核心子集，含英文释义、中文释义、音标、已收录词形 | 57,841 | 15,724,544 字节 |
-| 中 → 英 | CC-CEDICT，支持简体、繁体、带声调数字的拼音 | 125,301 | 14,618,624 字节 |
+| 方向 | 数据 | 条目数 |
+| --- | --- | ---: |
+| 英 → 中 | ECDICT 核心子集 + Annota 原创词组与术语 | 58,783 |
+| 中 → 英 | CC-CEDICT + 原创短释义的反向索引 | 126,272 |
 
-两库共约 28.94 MiB（包含模糊查询索引）。数量是词条数，不是互不重复的单词数。英文子集保留有中文释义且带考试标签或 BNC / FRQ 排名不超过 50,000 的条目；没有声称覆盖所有专业术语。中文库为汉英词典，不是汉汉字典；不提供完整中文释义、字形演变或成语典故。未收录时如实返回无结果，绝不自动转联网。
+新增 **942 条**独立编写的简短词组 / 术语，另有 **682 个**显式记录的词形和拼写别名。别名不计为新增词条；未通过组合模板制造数据量。九个主题覆盖：
 
-HTML 阅读预览仍内嵌约 30 条原创论文术语，用于展示交互；界面标注“Annota 论文词库 · 离线”。完整数据库通过 `annota:dictionary-query` / `annota:dictionary-result` 接入，见 `../NATIVE-INTEGRATION.md`。预览不把数据库塞入页面，也不会伪装成完整词库已连接。
+- 常用短语动词 135 条，学术连接表达 92 条，论文阅读与研究方法 78 条。
+- Attention / 自然语言处理 77 条，机器学习 134 条，视觉与模型 76 条。
+- 数学与统计 133 条，软件与系统 102 条，科学与工程 115 条。
 
-## 离线构建和查询
+例如 `set up`、`take into account`、`in terms of`、`recurrent neural network`、`scaled dot-product attention`、`confidence interval`、`palm rejection`。释义以完整的短等价表达为主，不堆长解释。词库并非穷尽所有领域；条目数也不是去重后的单词数。
+
+## 匹配规则
+
+1. 优先精确词条 / 显式别名，再按保留词边界的连字符与空格等价匹配。
+2. `set up` 与 `setup` 分开，`neuralnetwork` 不冒充 `neural network`；猜测仅出现在可点选建议中。
+3. 支持已记录的词形，例如 `neural networks`、`carried out`、`taken into account`。不随意截词尾猜词根。
+4. 全半角、大小写、Unicode 连字符、软连字符统一；`self-\nattention` 保留词边界，`neural net-\nwork` 在未命中时尝试修复断行词。
+5. 阅读中选中单词时，可以结合本地同栏、同句的相邻词匹配最长短语；同长度结果冲突时不强行选义。整个词组默认只显示一条简洁释义。
+6. 中文同时查简繁体。新增原创反向等价表达写入同一个汉英库；已有 CC-CEDICT 数据保持原样。
+
+词典接收最多 160 字符，超过时返回空结果，不静默截成另一个查询。完整句子翻译是独立能力，不用逐词释义拼接替代。
+
+## 可复现构建与检查
 
 ```sh
 python3 design/dictionary/build.py
-python3 design/dictionary/lookup.py attention
-python3 design/dictionary/lookup.py 学习
 python3 design/dictionary/test_lookup.py
+python3 design/dictionary/lookup.py 'multi-head attention'
+python3 android/scripts/sync-assets.py
 ```
 
-构建、查询、测试均不需要网络。`sources/` 保存构建所需原数据，`bundle/manifest.json` 记录版本、来源和 SHA-256。首次准备英文核心子集时可提供本地完整 CSV：`build.py --ecdict /path/to/ecdict.csv`。不得在客户端启动时执行下载。
+以上过程无需网络。`sources/annota-phrases.tsv` 是原创词组源文件，分组注释与逐条释义均可审阅；第三列为 `|` 分隔的显式别名。构建检查重复词条、长度和短释义，测试逐一查询所有新增词条与别名，并检查词边界、断行和反向查询。
 
-原生实现：把 `bundle/*.sqlite` 与许可说明置于 APK assets；安装后原子复制至私有存储、校验 manifest、只读打开。查询在后台线程执行，使用参数绑定；英语先精确匹配，再按词库提供的词形查询，未命中给前缀及轻微拼写错误候选。输入做大小写与全半角归一化；短词允许 1 个编辑，较长词允许 2 个编辑，支持相邻字母交换，并用正反向索引限制候选扫描范围。中文同时索引简繁体，支持前缀与包含关键词查询。候选必须由用户点选，不擅自替换原词。不使用全量内存加载，也不依赖 SQLite 扩展。字典只会随用户明确触发的应用更新一并更新。
+`sources/` 包含重建所需数据；`bundle/manifest.json` 记录 SQLite schema 3、原始 / 扩展数量、分类、许可和 SHA-256。数据库未压缩合计约 35.2 MiB，包含匹配与拼写建议索引。首次准备 ECDICT 子集可用 `build.py --ecdict /path/to/ecdict.csv`；没有参数时使用已保存的本机源文件。
 
-阅读页“选取 → 翻译”与手工查词复用这个离线查询接口。它提供词典释义，不能把逐词拼接当作整句翻译；完整句子没有匹配短语时明确提示当前能力限制，不调用在线翻译。原型已经补充这份示例 PDF 的真实文字层与复制菜单，通用 PDF 引擎及原生剪贴板仍由后续 Android 宿主提供。
+Android 安装时按 manifest 原子复制与校验数据库。查询在后台线程使用参数绑定、只读连接；旧版词库在更新后按哈希更换，不修改用户文档。全部词组随应用更新提供，无额外下载。
 
-## 来源和署名
+## 来源与许可
 
-- **ECDICT** — Linwei / skywind3000，项目标注 MIT，原许可保存在 `licenses/ECDICT-MIT.txt`。[项目与数据说明](https://github.com/skywind3000/ECDICT)、[许可](https://github.com/skywind3000/ECDICT/blob/master/LICENSE)。本包对源数据作核心词筛选、换行标准化及索引转换，保留署名。上游说明数据来自多种资料；公开发行前仍需复核所选数据的来源链，而不把仓库代码许可当作所有外部材料的单独授权证明。
-- **CC-CEDICT** — 社区维护、MDBG 发布，2026-10-19 版本，**CC BY-SA 4.0**。来源：[下载与许可页](https://www.mdbg.net/chinese/dictionary?page=cc-cedict)，[完整许可](https://creativecommons.org/licenses/by-sa/4.0/legalcode)。原始头部保存在 `licenses/CC-CEDICT-header.txt`，其中也记录 Paul Andrew Denisowski 的 CEDICT 贡献。本包仅将其格式转换为 SQLite 并建立索引；`zh-en.sqlite` 及其数据转换结果沿用 CC BY-SA 4.0，原始数据随 `sources/cedict.txt.gz` 提供。CC-CEDICT Wiki 旧页仍写 3.0，本次以下载页和实际文件头明确标注的 4.0 为准。
+- **Annota 原创词组** — 2026 Dai Pan and Annota contributors，MIT。短释义与别名为项目原创编辑，没有复制外部词典解释。完整逐条源文件与许可随 APK 提供；来源、范围和转换说明见 `sources/provenance.json`。中文反向索引只使用完整等价表达，含“……”的句式不反向生成。
+- **ECDICT** — Linwei / skywind3000，MIT。来源：[项目](https://github.com/skywind3000/ECDICT)，许可在 `licenses/ECDICT-MIT.txt`。保留有中文释义且带考试标签或 BNC / FRQ 排名不超过 50,000 的 57,841 条核心记录；原始核心数据见 `sources/ecdict-core.csv.gz`。上游说明数据来自多种资料，其来源链说明保留于应用署名。
+- **CC-CEDICT** — 社区维护、MDBG 发布，2026-10-19 版本，CC BY-SA 4.0。[下载与许可](https://www.mdbg.net/chinese/dictionary?page=cc-cedict)。125,301 条原始记录保留；头部署名见 `licenses/CC-CEDICT-header.txt`，包括 Paul Andrew Denisowski 的贡献。`zh-en.sqlite` 作为转换和组合数据按 CC BY-SA 4.0 分发；原创 TSV 可独立按 MIT 使用。源数据为 `sources/cedict.txt.gz`。
 
-正式应用在“关于 → 开源与词库许可”本地展示以上署名和许可，不要求打开网页才能阅读。
-
-## 手写和联网边界
-
-键盘和手写向同一个查词输入框提交文字。原生版本使用设备已安装、已验证可断网工作的手写输入法；Android 14+ 的标准文本框可接入系统手写。系统输入法有自己的网络行为，不能仅凭 Annota 不发请求便断言输入法也不联网，需在目标小米设备上用飞行模式验收。
-
-首期不接需要在线鉴权的手写识别服务，也不在字典中请求在线发音或整句翻译。应用网络模块仅用于用户主动检查 / 下载更新，以及在应用内提交反馈。没有自动遥测、远程字体、分析 SDK、登录或云同步；查词内容不上传，反馈不自动附带文档、截图或日志。反馈服务尚未配置时仅保留本地草稿。
+应用“关于 → 开源与词库许可”离线展示署名和许可。词典没有在线发音，也没有自动遥测、登录或云同步；系统输入法有独立网络行为，需在目标设备飞行模式下单独验收。

@@ -11,20 +11,15 @@ import kotlin.math.*
 
 /** A temporary capture pad. Signatures are only retained after placement is confirmed. */
 class SignaturePad(context: Context, private val unit: Float = 1f) : View(context) {
-    private val strokes = mutableListOf<MutableList<PointF>>()
-    private var current: MutableList<PointF>? = null
+    private val strokes = mutableListOf<Mark>()
+    private var current: Mark? = null
+    private var activePointer = -1
+    private var activePen = false
+    private var awaitingPalmUp = false
+    private val renderer = InkRenderer()
     var onChanged: () -> Unit = {}
     val hasInk
-        get() = strokes.any { it.size > 1 }
-
-    private val ink =
-        Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = 0xff20232a.toInt()
-            style = Paint.Style.STROKE
-            strokeWidth = 2.2f * unit
-            strokeCap = Paint.Cap.ROUND
-            strokeJoin = Paint.Join.ROUND
-        }
+        get() = strokes.any { it.points.isNotEmpty() }
 
     init {
         contentDescription = "Signature canvas"
@@ -34,12 +29,16 @@ class SignaturePad(context: Context, private val unit: Float = 1f) : View(contex
     fun undo() {
         if (strokes.isNotEmpty()) strokes.removeAt(strokes.lastIndex)
         current = null
+        activePointer = -1
+        renderer.invalidate()
         changed()
     }
 
     fun clear() {
         strokes.clear()
         current = null
+        activePointer = -1
+        renderer.invalidate()
         changed()
     }
 
@@ -49,15 +48,10 @@ class SignaturePad(context: Context, private val unit: Float = 1f) : View(contex
     }
 
     private fun drawInk(canvas: Canvas) {
-        strokes.forEach { points ->
-            if (points.isEmpty()) return@forEach
-            val path =
-                Path().apply {
-                    moveTo(points.first().x, points.first().y)
-                    points.drop(1).forEach { lineTo(it.x, it.y) }
-                }
-            canvas.drawPath(path, ink)
-        }
+        canvas.save()
+        canvas.scale(unit, unit)
+        strokes.forEach { renderer.draw(canvas, it) }
+        canvas.restore()
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -65,73 +59,92 @@ class SignaturePad(context: Context, private val unit: Float = 1f) : View(contex
         drawInk(canvas)
     }
 
+    private fun cancelCurrent() {
+        current?.let { pending -> strokes.removeAll { it === pending } }
+        current = null
+        activePointer = -1
+    }
+
+    private fun sample(e: MotionEvent, index: Int, history: Int = -1): Point {
+        val x = if (history < 0) e.getX(index) else e.getHistoricalX(index, history)
+        val y = if (history < 0) e.getY(index) else e.getHistoricalY(index, history)
+        val pressure =
+            if (!activePen) .65f
+            else if (history < 0) e.getPressure(index) else e.getHistoricalPressure(index, history)
+        return Point(
+            x.coerceIn(0f, width.toFloat()) / unit,
+            y.coerceIn(0f, height.toFloat()) / unit,
+            pressure,
+            if (history < 0) e.eventTime else e.getHistoricalEventTime(history),
+        )
+    }
+
     override fun onTouchEvent(e: MotionEvent): Boolean {
+        if (
+            e.actionMasked == MotionEvent.ACTION_CANCEL ||
+                (android.os.Build.VERSION.SDK_INT >= 33 &&
+                    e.flags and MotionEvent.FLAG_CANCELED != 0 &&
+                    (e.actionMasked != MotionEvent.ACTION_POINTER_UP ||
+                        e.getPointerId(e.actionIndex) == activePointer))
+        ) {
+            cancelCurrent()
+            awaitingPalmUp = e.pointerCount > 1
+            changed()
+            return true
+        }
         val pen =
             (0 until e.pointerCount).firstOrNull {
                 e.getToolType(it) == MotionEvent.TOOL_TYPE_STYLUS ||
                     e.getToolType(it) == MotionEvent.TOOL_TYPE_ERASER
             }
-        val index = pen ?: 0
-        if (
-            pen != null &&
-                e.actionMasked in
-                    setOf(MotionEvent.ACTION_POINTER_DOWN, MotionEvent.ACTION_POINTER_UP) &&
-                e.actionIndex != pen
-        )
-            return true
-        val action =
-            when (e.actionMasked) {
-                MotionEvent.ACTION_POINTER_DOWN ->
-                    if (pen != null) MotionEvent.ACTION_DOWN else e.actionMasked
-                MotionEvent.ACTION_POINTER_UP ->
-                    if (pen != null) MotionEvent.ACTION_UP else e.actionMasked
-                else -> e.actionMasked
-            }
-        if (
-            (pen == null && e.pointerCount > 1) ||
-                e.actionMasked == MotionEvent.ACTION_CANCEL ||
-                (android.os.Build.VERSION.SDK_INT >= 33 &&
-                    e.flags and MotionEvent.FLAG_CANCELED != 0)
-        ) {
-            current?.let { strokes.remove(it) }
-            current = null
-            changed()
+        if (awaitingPalmUp && pen == null) {
+            if (e.actionMasked == MotionEvent.ACTION_UP) awaitingPalmUp = false
             return true
         }
-        when (action) {
-            MotionEvent.ACTION_DOWN -> {
-                parent?.requestDisallowInterceptTouchEvent(true)
-                current =
-                    mutableListOf(
-                        PointF(
-                            e.getX(index).coerceIn(0f, width.toFloat()),
-                            e.getY(index).coerceIn(0f, height.toFloat()),
-                        )
-                    )
-                strokes.add(current!!)
-            }
-            MotionEvent.ACTION_MOVE,
-            MotionEvent.ACTION_UP ->
-                current?.let { points ->
-                    repeat(e.historySize) { h ->
-                        points.add(
-                            PointF(
-                                e.getHistoricalX(index, h).coerceIn(0f, width.toFloat()),
-                                e.getHistoricalY(index, h).coerceIn(0f, height.toFloat()),
-                            )
-                        )
-                    }
-                    points.add(
-                        PointF(
-                            e.getX(index).coerceIn(0f, width.toFloat()),
-                            e.getY(index).coerceIn(0f, height.toFloat()),
-                        )
-                    )
-                    if (action == MotionEvent.ACTION_UP) {
-                        current = null
-                        performClick()
-                    }
+        val penDown =
+            pen != null &&
+                (e.actionMasked == MotionEvent.ACTION_DOWN ||
+                    (e.actionMasked == MotionEvent.ACTION_POINTER_DOWN && e.actionIndex == pen))
+        if (penDown || e.actionMasked == MotionEvent.ACTION_DOWN) {
+            // A palm can land and move before the pen. Roll back its provisional stroke rather
+            // than leaving a stray line when the stylus takes over as pointer 1 or later.
+            cancelCurrent()
+            val index = pen ?: e.actionIndex
+            activePen = pen != null
+            activePointer = e.getPointerId(index)
+            awaitingPalmUp = false
+            if (activePen) requestUnbufferedDispatch(e)
+            parent?.requestDisallowInterceptTouchEvent(true)
+            current =
+                Mark(
+                    "pen",
+                    0xff20232a.toInt(),
+                    2.2f,
+                    mutableListOf(sample(e, index)),
+                    inkVersion = InkGeometry.VERSION,
+                )
+            strokes.add(current!!)
+        } else if (pen == null && e.pointerCount > 1) {
+            cancelCurrent()
+            awaitingPalmUp = true
+        } else {
+            val index = e.findPointerIndex(activePointer)
+            val ownUp =
+                e.actionMasked == MotionEvent.ACTION_UP ||
+                    (e.actionMasked == MotionEvent.ACTION_POINTER_UP &&
+                        e.getPointerId(e.actionIndex) == activePointer)
+            if (index >= 0 && (e.actionMasked == MotionEvent.ACTION_MOVE || ownUp)) {
+                current?.points?.let { points ->
+                    repeat(e.historySize) { points.add(sample(e, index, it)) }
+                    points.add(sample(e, index))
                 }
+                if (ownUp) {
+                    awaitingPalmUp = activePen && e.pointerCount > 1
+                    current = null
+                    activePointer = -1
+                    performClick()
+                }
+            }
         }
         changed()
         return true
@@ -144,12 +157,12 @@ class SignaturePad(context: Context, private val unit: Float = 1f) : View(contex
 
     fun bitmap(): Bitmap {
         require(hasInk)
-        val points = strokes.flatten()
+        val points = strokes.flatMap { it.points }
         val padding = 6f * unit
-        val left = max(0f, points.minOf { it.x } - padding)
-        val top = max(0f, points.minOf { it.y } - padding)
-        val right = min(width.toFloat(), points.maxOf { it.x } + padding)
-        val bottom = min(height.toFloat(), points.maxOf { it.y } + padding)
+        val left = max(0f, points.minOf { it.x } * unit - padding)
+        val top = max(0f, points.minOf { it.y } * unit - padding)
+        val right = min(width.toFloat(), points.maxOf { it.x } * unit + padding)
+        val bottom = min(height.toFloat(), points.maxOf { it.y } * unit + padding)
         val result =
             Bitmap.createBitmap(
                 max(1, ceil(right - left).toInt()),

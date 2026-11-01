@@ -1,8 +1,12 @@
 # Annota Android
 
-Native Kotlin application ID: `io.github.dpan538.annota`. Minimum Android 10 / API 29, compile / target API 36. Current stable version 1.0.2 (13); 1.0.0 was the first stable release. The earlier 0.1.0-dev build used a simplified functional-test interface and did not meet the approved design. This folder contains the native implementation; it does not publish GitHub Releases or change the design sources.
+Native Kotlin application ID: `io.github.dpan538.annota`. Minimum Android 10 / API 29, compile / target API 36. Current source targets **1.0.3-test Beta (14)**, a GitHub Pre-release; stable remains **1.0.2 (13)**. Version 1.0.0 was the first stable release. The earlier 0.1.0-dev build used a simplified functional-test interface and did not meet the approved design. This folder contains the native implementation; distribution follows the verified GitHub Release workflow in [distribution notes](../docs/DISTRIBUTION.md).
 
-Version 1.0.2 (13) adds handwritten signatures and signed/restricted PDF compatibility. More → Handwritten signature captures transparent ink, then allows moving and proportional resizing before a single undoable insertion. Restricted PDFs open read-only; original signed bytes are retained, including when a private unlocked viewing copy is needed. Unchanged exports preserve the original bytes. Annotated derivatives preserve visible form/signature appearances and explicitly do not preserve original digital-signature validation. No certificate signing/trust verification is implemented. See [signature acceptance](../docs/PDF-SIGNATURE-ACCEPTANCE.md). Run `PdfSignatureTest` alongside the PDF/input regressions; update fixtures for this source must now use a versionCode greater than 13.
+Version 1.0.3-test Beta (14) refines the existing pens with adaptive stabilization, smoothed pressure/speed response, versioned variable-width vector geometry and subtle deterministic pencil grain. Canvas and PDF export share geometry; old marks retain the legacy renderer. It also fixes swept local erasing, signature palm takeover, blank-notebook PDF export and proportional placement of tall images. No automatic glyph rewriting, handwriting layout changes or proprietary pen haptics are enabled. Target-device review follows the [Beta checklist](../docs/BETA-1.0.3-TEST-CHECKLIST.md).
+
+The bundled dictionaries add 942 authored phrases/terms and 682 explicit aliases. Optional English ↔ Chinese sentence translation reuses the dictionary panel, preserves complete input, and requires an explicit first model download over Wi-Fi. Input/output stay on-device; ML Kit may send SDK usage/performance metrics. See [translation implementation and limitations](../docs/TRANSLATION.md). The new pen feel and translation model still need target-device acceptance; emulator tests are separate evidence.
+
+Version 1.0.2 (13) introduced handwritten signatures and signed/restricted PDF compatibility. More → Handwritten signature captures transparent ink, then allows moving and proportional resizing before a single undoable insertion. Restricted PDFs open read-only; original signed bytes are retained, including when a private unlocked viewing copy is needed. Unchanged exports preserve the original bytes. Annotated derivatives preserve visible form/signature appearances and explicitly do not preserve original digital-signature validation. No certificate signing/trust verification is implemented. See [signature acceptance](../docs/PDF-SIGNATURE-ACCEPTANCE.md). Run `PdfSignatureTest` alongside the PDF/input regressions; update fixtures for the current source must use a versionCode greater than 14.
 
 ## Build
 
@@ -15,9 +19,9 @@ adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
 adb shell am instrument -w -e class io.github.dpan538.annota.CoreTest,io.github.dpan538.annota.DesignUiTest,io.github.dpan538.annota.EnglishUiTest,io.github.dpan538.annota.InputTest,io.github.dpan538.annota.ReaderPolishTest,io.github.dpan538.annota.RenderLifecycleTest,io.github.dpan538.annota.SeedTest,io.github.dpan538.annota.UpdateTest,io.github.dpan538.annota.ContinuousReaderTest,io.github.dpan538.annota.MotionTest io.github.dpan538.annota.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
-The two `UpdateTest` cases require a same-signed APK built with `-PannotaVersionCode=14 -PannotaVersionName=update-test-fixture`, staged in the target application's `cache/update-test.apk` (push to `/data/local/tmp/` then copy using `adb shell run-as io.github.dpan538.annota`). Keep the installed debug target at versionCode 13. Without the fixture these two tests explicitly skip. Run instrumentation only on a disposable emulator because storage fixtures reset its library.
+The two `UpdateTest` cases require a same-signed APK built with `-PannotaVersionCode=15 -PannotaVersionName=update-test-fixture`, staged in the target application's `cache/update-test.apk` (push to `/data/local/tmp/` then copy using `adb shell run-as io.github.dpan538.annota`). Keep the installed debug target at versionCode 14. Without the fixture these two tests explicitly skip. Run instrumentation only on a disposable emulator because storage fixtures reset its library.
 
-The checked-in wrapper pins Gradle 8.13 and verifies its distribution SHA-256. `.tooling/` holds only ignored local downloads and SDK/emulator files. No SDK, build cache or private key should be committed. `scripts/sync-assets.py` can re-copy the dictionaries from the read-only `../design/dictionary/` source. The actual database SHA-256 values are checked again at installation. The original authored five-page guide is bundled as `assets/guide.pdf`; the owner-supplied original paper is bundled as a second initial document with an independent rights notice.
+The checked-in wrapper pins Gradle 8.13 and verifies its distribution SHA-256. `.tooling/` holds only ignored local downloads and SDK/emulator files. No SDK, build cache or private key should be committed. `scripts/sync-assets.py` can re-copy the dictionaries from the versioned `../design/dictionary/` source. The actual database SHA-256 values are checked again at installation. The original authored five-page guide is bundled as `assets/guide.pdf`; the owner-supplied original paper is bundled as a second initial document with an independent rights notice.
 
 ## Storage and offline behavior
 
@@ -27,7 +31,15 @@ Settings → Export backup writes `.annota.zip` with complete current library do
 
 PDF rendering uses Android PdfRenderer. PDFBox-Android extracts text and composes exports while retaining source vector pages/text. New paper backgrounds are rendered locally; ink/images are overlaid into the export. Scanned pages need OCR outside this version. A source PDF is capped at 512 MiB / 10,000 pages; render bitmaps are capped to 2,500 pixels. These limits do not guarantee every PDF feature, font or color space. PDF parsing is cancellable between pages and operations; a currently running native render or PDFBox parse must return before cancellation can complete.
 
-The dictionaries are ECDICT core (57,841 entries) and CC-CEDICT (125,301 entries), not sentence translation. SQLite queries run in a worker with bound arguments and stale-request isolation. Source data and license texts are included offline. No remote font, analytics, login, sync or automatic update checks are used.
+The packaged English–Chinese database has 58,783 records (57,841 original ECDICT core records plus 942 authored entries); Chinese–English has 126,272 records (125,301 CC-CEDICT plus 971 authored reverse equivalents). Another 682 explicit spelling/inflection aliases do not count as new entries. Boundary-preserving matching distinguishes `set up` from `setup`, handles Unicode/line-break variants, and prefers unambiguous contextual phrases. SQLite queries run in a worker with bound arguments and stale-request isolation. Schema 3 databases, original source TSV, provenance, hashes and licenses are included offline. Run `python3 ../design/dictionary/test_lookup.py` to exercise every authored entry and alias.
+
+Ordinary dictionary lookup does not initialize the translation SDK. Sentence translation is a separate opt-in path, limited to 4,000 characters without silent truncation. Its approximately 30 MB model downloads only after user confirmation and requires Wi-Fi; subsequent translation works on-device. Google ML Kit may contact Google for model/compatibility updates and API usage/performance metrics. There is no Annota login, cloud sync, remote font or automatic app update checking. See the privacy and translation notices for the SDK boundary.
+
+## Ink and lookup regression scope
+
+Run `InkQualityTest`, `InkEditingTest`, `DictionaryContextTest`, `DictionaryContextUiTest`, `SentenceTranslationTest`, and `PdfSignatureTest` alongside the standard input / render / storage regressions. `SentenceTranslationDeviceTest` is an explicit model-download and offline-inference check; its result must describe the actual emulator/device, network and model state. It does not establish Xiaomi or mainland-network compatibility.
+
+Keep new-ink rendering, re-opened data and exported PDF comparisons separate from algorithm tests. Real pen jitter, pressure range and perceived delay require the target tablet and stylus, not synthetic MotionEvents. Persistent ink versions protect old notes when the current renderer changes.
 
 ## Controls and hardware
 
@@ -42,6 +54,10 @@ Feedback posts to the deployed Vercel HTTPS relay only when the user clicks Subm
 ## Signing and GitHub updates
 
 Public stable APKs are non-debuggable release builds. The existing certificate is retained by explicit user decision so development users can upgrade in place. Local debug builds normally use the developer machine's own key and cannot overwrite a public install if the certificate differs. No signing material is committed.
+
+The 1.0.3-test Beta also uses a non-debuggable Release build and the existing certificate, but must be labeled Beta in the app/repository and `prerelease=true` on GitHub. Do not promote it to latest or change the stable channel from 1.0.2. Publish `Annota-1.0.3-test.apk`, `SHA256SUMS.txt` and its generated `annota-update.json` together under `v1.0.3-test`.
+
+The `-test` channel reads the latest 30 releases, allows non-draft prereleases, and chooses a higher integer versionCode. Stable 1.0.2 continues to read `/releases/latest`; entering Beta is an intentional manual same-certificate APK update. A future stable release must have versionCode greater than 14 to upgrade Beta installations in place. No extra channel setting is introduced.
 
 Production signing uses only environment variables:
 
@@ -65,9 +81,9 @@ See `../docs/IMPLEMENTATION-STATUS.md` for actual build/test evidence, artifact 
 
 ## Onboarding and regression fixtures
 
-Current stable build: `1.0.2` / versionCode 13. Both seed PDFs are bundled and verified by SHA-256 and page count. They publish together in a database transaction. Any earlier initialization marker is final, including the old guide-only development build. No sample is added back on restart or upgrade, even after removal. Paper rights are separate: see `app/src/main/assets/SAMPLE-PAPER-NOTICE.md`; redistribution clearance remains a public-release checklist item.
+Current Beta build: `1.0.3-test` / versionCode 14; stable is `1.0.2` / 13. Both seed PDFs are bundled and verified by SHA-256 and page count. They publish together in a database transaction. Any earlier initialization marker is final, including the old guide-only development build. No sample is added back on restart or upgrade, even after removal. Paper rights are separate: see `app/src/main/assets/SAMPLE-PAPER-NOTICE.md`; redistribution clearance remains a public-release checklist item.
 
-The update tests require a same-development-key versionCode 14 / versionName `update-test-fixture` APK at the target app's `cache/update-test.apk`. Build it with Gradle property overrides, keep it outside Git and stage it with `adb shell run-as io.github.dpan538.annota ...` on the dedicated emulator. Without it, those two tests are explicitly skipped; do not report them as passed. No fixture is a published update. Test APKs reset library data and must never run on a user's tablet.
+The update tests require a same-development-key versionCode 15 / versionName `update-test-fixture` APK at the target app's `cache/update-test.apk`. Build it with Gradle property overrides, keep it outside Git and stage it with `adb shell run-as io.github.dpan538.annota ...` on the dedicated emulator. Without it, those two tests are explicitly skipped; do not report them as passed. No fixture is a published update. Test APKs reset library data and must never run on a user's tablet.
 
 ## Reader design, lifecycle and memory acceptance
 

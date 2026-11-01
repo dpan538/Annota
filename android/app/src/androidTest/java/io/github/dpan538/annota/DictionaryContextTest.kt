@@ -25,7 +25,7 @@ class DictionaryContextTest {
     @Test
     fun oneWordChangesMeaningWithItsLocalSentence() {
         assertEquals(
-            "数据集",
+            "训练集",
             reading("set", "the training", "contains many examples").primary.single().text,
         )
         assertEquals(
@@ -48,12 +48,12 @@ class DictionaryContextTest {
         )
         assertEquals("模特儿", reading("model", "a fashion", "walks the runway").primary.single().text)
         assertEquals(
-            "细胞",
+            "细胞膜",
             reading("cell", "the", "membrane surrounds the nucleus").primary.single().text,
         )
         assertEquals("电池单元", reading("cell", "each battery", "has a voltage").primary.single().text)
         assertEquals(
-            "权重",
+            "注意力权重",
             reading("weight", "the attention", "in this model").primary.single().text,
         )
         assertEquals("重量", reading("weight", "the body", "in kg").primary.single().text)
@@ -114,5 +114,82 @@ class DictionaryContextTest {
             (context.before + context.after).any { it in setOf("money", "deposit", "account") }
         )
         assertEquals("河岸", dictionary.lookup("bank", context).reading!!.primary.single().text)
+    }
+
+    @Test
+    fun phrasesKeepBoundariesAndPreferTheWholeMeaning() {
+        assertEquals("set up", dictionary.query("set up").entries.first().word)
+        assertEquals("setup", dictionary.query("setup").entries.first().word)
+        for (word in
+            listOf("setu p", "neuralnetwork", "selfattention", "takeintoaccount")) assertTrue(
+            word,
+            dictionary.query(word).entries.isEmpty(),
+        )
+        for ((word, meaning) in
+            listOf(
+                "neural networks" to "神经网络",
+                "machine learning" to "机器学习",
+                "taken into account" to "考虑到",
+                "self attention" to "自注意力",
+                "multi-head attention" to "多头注意力",
+                "confidence interval" to "置信区间",
+                "in terms of" to "就……而言",
+            )) assertEquals(word, meaning, reading(word).primary.single().text)
+    }
+
+    @Test
+    fun selectedWordUsesTheLongestUnambiguousLocalPhrase() {
+        val model = reading("network", "we use a recurrent neural", "for this task")
+        assertEquals("循环神经网络", model.primary.single().text)
+        assertEquals("recurrent neural network", model.phrase)
+        assertTrue(model.contextual)
+        val verb = reading("account", "these effects were taken into", "during training")
+        assertEquals("考虑到", verb.primary.single().text)
+        assertEquals("taken into account", verb.phrase)
+    }
+
+    @Test
+    fun selectedPhraseDoesNotRequireRecognizingEveryWordIndividually() {
+        val phrase = reading("generalization", "we evaluate the", "ability on new data")
+        assertEquals("泛化能力", phrase.primary.single().text)
+        assertTrue(phrase.contextual)
+    }
+
+    @Test
+    fun unicodeHyphensSoftHyphensAndPdfLineBreaksResolve() {
+        for ((query, expected) in
+            listOf(
+                "SELF‑ATTENTION" to "self-attention",
+                "self-\nattention" to "self-attention",
+                "neural\nnetwork" to "neural network",
+                "neural net-\nwork" to "neural network",
+                "neural net‐ work" to "neural network",
+                "multi\u00ad-head attention" to "multi-head attention",
+                "“machine learning,”" to "machine learning",
+            )) assertEquals(query, expected, dictionary.query(query).entries.first().word)
+    }
+
+    @Test
+    fun lexicalPeriodsSurviveSelectionPunctuation() {
+        for ((query, expected) in
+            listOf(
+                "i.e." to "i.e.",
+                "“i.e.,”" to "i.e.",
+                "P.M." to "P.M.",
+                "attention." to "attention",
+                "“neural network.”" to "neural network",
+            )) assertEquals(query, expected, dictionary.query(query).entries.first().word)
+        assertTrue(dictionary.query("“学习.”").entries.isNotEmpty())
+    }
+
+    @Test
+    fun reverseLookupFindsAcademicPhrasesAndLongInputStaysIntact() {
+        assertTrue(dictionary.query("自注意力").entries.any { it.meaning == "self-attention" })
+        assertTrue(dictionary.query("神经网络").entries.any { it.meaning == "neural network" })
+        val input = "attention" + " ".repeat(Dictionary.MAX_QUERY_LENGTH)
+        val result = dictionary.lookup(input)
+        assertTrue(result.entries.isEmpty())
+        assertTrue(result.suggestions.isEmpty())
+        assertNull(result.reading)
     }
 }

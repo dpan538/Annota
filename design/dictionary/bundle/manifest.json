@@ -1,30 +1,51 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "networkRequired": false,
   "en-zh": {
-    "entries": 57841,
-    "source": "ECDICT, frequency/exam core subset",
+    "entries": 58783,
+    "baseEntries": 57841,
+    "source": "ECDICT core subset + Annota authored phrases",
     "license": "MIT",
     "url": "https://github.com/skywind3000/ECDICT"
   },
   "zh-en": {
-    "entries": 125301,
-    "source": "CC-CEDICT",
+    "entries": 126272,
+    "baseEntries": 125301,
+    "source": "CC-CEDICT + Annota authored reverse equivalents",
     "license": "CC-BY-SA-4.0",
     "url": "https://www.mdbg.net/chinese/dictionary?page=cc-cedict"
   },
+  "annota-phrases": {
+    "entries": 942,
+    "aliases": 682,
+    "license": "MIT",
+    "source": "Original Annota phrase equivalents, 2026-11-01",
+    "categories": {
+      "academic_connectors": 92,
+      "academic_reading": 78,
+      "attention_and_language": 77,
+      "common_phrases": 135,
+      "machine_learning": 134,
+      "mathematics_and_statistics": 133,
+      "science_and_engineering": 115,
+      "software_and_systems": 102,
+      "vision_and_models": 76
+    }
+  },
   "files": {
     "en-zh.sqlite": {
-      "bytes": 15724544,
-      "sha256": "d557d408e0470f046dbedf85b4f82d89871e52e413b3098a8ca9c697d39acb44"
+      "bytes": 21291008,
+      "sha256": "534f5aadb45fba2edb06eee8e442cde106710b2a6c4e09d1e5b1f814612fddd5"
     },
     "zh-en.sqlite": {
-      "bytes": 14618624,
-      "sha256": "82b987a224ab0e67fb3035eb6c71a4e3b7517d4cf112ed0f2ce3c5589b65de0d"
+      "bytes": 15622144,
+      "sha256": "bda7b4c5fd8742ed776445e59bcdbb651086e20e1f76ea2954b62b24f54a8a35"
     }
   },
   "sources": {
+    "annota-phrases.tsv": "47fad91cc431ba663ab3320298e8e94312d8574fcd936dd372241ebfd0333582",
     "cedict.txt.gz": "2d42d41f75df8708d9d9b236d8ae15ecf1cef525aef8ebb8499a74cb09e1b096",
-    "ecdict-core.csv.gz": "6bfc246aecfb1284a73e3d09b3f6be6279c99afb6e08e51bcd2cc080e483f895"
+    "ecdict-core.csv.gz": "6bfc246aecfb1284a73e3d09b3f6be6279c99afb6e08e51bcd2cc080e483f895",
+    "provenance.json": "6cad2e95aa00ad0b69c989efc59d49aac1afac1b18c583a929630c9a58ba843f"
   }
 }

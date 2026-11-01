@@ -249,7 +249,7 @@ class PdfEngine(val context: Context, val store: Store) {
     ) {
         inspect(book)
         require(
-            target.canonicalFile != store.file(book.source.ifEmpty { "unused.pdf" }).canonicalFile
+            book.source.isEmpty() || target.canonicalFile != store.file(book.source).canonicalFile
         ) {
             "不能覆盖 PDF 原件"
         }
@@ -331,6 +331,11 @@ class PdfEngine(val context: Context, val store: Store) {
                                 cs.setLineJoinStyle(1)
                                 val a = m.points.first()
                                 val b = m.points.last()
+                                if (InkGeometry.supports(m)) {
+                                    exportInk(cs, m)
+                                    cs.restoreGraphicsState()
+                                    return@forEach
+                                }
                                 when (m.tool) {
                                     "image" -> {
                                         val bitmap = decodeImage(store.file(m.image), 2000)
@@ -402,7 +407,7 @@ class PdfEngine(val context: Context, val store: Store) {
                                     }
                                     else -> {
                                         if (m.points.size == 1) {
-                                            cs.addRect(a.x, a.y, m.width, m.width)
+                                            InkGeometry.circle(a.x, a.y, m.width / 2f, inkSink(cs))
                                             cs.fill()
                                         } else
                                             m.points.zipWithNext().forEach { (x, y) ->
@@ -438,6 +443,40 @@ class PdfEngine(val context: Context, val store: Store) {
             source?.close()
         }
     }
+
+    private fun exportInk(cs: PDPageContentStream, mark: Mark) {
+        val samples = InkGeometry.samples(mark)
+        val sink = inkSink(cs)
+        cs.setGraphicsStateParameters(
+            PDExtendedGraphicsState().apply {
+                strokingAlphaConstant = InkGeometry.opacity(mark)
+                nonStrokingAlphaConstant = InkGeometry.opacity(mark)
+            }
+        )
+        InkGeometry.outline(samples, sink)
+        cs.fill()
+        if (mark.tool == "pencil") {
+            cs.setGraphicsStateParameters(
+                PDExtendedGraphicsState().apply { nonStrokingAlphaConstant = 48f / 255f }
+            )
+            InkGeometry.grains(samples, mark.width).forEach {
+                InkGeometry.circle(it.x, it.y, it.radius, sink)
+            }
+            cs.fill()
+        }
+    }
+
+    private fun inkSink(cs: PDPageContentStream) =
+        object : InkGeometry.PathSink {
+            override fun move(x: Float, y: Float) = cs.moveTo(x, y)
+
+            override fun line(x: Float, y: Float) = cs.lineTo(x, y)
+
+            override fun cubic(x1: Float, y1: Float, x2: Float, y2: Float, x: Float, y: Float) =
+                cs.curveTo(x1, y1, x2, y2, x, y)
+
+            override fun close() = cs.closePath()
+        }
 
     companion object {
         fun strokeWidth(m: Mark, p: Float): Float =

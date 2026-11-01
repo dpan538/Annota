@@ -119,7 +119,8 @@ class Network(val context: Context) {
             debug: Boolean = BuildConfig.DEBUG,
         ): Boolean =
             debug ||
-                Regex("(?i).*(?:-dev|-alpha|-beta|-rc|preview|snapshot).*").matches(versionName)
+                Regex("(?i).*(?:-dev|-alpha|-beta|-test|-rc|preview|snapshot).*")
+                    .matches(versionName)
     }
 
     fun releaseCandidates(releases: JSONArray, includePreview: Boolean): List<JSONObject> =

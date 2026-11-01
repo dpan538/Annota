@@ -29,3 +29,9 @@
 MiSans 官方 FAQ 允许软件嵌入，并要求注明使用；本地实验字体不作为公开发行依据。Android 在「关于 → 开源与资源许可」离线显示实际随包资源的完整署名和许可。
 
 用户自行导入的文档和笔记始终属于用户，不进入项目代码或视觉许可。没有把商业软件截图、参考图或用户个人资料提交到公开仓库。
+
+## Google ML Kit on-device translation
+
+Optional English–Chinese sentence translation uses Google ML Kit Translate 17.0.3. Input/output are processed on the device; model download and SDK metrics have separate network behavior disclosed before use. See [translation/privacy details](docs/TRANSLATION.md), [ML Kit terms](https://developers.google.com/ml-kit/terms) and [translation usage requirements](https://developers.google.com/ml-kit/language/translation/translation-terms). Official Google Translate attribution images remain unmodified and are not licensed under Annota’s MIT license.
+
+The additional Annota phrase lexicon is original and MIT-licensed; its source and license are included in `design/dictionary/sources/annota-phrases.tsv` and `design/dictionary/licenses/Annota-phrases-MIT.txt`.

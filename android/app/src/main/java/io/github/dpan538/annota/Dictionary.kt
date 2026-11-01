@@ -23,8 +23,12 @@ class Dictionary(private val context: Context) {
     fun lookup(text: String, context: LookupContext? = null): Result {
         val result = query(text)
         val active = context?.takeIf { it.matches(text) }
-        val phrase = if (active == null || result.entries.isEmpty()) null else phrase(active)
-        return result.copy(reading = readings.present(text, result, active, phrase))
+        val phrase = if (active == null || text.length > MAX_QUERY_LENGTH) null else phrase(active)
+        val resolved =
+            if (result.entries.isEmpty() && phrase != null)
+                Result(listOf(phrase.second), emptyList())
+            else result
+        return resolved.copy(reading = readings.present(text, resolved, active, phrase))
     }
 
     private fun phrase(context: LookupContext): Pair<String, Entry>? {
@@ -32,9 +36,9 @@ class Dictionary(private val context: Context) {
         if (target.size != 1 || !target.single().matches(Regex("[a-z]+"))) return null
         val candidates =
             buildList {
-                    for (before in 0..minOf(2, context.before.size)) for (after in
-                        0..minOf(2, context.after.size)) {
-                        if (before + after in 1..3)
+                    for (before in 0..minOf(5, context.before.size)) for (after in
+                        0..minOf(5, context.after.size)) {
+                        if (before + after in 1..5)
                             add(
                                 (context.before.takeLast(before) +
                                         target +
@@ -44,35 +48,43 @@ class Dictionary(private val context: Context) {
                     }
                 }
                 .distinct()
-                .sortedByDescending { it.length }
+                .sortedByDescending { it.count { ch -> ch == ' ' } }
         SQLiteDatabase.openDatabase(
                 File(dir, "en-zh.sqlite").path,
                 null,
                 SQLiteDatabase.OPEN_READONLY,
             )
             .use { db ->
+                val matches = mutableListOf<Pair<String, Entry>>()
                 candidates.forEach { value ->
                     db.rawQuery(
-                            "SELECT word,phonetic,translation,definition FROM entries WHERE key=? OR compact=? LIMIT 1",
-                            arrayOf(value, value.replace(Regex("[^a-z0-9]"), "")),
+                            "SELECT e.word,e.phonetic,e.translation,e.definition FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.boundary_key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 1",
+                            arrayOf(boundaryKey(value)),
                         )
                         .use { c ->
-                            if (
-                                c.moveToFirst() &&
-                                    LookupContext.key(c.getString(0)).replace('-', ' ') == value
-                            )
-                                return value to
-                                    Entry(
-                                        c.getString(0),
-                                        c.getString(1).orEmpty(),
-                                        c.getString(2).orEmpty().ifBlank {
-                                            c.getString(3).orEmpty()
-                                        },
-                                    )
+                            if (c.moveToFirst())
+                                matches +=
+                                    value to
+                                        Entry(
+                                            c.getString(0),
+                                            c.getString(1).orEmpty(),
+                                            c.getString(2).orEmpty().ifBlank {
+                                                c.getString(3).orEmpty()
+                                            },
+                                        )
                         }
                 }
+                // Equal-length competing phrases do not justify silently selecting one meaning.
+                val longest = matches.firstOrNull() ?: return null
+                val count = longest.first.count { it == ' ' }
+                return longest.takeIf {
+                    matches
+                        .filter { it.first.count { ch -> ch == ' ' } == count }
+                        .map { it.second.word }
+                        .distinct()
+                        .size == 1
+                }
             }
-        return null
     }
 
     @Synchronized
@@ -97,12 +109,10 @@ class Dictionary(private val context: Context) {
     }
 
     fun query(text: String): Result {
-        require(text.length <= 80) { "暂不支持整句翻译" }
-        val key =
-            Normalizer.normalize(text, Normalizer.Form.NFKC)
-                .trim()
-                .lowercase(Locale.ROOT)
-                .replace(Regex("\\s+"), " ")
+        // Sentence translation owns longer input. Never truncate it into a different query.
+        if (text.length > MAX_QUERY_LENGTH) return Result(emptyList(), emptyList())
+        val keys = queryKeys(text)
+        val key = normalize(text)
         if (key.isBlank()) return Result(emptyList(), emptyList())
         val zh = key.any { it in '\u3400'..'\u9fff' }
         SQLiteDatabase.openDatabase(
@@ -138,20 +148,32 @@ class Dictionary(private val context: Context) {
                 var rows =
                     if (zh)
                         entries(
-                            "SELECT * FROM entries WHERE simplified=? OR traditional=? LIMIT 12",
+                            "SELECT * FROM entries WHERE simplified=? OR traditional=? ORDER BY CASE source WHEN 'annota' THEN 0 ELSE 1 END,id LIMIT 12",
                             arrayOf(key, key),
                         )
-                    else
-                        entries(
-                            "SELECT * FROM entries WHERE key=? OR (compact=? AND compact!='') LIMIT 12",
-                            arrayOf(key, compact),
-                        )
-                if (!zh && rows.isEmpty())
-                    rows =
-                        entries(
-                            "SELECT DISTINCT e.* FROM entries e JOIN forms f ON e.id=f.entry_id WHERE f.key=? LIMIT 12",
-                            arrayOf(key),
-                        )
+                    else emptyList()
+                if (!zh) {
+                    for (candidate in keys) {
+                        rows =
+                            entries(
+                                "SELECT DISTINCT e.* FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 12",
+                                arrayOf(candidate),
+                            )
+                        if (rows.isEmpty())
+                            rows =
+                                entries(
+                                    "SELECT DISTINCT e.* FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.boundary_key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 12",
+                                    arrayOf(boundaryKey(candidate)),
+                                )
+                        if (rows.isEmpty())
+                            rows =
+                                entries(
+                                    "SELECT DISTINCT e.* FROM entries e JOIN forms f ON e.id=f.entry_id WHERE f.key=? LIMIT 12",
+                                    arrayOf(candidate),
+                                )
+                        if (rows.isNotEmpty()) break
+                    }
+                }
                 if (rows.isNotEmpty()) return Result(rows, emptyList())
                 val s = mutableListOf<String>()
                 if (zh) {
@@ -210,6 +232,46 @@ class Dictionary(private val context: Context) {
     }
 
     companion object {
+        const val MAX_QUERY_LENGTH = 160
+
+        fun normalize(value: String): String = normalizeLiteral(value).trim(' ', '.')
+
+        private fun normalizeLiteral(value: String): String =
+            Normalizer.normalize(value, Normalizer.Form.NFKC)
+                .lowercase(Locale.ROOT)
+                .replace(Regex("[‐‑–—]"), "-")
+                .replace('’', '\'')
+                .replace("\u00ad", "")
+                .replace(Regex("\\s+"), " ")
+                .trim(
+                    ' ',
+                    ',',
+                    ';',
+                    ':',
+                    '!',
+                    '?',
+                    '"',
+                    '“',
+                    '”',
+                    '(',
+                    ')',
+                    '[',
+                    ']',
+                    '{',
+                    '}',
+                )
+
+        fun boundaryKey(value: String): String = normalize(value).replace(Regex("[ -]+"), " ")
+
+        fun queryKeys(value: String): List<String> =
+            listOf(
+                    value,
+                    value.replace(Regex("(?<=[\\p{L}])[-‐‑–—]\\s+(?=[\\p{L}])"), ""),
+                )
+                // Preserve lexical periods (i.e., P.M.) before stripping sentence punctuation.
+                .flatMap { listOf(normalizeLiteral(it), normalize(it)) }
+                .distinct()
+
         fun distance(a: String, b: String): Int {
             val rows = Array(a.length + 1) { IntArray(b.length + 1) }
             for (i in 0..a.length) rows[i][0] = i

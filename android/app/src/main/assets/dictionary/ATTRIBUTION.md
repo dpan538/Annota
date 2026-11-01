@@ -1,29 +1,38 @@
-# Annota 完整离线词库
+# Annota 离线词库
 
-英汉：57,841 个 ECDICT 核心词条；汉英：125,301 个 CC-CEDICT 词条。
-两份 SQLite 及其源数据、许可随安装包提供。查词只读本机，不上传输入、手写轨迹或文档。
-英语支持精确、词形、前缀和轻微拼写候选；汉英支持简繁体、前缀和包含查询。
-这是英汉 / 汉英词典，不是汉汉辞典，不支持完整句子翻译或在线发音。
+英汉：58,783 条记录，其中 942 条为 Annota 原创短语与学术术语；682 个显式词形 / 拼写别名另计。
+汉英：126,272 条记录，其中 125,301 条来自 CC-CEDICT，其余为原创短释义的反向等价表达。
+数据、来源和许可随安装包提供。查词只读本机，不上传输入、手写轨迹或文档。
+
+支持完整词组、显式词形、保留边界的连字符变体、前缀和轻微拼写建议。
+词典释义与整句翻译是不同能力；整句翻译的模型和使用范围见应用中的翻译说明。
+
+## Annota 原创词组与术语
+
+Copyright (c) 2026 Dai Pan and Annota contributors. MIT License.
+完整许可：licenses/Annota-phrases-MIT.txt。
+原创源文件：sources/annota-phrases.tsv；编辑范围与转换说明：sources/provenance.json。
+涵盖常用搭配、论文表达、Attention / 机器学习、统计、软件及科学工程术语。
+中文释义为项目原创编辑的简短等价表达；没有复制外部词典的长解释。
+源文件可独立按 MIT 使用。带“……”的句式不会自动生成反向词条。
 
 ## ECDICT
 
 Linwei / skywind3000, ECDICT，项目许可 MIT。
 来源：https://github.com/skywind3000/ECDICT
-完整 MIT 许可在 licenses/ECDICT-MIT.txt；原始核心子集在 sources/ecdict-core.csv.gz。
-Annota 对数据作核心词筛选、换行标准化及 SQLite 索引转换。
-上游数据包含多种资料来源，公开分发前仍需复核来源链；仓库代码许可不等于所有外部材料的单独授权证明。
+完整许可：licenses/ECDICT-MIT.txt；原始核心子集：sources/ecdict-core.csv.gz。
+Annota 对源数据作核心词筛选、换行标准化及 SQLite 索引转换，保留 57,841 条原始记录。
+上游包含多种资料来源；仓库代码许可不等于所有外部材料的单独授权证明。
 
 ## CC-CEDICT
 
 CC-CEDICT 社区维护，MDBG 发布；来源版本 2026-10-19。
 来源：https://www.mdbg.net/chinese/dictionary?page=cc-cedict
 许可：Creative Commons Attribution-ShareAlike 4.0 International（CC BY-SA 4.0）。
-包括 Paul Andrew Denisowski 的 CEDICT 贡献，具体原始署名见 licenses/CC-CEDICT-header.txt。
-完整许可离线附于 licenses/CC-BY-SA-4.0.txt；原始源数据见 sources/cedict.txt.gz。
-Annota 仅转换为 SQLite 并增加索引；zh-en.sqlite 及转换结果沿用 CC BY-SA 4.0。
-转换代码在 Annota Android 源码及 design/dictionary 构建程序中提供；不改变原释义。
+包括 Paul Andrew Denisowski 的贡献，原始署名见 licenses/CC-CEDICT-header.txt。
+完整许可：licenses/CC-BY-SA-4.0.txt；原始源数据：sources/cedict.txt.gz。
+原始释义保持不变；zh-en.sqlite 的格式转换和数据组合按 CC BY-SA 4.0 分发。
 
 ## 字体与输入法
 
-应用界面使用系统字体；随包指南嵌入 MiSans 与 Xiaolai 字体，许可另附。
-系统手写使用设备已安装的输入法，不含在线识别 SDK。需在目标设备飞行模式验收。
+界面和指南所用字体许可另附。系统手写使用设备已安装的输入法，其网络行为由输入法管理。

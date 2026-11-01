@@ -1,0 +1,2 @@
+Synthetic software canvas on API 36 emulator. Not physical pen latency.
+11-01 20:33:38.855  8031  8044 I InkQuality: synthetic software canvas; first500Ms=6.120292; cached500Ms=1.107875; live2000Ms=2406.739918; cacheBytes=952192

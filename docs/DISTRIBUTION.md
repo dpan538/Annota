@@ -1,8 +1,14 @@
 # APK 与应用内更新
 
-## 当前正式版
+## 当前稳定版与测试版
 
-当前稳定版本为 [1.0.2](https://github.com/dpan538/Annota/releases/tag/v1.0.2)，新增手写签名并修复部分已签名及受限 PDF 的导入问题。非调试 Release 构建，保留已有安装证书，可覆盖升级；APK、SHA256SUMS.txt 和 annota-update.json 一同通过 GitHub Releases 分发。[下载页](../DOWNLOAD.md) 与应用内稳定更新通道同步维护。1.0.0 是首个正式版，1.0.1 修正阅读颜色；本次功能与交付证据见 [签名验收](PDF-SIGNATURE-ACCEPTANCE.md)。
+当前稳定版本仍为 [1.0.2](https://github.com/dpan538/Annota/releases/tag/v1.0.2)，versionCode **13**。稳定更新通道保持 `/releases/latest`，不将本轮 Beta 推送给稳定版用户。
+
+本轮为 [1.0.3-test Beta](https://github.com/dpan538/Annota/releases/tag/v1.0.3-test)，versionCode **14**，GitHub 必须标为 **Pre-release**。本轮完善现有笔种、局部擦除和签名掌触，新增 942 条原创词组 / 术语与 682 个别名，并提供需用户下载模型的可选英汉句子翻译。测试包使用非调试 Release 构建、沿用已有安装证书；`Annota-1.0.3-test.apk`、`SHA256SUMS.txt` 和 `annota-update.json` 置于同一个预发布版本。构建类型与发布通道分别标注，不能把 Release 构建称为正式稳定版。[下载页](../DOWNLOAD.md)提供独立的稳定版和 Beta 入口。
+
+1.0.3-test 通过 Release 列表读取最近 30 项发布，允许非草稿 Pre-release，并按更高的整数 versionCode 选择更新；1.0.2 正式版继续使用 `/releases/latest`，不会发现这个预发布。稳定版用户通过明确的 Beta APK 链接手动同证书覆盖安装进入测试。未来稳定版本必须使用 **大于 14** 的 versionCode，才能让 Beta 用户正常覆盖升级，不要求卸载。
+
+1.0.0 是首个正式版，1.0.1 修正阅读颜色，1.0.2 增加手写签名与受限 PDF 兼容性；其历史证据保留在[签名验收](PDF-SIGNATURE-ACCEPTANCE.md)。
 
 ## 交付约定
 
@@ -39,6 +45,7 @@
 ## GitHub 端
 
 - 正式标签：`vX.Y.Z`，附清晰的版本说明。
+- 本轮测试标签：`v1.0.3-test`，`prerelease=true`，不设为 latest；附件和更新清单均使用真实测试包的名称、versionCode 与摘要。
 - 附件：签名 `Annota-X.Y.Z.apk`、`SHA256SUMS.txt`，以及客户端必需的 `annota-update.json`（由 `android/scripts/make-update-manifest.py` 从真实签名 APK 生成）。
 - 使用公开 Releases API：`GET https://api.github.com/repos/dpan538/Annota/releases/latest`，没有 Token 也能读取公开发布信息，但需处理限流。
 - `latest` 用于正式生产版本；安装开发/预览包的用户进入测试通道，允许 Pre-release，生产包不默认推送预览。
@@ -59,7 +66,15 @@
 
 当前反馈由用户主动提交到 Vercel HTTPS 接收服务，服务端创建 GitHub 公开 Issue。客户端核对真实接收回执后自动提示成功并清除对应草稿；离线或服务失败保留草稿并提示。GitHub 写入凭据仅保存在服务端，APK 不含仓库写入 Token。
 
-## 当前验证与发布前闭环
+## 1.0.3-test Beta 验证范围
+
+本轮发布前核对：新旧笔迹的持久化与 PDF 外观、连续扫擦及取消恢复、签名掌触、图片比例、全部新增词组 / 别名、长文本不截断，以及同证书覆盖安装后的数据保留。公开附件还需完成匿名下载、签名、哈希、包身份和更新清单核对；源码提交或内部构建不等于完成交付。
+
+证据见[手写与查词验收](HANDWRITING-LOOKUP-ACCEPTANCE.md)，真机按[Beta 测试清单](BETA-1.0.3-TEST-CHECKLIST.md)记录。该版本供主动测试，不表示已经完成目标设备验收。
+
+句子翻译的模型不打入初装 APK。用户确认后通过 Wi-Fi 下载约 30 MB，文本在设备上翻译；Google ML Kit 的模型联网、使用及性能指标行为见[翻译说明](TRANSLATION.md)与[隐私说明](PRIVACY.md)。这部分无需 Annota 自建翻译后端，不应表述为 SDK 从不联网。目标国行设备的模型下载与离线推理，以及实际手写笔的感受，需单独验证；此前版本真机测试不能覆盖本轮新增行为。
+
+## 历史验证与发布闭环
 
 0.1.5 已完成测试通道闭环：本地低版本修正客户端（versionCode 5）识别公开 Pre-release → 应用下载 versionCode 6 → 校验 → 杀进程重开恢复待安装包 → 系统来源授权 → Android 安装器覆盖升级。安装后 APK 哈希与公开原件相同，笔迹、精细阅读位置、废纸篓和初始化标记不变，暂存已清理。起点是修正源码的测试夹具，不能据此声称原始 0.1.4 能直接升级；原始用户需手动覆盖一次。证据见 `android/verification/continuous-update-install.json` 与[验收记录](CONTINUOUS-READER-ACCEPTANCE.md)。
 
@@ -67,7 +82,7 @@
 
 - 同一签名的旧版 → 新版覆盖更新，已有笔记完整。
 - 下载损坏、取消、空间不足、安装权限拒绝、签名不符都能退出或重试。
-- 离线启动、阅读、书写和查词不发网络请求。
+- 启动、阅读、书写和随包词典查询不依赖网络；可选翻译 SDK 的联网边界单列说明。
 - 论文、字体、词库许可与软件内离线说明齐全。
 - 真机验证已记录；未测项目如实列出。
 

@@ -1,0 +1,89 @@
+
+io.github.dpan538.annota.InkQualityTest:........
+io.github.dpan538.annota.InkEditingTest:.......
+io.github.dpan538.annota.InkReaderIntegrationTest:...
+io.github.dpan538.annota.InputTest:.....
+io.github.dpan538.annota.PdfSignatureTest:......
+io.github.dpan538.annota.SentenceTranslationTest:....
+io.github.dpan538.annota.CoreTest:........
+io.github.dpan538.annota.ReaderFidelityTest:....
+Error in oneTapSwitchesPenAndEraserEvenWithMenuOpenAndRemembersNib(io.github.dpan538.annota.ReaderFidelityTest):
+org.junit.ComparisonFailure: expected:<[pencil]> but was:<[eraser]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at io.github.dpan538.annota.ReaderFidelityTest.oneTapSwitchesPenAndEraserEvenWithMenuOpenAndRemembersNib(ReaderFidelityTest.kt:556)
+....
+io.github.dpan538.annota.RenderLifecycleTest:
+Cache before trim: MemoryStats(pageBytes=21234864, imageBytes=0, wordBytes=30760, pageLimit=50331648, imageLimit=8388608, wordLimit=3145728, queued=0)
+Cache after trim: MemoryStats(pageBytes=0, imageBytes=0, wordBytes=0, pageLimit=25165824, imageLimit=4194304, wordLimit=1572864, queued=0)
+.
+io.github.dpan538.annota.ReadingModeTest:.
+Error in singleTapOnlyTogglesChromeAndLongPressLookupWorksWhileChromeIsHidden(io.github.dpan538.annota.ReadingModeTest):
+java.lang.IllegalStateException: Reading mode did not settle
+	at io.github.dpan538.annota.ReadingModeTest.waitFor(ReadingModeTest.kt:53)
+	at io.github.dpan538.annota.ReadingModeTest.singleTapOnlyTogglesChromeAndLongPressLookupWorksWhileChromeIsHidden(ReadingModeTest.kt:741)
+..
+Error in nativeReadingBarAndExactlyThreeChoicesFitEverySizeAndOrientation(io.github.dpan538.annota.ReadingModeTest):
+java.lang.AssertionError: expected:<3> but was:<0>
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.failNotEquals(Assert.java:835)
+	at org.junit.Assert.assertEquals(Assert.java:120)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at io.github.dpan538.annota.ReadingModeTest.nativeReadingBarAndExactlyThreeChoicesFitEverySizeAndOrientation$lambda$88(ReadingModeTest.kt:633)
+	at io.github.dpan538.annota.ReadingModeTest.$r8$lambda$FGUzq1lAfTEbaIOKhsQCtR3hZUI(Unknown Source:0)
+	at io.github.dpan538.annota.ReadingModeTest$$ExternalSyntheticLambda60.invoke(D8$$SyntheticClass:0)
+	at io.github.dpan538.annota.ReadingModeTest.ui$lambda$1(ReadingModeTest.kt:40)
+	at io.github.dpan538.annota.ReadingModeTest.$r8$lambda$VGo73PRItqC8pz0YPD70oWs1oYs(Unknown Source:0)
+	at io.github.dpan538.annota.ReadingModeTest$$ExternalSyntheticLambda26.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2616)
+	at android.os.Handler.handleCallback(Handler.java:995)
+	at android.os.Handler.dispatchMessage(Handler.java:103)
+	at android.os.Looper.loopOnce(Looper.java:248)
+	at android.os.Looper.loop(Looper.java:338)
+	at android.app.ActivityThread.main(ActivityThread.java:9067)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+.
+io.github.dpan538.annota.DictionaryContextTest:............
+io.github.dpan538.annota.DictionaryContextUiTest:.
+
+Time: 122.727
+There were 3 failures:
+1) oneTapSwitchesPenAndEraserEvenWithMenuOpenAndRemembersNib(io.github.dpan538.annota.ReaderFidelityTest)
+org.junit.ComparisonFailure: expected:<[pencil]> but was:<[eraser]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at io.github.dpan538.annota.ReaderFidelityTest.oneTapSwitchesPenAndEraserEvenWithMenuOpenAndRemembersNib(ReaderFidelityTest.kt:556)
+2) singleTapOnlyTogglesChromeAndLongPressLookupWorksWhileChromeIsHidden(io.github.dpan538.annota.ReadingModeTest)
+java.lang.IllegalStateException: Reading mode did not settle
+	at io.github.dpan538.annota.ReadingModeTest.waitFor(ReadingModeTest.kt:53)
+	at io.github.dpan538.annota.ReadingModeTest.singleTapOnlyTogglesChromeAndLongPressLookupWorksWhileChromeIsHidden(ReadingModeTest.kt:741)
+3) nativeReadingBarAndExactlyThreeChoicesFitEverySizeAndOrientation(io.github.dpan538.annota.ReadingModeTest)
+java.lang.AssertionError: expected:<3> but was:<0>
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.failNotEquals(Assert.java:835)
+	at org.junit.Assert.assertEquals(Assert.java:120)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at io.github.dpan538.annota.ReadingModeTest.nativeReadingBarAndExactlyThreeChoicesFitEverySizeAndOrientation$lambda$88(ReadingModeTest.kt:633)
+	at io.github.dpan538.annota.ReadingModeTest.$r8$lambda$FGUzq1lAfTEbaIOKhsQCtR3hZUI(Unknown Source:0)
+	at io.github.dpan538.annota.ReadingModeTest$$ExternalSyntheticLambda60.invoke(D8$$SyntheticClass:0)
+	at io.github.dpan538.annota.ReadingModeTest.ui$lambda$1(ReadingModeTest.kt:40)
+	at io.github.dpan538.annota.ReadingModeTest.$r8$lambda$VGo73PRItqC8pz0YPD70oWs1oYs(Unknown Source:0)
+	at io.github.dpan538.annota.ReadingModeTest$$ExternalSyntheticLambda26.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2616)
+	at android.os.Handler.handleCallback(Handler.java:995)
+	at android.os.Handler.dispatchMessage(Handler.java:103)
+	at android.os.Looper.loopOnce(Looper.java:248)
+	at android.os.Looper.loop(Looper.java:338)
+	at android.app.ActivityThread.main(ActivityThread.java:9067)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+
+FAILURES!!!
+Tests run: 70,  Failures: 3

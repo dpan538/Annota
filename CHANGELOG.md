@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.0.3-test Beta — 笔触与词组测试版 / Ink and phrase lookup prerelease
+
+本轮仅发布测试版（GitHub Pre-release），versionCode 14；稳定版本及稳定更新通道仍为 1.0.2（13）。新功能的真机验证按[测试清单](docs/BETA-1.0.3-TEST-CHECKLIST.md)进行。
+
+- 优化现有笔种：速度自适应去抖、压力过渡与速度响应、连续变宽矢量轮廓；铅笔加入固定在笔迹坐标中的轻微颗粒。屏幕与 PDF 导出共用几何，旧笔迹保持旧版绘制，不自动改字或重新排版。
+- 局部橡皮按完整扫过路径切割线段，修复采样点稀疏时中段擦不掉；修正签名板掌触先落时的杂线、单点导出外观和竖长图片等比放置。
+- 修复空白笔记没有原始 PDF 文件时触发路径校验、导致 PDF 导出失败的问题；有原件的文档仍禁止覆盖原始文件。
+- 随包新增 942 条原创词组 / 学术术语与 682 个词形 / 拼写别名，覆盖常用搭配、论文表达、Attention、机器学习、数学统计、软件及科学工程。新增源文件与许可可审阅、可离线重建。
+- 保留词边界区分 `set up` 与 `setup`；支持显式词形、Unicode 连字符与 PDF 断行修复。局部语境优先采用最长且不冲突的完整词组，默认给一条短释义。
+- 可选英汉句子翻译沿用查词侧栏；原文不静默截断，最多 4,000 字符。首次由用户确认通过 Wi-Fi 下载约 30 MB 模型，完成后端侧翻译。Google ML Kit 的模型联网及使用 / 性能指标行为单独披露；输入和译文不上传到 Google。
+- 非调试 Release 构建作为 Beta 分发，保留既有签名与覆盖升级；Release 构建类型不表示稳定版。新笔感和翻译模型的目标设备验证与自动化测试分别记录，不声称模拟器等同于真机验收。
+- Same-certificate Beta prerelease with refined existing brushes, swept local erasing, 942 authored phrases and 682 explicit aliases, plus opt-in on-device English/Chinese sentence translation after a model download. Stable stays at 1.0.2.
+
+## 1.0.2 — 手写签名与 PDF 兼容性 / Signatures and PDF compatibility
+
+- 新增「更多 → 手写签名」，独立录入后移动、等比缩放、确认与撤销，签名随 PDF 导出。
+- 修复权限检查导致部分已签名及受限 PDF 导入失败；保留原件，受限文档只读打开，必要时使用私有阅读副本。
+- 未修改的文档导出保留原始字节；批注副本保留可见表单 / 签名外观，明确提示原证书签名的验证效力不随副本保留。
+- 沿用既有证书，versionCode 13；不提供证书签名或信任链验证。详见[签名验收](docs/PDF-SIGNATURE-ACCEPTANCE.md)。
+
 ## 1.0.1 — 中性阅读颜色 / Neutral reading colors
 
 - 新文档默认原始 PDF 白底；柔和预设改为中性浅灰，去除页面和外围背景的暖黄偏色，既有选择仍有效。

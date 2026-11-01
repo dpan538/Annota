@@ -44,8 +44,18 @@ fun atomicWrite(file: File, block: (FileOutputStream) -> Unit) {
     }
 }
 
-data class Point(val x: Float, val y: Float, val p: Float = 1f) {
-    fun json() = JSONArray().put(x.toDouble()).put(y.toDouble()).put(p.toDouble())
+data class Point(
+    val x: Float,
+    val y: Float,
+    val p: Float = 1f,
+    val t: Long = 0,
+    val w: Float = 0f,
+) {
+    fun json() =
+        JSONArray().put(x.toDouble()).put(y.toDouble()).put(p.toDouble()).also {
+            if (t > 0 || w > 0f) it.put(t)
+            if (w > 0f) it.put(w.toDouble())
+        }
 }
 
 data class Mark(
@@ -55,6 +65,8 @@ data class Mark(
     val points: MutableList<Point> = mutableListOf(),
     val image: String = "",
     val filled: Boolean = false,
+    val inkVersion: Int = 0,
+    val refined: Boolean = true,
 ) {
     fun json() =
         JSONObject()
@@ -64,6 +76,7 @@ data class Mark(
             .put("points", JSONArray().also { a -> points.forEach { a.put(it.json()) } })
             .put("image", image)
             .put("filled", filled)
+            .also { if (inkVersion > 0) it.put("inkVersion", inkVersion).put("refined", refined) }
 
     companion object {
         fun from(j: JSONObject): Mark {
@@ -78,11 +91,15 @@ data class Mark(
                             it.getDouble(0).toFloat(),
                             it.getDouble(1).toFloat(),
                             it.optDouble(2, 1.0).toFloat(),
+                            it.optLong(3, 0),
+                            it.optDouble(4, 0.0).toFloat(),
                         )
                     }
                 },
                 j.optString("image"),
                 j.optBoolean("filled"),
+                j.optInt("inkVersion", 0),
+                j.optBoolean("refined", true),
             )
         }
     }

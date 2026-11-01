@@ -141,7 +141,7 @@ class DictionaryContextUiTest {
                 )
                 capture(screenshot)
             }
-            select(words.filter { it.text == "set" }[0], "数据集", "dictionary-context-training-set")
+            select(words.filter { it.text == "set" }[0], "训练集", "dictionary-context-training-set")
             val samePanel = ui { popup() }
             val headword = ui {
                 nodes().filterIsInstance<TextView>().first {
@@ -162,15 +162,15 @@ class DictionaryContextUiTest {
             assertTrue(definitions().all { it.length <= 21 })
             capture("dictionary-context-expanded")
             click("收起释义")
-            waitFor { definitions() == listOf("数据集") }
+            waitFor { definitions() == listOf("训练集") }
             click("更多释义")
             waitFor { definitions().size > 2 }
             click("查词")
-            waitFor { definitions() == listOf("数据集") }
+            waitFor { definitions() == listOf("训练集") }
             click("更多释义")
             waitFor { definitions().size > 2 }
             click("收起释义")
-            waitFor { definitions() == listOf("数据集") }
+            waitFor { definitions() == listOf("训练集") }
             ui { nodes().filterIsInstance<EditText>().single().setText("bank") }
             waitFor { definitions() == listOf("银行", "河岸") }
             assertFalse(

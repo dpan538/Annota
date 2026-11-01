@@ -472,6 +472,8 @@ class ReaderFidelityTest {
                 .apply { isAccessible = true }
                 .invoke(a, a.store.book("attention"))
         }
+        // Opening a seeded PDF first inspects its permissions asynchronously.
+        waitUntil { ui { all(a.window.decorView).filterIsInstance<ReaderView>().size == 1 } }
         val original = ui { all(a.window.decorView).filterIsInstance<ReaderView>().single() }
         click(a, "Pen")
         assertEquals("pen", original.tool)
@@ -499,27 +501,53 @@ class ReaderFidelityTest {
     }
 
     private fun tap(a: MainActivity, description: String) {
-        val bounds = ui {
-            val node =
-                all(a.window.decorView).first {
-                    it.contentDescription == description && it.isClickable
-                }
-            Rect().also { node.getGlobalVisibleRect(it) }
+        fun control() =
+            all(a.window.decorView).first { it.contentDescription == description && it.isClickable }
+        var previous: List<Int>? = null
+        var stable = 0
+        waitUntil {
+            ui {
+                val node = control()
+                val bounds = Rect()
+                val at = IntArray(2).also(node::getLocationOnScreen)
+                val current = listOf(at[0], at[1], node.width, node.height)
+                val ready =
+                    node.isLaidOut &&
+                        node.width > 0 &&
+                        node.height > 0 &&
+                        node.getGlobalVisibleRect(bounds) &&
+                        bounds.width() >= node.width &&
+                        bounds.height() >= node.height
+                stable = if (ready && current == previous) stable + 1 else 0
+                previous = current
+                stable >= 2
+            }
+        }
+        val point = ui {
+            val node = control()
+            IntArray(2).also {
+                node.getLocationOnScreen(it)
+                it[0] += node.width / 2
+                it[1] += node.height / 2
+            }
         }
         val now = SystemClock.uptimeMillis()
         for (action in listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_UP)) {
             val e =
                 MotionEvent.obtain(
                     now,
-                    now + if (action == MotionEvent.ACTION_UP) 16 else 0,
+                    SystemClock.uptimeMillis(),
                     action,
-                    bounds.centerX().toFloat(),
-                    bounds.centerY().toFloat(),
+                    point[0].toFloat(),
+                    point[1].toFloat(),
                     0,
                 )
             e.source = InputDevice.SOURCE_TOUCHSCREEN
-            assertTrue(inst.uiAutomation.injectInputEvent(e, true))
+            // Waiting synchronously for DOWN can turn a tap into a tooltip long press while
+            // PDF rendering occupies the emulator. Queue DOWN, then complete a real short tap.
+            assertTrue(inst.uiAutomation.injectInputEvent(e, action == MotionEvent.ACTION_UP))
             e.recycle()
+            if (action == MotionEvent.ACTION_DOWN) SystemClock.sleep(35)
         }
         inst.waitForIdleSync()
     }
@@ -534,6 +562,7 @@ class ReaderFidelityTest {
                 .apply { isAccessible = true }
                 .invoke(a, a.store.book("attention"))
         }
+        waitUntil { ui { all(a.window.decorView).filterIsInstance<ReaderView>().size == 1 } }
         val reader = ui { all(a.window.decorView).filterIsInstance<ReaderView>().single() }
         click(a, "Pen")
         click(a, "Pen")

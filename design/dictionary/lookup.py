@@ -4,7 +4,7 @@ import json
 import re
 import sqlite3
 from pathlib import Path
-from build import normalize
+from build import normalize, boundary_key
 
 ROOT = Path(__file__).resolve().parent
 
@@ -24,7 +24,15 @@ def distance(a, b):
 
 
 def lookup(query, limit=12):
-    key = normalize(str(query)[:80])
+    query = str(query)
+    if len(query) > 160:
+        return {"entries": [], "suggestions": []}
+    def normalized(text):
+        return normalize(text).strip(' .,;:!?"“”()[]{}')
+    variants = (query, re.sub(r"(?<=[^\W\d_])[-‐‑–—]\s+(?=[^\W\d_])", "", query))
+    keys = list(dict.fromkeys(candidate for variant in variants for candidate in (
+        normalize(variant).strip(' ,;:!?"“”()[]{}'), normalized(variant))))
+    key = normalized(query)
     if not key:
         return {"entries": [], "suggestions": []}
     limit = max(1, min(20, limit))
@@ -34,7 +42,7 @@ def lookup(query, limit=12):
     db.row_factory = sqlite3.Row
     try:
         if chinese:
-            rows = db.execute("SELECT * FROM entries WHERE simplified=? OR traditional=? LIMIT ?",
+            rows = db.execute("SELECT * FROM entries WHERE simplified=? OR traditional=? ORDER BY CASE source WHEN 'annota' THEN 0 ELSE 1 END,id LIMIT ?",
                               (key, key, limit)).fetchall()
             suggestions = [] if rows else [r[0] for r in db.execute(
                 """SELECT DISTINCT simplified FROM entries
@@ -50,11 +58,18 @@ def lookup(query, limit=12):
                 suggestions = suggestions[:limit]
         else:
             compact = re.sub(r"[^a-z0-9]", "", key)
-            rows = db.execute("SELECT * FROM entries WHERE key=? OR (compact=? AND compact!='') LIMIT ?",
-                              (key, compact, limit)).fetchall()
-            if not rows:
-                rows = db.execute("SELECT DISTINCT e.* FROM entries e JOIN forms f ON e.id=f.entry_id WHERE f.key=? LIMIT ?",
-                                  (key, limit)).fetchall()
+            rows = []
+            for candidate in keys:
+                rows = db.execute("SELECT DISTINCT e.* FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT ?",
+                                  (candidate, limit)).fetchall()
+                if not rows:
+                    rows = db.execute("SELECT DISTINCT e.* FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.boundary_key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT ?",
+                                      (boundary_key(candidate), limit)).fetchall()
+                if not rows:
+                    rows = db.execute("SELECT DISTINCT e.* FROM entries e JOIN forms f ON e.id=f.entry_id WHERE f.key=? LIMIT ?",
+                                      (candidate, limit)).fetchall()
+                if rows:
+                    break
             suggestions = [] if rows or not compact else [r[0] for r in db.execute(
                 "SELECT word FROM entries WHERE compact>=? AND compact<? ORDER BY length(compact),compact LIMIT ?",
                 (compact, compact + "\U0010ffff", limit))]

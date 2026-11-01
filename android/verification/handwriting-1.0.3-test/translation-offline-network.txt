@@ -1,0 +1,5 @@
+Dedicated Annota emulator-5584 / API 36
+Non-debuggable 1.0.3-test Beta
+Commands: svc wifi disable; svc data disable
+Active default network: none (confirmed before AND after inference)
+Network restored after probe.

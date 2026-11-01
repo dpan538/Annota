@@ -1,0 +1,18 @@
+可选英汉句子翻译 / Optional English–Chinese sentence translation
+
+Translation powered by Google Translate through ML Kit on-device translation.
+https://translate.google.com
+https://cloud.google.com/translate
+
+The original text and translation are processed on the device and are not sent to Google servers. Downloading the language model requires an internet connection. ML Kit may contact Google for models, bug fixes and compatibility information, and sends API usage and performance metrics. Ordinary Annota dictionary lookups do not initialize ML Kit.
+https://developers.google.com/ml-kit/terms
+
+Google Translate disclaimer (official required wording, reproduced without changes):
+THIS SERVICE MAY CONTAIN TRANSLATIONS POWERED BY GOOGLE. GOOGLE DISCLAIMS ALL WARRANTIES RELATED TO THE TRANSLATIONS, EXPRESS OR IMPLIED, INCLUDING ANY WARRANTIES OF ACCURACY, RELIABILITY, AND ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+Google 的译文免责声明涵盖准确性、可靠性、适销性、特定用途适用性和不侵权等明示或默示担保；该机器翻译不提供这些保证。官方原文：
+https://cloud.google.com/translate/attribution#disclaimer
+
+Official Google Translate attribution graphics are used without alteration under Google's attribution guidelines. They are not covered by Annota's MIT license.
+https://cloud.google.com/translate/attribution
+https://developers.google.com/ml-kit/language/translation/translation-terms

@@ -93,6 +93,36 @@ class UpdateTest {
     }
 
     @Test
+    fun testBetaJoinsPreviewChannelWhileStableUsersStayOnStableReleases() {
+        val network = Network(context)
+        val beta = release("v1.0.3-test", true)
+        val stable = release("v1.0.2", false)
+        val releases =
+            org.json
+                .JSONArray()
+                .put(beta)
+                .put(stable)
+                .put(release("v1.0.4-test", true, draft = true))
+                .put(release("v1.0.5-test", true, withManifest = false))
+        assertTrue(Network.previewUpdates("1.0.3-test", false))
+        assertTrue(Network.previewUpdates("1.0.3-TEST", false))
+        assertFalse(Network.previewUpdates("1.0.2", false))
+        assertFalse(Network.previewUpdates("1.0.3", false))
+        assertEquals(
+            listOf("v1.0.3-test", "v1.0.2"),
+            network.releaseCandidates(releases, Network.previewUpdates("1.0.3-test", false)).map {
+                it.getString("tag_name")
+            },
+        )
+        assertEquals(
+            listOf("v1.0.2"),
+            network.releaseCandidates(releases, Network.previewUpdates("1.0.2", false)).map {
+                it.getString("tag_name")
+            },
+        )
+    }
+
+    @Test
     fun manifestUsesIntegerVersionAndRequiresTheActualApkAssetAndIdentity() {
         val network = Network(context)
         val release = release("v0.1.5-dev", true)
@@ -113,6 +143,14 @@ class UpdateTest {
                 org.json
                     .JSONObject(manifest.toString())
                     .put("versionCode", BuildConfig.VERSION_CODE),
+            )
+        )
+        assertNull(
+            network.updateFromManifest(
+                release,
+                org.json
+                    .JSONObject(manifest.toString())
+                    .put("versionCode", BuildConfig.VERSION_CODE - 1),
             )
         )
         for ((key, value) in

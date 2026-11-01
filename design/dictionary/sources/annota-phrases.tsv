@@ -1,0 +1,953 @@
+# Annota authored concise bilingual phrases. MIT. See provenance.json.
+# Format: English<TAB>Chinese<TAB>explicit English aliases (optional, separated by |)
+# category: attention_and_language
+self-attention	自注意力	self attention
+multi-head attention	多头注意力	multi head attention
+attention mechanism	注意力机制	attention mechanisms
+attention weight	注意力权重	attention weights
+attention score	注意力分数	attention scores
+attention head	注意力头	attention heads
+scaled dot-product attention	缩放点积注意力	scaled dot product attention
+dot-product attention	点积注意力	dot product attention
+additive attention	加性注意力
+cross-attention	交叉注意力	cross attention
+causal attention	因果注意力
+masked attention	掩码注意力
+sparse attention	稀疏注意力
+local attention	局部注意力
+global attention	全局注意力
+linear attention	线性注意力
+positional encoding	位置编码	positional encodings
+position embedding	位置嵌入	position embeddings|positional embedding|positional embeddings
+relative position	相对位置	relative positions
+absolute position	绝对位置	absolute positions
+rotary position embedding	旋转位置嵌入	rotary positional embedding|rotary position embeddings
+query vector	查询向量	query vectors
+key vector	键向量	key vectors
+value vector	值向量	value vectors
+query-key pair	查询与键的配对	query-key pairs
+encoder-decoder	编码器与解码器	encoder decoder
+encoder-decoder architecture	编码器解码器架构	encoder decoder architecture
+sequence to sequence	序列到序列	sequence-to-sequence
+sequence transduction	序列转换
+sequence modeling	序列建模	sequence modelling
+sequence length	序列长度	sequence lengths
+input sequence	输入序列	input sequences
+output sequence	输出序列	output sequences
+source sequence	源序列	source sequences
+target sequence	目标序列	target sequences
+machine translation	机器翻译
+neural machine translation	神经机器翻译
+language model	语言模型	language models
+large language model	大语言模型	large language models
+natural language processing	自然语言处理
+language modeling	语言建模	language modelling
+autoregressive model	自回归模型	autoregressive models
+masked language model	掩码语言模型	masked language models
+word embedding	词嵌入	word embeddings
+token embedding	词元嵌入	token embeddings
+sentence embedding	句子嵌入	sentence embeddings
+context window	上下文窗口	context windows
+context length	上下文长度
+contextual representation	上下文表示	contextual representations
+word order	词序
+subword unit	子词单元	subword units
+byte pair encoding	字节对编码	byte-pair encoding
+beam search	束搜索
+greedy decoding	贪心解码
+sampling temperature	采样温度
+next-token prediction	下一词元预测	next token prediction
+teacher forcing	教师强制
+exposure bias	暴露偏差
+length penalty	长度惩罚
+label smoothing	标签平滑
+out of vocabulary	词表外	out-of-vocabulary
+part of speech	词性	part-of-speech
+named entity recognition	命名实体识别
+text classification	文本分类
+sentiment analysis	情感分析
+question answering	问答
+reading comprehension	阅读理解
+text summarization	文本摘要	text summarisation
+abstractive summarization	生成式摘要	abstractive summarisation
+extractive summarization	抽取式摘要	extractive summarisation
+coreference resolution	指代消解
+information extraction	信息抽取
+retrieval augmented generation	检索增强生成	retrieval-augmented generation
+in-context learning	上下文学习	in context learning
+prompt engineering	提示词设计
+instruction tuning	指令微调
+chain of thought	思维链	chain-of-thought
+# category: machine_learning
+machine learning	机器学习
+deep learning	深度学习
+neural network	神经网络	neural networks
+artificial neural network	人工神经网络	artificial neural networks
+feed-forward network	前馈网络	feed forward network|feed-forward networks|feedforward network
+recurrent neural network	循环神经网络	recurrent neural networks
+convolutional neural network	卷积神经网络	convolutional neural networks
+graph neural network	图神经网络	graph neural networks
+residual network	残差网络	residual networks
+fully connected layer	全连接层	fully-connected layer|fully connected layers
+hidden layer	隐藏层	hidden layers
+input layer	输入层
+output layer	输出层
+activation function	激活函数	activation functions
+loss function	损失函数	loss functions
+objective function	目标函数	objective functions
+cost function	代价函数	cost functions
+cross entropy	交叉熵	cross-entropy
+binary cross entropy	二元交叉熵	binary cross-entropy
+mean squared error	均方误差
+mean absolute error	平均绝对误差
+root mean squared error	均方根误差
+negative log likelihood	负对数似然	negative log-likelihood
+maximum likelihood	最大似然
+maximum a posteriori	最大后验
+gradient descent	梯度下降
+stochastic gradient descent	随机梯度下降
+mini-batch	小批量	mini batch
+batch size	批量大小
+learning rate	学习率	learning rates
+learning rate schedule	学习率调度
+weight decay	权重衰减
+gradient clipping	梯度裁剪
+gradient accumulation	梯度累积
+vanishing gradient	梯度消失	vanishing gradients
+exploding gradient	梯度爆炸	exploding gradients
+back propagation	反向传播	back-propagation
+forward pass	前向计算
+backward pass	反向计算
+parameter update	参数更新	parameter updates
+model parameter	模型参数	model parameters
+weight initialization	权重初始化	weight initialisation
+random initialization	随机初始化	random initialisation
+batch normalization	批归一化	batch normalisation
+layer normalization	层归一化	layer normalisation
+residual connection	残差连接	residual connections
+skip connection	跳跃连接	skip connections
+receptive field	感受野	receptive fields
+feature map	特征图	feature maps
+feature extraction	特征提取
+feature selection	特征选择
+feature engineering	特征工程
+representation learning	表示学习
+supervised learning	监督学习
+unsupervised learning	无监督学习
+semi-supervised learning	半监督学习	semi supervised learning
+self-supervised learning	自监督学习	self supervised learning
+reinforcement learning	强化学习
+transfer learning	迁移学习
+multi-task learning	多任务学习	multitask learning
+continual learning	持续学习
+online learning	在线学习
+offline learning	离线学习
+active learning	主动学习
+federated learning	联邦学习
+contrastive learning	对比学习
+metric learning	度量学习
+few-shot learning	少样本学习	few shot learning
+zero-shot learning	零样本学习	zero shot learning
+one-shot learning	单样本学习	one shot learning
+meta learning	元学习	meta-learning
+training set	训练集	training sets
+validation set	验证集	validation sets
+test set	测试集	test sets
+data set	数据集	data sets
+data point	数据点	data points
+training example	训练样本	training examples
+training sample	训练样本	training samples
+training data	训练数据
+test data	测试数据
+validation data	验证数据
+unlabeled data	无标签数据	unlabelled data
+labeled data	有标签数据	labelled data
+data augmentation	数据增强
+data preprocessing	数据预处理
+data leakage	数据泄漏
+class imbalance	类别不平衡
+distribution shift	分布偏移
+domain adaptation	领域适应
+out-of-distribution	分布外	out of distribution
+in-distribution	分布内	in distribution
+training loss	训练损失
+validation loss	验证损失
+generalization error	泛化误差	generalisation error
+generalization ability	泛化能力	generalisation ability
+bias-variance tradeoff	偏差方差权衡	bias variance tradeoff|bias-variance trade-off
+early stopping	提前停止
+cross validation	交叉验证	cross-validation
+k-fold cross validation	K 折交叉验证	k-fold cross-validation
+hyperparameter tuning	超参数调优
+hyperparameter search	超参数搜索
+grid search	网格搜索
+random search	随机搜索
+Bayesian optimization	贝叶斯优化	bayesian optimisation
+model selection	模型选择
+model evaluation	模型评估
+ablation study	消融实验	ablation studies
+baseline model	基线模型	baseline models
+benchmark data set	基准数据集	benchmark dataset
+state of the art	当前领先水平	state-of-the-art
+pre-trained model	预训练模型	pretrained model|pre-trained models|pretrained models
+fine tuning	微调	fine-tuning
+parameter-efficient fine-tuning	参数高效微调	parameter efficient fine tuning
+low-rank adaptation	低秩适配	low rank adaptation
+knowledge distillation	知识蒸馏
+model compression	模型压缩
+model pruning	模型剪枝
+model quantization	模型量化	model quantisation
+mixed precision	混合精度	mixed-precision
+half precision	半精度
+single precision	单精度
+double precision	双精度
+inference time	推理时间
+training time	训练时间
+computational cost	计算开销
+computational complexity	计算复杂度
+memory footprint	内存占用
+memory bandwidth	内存带宽
+floating point operation	浮点运算	floating-point operation|floating point operations
+parallel processing	并行处理
+data parallelism	数据并行
+model parallelism	模型并行
+pipeline parallelism	流水线并行
+mixture of experts	混合专家模型	mixture-of-experts
+# category: vision_and_models
+computer vision	计算机视觉
+image classification	图像分类
+object detection	目标检测
+semantic segmentation	语义分割
+instance segmentation	实例分割
+image segmentation	图像分割
+image generation	图像生成
+image captioning	图像描述生成
+image resolution	图像分辨率
+super resolution	超分辨率	super-resolution
+optical character recognition	光学字符识别
+optical flow	光流
+bounding box	边界框	bounding boxes
+non-maximum suppression	非极大值抑制	non maximum suppression
+intersection over union	交并比
+region of interest	感兴趣区域	regions of interest
+edge detection	边缘检测
+feature pyramid	特征金字塔
+max pooling	最大池化
+average pooling	平均池化
+global average pooling	全局平均池化
+kernel size	卷积核大小
+stride length	步长
+zero padding	零填充
+spatial resolution	空间分辨率
+channel attention	通道注意力
+spatial attention	空间注意力
+vision transformer	视觉 Transformer	vision transformers
+image patch	图像块	image patches
+patch embedding	图像块嵌入	patch embeddings
+multimodal learning	多模态学习	multi-modal learning
+vision-language model	视觉语言模型	vision language model|vision-language models
+speech recognition	语音识别
+speech synthesis	语音合成
+text to speech	文本转语音	text-to-speech
+signal processing	信号处理
+time series	时间序列
+time series forecasting	时间序列预测
+frequency domain	频域
+time domain	时域
+Fourier transform	傅里叶变换
+fast Fourier transform	快速傅里叶变换
+low-pass filter	低通滤波器	low pass filter
+high-pass filter	高通滤波器	high pass filter
+signal-to-noise ratio	信噪比	signal to noise ratio
+sampling rate	采样率
+sampling frequency	采样频率
+support vector machine	支持向量机	support vector machines
+decision tree	决策树	decision trees
+random forest	随机森林	random forests
+logistic regression	逻辑回归
+linear regression	线性回归
+ridge regression	岭回归
+nearest neighbor	最近邻	nearest neighbour|nearest neighbors|nearest neighbours
+k-means clustering	K 均值聚类	k means clustering
+principal component analysis	主成分分析
+dimensionality reduction	降维
+latent variable	潜变量	latent variables
+latent space	潜空间
+auto encoder	自编码器
+auto-regressive	自回归的
+generative adversarial network	生成对抗网络	generative adversarial networks
+variational autoencoder	变分自编码器	variational autoencoders
+diffusion model	扩散模型	diffusion models
+denoising autoencoder	去噪自编码器
+score matching	分数匹配
+noise schedule	噪声调度
+reverse process	逆过程
+forward process	前向过程
+Markov decision process	马尔可夫决策过程	markov decision processes
+reward function	奖励函数	reward functions
+value function	价值函数	value functions
+policy gradient	策略梯度
+exploration and exploitation	探索与利用
+off-policy learning	离策略学习	off policy learning
+on-policy learning	同策略学习	on policy learning
+# category: mathematics_and_statistics
+linear algebra	线性代数
+linear transformation	线性变换	linear transformations
+matrix multiplication	矩阵乘法
+matrix transpose	矩阵转置
+identity matrix	单位矩阵	identity matrices
+diagonal matrix	对角矩阵	diagonal matrices
+sparse matrix	稀疏矩阵	sparse matrices
+singular value	奇异值	singular values
+singular value decomposition	奇异值分解
+eigenvalue decomposition	特征值分解
+vector space	向量空间	vector spaces
+vector norm	向量范数
+inner product	内积
+outer product	外积
+dot product	点积
+cross product	叉积
+Euclidean distance	欧氏距离
+cosine similarity	余弦相似度
+Euclidean space	欧氏空间
+high dimensional	高维的	high-dimensional
+low dimensional	低维的	low-dimensional
+partial derivative	偏导数	partial derivatives
+second derivative	二阶导数
+chain rule	链式法则
+Taylor expansion	泰勒展开
+numerical integration	数值积分
+numerical stability	数值稳定性
+finite difference	有限差分
+finite element	有限元
+boundary condition	边界条件	boundary conditions
+initial condition	初始条件	initial conditions
+closed-form solution	闭式解	closed form solution
+analytical solution	解析解
+approximate solution	近似解
+local minimum	局部极小值	local minima
+global minimum	全局最小值	global minima
+saddle point	鞍点	saddle points
+convex optimization	凸优化	convex optimisation
+non-convex optimization	非凸优化	nonconvex optimization
+constraint satisfaction	约束满足
+Lagrange multiplier	拉格朗日乘子	lagrange multipliers
+probability theory	概率论
+random variable	随机变量	random variables
+probability distribution	概率分布	probability distributions
+probability density	概率密度
+probability mass function	概率质量函数
+probability density function	概率密度函数
+cumulative distribution function	累积分布函数
+conditional probability	条件概率
+joint probability	联合概率
+marginal probability	边缘概率
+Bayes theorem	贝叶斯定理	bayes' theorem|bayes’s theorem
+Bayesian inference	贝叶斯推断
+prior distribution	先验分布
+posterior distribution	后验分布
+normal distribution	正态分布
+Gaussian distribution	高斯分布
+uniform distribution	均匀分布
+binomial distribution	二项分布
+Poisson distribution	泊松分布
+expected value	期望值
+sample mean	样本均值
+population mean	总体均值
+standard deviation	标准差
+standard error	标准误
+sample size	样本量
+sample variance	样本方差
+covariance matrix	协方差矩阵
+correlation coefficient	相关系数
+Pearson correlation	皮尔逊相关
+rank correlation	秩相关
+statistical significance	统计显著性
+significance level	显著性水平
+confidence interval	置信区间	confidence intervals
+credible interval	可信区间	credible intervals
+prediction interval	预测区间
+null hypothesis	零假设
+alternative hypothesis	备择假设
+hypothesis testing	假设检验
+p-value	P 值	p value|p-values
+false positive	假阳性	false positives
+false negative	假阴性	false negatives
+true positive	真阳性	true positives
+true negative	真阴性	true negatives
+confusion matrix	混淆矩阵
+false positive rate	假阳性率
+false negative rate	假阴性率
+true positive rate	真阳性率
+precision and recall	精确率与召回率
+F1 score	F1 分数	f1-score
+receiver operating characteristic	受试者工作特征
+area under the curve	曲线下面积
+precision-recall curve	精确率召回率曲线	precision recall curve
+balanced accuracy	平衡准确率
+class label	类别标签	class labels
+positive class	正类
+negative class	负类
+statistical power	统计功效
+effect size	效应量
+odds ratio	优势比
+relative risk	相对风险
+risk ratio	风险比
+hazard ratio	瞬时风险比
+multiple comparisons	多重比较
+multiple testing	多重检验
+false discovery rate	错误发现率
+family-wise error rate	族错误率
+paired test	配对检验
+two-sided test	双侧检验	two sided test
+one-sided test	单侧检验	one sided test
+chi-square test	卡方检验	chi squared test
+analysis of variance	方差分析
+linear mixed model	线性混合模型
+random effect	随机效应	random effects
+fixed effect	固定效应	fixed effects
+repeated measures	重复测量
+missing data	缺失数据
+missing value	缺失值	missing values
+complete case analysis	完整案例分析
+sensitivity analysis	敏感性分析
+robustness check	稳健性检验	robustness checks
+Monte Carlo simulation	蒙特卡洛模拟
+bootstrap sampling	自助重采样
+random sampling	随机抽样
+stratified sampling	分层抽样
+sampling bias	抽样偏差
+selection bias	选择偏差
+confounding variable	混杂变量	confounding variables
+causal inference	因果推断
+causal relationship	因果关系
+independent variable	自变量	independent variables
+dependent variable	因变量	dependent variables
+control variable	控制变量	control variables
+# category: academic_reading
+research question	研究问题	research questions
+research objective	研究目标	research objectives
+research method	研究方法	research methods
+research design	研究设计
+literature review	文献综述
+related work	相关工作
+previous work	前人工作
+prior work	已有工作
+future work	后续工作
+experimental setup	实验设置
+experimental design	实验设计
+experimental result	实验结果	experimental results
+empirical evidence	实证证据
+empirical study	实证研究	empirical studies
+case study	案例研究	case studies
+pilot study	预试验	pilot studies
+feasibility study	可行性研究
+comparative study	比较研究
+observational study	观察性研究
+longitudinal study	纵向研究
+cross-sectional study	横断面研究	cross sectional study
+systematic review	系统综述
+meta-analysis	荟萃分析	meta analysis
+randomized controlled trial	随机对照试验	randomised controlled trial
+control group	对照组	control groups
+treatment group	处理组	treatment groups
+experimental group	实验组
+inclusion criteria	纳入标准
+exclusion criteria	排除标准
+primary outcome	主要结局
+secondary outcome	次要结局
+outcome measure	结局指标	outcome measures
+follow-up period	随访期	follow up period
+sample collection	样本采集
+data collection	数据收集
+data analysis	数据分析
+data availability	数据可用性
+code availability	代码可用性
+supplementary material	补充材料	supplementary materials
+supplementary information	补充信息
+supporting information	支持材料
+source code	源代码
+source data	源数据
+raw data	原始数据
+processed data	处理后数据
+reproducible research	可复现研究
+reproducibility study	复现研究
+replication study	重复验证研究
+peer review	同行评审
+review article	综述文章
+original research	原创研究
+corresponding author	通讯作者
+first author	第一作者
+co-first author	共同第一作者	co first author
+author contribution	作者贡献	author contributions
+conflict of interest	利益冲突	conflicts of interest
+competing interests	竞争性利益
+funding statement	资助声明
+ethical approval	伦理批准
+informed consent	知情同意
+study limitation	研究局限	study limitations
+practical implication	实践启示	practical implications
+theoretical implication	理论启示	theoretical implications
+main finding	主要发现	main findings
+key finding	关键发现	key findings
+working hypothesis	工作假设
+proof of concept	概念验证	proof-of-concept
+proof of principle	原理验证
+underlying mechanism	内在机制	underlying mechanisms
+potential application	潜在应用	potential applications
+real-world application	实际应用	real world application
+real-world data	真实世界数据	real world data
+open access	开放获取	open-access
+open source	开源	open-source
+public domain	公有领域
+intellectual property	知识产权
+copyright holder	著作权人
+license agreement	许可协议
+# category: academic_connectors
+in terms of	就……而言
+with respect to	关于；相对于
+with regard to	关于
+in relation to	与……有关
+in the context of	在……背景下
+in contrast to	与……形成对比
+in comparison with	与……相比
+compared with	与……相比
+compared to	与……相比
+as opposed to	与……相对
+on the other hand	另一方面
+on the one hand	一方面
+in other words	换言之
+that is to say	也就是说
+for instance	例如
+for example	例如
+such as	例如；诸如
+in particular	尤其；特别是
+in general	通常；总体而言
+in principle	原则上
+in practice	在实践中
+in theory	在理论上
+in fact	事实上
+as a result	因此；结果是
+as a consequence	因此
+due to	由于
+owing to	由于
+because of	因为
+thanks to	得益于
+in spite of	尽管
+regardless of	无论；不顾
+rather than	而不是
+instead of	代替；而不是
+other than	除了
+apart from	除了
+except for	除……之外
+as well as	以及
+along with	连同
+in addition to	除……之外还
+in addition	此外
+at the same time	同时
+at least	至少
+at most	至多
+at best	充其量
+at worst	在最坏情况下
+to some extent	在一定程度上
+to a large extent	在很大程度上
+by means of	通过；借助
+in order to	为了
+so as to	以便
+so that	以便；因此
+provided that	只要；假如
+assuming that	假设
+as long as	只要
+in case of	如果发生
+in the case of	对于……的情况
+in this case	在这种情况下
+in turn	进而；依次
+in return	作为回报
+in summary	概括而言
+to sum up	总而言之
+in conclusion	总之
+as follows	如下
+as shown in	如……所示
+as described above	如上所述
+as mentioned above	如上所述
+as discussed below	如下文所述
+in what follows	在下文中
+in the following	在下文中
+as far as	就……而言；远至
+as soon as	一……就
+as a whole	作为整体
+on average	平均而言
+on the basis of	基于
+in light of	鉴于
+in view of	鉴于
+in favor of	支持；有利于	in favour of
+in accordance with	按照
+consistent with	与……一致
+contrary to	与……相反
+relative to	相对于
+irrespective of	不论；不考虑
+with the exception of	除……之外
+for the sake of	为了
+in response to	响应；针对
+in the absence of	在缺乏……时
+in the presence of	在有……时
+with the aim of	旨在
+at the expense of	以……为代价
+in exchange for	换取
+in combination with	与……结合
+in conjunction with	与……共同
+# category: common_phrases
+set up	建立；设置	sets up|setting up
+set out	出发；着手	sets out|setting out
+set aside	留出；暂不考虑	sets aside|setting aside
+set off	出发；引发	sets off|setting off
+set down	记下；放下	sets down|setting down
+set forth	提出；阐述	sets forth|setting forth
+set back	延误；阻碍	sets back|setting back
+set in	开始；到来	sets in|setting in
+carry out	执行；开展	carries out|carried out|carrying out
+carry on	继续	carries on|carried on|carrying on
+carry over	延续；结转	carried over|carrying over
+carry forward	推进；继承	carried forward|carrying forward
+take into account	考虑到	takes into account|taken into account|taking into account|took into account
+take account of	考虑	taking account of|taken account of
+take advantage of	利用	takes advantage of|taking advantage of|taken advantage of
+take place	发生	takes place|took place|taken place|taking place
+take part in	参加	took part in|taking part in|taken part in
+take over	接管	takes over|taking over|taken over|took over
+take up	开始从事；占用	takes up|taking up|taken up|took up
+take on	承担；呈现	takes on|taking on|taken on|took on
+take off	起飞；脱下	takes off|taking off|taken off|took off
+take away	拿走；消除	takes away|taking away|taken away|took away
+take care of	照料；处理	taking care of|takes care of|taken care of
+take for granted	认为理所当然	taking for granted|taken for granted
+give rise to	导致；引起	gives rise to|gave rise to|given rise to|giving rise to
+give up	放弃	gives up|gave up|given up|giving up
+give in	让步；屈服	gives in|gave in|given in|giving in
+give out	分发；耗尽	gives out|gave out|given out|giving out
+give off	散发；释放	gives off|gave off|given off|giving off
+give back	归还	gives back|gave back|given back|giving back
+put forward	提出	puts forward|putting forward
+put off	推迟	puts off|putting off
+put up with	忍受	puts up with|putting up with
+put together	组装；汇集	puts together|putting together
+put into practice	付诸实践	putting into practice
+put in place	实施；落实	putting in place
+point out	指出	points out|pointed out|pointing out
+point to	指向；表明	points to|pointed to|pointing to
+point of view	观点	points of view
+find out	查明；发现	finds out|found out|finding out
+figure out	弄明白	figures out|figured out|figuring out
+work out	算出；解决	works out|worked out|working out
+work on	从事；致力于	works on|worked on|working on
+work with	与……合作	works with|worked with|working with
+work through	逐步处理	works through|worked through|working through
+turn out	结果是	turns out|turned out|turning out
+turn into	变成	turns into|turned into|turning into
+turn to	转向；求助于	turns to|turned to|turning to
+turn down	拒绝；调低	turns down|turned down|turning down
+turn up	出现；调高	turns up|turned up|turning up
+turn off	关闭	turns off|turned off|turning off
+turn on	开启	turns on|turned on|turning on
+break down	分解；发生故障	breaks down|broke down|broken down|breaking down
+break up	分散；解体	breaks up|broke up|broken up|breaking up
+break out	爆发	breaks out|broke out|broken out|breaking out
+break through	突破	breaks through|broke through|broken through|breaking through
+bring about	引起；造成	brings about|brought about|bringing about
+bring up	提出；抚养	brings up|brought up|bringing up
+bring together	汇集	brings together|brought together|bringing together
+bring back	带回；恢复	brings back|brought back|bringing back
+come up with	提出；想出	comes up with|came up with|coming up with
+come across	偶遇；发现	comes across|came across|coming across
+come into effect	开始生效	comes into effect|came into effect|coming into effect
+come into play	开始起作用	comes into play|came into play|coming into play
+come to terms with	接受；适应	coming to terms with
+come down to	归结为	comes down to|came down to|coming down to
+look up	查找；抬头看	looks up|looked up|looking up
+look into	调查	looks into|looked into|looking into
+look for	寻找	looks for|looked for|looking for
+look at	查看；考虑	looks at|looked at|looking at
+look after	照顾	looks after|looked after|looking after
+look forward to	期待	looks forward to|looked forward to|looking forward to
+look back on	回顾	looks back on|looked back on|looking back on
+make up	构成；编造	makes up|made up|making up
+make use of	利用	makes use of|made use of|making use of
+make sense	有意义；讲得通	makes sense|made sense|making sense
+make sure	确保	makes sure|made sure|making sure
+make progress	取得进展	makes progress|made progress|making progress
+make a difference	产生影响	makes a difference|made a difference|making a difference
+make room for	为……腾出空间	makes room for|made room for|making room for
+account for	解释；占比	accounts for|accounted for|accounting for
+allow for	考虑到；留出余地	allows for|allowed for|allowing for
+apply to	适用于；申请	applies to|applied to|applying to
+refer to	指；参考	refers to|referred to|referring to
+lead to	导致	leads to|led to|leading to
+result in	导致	results in|resulted in|resulting in
+result from	由……造成	results from|resulted from|resulting from
+depend on	依赖；取决于	depends on|depended on|depending on
+rely on	依靠	relies on|relied on|relying on
+focus on	聚焦于	focuses on|focused on|focusing on
+concentrate on	专注于	concentrates on|concentrated on|concentrating on
+consist of	由……组成	consists of|consisted of|consisting of
+consist in	在于	consists in|consisted in|consisting in
+contribute to	促成；有助于	contributes to|contributed to|contributing to
+correspond to	对应于	corresponds to|corresponded to|corresponding to
+agree with	赞同；与……一致	agrees with|agreed with|agreeing with
+agree on	就……达成一致	agrees on|agreed on|agreeing on
+associate with	与……关联	associates with|associated with|associating with
+attribute to	归因于	attributes to|attributed to|attributing to
+compare with	与……比较	compares with|comparing with
+compare to	比作；与……比较	compares to|comparing to
+distinguish between	区分	distinguishes between|distinguished between|distinguishing between
+differ from	与……不同	differs from|differed from|differing from
+deal with	处理；涉及	deals with|dealt with|dealing with
+cope with	应对	copes with|coped with|coping with
+rule out	排除	rules out|ruled out|ruling out
+rule of thumb	经验法则
+hold out	坚持；提供希望	holds out|held out|holding out
+hold back	阻止；抑制	holds back|held back|holding back
+keep up with	跟上	keeps up with|kept up with|keeping up with
+keep track of	跟踪；记录	keeps track of|kept track of|keeping track of
+keep in mind	记住	keeps in mind|kept in mind|keeping in mind
+run out of	用尽	runs out of|ran out of|running out of
+run into	遇到	runs into|ran into|running into
+sum up	概括	sums up|summed up|summing up
+follow up	跟进	follows up|followed up|following up
+follow from	由……推得	follows from|followed from|following from
+build on	以……为基础	builds on|built on|building on
+based on	基于
+be subject to	受……影响；须遵守	is subject to|are subject to|was subject to|were subject to
+be likely to	可能	is likely to|are likely to|was likely to
+be able to	能够	is able to|are able to|was able to
+be supposed to	应当	is supposed to|are supposed to
+be concerned with	涉及；关注	is concerned with|are concerned with
+be composed of	由……组成	is composed of|are composed of
+be aware of	意识到	is aware of|are aware of
+be capable of	能够	is capable of|are capable of
+be responsible for	负责	is responsible for|are responsible for
+be involved in	参与；涉及	is involved in|are involved in
+be associated with	与……相关	is associated with|are associated with
+be consistent with	与……一致	is consistent with|are consistent with
+be different from	与……不同	is different from|are different from
+be similar to	与……相似	is similar to|are similar to
+be relevant to	与……有关	is relevant to|are relevant to
+be equivalent to	等同于	is equivalent to|are equivalent to
+# category: software_and_systems
+operating system	操作系统	operating systems
+file system	文件系统	file systems
+file format	文件格式	file formats
+file extension	文件扩展名	file extensions
+source file	源文件	source files
+binary file	二进制文件	binary files
+plain text	纯文本
+rich text	富文本
+text encoding	文本编码
+character encoding	字符编码
+user interface	用户界面
+user experience	用户体验
+graphical user interface	图形用户界面
+command line	命令行	command-line
+application programming interface	应用程序接口
+software development kit	软件开发工具包
+open-source software	开源软件	open source software
+version control	版本控制
+release note	版本说明	release notes
+backward compatibility	向后兼容
+forward compatibility	向前兼容
+error handling	错误处理
+exception handling	异常处理
+unit test	单元测试	unit tests
+integration test	集成测试	integration tests
+regression test	回归测试	regression tests
+end-to-end test	端到端测试	end to end test
+code review	代码审查
+static analysis	静态分析
+memory leak	内存泄漏	memory leaks
+race condition	竞态条件	race conditions
+thread safety	线程安全
+concurrent execution	并发执行
+asynchronous operation	异步操作	asynchronous operations
+synchronous operation	同步操作	synchronous operations
+background task	后台任务	background tasks
+main thread	主线程
+worker thread	工作线程	worker threads
+input event	输入事件	input events
+event loop	事件循环
+rendering pipeline	渲染流水线
+frame rate	帧率
+refresh rate	刷新率
+frame time	帧耗时
+input latency	输入延迟
+response time	响应时间
+real time	实时	real-time
+low latency	低延迟	low-latency
+high performance	高性能	high-performance
+hardware acceleration	硬件加速
+vector graphics	矢量图形
+raster graphics	栅格图形
+anti-aliasing	抗锯齿	anti aliasing
+alpha blending	透明度混合
+color space	色彩空间	colour space
+aspect ratio	宽高比
+pixel density	像素密度
+coordinate system	坐标系
+transformation matrix	变换矩阵
+pressure sensitivity	压感灵敏度
+palm rejection	防掌触
+motion prediction	运动预测
+stroke smoothing	笔画平滑
+handwriting recognition	手写识别
+digital signature	数字签名
+electronic signature	电子签名
+public key	公钥	public keys
+private key	私钥	private keys
+certificate authority	证书颁发机构
+hash function	哈希函数
+checksum verification	校验和验证
+end-to-end encryption	端到端加密	end to end encryption
+access control	访问控制
+permission model	权限模型
+local storage	本地存储
+cloud storage	云存储
+offline mode	离线模式
+network connection	网络连接
+network request	网络请求
+content provider	内容提供者
+data structure	数据结构	data structures
+linked list	链表	linked lists
+hash table	哈希表	hash tables
+binary tree	二叉树	binary trees
+search tree	搜索树	search trees
+directed graph	有向图
+directed acyclic graph	有向无环图
+breadth-first search	广度优先搜索	breadth first search
+depth-first search	深度优先搜索	depth first search
+binary search	二分查找
+dynamic programming	动态规划
+divide and conquer	分治	divide-and-conquer
+greedy algorithm	贪心算法	greedy algorithms
+time complexity	时间复杂度
+space complexity	空间复杂度
+worst case	最坏情况	worst-case
+best case	最好情况	best-case
+average case	平均情况	average-case
+upper bound	上界
+lower bound	下界
+tight bound	紧确界
+big O notation	大 O 记号
+# category: science_and_engineering
+physical quantity	物理量	physical quantities
+unit of measurement	计量单位	units of measurement
+dimensional analysis	量纲分析
+order of magnitude	数量级	orders of magnitude
+mass balance	质量平衡
+energy conservation	能量守恒
+momentum conservation	动量守恒
+kinetic energy	动能
+potential energy	势能
+thermal energy	热能
+heat transfer	传热
+thermal conductivity	热导率
+thermal expansion	热膨胀
+electric field	电场
+magnetic field	磁场
+electromagnetic wave	电磁波	electromagnetic waves
+current density	电流密度
+potential difference	电势差
+circuit diagram	电路图
+alternating current	交流电
+direct current	直流电
+power consumption	功耗
+energy efficiency	能源效率
+power supply	电源
+quantum mechanics	量子力学
+quantum state	量子态	quantum states
+quantum entanglement	量子纠缠
+wave function	波函数
+wave number	波数
+phase transition	相变
+steady state	稳态	steady-state
+transient response	瞬态响应
+stress tensor	应力张量
+strain rate	应变率
+elastic modulus	弹性模量
+Young's modulus	杨氏模量
+yield strength	屈服强度
+tensile strength	抗拉强度
+surface tension	表面张力
+surface area	表面积
+volume fraction	体积分数
+mass fraction	质量分数
+molar mass	摩尔质量
+reaction rate	反应速率
+activation energy	活化能
+chemical equilibrium	化学平衡
+chemical bond	化学键	chemical bonds
+hydrogen bond	氢键	hydrogen bonds
+covalent bond	共价键	covalent bonds
+crystal structure	晶体结构
+lattice constant	晶格常数
+band gap	带隙
+charge carrier	载流子	charge carriers
+electron microscopy	电子显微术
+scanning electron microscopy	扫描电子显微术
+transmission electron microscopy	透射电子显微术
+X-ray diffraction	X 射线衍射	x ray diffraction
+nuclear magnetic resonance	核磁共振
+infrared spectroscopy	红外光谱法
+mass spectrometry	质谱法
+gene expression	基因表达
+gene regulation	基因调控
+protein structure	蛋白质结构
+amino acid	氨基酸	amino acids
+nucleic acid	核酸	nucleic acids
+cell membrane	细胞膜
+cell division	细胞分裂
+cell culture	细胞培养
+stem cell	干细胞	stem cells
+immune response	免疫反应
+signal transduction	信号转导
+metabolic pathway	代谢通路	metabolic pathways
+polymerase chain reaction	聚合酶链式反应
+DNA sequencing	DNA 测序
+RNA sequencing	RNA 测序
+single-cell sequencing	单细胞测序	single cell sequencing
+high throughput	高通量	high-throughput
+next-generation sequencing	下一代测序	next generation sequencing
+clinical trial	临床试验	clinical trials
+drug discovery	药物发现
+dose response	剂量反应	dose-response
+adverse event	不良事件	adverse events
+side effect	副作用	side effects
+public health	公共卫生
+quality of life	生活质量
+life expectancy	预期寿命
+sustainable development	可持续发展
+renewable energy	可再生能源
+carbon emission	碳排放	carbon emissions
+greenhouse gas	温室气体	greenhouse gases
+climate change	气候变化
+life cycle assessment	生命周期评价	life-cycle assessment
+cost benefit analysis	成本效益分析	cost-benefit analysis
+supply chain	供应链
+market share	市场份额
+gross domestic product	国内生产总值
+return on investment	投资回报率
+net present value	净现值
+opportunity cost	机会成本
+marginal cost	边际成本
+economies of scale	规模经济
+interest rate	利率	interest rates
+exchange rate	汇率	exchange rates
+purchasing power	购买力
+human-computer interaction	人机交互	human computer interaction
+cognitive load	认知负荷
+working memory	工作记忆
+long-term memory	长期记忆	long term memory
+short-term memory	短期记忆	short term memory
+attention span	注意力持续时间
+mental model	心智模型	mental models
+learning curve	学习曲线
+user study	用户研究	user studies
+usability testing	可用性测试
+accessibility feature	无障碍功能	accessibility features

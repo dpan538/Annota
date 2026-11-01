@@ -1,0 +1,65 @@
+{
+  "from": "published 1.0.2 non-debuggable",
+  "to": "1.1.0 debug candidate, same certificate",
+  "transport": "adb install -r",
+  "physicalDevice": false,
+  "dataUnchanged": true,
+  "snapshot": {
+    "books": [
+      {
+        "id": "attention",
+        "title": "Attention Is All You Need",
+        "source": "00000000-0000-0000-0000-000000000002.pdf",
+        "folder": "",
+        "favorite": "0",
+        "trash": "0",
+        "opened": "1793527369579",
+        "current": "0",
+        "revision": "0",
+        "cursor": "0",
+        "state": "9cfef851b63424e78b63929a9d3f5d78ee361c4fa3ef8d26a4be9c601c331067.json.gz",
+        "pdfInfo": "{\"viewingSource\":\"\",\"annotate\":true,\"extract\":true,\"signatures\":0,\"inspected\":false,\"pageCount\":0}",
+        "stateSha256": "21c2ef078f3b2207a50cfc473ead9efccaf56355e8e9a2a1d1af02a0819052ec",
+        "sourceSha256": "d87d482d5ae7960e2e43d7dd6d21377e60e73e8fce1bf2a01aff7aca8a08c537"
+      },
+      {
+        "id": "guide",
+        "title": "Annota 使用指南",
+        "source": "00000000-0000-0000-0000-000000000001.pdf",
+        "folder": "",
+        "favorite": "0",
+        "trash": "0",
+        "opened": "1793527369535",
+        "current": "0",
+        "revision": "0",
+        "cursor": "0",
+        "state": "8904b8bfe5d8392d0eb6d6afe7396a42e2512c04ae83655b1e33ea756a2b918b.json.gz",
+        "pdfInfo": "{\"viewingSource\":\"\",\"annotate\":true,\"extract\":true,\"signatures\":0,\"inspected\":false,\"pageCount\":0}",
+        "stateSha256": "ced877a6ad72a480fb086891d6ca51700ae9264346745033a78d0bfd4755c889",
+        "sourceSha256": "4d0a1ef7475f09a5e11b09c9bf42f35e5e67167eaf97e82899a002a6ff3edbe9"
+      }
+    ],
+    "flags": [
+      {
+        "key": "library-initialized-v1",
+        "value": "1"
+      },
+      {
+        "key": "seed",
+        "value": "1"
+      },
+      {
+        "key": "seed-attention-v1",
+        "value": "1"
+      }
+    ],
+    "settings": {
+      "english": false,
+      "theme": 0,
+      "buttonSize": 68
+    },
+    "reading-viewports": {},
+    "reading-display": {},
+    "pendingUpdateCleared": true
+  }
+}

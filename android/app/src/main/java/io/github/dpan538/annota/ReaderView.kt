@@ -168,6 +168,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
 
     private fun tr(zh: String, en: String) = if (english) en else zh
 
+    private val inkRenderer = InkRenderer()
+    private var previousErase: Point? = null
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
     private val documentPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
     private val memory = RenderMemory.from(context)
@@ -353,6 +355,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     fun dispose() {
+        inkRenderer.invalidate()
         finishSignature(false)
         persistPosition()
         stopMotion()
@@ -375,6 +378,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     fun refresh() {
+        inkRenderer.invalidate()
         stopMotion()
         selected = emptyList()
         selectionStart = null
@@ -1161,6 +1165,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
 
     private fun drawMark(c: Canvas, m: Mark) {
         if (m.points.isEmpty()) return
+        if (inkRenderer.draw(c, m)) return
         paint.color = m.color
         paint.alpha =
             when (m.tool) {
@@ -1294,7 +1299,13 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         return Point(dx * cos(a) - dy * sin(a), dx * sin(a) + dy * cos(a))
     }
 
-    private fun point(place: Placement, x: Float, y: Float, pressure: Float): Point {
+    private fun point(
+        place: Placement,
+        x: Float,
+        y: Float,
+        pressure: Float,
+        time: Long = 0L,
+    ): Point {
         var sx = x
         var sy = y
         rulerEdge?.let { edge ->
@@ -1310,59 +1321,54 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             pt[0].coerceIn(0f, page.w),
             pt[1].coerceIn(0f, page.h),
             pressure.coerceIn(0f, 1f),
+            time,
         )
     }
 
     private fun erase(p: Point) {
         val page = book.pages[active!!.index]
+        val from = previousErase ?: p
+        previousErase = p
         val radius = penWidth * 5 + 5
         val result = mutableListOf<Mark>()
         page.marks.forEach { m ->
-            if (onlyHighlight && m.tool != "highlight") {
+            if (m.points.isEmpty() || (onlyHighlight && m.tool != "highlight")) {
                 result.add(m)
                 return@forEach
             }
-            val hit =
-                if (m.tool in setOf("image", "rectangle", "ellipse", "triangle")) {
-                    val a = m.points.first()
-                    val b = m.points.last()
+            if (m.tool in setOf("image", "rectangle", "ellipse", "triangle")) {
+                val a = m.points.first()
+                val b = m.points.last()
+                val box =
                     RectF(
-                            min(a.x, b.x) - radius,
-                            min(a.y, b.y) - radius,
-                            max(a.x, b.x) + radius,
-                            max(a.y, b.y) + radius,
-                        )
-                        .contains(p.x, p.y)
-                } else
-                    m.points.any { hypot(it.x - p.x, it.y - p.y) < radius } ||
-                        m.points.zipWithNext().any { (a, b) -> segmentDistance(p, a, b) < radius }
-            if (!hit) {
-                result.add(m)
-                return@forEach
+                        min(a.x, b.x) - radius,
+                        min(a.y, b.y) - radius,
+                        max(a.x, b.x) + radius,
+                        max(a.y, b.y) + radius,
+                    )
+                val edges =
+                    listOf(
+                        Point(box.left, box.top),
+                        Point(box.right, box.top),
+                        Point(box.right, box.bottom),
+                        Point(box.left, box.bottom),
+                        Point(box.left, box.top),
+                    )
+                val crossed =
+                    edges.zipWithNext().any { (u, v) ->
+                        InkEditing.erase(Mark("line", 0, 0f, mutableListOf(u, v)), from, p, .01f)
+                            .let { pieces -> pieces.size != 1 || pieces[0].points != listOf(u, v) }
+                    }
+                if (!box.contains(p.x, p.y) && !box.contains(from.x, from.y) && !crossed)
+                    result.add(m)
+            } else {
+                val pieces = InkEditing.erase(m, from, p, radius)
+                if (eraserLocal) result.addAll(pieces)
+                else if (pieces.size == 1 && pieces[0] === m) result.add(m)
             }
-            if (!eraserLocal || m.tool in setOf("image", "rectangle", "ellipse", "triangle"))
-                return@forEach
-            var run = mutableListOf<Point>()
-            m.points.forEach { q ->
-                if (hypot(q.x - p.x, q.y - p.y) >= radius) {
-                    run.add(q)
-                } else if (run.isNotEmpty()) {
-                    result.add(m.copy(points = run))
-                    run = mutableListOf()
-                }
-            }
-            if (run.isNotEmpty()) result.add(m.copy(points = run))
         }
         page.marks.clear()
         page.marks.addAll(result)
-    }
-
-    private fun segmentDistance(p: Point, a: Point, b: Point): Float {
-        val dx = b.x - a.x
-        val dy = b.y - a.y
-        val d = dx * dx + dy * dy
-        val t = if (d == 0f) 0f else (((p.x - a.x) * dx + (p.y - a.y) * dy) / d).coerceIn(0f, 1f)
-        return hypot(p.x - a.x - t * dx, p.y - a.y - t * dy)
     }
 
     private fun saveChange() {
@@ -1392,6 +1398,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             repeat(a.length()) { book.pages.add(Sheet.from(a.getJSONObject(it))) }
         }
         beforeErase = null
+        previousErase = null
         active = null
         invalidate()
     }
@@ -1617,9 +1624,10 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                     active != null && (tool != "hand" || temporaryEraser) && draw && !draggingRuler
                 ) {
                     book.current = active!!.index
-                    val p = point(active!!, e.x, e.y, e.pressure)
+                    val p = point(active!!, e.x, e.y, e.pressure, e.eventTime)
                     if (tool == "eraser" || temporaryEraser) {
                         beforeErase = book.state()
+                        previousErase = null
                         erase(p)
                     } else
                         stroke =
@@ -1629,6 +1637,13 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                 if (tool == "highlight") penWidth * 6 else penWidth,
                                 mutableListOf(p),
                                 filled = filled,
+                                inkVersion =
+                                    if (
+                                        tool in setOf("pen", "pencil", "fountain", "highlight") &&
+                                            rulerEdge == null
+                                    )
+                                        InkGeometry.VERSION
+                                    else 0,
                             )
                 }
                 if (browsing && (!stylus || readOnly))
@@ -1708,7 +1723,9 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                         val y = if (i == e.historySize) e.y else e.getHistoricalY(i)
                         val pressure =
                             if (i == e.historySize) e.pressure else e.getHistoricalPressure(i)
-                        val p = point(active!!, x, y, pressure)
+                        val sampleTime =
+                            if (i == e.historySize) e.eventTime else e.getHistoricalEventTime(i)
+                        val p = point(active!!, x, y, pressure, sampleTime)
                         if (beforeErase != null) erase(p)
                         else
                             stroke?.let { m ->
@@ -1765,19 +1782,36 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 velocity?.addMovement(e)
                 if (!cancelled) {
                     if (stroke != null && active != null) {
-                        // UP may contain a final sample not delivered by MOVE (especially fast
-                        // strokes).
-                        val p = point(active!!, e.x, e.y, e.pressure)
-                        stroke?.let { mark ->
-                            val last = mark.points.last()
-                            if (p.x != last.x || p.y != last.y) {
-                                if (
-                                    mark.tool in
-                                        setOf("rectangle", "ellipse", "triangle", "line", "arrow")
-                                ) {
-                                    if (mark.points.size == 1) mark.points.add(p)
-                                    else mark.points[1] = p
-                                } else mark.points.add(p)
+                        // Preserve batched UP history as well as the final endpoint.
+                        for (i in 0..e.historySize) {
+                            val p =
+                                if (i == e.historySize)
+                                    point(active!!, e.x, e.y, e.pressure, e.eventTime)
+                                else
+                                    point(
+                                        active!!,
+                                        e.getHistoricalX(i),
+                                        e.getHistoricalY(i),
+                                        e.getHistoricalPressure(i),
+                                        e.getHistoricalEventTime(i),
+                                    )
+                            stroke?.let { mark ->
+                                val last = mark.points.last()
+                                if (p.x != last.x || p.y != last.y || p.p != last.p) {
+                                    if (
+                                        mark.tool in
+                                            setOf(
+                                                "rectangle",
+                                                "ellipse",
+                                                "triangle",
+                                                "line",
+                                                "arrow",
+                                            )
+                                    ) {
+                                        if (mark.points.size == 1) mark.points.add(p)
+                                        else mark.points[1] = p
+                                    } else mark.points.add(p)
+                                }
                             }
                         }
                         book.pages[active!!.index].marks.add(stroke!!)
@@ -1785,7 +1819,23 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                         saveChange()
                         onChanged()
                     } else if (beforeErase != null) {
+                        if (active != null)
+                            for (i in 0..e.historySize) {
+                                val p =
+                                    if (i == e.historySize)
+                                        point(active!!, e.x, e.y, e.pressure, e.eventTime)
+                                    else
+                                        point(
+                                            active!!,
+                                            e.getHistoricalX(i),
+                                            e.getHistoricalY(i),
+                                            e.getHistoricalPressure(i),
+                                            e.getHistoricalEventTime(i),
+                                        )
+                                erase(p)
+                            }
                         beforeErase = null
+                        previousErase = null
                         saveChange()
                         onChanged()
                     } else if (

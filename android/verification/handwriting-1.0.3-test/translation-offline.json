@@ -1,0 +1,23 @@
+{
+  "mode": "offline",
+  "hardware": "ranchu",
+  "alreadyDownloaded": true,
+  "english": "The model does not use recurrent layers.",
+  "chineseResult": "该模型不使用反复间隔。",
+  "englishResult": "This model does not use a circulating layer.",
+  "readingExamples": [
+    {
+      "source": "Each query attends to all keys in the input sequence.",
+      "translation": "每个查询都参加输入序列中的所有键。",
+      "elapsedMs": 22
+    },
+    {
+      "source": "The training set contains 100 examples, while the test set contains 20.",
+      "translation": "训练集包含100个示例，而测试集包含20个。",
+      "elapsedMs": 18
+    }
+  ],
+  "passed": true,
+  "installedVersionName": "1.0.3-test",
+  "nonDebuggable": true
+}

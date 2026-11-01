@@ -1,0 +1,73 @@
+{
+  "from": "published 1.0.2 non-debuggable",
+  "to": "1.0.3-test Beta non-debuggable",
+  "transport": "adb install -r",
+  "physicalDevice": false,
+  "sameCertificate": true,
+  "legacyInkSeeded": true,
+  "bookmarksSeeded": true,
+  "dataUnchanged": true,
+  "apkSha256": "66dd5b62f18caf80260163f4bdbf66712748444ddf1004cae81816eb9ddfc1d7",
+  "snapshot": {
+    "books": [
+      {
+        "id": "attention",
+        "title": "Attention Is All You Need",
+        "source": "00000000-0000-0000-0000-000000000002.pdf",
+        "folder": "",
+        "favorite": "0",
+        "trash": "0",
+        "opened": "1793528990210",
+        "current": "0",
+        "revision": "1",
+        "cursor": "1",
+        "state": "c4bf24aa563629e4d8004894edd07201fa100cd07e142df543e34b733153b126.json.gz",
+        "pdfInfo": "{\"viewingSource\":\"\",\"annotate\":true,\"extract\":true,\"signatures\":0,\"inspected\":false,\"pageCount\":0}",
+        "stateSha256": "3bb49d0275970384e31453e9c4b9dcd63f72725307c7e0e04287088f07a19b6f",
+        "sourceSha256": "d87d482d5ae7960e2e43d7dd6d21377e60e73e8fce1bf2a01aff7aca8a08c537"
+      },
+      {
+        "id": "guide",
+        "title": "Annota 使用指南",
+        "source": "00000000-0000-0000-0000-000000000001.pdf",
+        "folder": "",
+        "favorite": "0",
+        "trash": "0",
+        "opened": "1793528990175",
+        "current": "0",
+        "revision": "0",
+        "cursor": "0",
+        "state": "e929027709e33b712af2c4ccbba7fa5cc3b4d18d8e0f4b40d1807c717c135e26.json.gz",
+        "pdfInfo": "{\"viewingSource\":\"\",\"annotate\":true,\"extract\":true,\"signatures\":0,\"inspected\":false,\"pageCount\":0}",
+        "stateSha256": "0753beb41c370ff031828022e8e035faaa19349da72f23d3c6e5b5512aae0a8f",
+        "sourceSha256": "4d0a1ef7475f09a5e11b09c9bf42f35e5e67167eaf97e82899a002a6ff3edbe9"
+      }
+    ],
+    "flags": [
+      {
+        "key": "bookmarks:attention",
+        "value": "[\"6803500a-a9db-44db-8b45-fb95eb9cfeb7\"]"
+      },
+      {
+        "key": "library-initialized-v1",
+        "value": "1"
+      },
+      {
+        "key": "seed",
+        "value": "1"
+      },
+      {
+        "key": "seed-attention-v1",
+        "value": "1"
+      }
+    ],
+    "settings": {
+      "english": false,
+      "theme": 0,
+      "buttonSize": 68
+    },
+    "reading-viewports": {},
+    "reading-display": {},
+    "pendingUpdateCleared": true
+  }
+}

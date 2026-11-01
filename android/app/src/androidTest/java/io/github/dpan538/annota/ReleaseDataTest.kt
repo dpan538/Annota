@@ -27,11 +27,12 @@ class ReleaseDataTest {
                     book.pages[0]
                         .marks
                         .add(
-                            Mark(
-                                "pen",
-                                android.graphics.Color.BLUE,
-                                2f,
-                                mutableListOf(Point(50f, 200f), Point(250f, 200f)),
+                            // Use the persisted schema so this probe can also seed an older
+                            // installed APK whose Point/Mark constructor predates ink metadata.
+                            Mark.from(
+                                JSONObject(
+                                    """{"tool":"pen","color":-16776961,"width":2,"points":[[50,200,1],[250,200,1]],"image":"","filled":false}"""
+                                )
                             )
                         )
                     store.commit(book)

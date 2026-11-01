@@ -1,0 +1,152 @@
+
+io.github.dpan538.annota.InkQualityTest:.
+Error in vectorPdfAndCanvasKeepMatchingFootprintAndCenteredRoundDots(io.github.dpan538.annota.InkQualityTest):
+java.lang.IllegalArgumentException: Failed requirement.
+	at io.github.dpan538.annota.Store.file(Store.kt:527)
+	at io.github.dpan538.annota.PdfEngine.export(PdfEngine.kt:252)
+	at io.github.dpan538.annota.PdfEngine.export$default(PdfEngine.kt:244)
+	at io.github.dpan538.annota.InkQualityTest.vectorPdfAndCanvasKeepMatchingFootprintAndCenteredRoundDots(InkQualityTest.kt:278)
+......
+io.github.dpan538.annota.InkEditingTest:.......
+io.github.dpan538.annota.InkReaderIntegrationTest:...
+io.github.dpan538.annota.InputTest:.....
+io.github.dpan538.annota.PdfSignatureTest:......
+io.github.dpan538.annota.SentenceTranslationTest:..
+Error in overLimitSelectionRemainsIntactWithoutInitializingTranslation(io.github.dpan538.annota.SentenceTranslationTest):
+org.junit.ComparisonFailure: expected:<...ins available. The e[ntire source remains available. The entire source remains available. The entire source remains available. The entire source remains available. The entire source remains available. ]> but was:<...ins available. The e[]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at io.github.dpan538.annota.SentenceTranslationTest.overLimitSelectionRemainsIntactWithoutInitializingTranslation$lambda$41(SentenceTranslationTest.kt:196)
+	at io.github.dpan538.annota.SentenceTranslationTest.$r8$lambda$ZsM24CTYuaF6AKMAN0ElukAQS94(Unknown Source:0)
+	at io.github.dpan538.annota.SentenceTranslationTest$$ExternalSyntheticLambda31.invoke(D8$$SyntheticClass:0)
+	at io.github.dpan538.annota.SentenceTranslationTest.withPanel(SentenceTranslationTest.kt:108)
+	at io.github.dpan538.annota.SentenceTranslationTest.overLimitSelectionRemainsIntactWithoutInitializingTranslation(SentenceTranslationTest.kt:194)
+.
+io.github.dpan538.annota.CoreTest:........
+io.github.dpan538.annota.ReaderFidelityTest:.
+Error in readerMenusAreCompactUndimmedAndDoNotReplaceTheReader(io.github.dpan538.annota.ReaderFidelityTest):
+java.util.NoSuchElementException: List is empty.
+	at kotlin.collections.CollectionsKt___CollectionsKt.single(_Collections.kt:616)
+	at io.github.dpan538.annota.ReaderFidelityTest.readerMenusAreCompactUndimmedAndDoNotReplaceTheReader$lambda$61(ReaderFidelityTest.kt:475)
+	at io.github.dpan538.annota.ReaderFidelityTest.$r8$lambda$mSnDvW7--4kURhnKU3sQcl7QxsY(Unknown Source:0)
+	at io.github.dpan538.annota.ReaderFidelityTest$$ExternalSyntheticLambda11.invoke(D8$$SyntheticClass:0)
+	at io.github.dpan538.annota.ReaderFidelityTest.ui$lambda$0(ReaderFidelityTest.kt:33)
+	at io.github.dpan538.annota.ReaderFidelityTest.$r8$lambda$0ImnaS2tifM_HOB5tWZqDrTDE-M(Unknown Source:0)
+	at io.github.dpan538.annota.ReaderFidelityTest$$ExternalSyntheticLambda28.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2616)
+	at android.os.Handler.handleCallback(Handler.java:995)
+	at android.os.Handler.dispatchMessage(Handler.java:103)
+	at android.os.Looper.loopOnce(Looper.java:248)
+	at android.os.Looper.loop(Looper.java:338)
+	at android.app.ActivityThread.main(ActivityThread.java:9067)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+..
+Error in oneTapSwitchesPenAndEraserEvenWithMenuOpenAndRemembersNib(io.github.dpan538.annota.ReaderFidelityTest):
+java.util.NoSuchElementException: List is empty.
+	at kotlin.collections.CollectionsKt___CollectionsKt.single(_Collections.kt:616)
+	at io.github.dpan538.annota.ReaderFidelityTest.oneTapSwitchesPenAndEraserEvenWithMenuOpenAndRemembersNib$lambda$72(ReaderFidelityTest.kt:537)
+	at io.github.dpan538.annota.ReaderFidelityTest.$r8$lambda$Lt8Y0Hc_7CwL14KaL1XV_-txgIU(Unknown Source:0)
+	at io.github.dpan538.annota.ReaderFidelityTest$$ExternalSyntheticLambda45.invoke(D8$$SyntheticClass:0)
+	at io.github.dpan538.annota.ReaderFidelityTest.ui$lambda$0(ReaderFidelityTest.kt:33)
+	at io.github.dpan538.annota.ReaderFidelityTest.$r8$lambda$0ImnaS2tifM_HOB5tWZqDrTDE-M(Unknown Source:0)
+	at io.github.dpan538.annota.ReaderFidelityTest$$ExternalSyntheticLambda28.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2616)
+	at android.os.Handler.handleCallback(Handler.java:995)
+	at android.os.Handler.dispatchMessage(Handler.java:103)
+	at android.os.Looper.loopOnce(Looper.java:248)
+	at android.os.Looper.loop(Looper.java:338)
+	at android.app.ActivityThread.main(ActivityThread.java:9067)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+....
+io.github.dpan538.annota.RenderLifecycleTest:
+Cache before trim: MemoryStats(pageBytes=25019960, imageBytes=0, wordBytes=30760, pageLimit=50331648, imageLimit=8388608, wordLimit=3145728, queued=2)
+Cache after trim: MemoryStats(pageBytes=0, imageBytes=0, wordBytes=0, pageLimit=25165824, imageLimit=4194304, wordLimit=1572864, queued=0)
+.
+io.github.dpan538.annota.ReadingModeTest:.
+Error in singleTapOnlyTogglesChromeAndLongPressLookupWorksWhileChromeIsHidden(io.github.dpan538.annota.ReadingModeTest):
+java.lang.IllegalStateException: Reading mode did not settle
+	at io.github.dpan538.annota.ReadingModeTest.waitFor(ReadingModeTest.kt:53)
+	at io.github.dpan538.annota.ReadingModeTest.singleTapOnlyTogglesChromeAndLongPressLookupWorksWhileChromeIsHidden(ReadingModeTest.kt:719)
+..
+Error in nativeReadingBarAndExactlyThreeChoicesFitEverySizeAndOrientation(io.github.dpan538.annota.ReadingModeTest):
+java.lang.IllegalStateException: Reading mode did not settle
+	at io.github.dpan538.annota.ReadingModeTest.waitFor(ReadingModeTest.kt:53)
+	at io.github.dpan538.annota.ReadingModeTest.nativeReadingBarAndExactlyThreeChoicesFitEverySizeAndOrientation(ReadingModeTest.kt:542)
+.
+
+Time: 151.204
+There were 6 failures:
+1) vectorPdfAndCanvasKeepMatchingFootprintAndCenteredRoundDots(io.github.dpan538.annota.InkQualityTest)
+java.lang.IllegalArgumentException: Failed requirement.
+	at io.github.dpan538.annota.Store.file(Store.kt:527)
+	at io.github.dpan538.annota.PdfEngine.export(PdfEngine.kt:252)
+	at io.github.dpan538.annota.PdfEngine.export$default(PdfEngine.kt:244)
+	at io.github.dpan538.annota.InkQualityTest.vectorPdfAndCanvasKeepMatchingFootprintAndCenteredRoundDots(InkQualityTest.kt:278)
+2) overLimitSelectionRemainsIntactWithoutInitializingTranslation(io.github.dpan538.annota.SentenceTranslationTest)
+org.junit.ComparisonFailure: expected:<...ins available. The e[ntire source remains available. The entire source remains available. The entire source remains available. The entire source remains available. The entire source remains available. ]> but was:<...ins available. The e[]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at io.github.dpan538.annota.SentenceTranslationTest.overLimitSelectionRemainsIntactWithoutInitializingTranslation$lambda$41(SentenceTranslationTest.kt:196)
+	at io.github.dpan538.annota.SentenceTranslationTest.$r8$lambda$ZsM24CTYuaF6AKMAN0ElukAQS94(Unknown Source:0)
+	at io.github.dpan538.annota.SentenceTranslationTest$$ExternalSyntheticLambda31.invoke(D8$$SyntheticClass:0)
+	at io.github.dpan538.annota.SentenceTranslationTest.withPanel(SentenceTranslationTest.kt:108)
+	at io.github.dpan538.annota.SentenceTranslationTest.overLimitSelectionRemainsIntactWithoutInitializingTranslation(SentenceTranslationTest.kt:194)
+3) readerMenusAreCompactUndimmedAndDoNotReplaceTheReader(io.github.dpan538.annota.ReaderFidelityTest)
+java.util.NoSuchElementException: List is empty.
+	at kotlin.collections.CollectionsKt___CollectionsKt.single(_Collections.kt:616)
+	at io.github.dpan538.annota.ReaderFidelityTest.readerMenusAreCompactUndimmedAndDoNotReplaceTheReader$lambda$61(ReaderFidelityTest.kt:475)
+	at io.github.dpan538.annota.ReaderFidelityTest.$r8$lambda$mSnDvW7--4kURhnKU3sQcl7QxsY(Unknown Source:0)
+	at io.github.dpan538.annota.ReaderFidelityTest$$ExternalSyntheticLambda11.invoke(D8$$SyntheticClass:0)
+	at io.github.dpan538.annota.ReaderFidelityTest.ui$lambda$0(ReaderFidelityTest.kt:33)
+	at io.github.dpan538.annota.ReaderFidelityTest.$r8$lambda$0ImnaS2tifM_HOB5tWZqDrTDE-M(Unknown Source:0)
+	at io.github.dpan538.annota.ReaderFidelityTest$$ExternalSyntheticLambda28.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2616)
+	at android.os.Handler.handleCallback(Handler.java:995)
+	at android.os.Handler.dispatchMessage(Handler.java:103)
+	at android.os.Looper.loopOnce(Looper.java:248)
+	at android.os.Looper.loop(Looper.java:338)
+	at android.app.ActivityThread.main(ActivityThread.java:9067)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+4) oneTapSwitchesPenAndEraserEvenWithMenuOpenAndRemembersNib(io.github.dpan538.annota.ReaderFidelityTest)
+java.util.NoSuchElementException: List is empty.
+	at kotlin.collections.CollectionsKt___CollectionsKt.single(_Collections.kt:616)
+	at io.github.dpan538.annota.ReaderFidelityTest.oneTapSwitchesPenAndEraserEvenWithMenuOpenAndRemembersNib$lambda$72(ReaderFidelityTest.kt:537)
+	at io.github.dpan538.annota.ReaderFidelityTest.$r8$lambda$Lt8Y0Hc_7CwL14KaL1XV_-txgIU(Unknown Source:0)
+	at io.github.dpan538.annota.ReaderFidelityTest$$ExternalSyntheticLambda45.invoke(D8$$SyntheticClass:0)
+	at io.github.dpan538.annota.ReaderFidelityTest.ui$lambda$0(ReaderFidelityTest.kt:33)
+	at io.github.dpan538.annota.ReaderFidelityTest.$r8$lambda$0ImnaS2tifM_HOB5tWZqDrTDE-M(Unknown Source:0)
+	at io.github.dpan538.annota.ReaderFidelityTest$$ExternalSyntheticLambda28.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2616)
+	at android.os.Handler.handleCallback(Handler.java:995)
+	at android.os.Handler.dispatchMessage(Handler.java:103)
+	at android.os.Looper.loopOnce(Looper.java:248)
+	at android.os.Looper.loop(Looper.java:338)
+	at android.app.ActivityThread.main(ActivityThread.java:9067)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+5) singleTapOnlyTogglesChromeAndLongPressLookupWorksWhileChromeIsHidden(io.github.dpan538.annota.ReadingModeTest)
+java.lang.IllegalStateException: Reading mode did not settle
+	at io.github.dpan538.annota.ReadingModeTest.waitFor(ReadingModeTest.kt:53)
+	at io.github.dpan538.annota.ReadingModeTest.singleTapOnlyTogglesChromeAndLongPressLookupWorksWhileChromeIsHidden(ReadingModeTest.kt:719)
+6) nativeReadingBarAndExactlyThreeChoicesFitEverySizeAndOrientation(io.github.dpan538.annota.ReadingModeTest)
+java.lang.IllegalStateException: Reading mode did not settle
+	at io.github.dpan538.annota.ReadingModeTest.waitFor(ReadingModeTest.kt:53)
+	at io.github.dpan538.annota.ReadingModeTest.nativeReadingBarAndExactlyThreeChoicesFitEverySizeAndOrientation(ReadingModeTest.kt:542)
+
+FAILURES!!!
+Tests run: 57,  Failures: 6

@@ -1,0 +1,29 @@
+{
+  "versionName": "1.0.3-test",
+  "versionCode": 14,
+  "channel": "beta",
+  "prerelease": true,
+  "debuggable": false,
+  "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18",
+  "apkSha256": "66dd5b62f18caf80260163f4bdbf66712748444ddf1004cae81816eb9ddfc1d7",
+  "bytes": 143073620,
+  "published": false,
+  "physicalDevice": false,
+  "stableChannel": "1.0.2",
+  "build": "assembleDebug, assembleDebugAndroidTest, lintDebug, assembleRelease passed",
+  "sameCertificateUpgrade": true,
+  "androidRegression": {
+    "tests": 93,
+    "failures": 0,
+    "durationSeconds": 94.517,
+    "installedBuild": "non-debuggable 1.0.3-test",
+    "record": "beta-regression.txt"
+  },
+  "dictionaryPythonTests": 12,
+  "actualModelProbes": {
+    "download": true,
+    "offline": true,
+    "installedBuild": "non-debuggable 1.0.3-test",
+    "academicTerminologyValidated": false
+  }
+}

@@ -85,8 +85,12 @@ class DictionaryReadings(context: Context) {
                 }
             }
         val defaults = rule?.getJSONArray("defaults")?.let(::fromJson).orEmpty()
+        val primaryLimit =
+            if (LookupContext.tokens(entry.word).size > 1 || '-' in entry.word) 1 else 2
         var primary =
-            defaults.ifEmpty { all.filterNot { it.label.startsWith("[") }.ifEmpty { all }.take(2) }
+            defaults.ifEmpty {
+                all.filterNot { it.label.startsWith("[") }.ifEmpty { all }.take(primaryLimit)
+            }
         var contextual = false
         var selectedPhrase = ""
         if (active != null && rule != null) {

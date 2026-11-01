@@ -1843,8 +1843,9 @@ class MainActivity : Activity() {
                             ) {
                                 tr("图片过大或格式无效", "Image is too large or the format is invalid")
                             }
-                            val w = p.w * .6f
-                            val h = min(p.h * .6f, w * bounds.outHeight / bounds.outWidth)
+                            val fit = min(p.w * .6f / bounds.outWidth, p.h * .6f / bounds.outHeight)
+                            val w = bounds.outWidth * fit
+                            val h = bounds.outHeight * fit
                             mark =
                                 Mark(
                                     "image",
@@ -2289,7 +2290,9 @@ class MainActivity : Activity() {
         val files =
             listOf(
                 "dictionary/ATTRIBUTION.md",
+                "TRANSLATION-NOTICE.txt",
                 "dictionary/licenses/ECDICT-MIT.txt",
+                "dictionary/licenses/Annota-phrases-MIT.txt",
                 "dictionary/licenses/CC-CEDICT-header.txt",
                 "dictionary/licenses/CC-BY-SA-4.0.txt",
                 "APACHE-2.0.txt",
