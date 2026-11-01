@@ -98,23 +98,26 @@ class InteractionMotionTest {
             ui {
                 val transition = UiMotion.captureScreen(host)
                 assertNotNull(transition)
-                host.setBackgroundColor(Color.WHITE)
+                host.addView(
+                    android.view.View(activity).apply { setBackgroundColor(Color.WHITE) },
+                    FrameLayout.LayoutParams(-1, -1),
+                )
                 transition!!.start()
             }
-            val samples = mutableListOf<Int>()
+            val samples = mutableListOf<Float>()
             val deadline = SystemClock.uptimeMillis() + 500
             while (SystemClock.uptimeMillis() < deadline) {
-                samples += sample()
+                samples += ui { host.getChildAt(0).translationX }
                 SystemClock.sleep(16)
             }
             assertTrue(
                 "Must contain visible intermediate frames: $samples",
-                samples.any { it in 1..254 },
+                samples.any { it > 0f && it < 500f },
             )
-            assertEquals(255, samples.last())
+            assertEquals(0f, samples.last(), .01f)
             assertTrue(
-                "Fade should proceed without reversing: $samples",
-                samples.zipWithNext().all { (a, b) -> b >= a },
+                "Slide should proceed without reversing: $samples",
+                samples.zipWithNext().all { (a, b) -> b <= a },
             )
             val output =
                 java.io.File(
@@ -126,6 +129,7 @@ class InteractionMotionTest {
             ui {
                 UiMotion.captureScreen(host)!!.start()
                 UiMotion.captureScreen(host)!!.finish()
+                host.removeAllViews()
                 host.setBackgroundColor(Color.BLACK)
             }
             assertEquals(0, sample())

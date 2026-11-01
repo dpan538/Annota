@@ -2,9 +2,9 @@
   "schemaVersion": 3,
   "networkRequired": false,
   "en-zh": {
-    "entries": 58783,
-    "baseEntries": 57841,
-    "source": "ECDICT core subset + Annota authored phrases",
+    "entries": 771180,
+    "baseEntries": 770238,
+    "source": "ECDICT complete translated vocabulary + Annota authored phrases",
     "license": "MIT",
     "url": "https://github.com/skywind3000/ECDICT"
   },
@@ -34,18 +34,20 @@
   },
   "files": {
     "en-zh.sqlite": {
-      "bytes": 21291008,
-      "sha256": "534f5aadb45fba2edb06eee8e442cde106710b2a6c4e09d1e5b1f814612fddd5"
+      "bytes": 238567424,
+      "sha256": "ab0466d55d815b258555c4831f0930da6f6d62af33010b0774da9d7909c3802e",
+      "asset": "en-zh.sqlite.pack"
     },
     "zh-en.sqlite": {
       "bytes": 15622144,
-      "sha256": "bda7b4c5fd8742ed776445e59bcdbb651086e20e1f76ea2954b62b24f54a8a35"
+      "sha256": "bda7b4c5fd8742ed776445e59bcdbb651086e20e1f76ea2954b62b24f54a8a35",
+      "asset": "zh-en.sqlite"
     }
   },
   "sources": {
     "annota-phrases.tsv": "47fad91cc431ba663ab3320298e8e94312d8574fcd936dd372241ebfd0333582",
     "cedict.txt.gz": "2d42d41f75df8708d9d9b236d8ae15ecf1cef525aef8ebb8499a74cb09e1b096",
-    "ecdict-core.csv.gz": "6bfc246aecfb1284a73e3d09b3f6be6279c99afb6e08e51bcd2cc080e483f895",
-    "provenance.json": "6cad2e95aa00ad0b69c989efc59d49aac1afac1b18c583a929630c9a58ba843f"
+    "ecdict-core.csv.gz": "790881495775749e17433898b2d85608f985b5bdbaef3e4dbc8b6b5ae592f931",
+    "provenance.json": "171cb01b5f8be59b7e01098867a6eed7f5afe13fd489ce83ba29578ec7db8453"
   }
 }

@@ -122,7 +122,17 @@ class DictionaryContextUiTest {
                 v.tool = "hand"
                 v.fitWidth()
             }
-            waitFor { ui { v.memoryStats().wordBytes > 0 } }
+            waitFor {
+                ui {
+                    var node: View? = v
+                    var settled = true
+                    while (node != null) {
+                        if (node.translationX != 0f || node.translationY != 0f) settled = false
+                        node = node.parent as? View
+                    }
+                    v.memoryStats().wordBytes > 0 && settled
+                }
+            }
             val words = a.pdf.words(b, b.pages[0])
             fun select(word: Word, expected: String, screenshot: String) {
                 ui { popup()?.dismiss() }
@@ -185,6 +195,35 @@ class DictionaryContextUiTest {
             )
             select(words.filter { it.text == "set" }[1], "日落", "dictionary-context-sunset")
             select(words.first { it.text == "bank" }, "河岸", "dictionary-context-river-bank")
+            for ((index, phrase) in
+                listOf(
+                        "virtual instances",
+                        "high-performance distributed grid",
+                        "workload distribution and coordination functions.",
+                    )
+                    .withIndex()) {
+                ui { nodes().filterIsInstance<EditText>().single().setText(phrase) }
+                waitFor {
+                    ui {
+                        nodes()
+                            .filter { it.tag == "dictionary-part" }
+                            .joinToString(" ") { it.contentDescription.toString() } ==
+                            Dictionary.boundaryKey(phrase)
+                    }
+                }
+                assertTrue(
+                    ui {
+                        val rows = nodes().filter { it.tag == "dictionary-part" }
+                        rows.size >= 2 &&
+                            rows.all { row ->
+                                val labels =
+                                    all(row).filterIsInstance<TextView>().map { it.text.toString() }
+                                labels.size == 2 && labels[1].isNotBlank() && labels[1] != "未收录"
+                            }
+                    }
+                )
+                capture("dictionary-coverage-$index")
+            }
             assertSame(v, ui { all(a.window.decorView).filterIsInstance<ReaderView>().single() })
         } finally {
             ui { a.finish() }

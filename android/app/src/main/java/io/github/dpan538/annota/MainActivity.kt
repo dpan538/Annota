@@ -555,7 +555,7 @@ class MainActivity : Activity() {
     private var searchVisible = false
 
     private fun library() {
-        val transition = if (reader != null) UiMotion.captureScreen(root) else null
+        val transition = if (reader != null) UiMotion.captureScreen(root, forward = false) else null
         closeNavigation()
         reader?.persistPosition()
         book?.let { ContinueReadingWidget.remember(this, it) }
@@ -797,7 +797,14 @@ class MainActivity : Activity() {
         ContinueReadingWidget.remember(this, b)
         activePage = b.current
         showReader()
-        transition?.start()
+        val entering = reader
+        if (transition != null) {
+            entering?.setLayoutTransition(true)
+            transition.start(
+                ready = { entering?.prepareEntryFrame() != false },
+                finished = { entering?.setLayoutTransition(false) },
+            )
+        }
         if (!b.pdfInfo.annotate)
             toast(tr("此 PDF 限制修改，已只读打开", "This PDF restricts changes. Opened read-only."))
     }
@@ -1508,27 +1515,74 @@ class MainActivity : Activity() {
         showPanel(menu)
     }
 
+    private var navigationMotion: android.animation.ValueAnimator? = null
+    private var navigationExpanded = false
+
+    private fun moveNavigation(open: Boolean, animated: Boolean) {
+        navigationMotion?.removeAllListeners()
+        navigationMotion?.cancel()
+        navigationMotion = null
+        navigationExpanded = open
+        readerTools["list"]?.isSelected = open
+        val r = reader ?: return
+        val panel = pageSidebar ?: return
+        val width = panel.layoutParams.width
+        val params = r.layoutParams as FrameLayout.LayoutParams
+        val from = params.leftMargin
+        val to = if (open) width else 0
+        r.cancelInput()
+        fun apply(inset: Int) {
+            panel.translationX = (inset - width).toFloat()
+            params.leftMargin = inset
+            r.layoutParams = params
+        }
+        fun complete() {
+            apply(to)
+            r.setLayoutTransition(false)
+            if (!open) {
+                navigationPanel?.dispose()
+                navigationPanel = null
+                readerHost?.removeView(panel)
+                pageSidebar = null
+                pageCovers?.close()
+                pageCovers = null
+            }
+            navigationMotion = null
+        }
+        if (!animated || !UiMotion.enabled() || from == to) {
+            complete()
+            return
+        }
+        r.setLayoutTransition(true)
+        apply(from)
+        navigationMotion =
+            android.animation.ValueAnimator.ofInt(from, to).apply {
+                duration = UiMotion.SCREEN
+                interpolator = UiMotion.linear
+                addUpdateListener { apply(it.animatedValue as Int) }
+                addListener(
+                    object : android.animation.AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: android.animation.Animator) =
+                            complete()
+                    }
+                )
+                start()
+            }
+    }
+
     private fun closeNavigation(animated: Boolean = false) {
-        val transition = if (animated) readerHost?.let { UiMotion.captureScreen(it) } else null
-        navigationPanel?.dispose()
-        navigationPanel = null
-        pageSidebar?.let { readerHost?.removeView(it) }
-        pageSidebar = null
-        reader?.layoutParams = FrameLayout.LayoutParams(-1, -1)
-        pageCovers?.close()
-        pageCovers = null
-        readerTools["list"]?.isSelected = false
-        transition?.start()
+        if (pageSidebar != null) moveNavigation(false, animated)
     }
 
     private fun pages() {
-        if (pageSidebar != null) closeNavigation(true) else showNavigation()
+        if (navigationExpanded) closeNavigation(true) else showNavigation()
     }
 
     private fun showNavigation(search: Boolean = false, restored: ReaderNavigator.State? = null) {
         val r = reader ?: return
         readerPopup?.dismiss()
         navigationPanel?.let {
+            moveNavigation(true, true)
             if (search) it.beginSearch()
             return
         }
@@ -1550,16 +1604,12 @@ class MainActivity : Activity() {
                 origin,
                 restored,
             )
-        val transition =
-            if (restored == null) readerHost?.let { UiMotion.captureScreen(it) } else null
         navigationPanel = panel
         pageSidebar = panel.view
         val width =
             menu.ui.px(264f).coerceAtMost((resources.displayMetrics.widthPixels * .46f).toInt())
         readerHost?.addView(panel.view, FrameLayout.LayoutParams(width, -1, Gravity.START))
-        r.layoutParams = FrameLayout.LayoutParams(-1, -1).apply { leftMargin = width }
-        readerTools["list"]?.isSelected = true
-        transition?.start()
+        moveNavigation(true, restored == null)
     }
 
     private fun addPage() {

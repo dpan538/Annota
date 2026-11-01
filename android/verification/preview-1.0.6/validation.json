@@ -1,0 +1,24 @@
+{
+  "version": "1.0.6-preview",
+  "versionCode": 18,
+  "productChannel": "Beta",
+  "apkSha256": "b53f86689d1275e44f82641ed05c1254121d8726dbdf007dd58bdefe8d28e8b0",
+  "instrumentation": {
+    "passed": 119,
+    "seconds": 185.041,
+    "androidApi": 36,
+    "serial": "emulator-5584",
+    "wifiAndMobileDataDisabled": true
+  },
+  "dictionaryPythonTests": 12,
+  "validatedSourceUnits": 21,
+  "builds": [
+    "assembleDebug",
+    "assembleDebugAndroidTest",
+    "lintDebug",
+    "assembleRelease"
+  ],
+  "noMlKitClassesOrGoogleTranslateRoutes": true,
+  "targetPhysicalDeviceVerified": false,
+  "privatePdfNotPublished": true
+}

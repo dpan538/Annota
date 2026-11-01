@@ -129,7 +129,11 @@ class DictionaryReadings(context: Context) {
                 contextual = true
             }
         }
-        if (active != null && phrase != null) {
+        // Curated context rules retain authority over broad upstream collocations; otherwise
+        // a phrase such as "river bank" would override deliberately ambiguous local evidence.
+        if (
+            active != null && phrase != null && (rule == null || phrase.second.source == "annota")
+        ) {
             primary = senses(phrase.second).take(1)
             contextual = primary.isNotEmpty()
             selectedPhrase = phrase.first

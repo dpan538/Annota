@@ -925,5 +925,91 @@
         ]
       }
     ]
+  },
+  {
+    "word": "instance",
+    "defaults": [
+      {
+        "pos": "n.",
+        "text": "实例；例子"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "实例",
+        "near": [
+          "virtual",
+          "class",
+          "object",
+          "server",
+          "database",
+          "cloud"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "grid",
+    "defaults": [
+      {
+        "pos": "n.",
+        "text": "网格；格栅"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "计算网格",
+        "near": [
+          "distributed",
+          "computing",
+          "compute",
+          "resources"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "virtual",
+    "defaults": [
+      {
+        "pos": "adj.",
+        "text": "虚拟的；实质上的"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "adj.",
+        "text": "虚拟的",
+        "near": [
+          "instances",
+          "machine",
+          "machines",
+          "memory",
+          "resources"
+        ]
+      }
+    ]
+  },
+  {
+    "word": "function",
+    "defaults": [
+      {
+        "pos": "n.",
+        "text": "功能；函数"
+      }
+    ],
+    "senses": [
+      {
+        "pos": "n.",
+        "text": "功能",
+        "near": [
+          "coordination",
+          "distribution",
+          "workload"
+        ]
+      }
+    ]
   }
 ]

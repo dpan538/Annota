@@ -650,6 +650,24 @@ class ReadingModeTest {
                     },
                 )
             }
+            // Native PopupWindow transitions can move an ancestor of contentView. Wait for
+            // settled screen bounds, then keep the exact no-clipping assertions below.
+            waitFor {
+                ui {
+                    val panel = popup() ?: return@ui false
+                    val choices =
+                        all(panel.contentView).filter {
+                            it.isClickable && it.contentDescription in setOf("原始", "柔和", "清晰")
+                        }
+                    choices.size == 3 &&
+                        choices.all { choice ->
+                            val visible = Rect()
+                            choice.getGlobalVisibleRect(visible) &&
+                                visible.width() == choice.width &&
+                                visible.height() == choice.height
+                        }
+                }
+            }
             ui {
                 val panel = popup()!!
                 val choices =

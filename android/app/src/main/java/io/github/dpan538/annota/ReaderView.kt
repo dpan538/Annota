@@ -190,6 +190,15 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private data class Tile(val key: String, val area: Rect, val scale: Float)
 
     @Volatile private var wantedTiles = emptySet<String>()
+    private var movingLayout = false
+    private var settledTilePlans = emptyMap<Int, List<Tile>>()
+
+    /** Scale cached page pixels during spatial transitions; refine once the viewport settles. */
+    fun setLayoutTransition(moving: Boolean) {
+        movingLayout = moving
+        if (!moving) invalidate()
+    }
+
     @Volatile private var wantedPages = emptySet<String>()
     private var drawnTiles = 0
     private val imageCache =
@@ -825,6 +834,20 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         return super.performAccessibilityAction(action, arguments)
     }
 
+    private fun baseWidth(page: Sheet): Int =
+        min(if (constrained) 512 else 768, sqrt(cache.maxSize() / 16f * page.w / page.h).toInt())
+            .coerceAtLeast(100)
+
+    /** Prime the destination before sliding it into view, without drawing a hidden PDF tree. */
+    fun prepareEntryFrame(): Boolean {
+        val layout = ensureGeometry() ?: return false
+        val row = layout.rows[layout.rowAt(max(0f, (-panY - layout.margin) / zoom))]
+        val pages = row.pages.map { book.pages[it.index] }
+        wantedPages = wantedPages + pages.map { it.id }
+        pages.filter { it.source >= 0 }.forEach { request(it, baseWidth(it)) }
+        return pages.all { it.source < 0 || cache.get("${pageKey(it)}:${baseWidth(it)}") != null }
+    }
+
     private fun request(p: Sheet, width: Int) {
         if (closed || suspended) return
         val key = "${book.source}:${p.id}:${p.style}:${p.paper}:$width"
@@ -1074,14 +1097,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         val lastRow = layout.rowAt((height - panY - layout.margin) / zoom)
         val frames = (firstRow..lastRow).flatMap { layout.rows[it].pages }
         val preload = layout.rows.getOrNull(lastRow + 1)?.pages.orEmpty()
-        fun bitmapWidth(index: Int): Int {
-            val page = book.pages[index]
-            return min(
-                    if (constrained) 512 else 768,
-                    sqrt(cache.maxSize() / 16f * page.w / page.h).toInt(),
-                )
-                .coerceAtLeast(100)
-        }
+        fun bitmapWidth(index: Int) = baseWidth(book.pages[index])
         val plans = mutableMapOf<Int, List<Tile>>()
         drawnTiles = 0
         val wanted = mutableSetOf<String>()
@@ -1089,7 +1105,11 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         // Estimating from viewport pixels alone can overfill an LRU and leave blurry holes.
         val tileBudget = (tiles.maxSize() * .88f).toLong()
         var quality = 1f
-        while (true) {
+        if (movingLayout) {
+            plans.putAll(settledTilePlans)
+            wanted.addAll(plans.values.flatten().map { it.key })
+        }
+        while (!movingLayout) {
             plans.clear()
             wanted.clear()
             var bytes = 0L
@@ -1107,6 +1127,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             if (bytes <= tileBudget) break
             quality *= min(.85f, sqrt(tileBudget.toFloat() / bytes) * .95f)
         }
+        if (!movingLayout) settledTilePlans = plans.toMap()
         wantedTiles = wanted
         wantedPages = (frames + preload).map { book.pages[it.index].id }.toSet()
         // Give every visible page its readable base before queueing any detail tiles.
@@ -1169,7 +1190,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                     )
                     drawnTiles++
                 }
-                requestTile(p, tile)
+                if (!movingLayout) requestTile(p, tile)
             }
             p.marks.forEach { drawMark(canvas, it) }
             annotationSelection.draw(

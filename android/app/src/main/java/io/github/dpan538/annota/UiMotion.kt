@@ -25,43 +25,35 @@ object UiMotion {
     fun press(view: View, pressed: Boolean) {
         view.animate().cancel()
         val size = if (pressed) .975f else 1f
-        val alpha = if (pressed) .78f else 1f
         if (enabled() && view.isAttachedToWindow) {
             view
                 .animate()
                 .scaleX(size)
                 .scaleY(size)
-                .alpha(alpha)
                 .setDuration(PRESS)
                 .setInterpolator(linear)
                 .start()
         } else {
             view.scaleX = size
             view.scaleY = size
-            view.alpha = alpha
+            view.alpha = 1f
         }
     }
 
     fun enter(view: View, distance: Float = 8f * view.resources.displayMetrics.density) {
         if (!enabled()) return
-        view.alpha = 0f
+        view.alpha = 1f
         view.translationY = distance
-        view
-            .animate()
-            .alpha(1f)
-            .translationY(0f)
-            .setDuration(SCREEN)
-            .setInterpolator(linear)
-            .start()
+        view.animate().translationY(0f).setDuration(SCREEN).setInterpolator(linear).start()
     }
 
     private val screenChanges = WeakHashMap<ViewGroup, ScreenChange>()
 
     /**
-     * Keeps the last drawn frame through a synchronous layout replacement, then fades it out. No
-     * frame-by-frame layout or PDF rerendering; bitmap memory is capped at 1440px longest edge.
+     * Keeps the previous screen opaque while the next screen slides alongside it. No frame-by-frame
+     * layout or PDF rerendering; bitmap memory is capped at 1440px longest edge.
      */
-    fun captureScreen(host: ViewGroup): ScreenChange? {
+    fun captureScreen(host: ViewGroup, forward: Boolean = true): ScreenChange? {
         screenChanges.remove(host)?.finish()
         if (!enabled() || !host.isAttachedToWindow || host.width == 0 || host.height == 0)
             return null
@@ -81,16 +73,21 @@ object UiMotion {
             } catch (_: OutOfMemoryError) {
                 return null
             }
-        return ScreenChange(host, bitmap).also { screenChanges[host] = it }
+        return ScreenChange(host, bitmap, forward).also { screenChanges[host] = it }
     }
 
     class ScreenChange
-    internal constructor(private val host: ViewGroup, private val bitmap: Bitmap) {
+    internal constructor(
+        private val host: ViewGroup,
+        private val bitmap: Bitmap,
+        private val forward: Boolean,
+    ) {
         private val drawable =
             BitmapDrawable(host.resources, bitmap).apply {
                 setBounds(0, 0, host.width, host.height)
             }
         private var animator: ValueAnimator? = null
+        private var incoming = emptyList<View>()
         private var closed = false
         private var listener: ViewTreeObserver.OnPreDrawListener? = null
         private val detach =
@@ -100,12 +97,23 @@ object UiMotion {
                 override fun onViewDetachedFromWindow(v: View) = finish()
             }
 
-        fun start() {
+        private var onFinished: (() -> Unit)? = null
+
+        fun start(ready: () -> Boolean = { true }, finished: () -> Unit = {}) {
+            onFinished = finished
             if (closed) return
+            incoming = (0 until host.childCount).map(host::getChildAt)
+            val direction = if (forward) 1f else -1f
+            incoming.forEach { it.translationX = direction * host.width }
             host.overlay.add(drawable)
             host.addOnAttachStateChangeListener(detach)
+            val deadline = android.os.SystemClock.uptimeMillis() + 800
             listener =
                 ViewTreeObserver.OnPreDrawListener {
+                    if (!closed && !ready() && android.os.SystemClock.uptimeMillis() < deadline) {
+                        host.postInvalidateOnAnimation()
+                        return@OnPreDrawListener true
+                    }
                     listener?.let {
                         if (host.viewTreeObserver.isAlive)
                             host.viewTreeObserver.removeOnPreDrawListener(it)
@@ -113,10 +121,18 @@ object UiMotion {
                     listener = null
                     if (!closed) {
                         animator =
-                            ValueAnimator.ofInt(255, 0).apply {
+                            ValueAnimator.ofFloat(0f, 1f).apply {
                                 duration = SCREEN
                                 interpolator = linear
-                                addUpdateListener { drawable.alpha = it.animatedValue as Int }
+                                addUpdateListener {
+                                    val progress = it.animatedValue as Float
+                                    val offset = (-direction * host.width * progress).toInt()
+                                    drawable.setBounds(offset, 0, offset + host.width, host.height)
+                                    incoming.forEach { child ->
+                                        child.translationX =
+                                            direction * host.width * (1f - progress)
+                                    }
+                                }
                                 addListener(
                                     object : android.animation.AnimatorListenerAdapter() {
                                         override fun onAnimationEnd(
@@ -141,10 +157,14 @@ object UiMotion {
             }
             listener = null
             animator?.cancel()
+            incoming.forEach { it.translationX = 0f }
+            incoming = emptyList()
             host.overlay.remove(drawable)
             host.removeOnAttachStateChangeListener(detach)
             if (screenChanges[host] === this) screenChanges.remove(host)
             bitmap.recycle()
+            onFinished?.invoke()
+            onFinished = null
         }
     }
 

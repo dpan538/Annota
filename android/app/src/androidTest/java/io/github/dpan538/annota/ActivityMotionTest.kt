@@ -46,7 +46,12 @@ class ActivityMotionTest {
         }
     }
 
-    private data class Frame(val ms: Long, val bitmap: Bitmap)
+    private data class Frame(
+        val ms: Long,
+        val bitmap: Bitmap,
+        val offset: Float,
+        val opaque: Boolean,
+    )
 
     private fun frame(root: ViewGroup): Bitmap {
         val scale = minOf(1f, 640f / maxOf(root.width, root.height))
@@ -70,7 +75,7 @@ class ActivityMotionTest {
         val frames = mutableListOf<Frame>()
         val done = CountDownLatch(1)
         ui {
-            frames += Frame(0, frame(root))
+            frames += Frame(0, frame(root), 0f, true)
             action()
             val start = SystemClock.uptimeMillis()
             val choreographer = Choreographer.getInstance()
@@ -78,7 +83,13 @@ class ActivityMotionTest {
                 object : Choreographer.FrameCallback {
                     override fun doFrame(frameTimeNanos: Long) {
                         val elapsed = SystemClock.uptimeMillis() - start
-                        frames += Frame(elapsed, frame(root))
+                        frames +=
+                            Frame(
+                                elapsed,
+                                frame(root),
+                                (root.getChildAt(0)?.translationX ?: 0f) / root.width,
+                                (0 until root.childCount).all { root.getChildAt(it).alpha == 1f },
+                            )
                         if (elapsed >= 1000) done.countDown()
                         else choreographer.postFrameCallback(this)
                     }
@@ -119,26 +130,20 @@ class ActivityMotionTest {
                         .mapIndexed { i, value -> (value - from[i]) * delta[i] }
                         .sum() / length
                 }
+            val positions = frames.drop(1).map { abs(it.offset) }
+            assertTrue("Screens remain fully opaque", frames.all { it.opaque })
             if (animated) {
                 assertTrue(
-                    "$name must include actual intermediate frames: $progress",
-                    progress.any { it in 0.03f..0.97f },
+                    "$name needs intermediate positions: $positions",
+                    positions.any { it in 0.03f..0.97f },
                 )
                 assertTrue(
-                    "$name must fade monotonically: $progress",
-                    progress.zipWithNext().all { (a, b) -> b + .025f >= a },
+                    "$name must move continuously to its destination: $positions",
+                    positions.zipWithNext().all { (a, b) -> b <= a + .01f },
                 )
-            } else {
-                assertTrue(
-                    "$name must respect disabled animations: $progress",
-                    progress.all { abs(it) < .025f || abs(it - 1) < .025f },
-                )
-            }
-            assertTrue(
-                "$name must finish without old screen pixels: ${frames.map { it.ms }} / $progress",
-                progress.takeLast(3).all { abs(it - 1) < .025f },
-            )
-            val middle = progress.indices.minBy { abs(progress[it] - 0.5f) }
+            } else assertTrue(positions.all { it < .01f })
+            assertTrue(positions.takeLast(3).all { it < .01f })
+            val middle = frames.indices.minBy { abs(abs(frames[it].offset) - 0.5f) }
             for ((label, index) in
                 listOf("before" to 0, "middle" to middle, "after" to frames.lastIndex)) {
                 File(output, "$name-$label.png").outputStream().use {
@@ -149,8 +154,8 @@ class ActivityMotionTest {
                 .put("animated", animated)
                 .put("point", JSONArray(listOf(point.first, point.second)))
                 .put("frameMs", JSONArray(frames.map { it.ms }))
-                .put("toolbarColorProgress", JSONArray(progress))
-                .put("intermediateFrames", progress.count { it in 0.03f..0.97f })
+                .put("screenOffsets", JSONArray(frames.map { it.offset }))
+                .put("intermediateFrames", positions.count { it in 0.03f..0.97f })
         } finally {
             frames.forEach { it.bitmap.recycle() }
         }
@@ -216,6 +221,46 @@ class ActivityMotionTest {
             await {
                 ui { all(root).filterIsInstance<ReaderView>().single().detailStats().resident > 0 }
             }
+            val r = ui { all(root).filterIsInstance<ReaderView>().single() }
+            fun toggleSidebar() {
+                activity.javaClass
+                    .getDeclaredMethod("pages")
+                    .apply { isAccessible = true }
+                    .invoke(activity)
+            }
+            fun sidebar(open: Boolean): JSONArray {
+                val sizes = mutableListOf<Int>()
+                val done = CountDownLatch(1)
+                ui {
+                    toggleSidebar()
+                    val start = SystemClock.uptimeMillis()
+                    val choreographer = Choreographer.getInstance()
+                    choreographer.postFrameCallback(
+                        object : Choreographer.FrameCallback {
+                            override fun doFrame(time: Long) {
+                                sizes += r.width
+                                assertEquals(1f, r.alpha, 0f)
+                                assertEquals(0f, r.translationX, 0f)
+                                assertSame(r, all(root).filterIsInstance<ReaderView>().single())
+                                if (SystemClock.uptimeMillis() - start > 650) done.countDown()
+                                else choreographer.postFrameCallback(this)
+                            }
+                        }
+                    )
+                }
+                assertTrue(done.await(5, TimeUnit.SECONDS))
+                assertTrue("Actual width must animate: $sizes", sizes.distinct().size >= 3)
+                assertTrue(
+                    "Width must be monotonic: $sizes",
+                    sizes.zipWithNext().all { (a, b) -> if (open) b <= a else b >= a },
+                )
+                return JSONArray(sizes)
+            }
+            evidence.put("sidebarOpenWidths", sidebar(true))
+            evidence.put("sidebarCloseWidths", sidebar(false))
+            ui { repeat(4) { toggleSidebar() } }
+            SystemClock.sleep(350)
+            assertEquals(ui { (r.parent as View).width }, ui { r.width })
             val closing = record(root) { assertTrue(button("Library").performClick()) }
             assertTrue(
                 ui { all(root).any { it is LibraryScreen } && all(root).none { it is ReaderView } }

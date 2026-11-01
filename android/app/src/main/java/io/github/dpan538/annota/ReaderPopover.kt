@@ -54,14 +54,14 @@ class ReaderPopover(
             // Native popup transitions also cover outside-tap and programmatic dismissals.
             enterTransition =
                 if (UiMotion.enabled())
-                    android.transition.Fade().apply {
+                    PanelSlide().apply {
                         duration = UiMotion.PANEL
                         interpolator = UiMotion.linear
                     }
                 else null
             exitTransition =
                 if (UiMotion.enabled())
-                    android.transition.Fade().apply {
+                    PanelSlide().apply {
                         duration = 120L
                         interpolator = UiMotion.linear
                     }

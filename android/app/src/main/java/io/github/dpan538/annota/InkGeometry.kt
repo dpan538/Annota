@@ -4,7 +4,7 @@ import kotlin.math.*
 
 /** Versioned, deterministic ink geometry shared by the canvas and PDF exporter. */
 object InkGeometry {
-    const val VERSION = 3
+    const val VERSION = 4
     private val tools = setOf("pen", "fountain", "pencil", "highlight")
 
     data class Sample(val x: Float, val y: Float, val p: Float, val width: Float, val t: Long)

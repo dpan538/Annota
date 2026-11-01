@@ -71,12 +71,11 @@ def build(ecdict_path):
     out = ROOT / "bundle"
     out.mkdir(exist_ok=True)
     if ecdict_path:
-        # A compact, reproducible subset; the original full CSV stays outside the bundle.
+        # Include every translated entry: frequency/exam filters exclude specialist vocabulary.
         rows = []
         with ecdict_path.open(encoding="utf-8-sig", newline="") as src:
             for row in csv.DictReader(src):
-                freq = [int(row[k]) for k in ("bnc", "frq") if row.get(k, "").isdigit() and int(row[k]) > 0]
-                if row.get("translation") and (row.get("tag") or (freq and min(freq) <= 50000)):
+                if row.get("translation") and row.get("word"):
                     rows.append({k: row.get(k, "") for k in
                                  ("word", "phonetic", "definition", "translation", "exchange")})
         buffer = io.StringIO()
@@ -167,7 +166,7 @@ def build(ecdict_path):
     manifest = {
         "schemaVersion": 3, "networkRequired": False,
         "en-zh": {"entries": en_count, "baseEntries": base_en_count,
-                  "source": "ECDICT core subset + Annota authored phrases",
+                  "source": "ECDICT complete translated vocabulary + Annota authored phrases",
                   "license": "MIT", "url": "https://github.com/skywind3000/ECDICT"},
         "zh-en": {"entries": zh_count, "baseEntries": base_zh_count,
                   "source": "CC-CEDICT + Annota authored reverse equivalents",
@@ -176,7 +175,8 @@ def build(ecdict_path):
                            "license": "MIT", "source": "Original Annota phrase equivalents, 2026-11-01",
                            "categories": {c: sum(r["category"] == c for r in phrases)
                                           for c in sorted({r["category"] for r in phrases})}},
-        "files": {p.name: {"bytes": p.stat().st_size,
+        "files": {p.name: {"asset": p.name + ".pack" if p.stat().st_size > 90_000_000 else p.name,
+                          "bytes": p.stat().st_size,
                           "sha256": hashlib.sha256(p.read_bytes()).hexdigest()}
                   for p in sorted(out.glob("*.sqlite"))},
         "sources": {p.name: hashlib.sha256(p.read_bytes()).hexdigest()

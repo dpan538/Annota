@@ -499,7 +499,7 @@ class PdfEngine(val context: Context, val store: Store) {
         val top = floor(samples.minOf { it.y } - padding)
         val right = ceil(samples.maxOf { it.x } + padding)
         val bottom = ceil(samples.maxOf { it.y } + padding)
-        val graphite = Graphite().also { g -> samples.forEach(g::add) }
+        val graphite = Graphite(mark.inkVersion).also { g -> samples.forEach(g::add) }
         cs.setGraphicsStateParameters(
             PDExtendedGraphicsState().apply { nonStrokingAlphaConstant = 1f }
         )

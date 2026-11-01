@@ -1,6 +1,6 @@
 # Annota 离线词库
 
-英汉：58,783 条记录，其中 942 条为 Annota 原创短语与学术术语；682 个显式词形 / 拼写别名另计。
+英汉：771,180 条记录，其中 942 条为 Annota 原创短语与学术术语；682 个显式词形 / 拼写别名另计。
 汉英：126,272 条记录，其中 125,301 条来自 CC-CEDICT，其余为原创短释义的反向等价表达。
 数据、来源和许可随安装包提供。查词只读本机，不上传输入、手写轨迹或文档。
 
@@ -21,8 +21,8 @@ Copyright (c) 2026 Dai Pan and Annota contributors. MIT License.
 
 Linwei / skywind3000, ECDICT，项目许可 MIT。
 来源：https://github.com/skywind3000/ECDICT
-完整许可：licenses/ECDICT-MIT.txt；原始核心子集：sources/ecdict-core.csv.gz。
-Annota 对源数据作核心词筛选、换行标准化及 SQLite 索引转换，保留 57,841 条原始记录。
+完整许可：licenses/ECDICT-MIT.txt；完整中文释义记录：sources/ecdict-core.csv.gz。
+Annota 保留全部有中文释义的 770,238 条记录，进行换行标准化及 SQLite 索引转换，不按词频或考试标签筛选。
 上游包含多种资料来源；仓库代码许可不等于所有外部材料的单独授权证明。
 
 ## CC-CEDICT

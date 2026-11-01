@@ -372,6 +372,32 @@ class DictionaryPanel(
                 LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = ui.px(8f) },
             )
         }
+        if (result.parts.isNotEmpty()) {
+            results.addView(menu.label(ui.tr("分段释义", "Phrase breakdown"), 13f, true))
+            result.parts.forEach { part ->
+                val row =
+                    LinearLayout(activity).apply {
+                        orientation = LinearLayout.VERTICAL
+                        setPadding(ui.px(8f), ui.px(7f), ui.px(8f), ui.px(7f))
+                        tag = "dictionary-part"
+                    }
+                row.addView(menu.label(part.text, 15f).apply { setTextColor(palette.accent) })
+                row.addView(
+                    menu.label(
+                        part.reading?.primary?.joinToString("；") { it.text }
+                            ?: ui.tr("未收录", "Not in dictionary"),
+                        14f,
+                    )
+                )
+                row.contentDescription = part.text
+                row.isClickable = part.reading != null
+                row.setOnClickListener {
+                    edit.setText(part.text)
+                    edit.setSelection(part.text.length)
+                }
+                results.addView(row)
+            }
+        }
         if (result.suggestions.isNotEmpty()) {
             results.addView(menu.label(ui.tr("相关词条", "Related entries"), 13f, true))
             result.suggestions.forEach { word ->
@@ -404,7 +430,7 @@ class DictionaryPanel(
                 )
             }
         }
-        if (result.entries.isEmpty() && result.suggestions.isEmpty()) {
+        if (result.entries.isEmpty() && result.suggestions.isEmpty() && result.parts.isEmpty()) {
             results.addView(
                 menu
                     .label(

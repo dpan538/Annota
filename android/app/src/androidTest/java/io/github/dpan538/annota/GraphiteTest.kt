@@ -24,6 +24,32 @@ class GraphiteTest {
         }
 
     @Test
+    fun normalScaleBlackIsDarkerWithoutRemovingTextureOrChangingStoredV3() {
+        fun normal(version: Int): Bitmap =
+            Bitmap.createBitmap(210, 80, Bitmap.Config.ARGB_8888).also {
+                InkRenderer().draw(Canvas(it), mark(.55f).copy(inkVersion = version))
+            }
+        val old = normal(3)
+        val current = normal(4)
+        val oldTone = (30..160).sumOf { Color.alpha(old.getPixel(it, 40)) }
+        val newTone = (30..160).sumOf { Color.alpha(current.getPixel(it, 40)) }
+        assertTrue(
+            "Normal-scale graphite must be visibly stronger: $oldTone -> $newTone",
+            newTone > oldTone * 1.35,
+        )
+        assertTrue("Black writing must have useful central contrast", newTone / 131 > 155)
+        assertTrue(
+            "Paper modulation must survive at normal zoom",
+            (30..160).map { Color.alpha(current.getPixel(it, 40)) }.distinct().size > 12,
+        )
+        val restored = normal(3)
+        assertTrue(old.sameAs(restored))
+        old.recycle()
+        current.recycle()
+        restored.recycle()
+    }
+
+    @Test
     fun pressureControlsGraphiteDensityAndPaperPoresStayTransparent() {
         val light = render(mark(.12f))
         val heavy = render(mark(.95f))
@@ -39,7 +65,10 @@ class GraphiteTest {
             if (b < 12) pores++
             if (b > 130) dark++
         }
-        assertTrue("Heavy pressure deposits more graphite", heavySum > lightSum * 1.5)
+        assertTrue(
+            "Heavy pressure deposits more graphite: $lightSum -> $heavySum",
+            heavySum > lightSum * 1.5,
+        )
         assertTrue("There is no uniform gray underpaint", pores > 100)
         assertTrue("Graphite includes dark irregular deposits", dark > 100)
         val before = heavy.getPixel(800, 320)
@@ -86,7 +115,7 @@ class GraphiteTest {
                 color = Color.rgb(35, 39, 46)
                 textSize = 34f
             }
-        c.drawText("Actual renderer: solid v2 / dry graphite v3", 60f, 65f, p)
+        c.drawText("Actual renderer: stored graphite v3 / darker graphite v4", 60f, 65f, p)
         p.textSize = 24f
         c.drawText("4x zoom; same input; no solid fill beneath the new pencil", 60f, 110f, p)
         c.drawText("Previous candidate", 100f, 175f, p)
@@ -95,13 +124,13 @@ class GraphiteTest {
         listOf(.15f, .5f, .9f).forEachIndexed { row, pressure ->
             val y = 260f + row * 210f
             c.drawText("Pressure $pressure", 60f, y - 30, p)
-            for (version in 2..3) {
+            for (version in 3..4) {
                 val points =
                     MutableList(121) { i ->
                         Point(i * 1.35f, 10 * sin(i * .05f), pressure, 1000L + i * 8)
                     }
                 c.save()
-                c.translate(if (version == 2) 110f else 960f, y + 30)
+                c.translate(if (version == 3) 110f else 960f, y + 30)
                 c.scale(4f, 4f)
                 renderer.draw(c, Mark("pencil", Color.BLACK, 6f, points, inkVersion = version))
                 c.restore()
@@ -116,7 +145,7 @@ class GraphiteTest {
                 MutableList(181) { i ->
                     Point(i * 2f, 8 * sin(i * .05f), .05f + i / 200f, 1000L + i * 8)
                 },
-                inkVersion = 3,
+                inkVersion = 4,
             )
         c.save()
         c.translate(110f, 990f)
@@ -132,7 +161,7 @@ class GraphiteTest {
                 MutableList(121) { i ->
                     Point(i * 2.8f, row * 4f + 5 * sin(i * .04f), .48f, 1000L + i * 8, tilt = 1.15f)
                 }
-            renderer.draw(c, Mark("pencil", Color.BLACK, 6f, points, inkVersion = 3))
+            renderer.draw(c, Mark("pencil", Color.BLACK, 6f, points, inkVersion = 4))
         }
         c.restore()
         val file =
@@ -140,7 +169,7 @@ class GraphiteTest {
                 InstrumentationRegistry.getInstrumentation()
                     .targetContext
                     .getExternalFilesDir(null),
-                "pencil-graphite-v3.png",
+                "pencil-graphite-v4.png",
             )
         file.outputStream().use { image.compress(Bitmap.CompressFormat.PNG, 100, it) }
         image.recycle()

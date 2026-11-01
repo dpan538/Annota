@@ -68,7 +68,11 @@ try:
                 assert hashlib.sha256(package.read('assets/' + file)).hexdigest() == seed[key]['sha256']
             dictionaries = json.loads(package.read('assets/dictionary/manifest.json'))['files']
             for file in ('en-zh.sqlite', 'zh-en.sqlite'):
-                assert hashlib.sha256(package.read('assets/dictionary/' + file)).hexdigest() == dictionaries[file]['sha256']
+                import gzip
+                asset = dictionaries[file].get('asset', file)
+                data = package.read('assets/dictionary/' + asset)
+                if asset.endswith('.pack'): data = gzip.decompress(data)
+                assert hashlib.sha256(data).hexdigest() == dictionaries[file]['sha256']
             report['zipEntries'] = len(names)
             report['nativeAbis'] = sorted({n.split('/')[1] for n in names if n.startswith('lib/') and n.endswith('.so')})
         badging = run([build_tools/'aapt', 'dump', 'badging', downloaded])

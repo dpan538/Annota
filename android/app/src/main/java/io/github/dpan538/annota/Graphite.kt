@@ -4,22 +4,27 @@ import android.graphics.*
 import kotlin.math.*
 
 /** Dry graphite coverage: no solid underpaint. Paper pores remain transparent on any page. */
-internal class Graphite {
+internal class Graphite(private val version: Int = InkGeometry.VERSION) {
     private val layers = Array(8) { Path() }
     private var previous: InkGeometry.Sample? = null
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
     private var tint = 0
     private val shader =
-        BitmapShader(paper, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT).apply {
-            setLocalMatrix(Matrix().apply { setScale(1f / 8f, 1f / 8f) })
-        }
+        BitmapShader(
+                if (version >= 4) densePaper else paper,
+                Shader.TileMode.REPEAT,
+                Shader.TileMode.REPEAT,
+            )
+            .apply { setLocalMatrix(Matrix().apply { setScale(1f / 8f, 1f / 8f) }) }
 
     fun add(sample: InkGeometry.Sample) {
         val before = previous
         for (i in layers.indices) {
             val threshold = (i + .5f) / layers.size
             fun width(s: InkGeometry.Sample): Float {
-                val deposit = .14f + .86f * s.p.coerceIn(0f, 1f).pow(.72f)
+                val pressure = s.p.coerceIn(0f, 1f)
+                val deposit =
+                    if (version >= 4) .04f + .96f * pressure else .14f + .86f * pressure.pow(.72f)
                 return s.width * sqrt((1f - threshold / deposit).coerceAtLeast(0f))
             }
             val end = sample.copy(width = width(sample))
@@ -45,7 +50,10 @@ internal class Graphite {
     companion object {
         // Fixed document-space grain size: making a broad pencil must not enlarge the pores.
         // Deterministic multi-scale paper relief, shared by live drawing, reopen and PDF export.
-        private val paper: Bitmap by lazy {
+        private val paper: Bitmap by lazy { makePaper(false) }
+        private val densePaper: Bitmap by lazy { makePaper(true) }
+
+        private fun makePaper(dense: Boolean): Bitmap {
             val size = 512
             fun noise(x: Int, y: Int): Float {
                 var h = x * 374761393 + y * 668265263
@@ -70,10 +78,12 @@ internal class Graphite {
                     val x = index % size
                     val y = index / size
                     val relief = noise(x, y) * .60f + field(x, y, 4) * .28f + field(x, y, 16) * .12f
-                    val coverage = ((relief - .27f) / .60f).coerceIn(0f, 1f).pow(1.6f)
-                    ((coverage * 135).toInt() shl 24) or 0xffffff
+                    val coverage =
+                        if (dense) ((relief - .22f) / .48f).coerceIn(0f, 1f).pow(.85f)
+                        else ((relief - .27f) / .60f).coerceIn(0f, 1f).pow(1.6f)
+                    ((coverage * if (dense) 125 else 135).toInt() shl 24) or 0xffffff
                 }
-            Bitmap.createBitmap(pixels, size, size, Bitmap.Config.ARGB_8888)
+            return Bitmap.createBitmap(pixels, size, size, Bitmap.Config.ARGB_8888)
         }
 
         private fun sink(path: Path) =

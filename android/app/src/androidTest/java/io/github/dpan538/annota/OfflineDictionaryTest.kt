@@ -122,7 +122,7 @@ class OfflineDictionaryTest {
         }
         val apk = java.util.zip.ZipFile(context.applicationInfo.sourceDir)
         apk.use {
-            assertNotNull(it.getEntry("assets/dictionary/en-zh.sqlite"))
+            assertNotNull(it.getEntry("assets/dictionary/en-zh.sqlite.pack"))
             assertNotNull(it.getEntry("assets/dictionary/zh-en.sqlite"))
             assertFalse(
                 it.entries().asSequence().any { entry ->

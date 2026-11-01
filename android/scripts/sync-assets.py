@@ -4,6 +4,7 @@ from pathlib import Path
 import shutil
 import hashlib
 import json
+import gzip
 root = Path(__file__).resolve().parents[1]
 source = root.parent / "design/dictionary"
 target = root / "app/src/main/assets/dictionary"
@@ -16,5 +17,11 @@ for directory in ("bundle", "licenses", "sources"):
     dest.mkdir(parents=True, exist_ok=True)
     for file in (source / directory).iterdir():
         if file.is_file():
-            shutil.copyfile(file, dest / file.name)
+            record = manifest["files"].get(file.name, {}) if directory == "bundle" else {}
+            asset = record.get("asset", file.name)
+            if asset.endswith(".pack") and asset != file.name:
+                (dest / asset).write_bytes(gzip.compress(file.read_bytes(), mtime=0))
+                (dest / file.name).unlink(missing_ok=True)
+            else:
+                shutil.copyfile(file, dest / file.name)
 print("Verified and copied offline dictionaries, sources and licenses")

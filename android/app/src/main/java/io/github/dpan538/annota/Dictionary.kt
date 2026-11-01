@@ -8,12 +8,20 @@ import java.util.Locale
 import org.json.JSONObject
 
 class Dictionary(private val context: Context) {
-    data class Entry(val word: String, val pronunciation: String, val meaning: String)
+    data class Entry(
+        val word: String,
+        val pronunciation: String,
+        val meaning: String,
+        val source: String = "",
+    )
+
+    data class Part(val text: String, val reading: DictionaryReading?)
 
     data class Result(
         val entries: List<Entry>,
         val suggestions: List<String>,
         val reading: DictionaryReading? = null,
+        val parts: List<Part> = emptyList(),
     )
 
     private val readings by lazy { DictionaryReadings(context) }
@@ -28,7 +36,119 @@ class Dictionary(private val context: Context) {
             if (result.entries.isEmpty() && phrase != null)
                 Result(listOf(phrase.second), emptyList())
             else result
-        return resolved.copy(reading = readings.present(text, resolved, active, phrase))
+        if (resolved.entries.isNotEmpty())
+            return resolved.copy(reading = readings.present(text, resolved, active, phrase))
+        val parts = decompose(text, active)
+        return if (parts.any { it.reading != null })
+            resolved.copy(suggestions = emptyList(), parts = parts)
+        else resolved
+    }
+
+    /**
+     * Exact phrase -> explicit source inflection -> longest covered chunks. Never invent a sentence
+     * translation.
+     */
+    private fun decompose(text: String, surrounding: LookupContext?): List<Part> {
+        if (text.length > MAX_QUERY_LENGTH) return emptyList()
+        val value = normalize(text)
+        if (!value.matches(Regex("[a-z0-9' -]+"))) return emptyList()
+        val tokens = value.split(Regex("[ -]+"))
+        if (tokens.size !in 2..16) return emptyList()
+        SQLiteDatabase.openDatabase(
+                File(dir, "en-zh.sqlite").path,
+                null,
+                SQLiteDatabase.OPEN_READONLY,
+            )
+            .use { db ->
+                val cache = mutableMapOf<String, Entry?>()
+                fun exact(key: String): Entry? {
+                    if (cache.containsKey(key)) return cache[key]
+                    fun find(table: String, column: String): Entry? =
+                        db.rawQuery(
+                                "SELECT e.word,e.phonetic,e.translation,e.definition,e.source FROM entries e JOIN $table a ON e.id=a.entry_id WHERE a.$column=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 1",
+                                arrayOf(key),
+                            )
+                            .use { c ->
+                                if (!c.moveToFirst()) null
+                                else
+                                    Entry(
+                                        c.getString(0),
+                                        c.getString(1).orEmpty(),
+                                        c.getString(2).orEmpty().ifBlank {
+                                            c.getString(3).orEmpty()
+                                        },
+                                        c.getString(4).orEmpty(),
+                                    )
+                            }
+                    return (find("aliases", "boundary_key") ?: find("forms", "key")).also {
+                        cache[key] = it
+                    }
+                }
+                fun match(start: Int, end: Int): Entry? {
+                    val words = tokens.subList(start, end)
+                    exact(words.joinToString(" "))?.let {
+                        return it
+                    }
+                    // Use only lemmas attested in the bundled source, never unverified suffix
+                    // chopping.
+                    if (words.size > 1) {
+                        val bases =
+                            db.rawQuery(
+                                    "SELECT e.word FROM entries e JOIN forms f ON e.id=f.entry_id WHERE f.key=? LIMIT 8",
+                                    arrayOf(words.last()),
+                                )
+                                .use { c ->
+                                    buildList { while (c.moveToNext()) add(c.getString(0)) }
+                                }
+                        bases.forEach { base ->
+                            exact((words.dropLast(1) + base).joinToString(" "))?.let {
+                                return it
+                            }
+                        }
+                    }
+                    return null
+                }
+                data class Chunk(val start: Int, val end: Int, val entry: Entry?)
+                data class Path(val covered: Int, val chunks: List<Chunk>)
+                val best = arrayOfNulls<Path>(tokens.size + 1)
+                best[tokens.size] = Path(0, emptyList())
+                for (start in tokens.lastIndex downTo 0) {
+                    val rest = best[start + 1]!!
+                    var chosen =
+                        Path(rest.covered, listOf(Chunk(start, start + 1, null)) + rest.chunks)
+                    for (end in start + 1..minOf(tokens.size, start + 8)) {
+                        val entry = match(start, end) ?: continue
+                        val tail = best[end]!!
+                        val option =
+                            Path(
+                                tail.covered + end - start,
+                                listOf(Chunk(start, end, entry)) + tail.chunks,
+                            )
+                        if (
+                            option.covered > chosen.covered ||
+                                (option.covered == chosen.covered &&
+                                    option.chunks.size < chosen.chunks.size)
+                        )
+                            chosen = option
+                    }
+                    best[start] = chosen
+                }
+                return best[0]!!.chunks.map { chunk ->
+                    val selected = tokens.subList(chunk.start, chunk.end).joinToString(" ")
+                    val local =
+                        LookupContext(
+                            selected,
+                            (surrounding?.before.orEmpty() + tokens.take(chunk.start)).takeLast(22),
+                            (tokens.drop(chunk.end) + surrounding?.after.orEmpty()).take(22),
+                        )
+                    Part(
+                        selected,
+                        chunk.entry?.let {
+                            readings.present(selected, Result(listOf(it), emptyList()), local, null)
+                        },
+                    )
+                }
+            }
     }
 
     private fun phrase(context: LookupContext): Pair<String, Entry>? {
@@ -58,7 +178,7 @@ class Dictionary(private val context: Context) {
                 val matches = mutableListOf<Pair<String, Entry>>()
                 candidates.forEach { value ->
                     db.rawQuery(
-                            "SELECT e.word,e.phonetic,e.translation,e.definition FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.boundary_key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 1",
+                            "SELECT e.word,e.phonetic,e.translation,e.definition,e.source FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.boundary_key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 1",
                             arrayOf(boundaryKey(value)),
                         )
                         .use { c ->
@@ -71,6 +191,7 @@ class Dictionary(private val context: Context) {
                                             c.getString(2).orEmpty().ifBlank {
                                                 c.getString(3).orEmpty()
                                             },
+                                            c.getString(4).orEmpty(),
                                         )
                         }
                 }
@@ -101,7 +222,13 @@ class Dictionary(private val context: Context) {
             val hash = manifest.getJSONObject(name).getString("sha256")
             if (!f.exists() || sha256(f) != hash) {
                 atomicWrite(f) { out ->
-                    context.assets.open("dictionary/$name").use { it.copyTo(out) }
+                    val asset = manifest.getJSONObject(name).optString("asset", name)
+                    context.assets.open("dictionary/$asset").use { input ->
+                        val source =
+                            if (asset.endsWith(".pack")) java.util.zip.GZIPInputStream(input)
+                            else input
+                        source.use { it.copyTo(out) }
+                    }
                 }
                 check(sha256(f) == hash) { "词库校验失败" }
             }
@@ -135,6 +262,7 @@ class Dictionary(private val context: Context) {
                                             s("word"),
                                             s("phonetic"),
                                             s("translation").ifBlank { s("definition") },
+                                            s("source"),
                                         )
                                 )
                             }
@@ -243,31 +371,12 @@ class Dictionary(private val context: Context) {
                 .replace('’', '\'')
                 .replace("\u00ad", "")
                 .replace(Regex("\\s+"), " ")
-                .trim(
-                    ' ',
-                    ',',
-                    ';',
-                    ':',
-                    '!',
-                    '?',
-                    '"',
-                    '“',
-                    '”',
-                    '(',
-                    ')',
-                    '[',
-                    ']',
-                    '{',
-                    '}',
-                )
+                .trim(' ', ',', ';', ':', '!', '?', '"', '“', '”', '(', ')', '[', ']', '{', '}')
 
         fun boundaryKey(value: String): String = normalize(value).replace(Regex("[ -]+"), " ")
 
         fun queryKeys(value: String): List<String> =
-            listOf(
-                    value,
-                    value.replace(Regex("(?<=[\\p{L}])[-‐‑–—]\\s+(?=[\\p{L}])"), ""),
-                )
+            listOf(value, value.replace(Regex("(?<=[\\p{L}])[-‐‑–—]\\s+(?=[\\p{L}])"), ""))
                 // Preserve lexical periods (i.e., P.M.) before stripping sentence punctuation.
                 .flatMap { listOf(normalizeLiteral(it), normalize(it)) }
                 .distinct()

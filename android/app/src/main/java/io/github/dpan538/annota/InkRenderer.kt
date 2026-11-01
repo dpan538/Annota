@@ -15,7 +15,8 @@ class InkRenderer {
 
     private class Cached(mark: Mark) {
         val stream = InkGeometry.Stream(mark)
-        val graphite = if (mark.tool == "pencil" && mark.inkVersion >= 3) Graphite() else null
+        val graphite =
+            if (mark.tool == "pencil" && mark.inkVersion >= 3) Graphite(mark.inkVersion) else null
         val grainStream =
             if (mark.tool == "pencil" && graphite == null)
                 InkGeometry.GrainStream(mark.width, mark.inkVersion)
