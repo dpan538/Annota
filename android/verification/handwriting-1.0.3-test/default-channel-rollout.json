@@ -1,0 +1,20 @@
+{
+  "verifiedAt": "2026-11-01T10:48:03.492215+00:00",
+  "authorization": "Maintainer requested default Beta availability for existing stable users.",
+  "endpoint": "https://api.github.com/repos/dpan538/Annota/releases/latest",
+  "latestTag": "v1.0.3-test",
+  "githubPrerelease": false,
+  "productChannel": "Beta",
+  "lastStable": "1.0.2",
+  "stableClientVersionCode": 13,
+  "candidateVersionCode": 14,
+  "stableClientDiscoveryPolicyCompatible": true,
+  "verificationScope": "Anonymous production endpoint and full asset checks against 1.0.2 source policy; not a new device UI test. Existing signed upgrade and regression evidence remains unchanged.",
+  "apkUnchanged": true,
+  "sha256": "66dd5b62f18caf80260163f4bdbf66712748444ddf1004cae81816eb9ddfc1d7",
+  "bytes": 143073620,
+  "sameCertificate": true,
+  "betaLabelInTitleAndNotes": true,
+  "automaticBackgroundNotification": false,
+  "installationRequiresUserAction": true
+}

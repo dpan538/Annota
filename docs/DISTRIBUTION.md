@@ -2,11 +2,11 @@
 
 ## 当前稳定版与测试版
 
-当前稳定版本仍为 [1.0.2](https://github.com/dpan538/Annota/releases/tag/v1.0.2)，versionCode **13**。稳定更新通道保持 `/releases/latest`，不将本轮 Beta 推送给稳定版用户。
+当前稳定版本仍为 [1.0.2](https://github.com/dpan538/Annota/releases/tag/v1.0.2)，versionCode **13**。默认更新入口 `/releases/latest` 现指向 1.0.3-test Beta，让正式版用户直接测试完整更新流程。
 
-本轮为 [1.0.3-test Beta](https://github.com/dpan538/Annota/releases/tag/v1.0.3-test)，versionCode **14**，GitHub 必须标为 **Pre-release**。本轮完善现有笔种、局部擦除和签名掌触，新增 942 条原创词组 / 术语与 682 个别名，并提供需用户下载模型的可选英汉句子翻译。测试包使用非调试 Release 构建、沿用已有安装证书；`Annota-1.0.3-test.apk`、`SHA256SUMS.txt` 和 `annota-update.json` 置于同一个预发布版本。构建类型与发布通道分别标注，不能把 Release 构建称为正式稳定版。[下载页](../DOWNLOAD.md)提供独立的稳定版和 Beta 入口。
+本轮为 [1.0.3-test Beta](https://github.com/dpan538/Annota/releases/tag/v1.0.3-test)，versionCode **14**，按维护者本轮明确要求，通过 GitHub **Latest** 默认分发；为兼容 1.0.2 客户端，GitHub 元数据设为 `prerelease=false`，但标题、说明和应用继续明确标注 **Beta 测试版**，并未宣称稳定。本轮完善现有笔种、局部擦除和签名掌触，新增 942 条原创词组 / 术语与 682 个别名，并提供需用户下载模型的可选英汉句子翻译。测试包使用非调试 Release 构建、沿用已有安装证书；`Annota-1.0.3-test.apk`、`SHA256SUMS.txt` 和 `annota-update.json` 置于同一个 Beta Release。构建类型与发布通道分别标注，不能把 Release 构建称为正式稳定版。[下载页](../DOWNLOAD.md)提供独立的稳定版和 Beta 入口。
 
-1.0.3-test 通过 Release 列表读取最近 30 项发布，允许非草稿 Pre-release，并按更高的整数 versionCode 选择更新；1.0.2 正式版继续使用 `/releases/latest`，不会发现这个预发布。稳定版用户通过明确的 Beta APK 链接手动同证书覆盖安装进入测试。未来稳定版本必须使用 **大于 14** 的 versionCode，才能让 Beta 用户正常覆盖升级，不要求卸载。
+1.0.3-test 通过 Release 列表读取最近 30 项发布，允许非草稿 Pre-release，并按更高的整数 versionCode 选择更新；1.0.2 正式版继续使用 `/releases/latest`，现能发现同一 Beta 更新。旧客户端没有后台更新通知，仍由用户点击检查、确认下载，再经 Android 安装器覆盖安装。未来稳定版本必须使用 **大于 14** 的 versionCode，才能让 Beta 用户正常覆盖升级，不要求卸载。
 
 1.0.0 是首个正式版，1.0.1 修正阅读颜色，1.0.2 增加手写签名与受限 PDF 兼容性；其历史证据保留在[签名验收](PDF-SIGNATURE-ACCEPTANCE.md)。
 
@@ -45,10 +45,10 @@
 ## GitHub 端
 
 - 正式标签：`vX.Y.Z`，附清晰的版本说明。
-- 本轮测试标签：`v1.0.3-test`，`prerelease=true`，不设为 latest；附件和更新清单均使用真实测试包的名称、versionCode 与摘要。
+- 本轮测试标签：`v1.0.3-test`，`prerelease=false`、设为 Latest 以兼容已安装的正式版更新器，标题和应用保留 Beta 标识；附件和更新清单均使用真实测试包的名称、versionCode 与摘要。
 - 附件：签名 `Annota-X.Y.Z.apk`、`SHA256SUMS.txt`，以及客户端必需的 `annota-update.json`（由 `android/scripts/make-update-manifest.py` 从真实签名 APK 生成）。
 - 使用公开 Releases API：`GET https://api.github.com/repos/dpan538/Annota/releases/latest`，没有 Token 也能读取公开发布信息，但需处理限流。
-- `latest` 用于正式生产版本；安装开发/预览包的用户进入测试通道，允许 Pre-release，生产包不默认推送预览。
+- `latest` 是已安装正式版的默认入口；本轮明确授权向该入口提供 Beta。后续正式包必须使用更高 versionCode 并替换 Latest；不按预计一小时时限自动宣称正式发布。
 - 只接受白名单仓库的 HTTPS 下载资源。GitHub 可能使用受控资源跳转，下载器要明确处理跳转和超时。
 - APK 自带的代码签名用于升级身份校验；SHA-256 用于文件完整性，不能单独替代签名信任。
 

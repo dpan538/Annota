@@ -11,7 +11,7 @@
 
 [**下载 1.0.3-test Beta APK**](https://github.com/dpan538/Annota/releases/download/v1.0.3-test/Annota-1.0.3-test.apk) · [下载 1.0.2 正式版](https://github.com/dpan538/Annota/releases/download/v1.0.2/Annota-1.0.2.apk) · [下载与安装](DOWNLOAD.md) · [真机测试清单](docs/BETA-1.0.3-TEST-CHECKLIST.md) · [English](#english)
 
-本轮为 **1.0.3-test Beta 测试版**（versionCode 14），GitHub 标记为 Pre-release；**稳定通道仍是 1.0.2 正式版**（versionCode 13），不会自动向正式版用户推送此 Beta。测试包沿用已有证书，可覆盖升级；安装前请先制作本地备份。
+本轮为 **1.0.3-test Beta 测试版**（versionCode 14），现已通过 GitHub Latest 向正式版用户的默认更新检查提供。**本包仍是 Beta，不是正式稳定版**；最近正式版为 1.0.2（versionCode 13）。测试包沿用已有证书，可覆盖升级；安装前请先制作本地备份。
 
 Beta 改善现有笔种的稳定性、压感和笔触质感，扩充 **942 条离线词组与术语、682 个词形 / 拼写别名**；修正局部橡皮、签名掌触、空白笔记导出和竖长图片比例。可选英汉句子翻译由 [Google Translate](https://cloud.google.com/translate) 提供，使用 ML Kit 端侧模型并复用查词面板，首次需下载模型。详见 [更新记录](CHANGELOG.md) 与 [句子翻译说明](docs/TRANSLATION.md)。
 
@@ -91,7 +91,7 @@ Beta 改善现有笔种的稳定性、压感和笔触质感，扩充 **942 条�
 ## 数据、更新与反馈
 
 - **本地优先**：没有账号、云同步或协作服务，文档与手写内容不上传。卸载或清除数据前，请先导出或制作本地备份；恢复时校验内容并合并导入。
-- **GitHub 更新**：在“设置 → 关于”检查版本。下载后校验包名、版本、SHA-256 与签名，再交给 Android 系统覆盖安装。正式版保持稳定通道；本轮 Beta 单独标明“测试版”，需从上方测试版入口主动安装。
+- **GitHub 更新**：在“设置 → 关于”检查版本。下载后校验包名、版本、SHA-256 与签名，再交给 Android 系统覆盖安装。本轮默认更新提供 1.0.3-test，并明确标明“Beta 测试版”；检查后由用户确认下载与安装，无需手动切换通道。
 - **自动反馈**：在应用内填写并点击提交，由 Vercel 接收服务创建公开 GitHub Issue。真实收到后自动提示“已收到反馈”；网络或服务失败会提示并保留草稿，无需手动检查结果。请勿填写私人文档或联系方式。
 
 普通阅读、书写和词典查询不初始化翻译 SDK。启用句子翻译后，Google ML Kit 需要联网下载模型，也可能发送 API 使用与性能指标；输入与译文在设备上处理，不上传到 Google。首次安装并不自带句子模型。应用另有用户主动触发的更新与反馈联网。详见 [隐私说明](docs/PRIVACY.md)、[分发与签名](docs/DISTRIBUTION.md) 和 [首版验收](docs/INTEGRATION-ACCEPTANCE.md)。
@@ -160,4 +160,4 @@ python3 -m unittest discover -s feedback-service -p test_github_relay.py -v
 - PDF open / share intents, local backup / restore and a resizable continue-reading home widget.
 - GitHub updates with verified in-place installation; automatic feedback acknowledgement after a real GitHub Issue is created.
 
-[Download 1.0.3-test Beta](https://github.com/dpan538/Annota/releases/download/v1.0.3-test/Annota-1.0.3-test.apk) · [Download 1.0.2 stable](https://github.com/dpan538/Annota/releases/download/v1.0.2/Annota-1.0.2.apk). The features above describe the Beta, a GitHub Pre-release with versionCode 14; the stable channel remains 1.0.2 (13). It refines ink and phrase lookup and fixes swept erasing, signature palm handling, blank-notebook export and tall-image proportions. Back up before testing; use the [device checklist](docs/BETA-1.0.3-TEST-CHECKLIST.md). Target-device validation remains separate from automated tests. Version 1.0.2 added handwritten signatures; 1.0.0 was the first stable release and 1.0.1 removed the warm color cast. All screenshots above use the same blue theme and the bundled original *Attention Is All You Need* PDF. Code is MIT; original artwork and guide are CC BY-NC 4.0.
+[Download 1.0.3-test Beta](https://github.com/dpan538/Annota/releases/download/v1.0.3-test/Annota-1.0.3-test.apk) · [Download 1.0.2 stable](https://github.com/dpan538/Annota/releases/download/v1.0.2/Annota-1.0.2.apk). The features above describe the Beta, versionCode 14, now offered through GitHub Latest to existing stable installations when they check for updates. It remains a Beta; the last stable version is 1.0.2 (13). It refines ink and phrase lookup and fixes swept erasing, signature palm handling, blank-notebook export and tall-image proportions. Back up before testing; use the [device checklist](docs/BETA-1.0.3-TEST-CHECKLIST.md). Target-device validation remains separate from automated tests. Version 1.0.2 added handwritten signatures; 1.0.0 was the first stable release and 1.0.1 removed the warm color cast. All screenshots above use the same blue theme and the bundled original *Attention Is All You Need* PDF. Code is MIT; original artwork and guide are CC BY-NC 4.0.

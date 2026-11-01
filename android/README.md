@@ -1,6 +1,6 @@
 # Annota Android
 
-Native Kotlin application ID: `io.github.dpan538.annota`. Minimum Android 10 / API 29, compile / target API 36. Current source targets **1.0.3-test Beta (14)**, a GitHub Pre-release; stable remains **1.0.2 (13)**. Version 1.0.0 was the first stable release. The earlier 0.1.0-dev build used a simplified functional-test interface and did not meet the approved design. This folder contains the native implementation; distribution follows the verified GitHub Release workflow in [distribution notes](../docs/DISTRIBUTION.md).
+Native Kotlin application ID: `io.github.dpan538.annota`. Minimum Android 10 / API 29, compile / target API 36. Current source targets **1.0.3-test Beta (14)**, offered via GitHub Latest to existing stable installations; the last stable version remains **1.0.2 (13)**. Version 1.0.0 was the first stable release. The earlier 0.1.0-dev build used a simplified functional-test interface and did not meet the approved design. This folder contains the native implementation; distribution follows the verified GitHub Release workflow in [distribution notes](../docs/DISTRIBUTION.md).
 
 Version 1.0.3-test Beta (14) refines the existing pens with adaptive stabilization, smoothed pressure/speed response, versioned variable-width vector geometry and subtle deterministic pencil grain. Canvas and PDF export share geometry; old marks retain the legacy renderer. It also fixes swept local erasing, signature palm takeover, blank-notebook PDF export and proportional placement of tall images. No automatic glyph rewriting, handwriting layout changes or proprietary pen haptics are enabled. Target-device review follows the [Beta checklist](../docs/BETA-1.0.3-TEST-CHECKLIST.md).
 
@@ -55,9 +55,9 @@ Feedback posts to the deployed Vercel HTTPS relay only when the user clicks Subm
 
 Public stable APKs are non-debuggable release builds. The existing certificate is retained by explicit user decision so development users can upgrade in place. Local debug builds normally use the developer machine's own key and cannot overwrite a public install if the certificate differs. No signing material is committed.
 
-The 1.0.3-test Beta also uses a non-debuggable Release build and the existing certificate, but must be labeled Beta in the app/repository and `prerelease=true` on GitHub. Do not promote it to latest or change the stable channel from 1.0.2. Publish `Annota-1.0.3-test.apk`, `SHA256SUMS.txt` and its generated `annota-update.json` together under `v1.0.3-test`.
+The 1.0.3-test Beta also uses a non-debuggable Release build and the existing certificate, but must be labeled Beta in the app/repository and remains Beta even though this rollout explicitly uses GitHub `prerelease=false` and Latest so the installed 1.0.2 updater can discover it. Publish `Annota-1.0.3-test.apk`, `SHA256SUMS.txt` and its generated `annota-update.json` together under `v1.0.3-test`.
 
-The `-test` channel reads the latest 30 releases, allows non-draft prereleases, and chooses a higher integer versionCode. Stable 1.0.2 continues to read `/releases/latest`; entering Beta is an intentional manual same-certificate APK update. A future stable release must have versionCode greater than 14 to upgrade Beta installations in place. No extra channel setting is introduced.
+The `-test` channel reads the latest 30 releases, allows non-draft prereleases, and chooses a higher integer versionCode. Stable 1.0.2 continues to read `/releases/latest`; that default endpoint now offers this Beta without a channel switch. Checking, downloading and installation remain user-triggered. A future stable release must have versionCode greater than 14 to upgrade Beta installations in place. No extra channel setting is introduced.
 
 Production signing uses only environment variables:
 
@@ -73,7 +73,7 @@ python3 scripts/make-update-manifest.py app/build/outputs/apk/release/app-releas
 
 Signing material is supplied locally and kept outside Git. Without the environment variables `assembleRelease` produces an unsigned artifact, which must not be distributed as installable. Keep the production key and an offline backup permanently; future updates must use it.
 
-A real stable Release at `dpan538/Annota` must include the signed APK **and** the generated `annota-update.json`. App check reads the latest stable Release only on user request, shows notes, and waits for a download action. Download permits only HTTPS GitHub asset hosts, enforces size and cancellation, checks SHA-256, cryptographic APK signature (apksig), exact package/version and the currently installed signer before asking the Android installer. Install permission refusal leaves the verified file available for retry. Every in-place upgrade must retain the installed signing identity. Gradle builds the artifact; publishing is a separate verified Release step.
+A real stable Release at `dpan538/Annota` must include the signed APK **and** the generated `annota-update.json`. App check reads GitHub Latest (currently the explicitly authorized Beta rollout) only on user request, shows notes, and waits for a download action. Download permits only HTTPS GitHub asset hosts, enforces size and cancellation, checks SHA-256, cryptographic APK signature (apksig), exact package/version and the currently installed signer before asking the Android installer. Install permission refusal leaves the verified file available for retry. Every in-place upgrade must retain the installed signing identity. Gradle builds the artifact; publishing is a separate verified Release step.
 
 404, rate limit, offline/network error, cancellation, hash/signature mismatch and installation permission states have explicit messages. Public stable releases, anonymous downloads and real Android installer upgrades are recorded in `../docs/INTEGRATION-ACCEPTANCE.md` and `../docs/NEUTRAL-READING-ACCEPTANCE.md`; local fixtures alone do not establish publication.
 
@@ -111,7 +111,7 @@ The reader uses bounded continuous vertical rows (including two-page spreads), v
 
 PaperMenu is an anchored rounded preview panel shared by creation, insertion and template changes; it handles IME resize and removes its host layout observer when dismissed. Buttons, panels and navigation use linear 100–180 ms motion; fling uses Android scrolling physics. System-disabled animations are respected and ink is immediate.
 
-Development/preview builds list the latest 30 GitHub releases and accept non-draft prereleases with an update manifest, selecting the highest larger integer versionCode. Production stable builds retain the stable-only endpoint. Every install verifies the APK again, including restored pending packages. Publish APK + SHA256SUMS.txt + annota-update.json; --allow-debug is explicitly for labelled development previews, never production.
+Development/preview builds list the latest 30 GitHub releases and accept non-draft prereleases with an update manifest, selecting the highest larger integer versionCode. Production stable builds retain the Latest endpoint, currently pointing to the authorized Beta rollout. Every install verifies the APK again, including restored pending packages. Publish APK + SHA256SUMS.txt + annota-update.json; --allow-debug is explicitly for labelled development previews, never production.
 
 0.1.4 needs one manual overwrite because its old binary excludes prereleases. Current acceptance: [continuous reading/update record](../docs/CONTINUOUS-READER-ACCEPTANCE.md). The earlier 316-cycle log remains 0.1.4 evidence, not a repeated soak of this reader.
 
