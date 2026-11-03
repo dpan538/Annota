@@ -1,0 +1,16 @@
+{
+  "commit": "b7699808106a4ce843fc7f0e8e5d87fcb84cc636",
+  "upstream": "https://github.com/bjascob/LemmInflect",
+  "files": [
+    "lemminflect/resources/lemma_lu.csv.gz",
+    "lemminflect/resources/lemma_overrides.csv",
+    "lemminflect/codecs/LemmaLUCodec.py",
+    "LICENSE"
+  ],
+  "raw_rows": 80676,
+  "merged_rows": 80760,
+  "unique_forms": 70064,
+  "nonself_pairs": 41024,
+  "sha256": "54bdc9e10c5b707678bee555fd5207c2a097976bf1bbb1770be8ae46ae93dc39",
+  "transformation": "Read upstream lemma_lu.csv.gz, preserve multiple lemmas and POS; map noun/verb/adj/adv/aux to UD POS; apply upstream lemma_overrides.csv; deterministic JSONL gzip; no OOV guesses or neural model."
+}

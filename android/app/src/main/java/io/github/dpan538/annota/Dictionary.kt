@@ -31,6 +31,11 @@ class Dictionary(private val context: Context) {
 
     private val wordnet by lazy { WordNetDictionary(File(dir, "wordnet.sqlite")) }
 
+    private val wiktionary by lazy { WordNetDictionary(File(dir, "wiktionary.sqlite"), "wiktionary") }
+
+    private fun lexical(text: String, lemmas: List<String>, context: LookupContext?) =
+        wiktionary.lookup(text, lemmas, context) + wordnet.lookup(text, lemmas, context)
+
     private val readings by lazy { DictionaryReadings(context) }
 
     private val dir = File(context.filesDir, "dictionary").apply { mkdirs() }
@@ -52,13 +57,13 @@ class Dictionary(private val context: Context) {
             )
         }
         val result = query(text)
-        val lexical = wordnet.lookup(text, result.entries.map { it.word }, context)
+        val lexical = lexical(text, result.entries.map { it.word }, context)
         val active = context?.takeIf { it.matches(text) }
         val phrase = if (active == null || text.length > MAX_QUERY_LENGTH) null else phrase(active)
         val base =
             if (result.entries.isEmpty() && lexical.isNotEmpty())
                 Result(
-                    lexical.map { Entry(it.word, "", it.label + " " + it.text, "wordnet") },
+                    lexical.map { Entry(it.word, "", it.label + " " + it.text, it.source) },
                     emptyList(),
                 )
             else result
@@ -81,25 +86,21 @@ class Dictionary(private val context: Context) {
      */
     private fun decompose(text: String, surrounding: LookupContext?): List<Part> {
         if (text.length > MAX_QUERY_LENGTH) return emptyList()
-        val value = normalize(text)
-        if (!value.matches(Regex("[a-z0-9' -]+"))) return emptyList()
-        val tokens = value.split(Regex("[ -]+"))
-        if (tokens.size !in 2..16) return emptyList()
-        val originalTokens =
-            Regex("[A-Za-z0-9']+")
-                .findAll(
-                    java.text.Normalizer.normalize(text, java.text.Normalizer.Form.NFKC)
-                        .replace("\u00ad", "")
-                )
-                .map { it.value }
-                .toList()
-                .takeIf { it.size == tokens.size } ?: tokens
+        // Keep punctuation as boundaries, not a reason to reject the entire selection.
+        // A sentence's full text goes to the offline translator; this remains a dictionary view.
+        val clean = Normalizer.normalize(text, Normalizer.Form.NFKC).replace("\u00ad", "")
+        if (clean.any { it in '\u3400'..'\u9fff' }) return emptyList()
+        val matches = Regex("[A-Za-z0-9]+(?:['’][A-Za-z]+)?").findAll(clean).toList()
+        val originalTokens = matches.map { it.value }
+        val tokens = originalTokens.map(::normalize)
+        if (tokens.size !in 2..40) return emptyList()
         SQLiteDatabase.openDatabase(
                 File(dir, "en-zh.sqlite").path,
                 null,
                 SQLiteDatabase.OPEN_READONLY,
             )
             .use { db ->
+            SQLiteDatabase.openDatabase(File(dir, "wiktionary.sqlite").path, null, SQLiteDatabase.OPEN_READONLY).use { wiki ->
                 val cache = mutableMapOf<String, Entry?>()
                 fun exact(key: String): Entry? {
                     if (cache.containsKey(key)) return cache[key]
@@ -120,11 +121,26 @@ class Dictionary(private val context: Context) {
                                         c.getString(4).orEmpty(),
                                     )
                             }
-                    return (find("aliases", "boundary_key") ?: find("forms", "key")).also {
+                    val extra = if (' ' in key) wiki.rawQuery(
+                        "SELECT word,pos,meaning FROM senses WHERE word=? ORDER BY rank LIMIT 1", arrayOf(key),
+                    ).use { c -> if (c.moveToFirst()) Entry(c.getString(0), "", c.getString(1) + ". " + c.getString(2), "wiktionary") else null } else null
+                    return (find("aliases", "boundary_key") ?: find("forms", "key") ?: extra).also {
                         cache[key] = it
                     }
                 }
+                val lemmaCache = mutableMapOf<String, List<String>>()
+                fun lemmas(word: String): List<String> = lemmaCache.getOrPut(word) {
+                    db.rawQuery(
+                        "SELECT DISTINCT e.word FROM entries e JOIN forms f ON e.id=f.entry_id WHERE f.key=? LIMIT 8",
+                        arrayOf(word),
+                    ).use { c -> buildList { while (c.moveToNext()) add(c.getString(0)) } }
+                }
                 fun match(start: Int, end: Int): Entry? {
+                    // A comma/semicolon/full stop separates phrases. Hyphens and spaces may join.
+                    for (i in start until end - 1) {
+                        val gap = clean.substring(matches[i].range.last + 1, matches[i + 1].range.first)
+                        if (gap.any { !it.isWhitespace() && it !in "-‐‑‒–—" }) return null
+                    }
                     val words = tokens.subList(start, end)
                     exact(words.joinToString(" "))?.let {
                         return it
@@ -132,17 +148,10 @@ class Dictionary(private val context: Context) {
                     // Use only lemmas attested in the bundled source, never unverified suffix
                     // chopping.
                     if (words.size > 1) {
-                        val bases =
-                            db.rawQuery(
-                                    "SELECT e.word FROM entries e JOIN forms f ON e.id=f.entry_id WHERE f.key=? LIMIT 8",
-                                    arrayOf(words.last()),
-                                )
-                                .use { c ->
-                                    buildList { while (c.moveToNext()) add(c.getString(0)) }
-                                }
-                        bases.forEach { base ->
-                            exact((words.dropLast(1) + base).joinToString(" "))?.let {
-                                return it
+                        for (index in words.indices) {
+                            for (base in lemmas(words[index])) {
+                                val candidate = words.toMutableList().apply { set(index, base) }
+                                exact(candidate.joinToString(" "))?.let { return it }
                             }
                         }
                     }
@@ -184,19 +193,20 @@ class Dictionary(private val context: Context) {
                     Part(
                         selected,
                         readings.acronym(selected, local)
-                            ?: chunk.entry?.let {
-                                readings.present(
-                                    selected,
-                                    Result(listOf(it), emptyList()),
-                                    local,
-                                    null,
-                                    wordnet.lookup(selected, listOf(it.word), local),
-                                )
+                            ?: run {
+                                // Do not throw away the other senses/lemmas after segmentation.
+                                val entries = query(selected).entries.ifEmpty { listOfNotNull(chunk.entry) }
+                                val lexical = lexical(selected, entries.map { it.word }, local)
+                                val resolved = entries.ifEmpty {
+                                    lexical.map { Entry(it.word, "", it.label + " " + it.text, it.source) }
+                                }
+                                readings.present(selected, Result(resolved, emptyList()), local, null, lexical)
                             },
                         local,
                     )
                 }
             }
+        }
     }
 
     private fun phrase(context: LookupContext): Pair<String, Entry>? {
@@ -265,7 +275,7 @@ class Dictionary(private val context: Context) {
                     }
                 )
                 .getJSONObject("files")
-        listOf("en-zh.sqlite", "zh-en.sqlite", "wordnet.sqlite").forEach { name ->
+        listOf("en-zh.sqlite", "zh-en.sqlite", "wordnet.sqlite", "wiktionary.sqlite").forEach { name ->
             val f = File(dir, name)
             val hash = manifest.getJSONObject(name).getString("sha256")
             if (!f.exists() || sha256(f) != hash) {

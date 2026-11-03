@@ -218,6 +218,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private var searchHits = emptyList<SearchHit>()
     private var currentSearchHit = -1
     var onSelectionAdjust: () -> Unit = {}
+    var onSelectionCleared: () -> Unit = {}
+    private var cancelledTextSelection = false
     var onNavigationChanged: (Boolean) -> Unit = {}
     private val backLocations = ArrayDeque<Viewport>()
     @Volatile private var epoch = 0
@@ -290,9 +292,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         executor.queue.clear()
         pending.clear()
         pendingWords.clear()
-        selected = emptyList()
-        selectionStart = null
-        magnifier?.dismiss()
+        clearSelection()
         links.evictAll()
         cache.evictAll()
         tiles.evictAll()
@@ -449,8 +449,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         cancelStroke()
         inkRenderer.invalidate()
         stopMotion()
-        selected = emptyList()
-        selectionStart = null
+        clearSelection()
         book.current = book.current.coerceIn(0, book.pages.lastIndex)
         pendingAnchor = Anchor(book.pages[book.current].id, 0f)
         geometry = null
@@ -594,6 +593,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     private fun scrollToPosition(target: Float, animated: Boolean) {
+        clearSelection()
         val layout = ensureGeometry() ?: return
         stopMotion()
         val destination = target.coerceIn(0f, maxScroll(layout))
@@ -724,6 +724,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        clearSelection()
         cancelStroke()
         pendingAnchor = captureAnchor()
         if (geometry != null) restorePan = panX / max(1, oldw)
@@ -1029,6 +1030,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     fun clearSelection() {
+        onSelectionCleared()
         selected = emptyList()
         selectionStart = null
         selectionText = null
@@ -1734,6 +1736,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 maxPointers = 1
                 moved = false
                 cancelled = false
+                cancelledTextSelection = false
                 if (browsing && e.pointerCount == 1) {
                     val handles = selectionHandles()
                     val hit =
@@ -1757,9 +1760,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                         }
                     }
                 }
-                selected = emptyList()
-                selectionText = null
-                selectionStart = null
+                cancelledTextSelection = selected.isNotEmpty()
+                clearSelection()
                 active = placements.firstOrNull { it.bounds.contains(e.x, e.y) }
                 active?.let { onActivePage(it.index) }
                 val r = rulerLocal(e.x, e.y)
@@ -2088,6 +2090,16 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                             "toolbar" -> onToolbarToggle()
                         }
                         if (!readOnly) onChanged()
+                    } else if (
+                        cancelledTextSelection && !moved && maxPointers == 1 && selected.isEmpty() &&
+                            (readOnly || active?.let { placement ->
+                                val p = point(placement, e.x, e.y, 1f)
+                                words.get(book.pages[placement.index].id).orEmpty().none {
+                                    RectF(it.box).apply { inset(-6f, -6f) }.contains(p.x, p.y)
+                                }
+                            } != false)
+                    ) {
+                        // Cancelling a selection must not also hide the reading toolbar.
                     } else if (
                         browsing &&
                             !moved &&

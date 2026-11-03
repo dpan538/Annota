@@ -95,7 +95,9 @@ class ActivityMotionTest {
                                 root.getChildAt(0)?.scaleX ?: 1f,
                                 root.getChildAt(0)?.translationX ?: 0f,
                             )
-                        if (elapsed >= 1000) done.countDown()
+                        // Entry may wait up to 800 ms for its first PDF frame, then animate.
+                        // Observe the complete legal interval even under full-suite raster load.
+                        if (elapsed >= 800 + UiMotion.DOCUMENT + 240) done.countDown()
                         else choreographer.postFrameCallback(this)
                     }
                 }

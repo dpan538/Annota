@@ -27,8 +27,8 @@ class DictionaryPanel(
     private val ui = menu.ui
     private val palette = menu.palette
     private val handler = Handler(Looper.getMainLooper())
-    private var generation = 0
-    private var open = true
+    @Volatile private var generation = 0
+    @Volatile private var open = true
     private var pending: Runnable? = null
     private lateinit var statusBadge: TextView
     private lateinit var footer: TextView
@@ -359,7 +359,10 @@ class DictionaryPanel(
             handler.post {
                 if (!open || id != generation) return@post
                 result.fold(
-                    { render(it, false) },
+                    { result ->
+                        render(result, false)
+                        if (OfflineTranslator.eligible(q) && result.reading == null) translate(q, id)
+                    },
                     {
                         results.removeAllViews()
                         results.addView(
@@ -372,6 +375,32 @@ class DictionaryPanel(
                         menu.refreshSize()
                     },
                 )
+            }
+        }
+    }
+
+    private fun translate(text: String, id: Int) {
+        val block = LinearLayout(activity).apply {
+            orientation = LinearLayout.VERTICAL
+            tag = "offline-translation"
+            setPadding(ui.px(8f), ui.px(8f), ui.px(8f), ui.px(16f))
+        }
+        block.addView(menu.label(ui.tr("离线参考译文", "Offline reference translation"), 13f, true))
+        val value = menu.label(ui.tr("正在本机翻译…", "Translating on this device…"), 15f).apply {
+            tag = "translation-result"
+            setPadding(0, ui.px(8f), 0, 0)
+            setLineSpacing(ui.px(3f).toFloat(), 1f)
+        }
+        block.addView(value)
+        results.addView(block, 0)
+        menu.refreshSize()
+        OfflineTranslator.get(activity).request(text, { open && generation == id }) { outcome ->
+            handler.post {
+                if (!open || generation != id) return@post
+                value.text = outcome.getOrElse {
+                    ui.tr("暂未生成译文，可继续查看下方词义", "Translation unavailable. Word meanings remain below.")
+                }
+                menu.refreshSize()
             }
         }
     }
@@ -447,7 +476,8 @@ class DictionaryPanel(
                 )
             }
         }
-        if (result.entries.isEmpty() && result.suggestions.isEmpty() && result.parts.isEmpty()) {
+        if (result.entries.isEmpty() && result.suggestions.isEmpty() && result.parts.isEmpty() &&
+            (empty || !OfflineTranslator.eligible(edit.text.toString()))) {
             results.addView(
                 menu
                     .label(
@@ -468,8 +498,8 @@ class DictionaryPanel(
                         if (empty) ui.tr("输入单词或词组", "Enter a word or phrase")
                         else
                             ui.tr(
-                                "词库随应用内置。请选取单词或词组，暂不提供整句翻译。",
-                                "Dictionary included in the app. Select a word or phrase; full-sentence translation is not available.",
+                                "词库与英汉翻译均随应用内置。可查询单词、词组或较短的英文句子。",
+                                "Dictionaries and English–Chinese translation are included. Look up a word, phrase, or short English sentence.",
                             ),
                         14f,
                         true,

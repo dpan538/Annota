@@ -15,6 +15,7 @@ class ReaderPopover(
     english: Boolean,
     private val panelWidth: Float = 250f,
     buttonSize: Int = 68,
+    private val toggleAnchor: Boolean = true,
 ) {
     val ui =
         DesignScreen(activity, theme, buttonSize, english).apply {
@@ -99,7 +100,8 @@ class ReaderPopover(
         // ACTION_OUTSIDE before the underlying button receives ACTION_UP and reopens it.
         popup.setTouchInterceptor { _, event ->
             val bounds = Rect()
-            event.actionMasked == MotionEvent.ACTION_OUTSIDE &&
+            toggleAnchor &&
+                event.actionMasked == MotionEvent.ACTION_OUTSIDE &&
                 anchor.getGlobalVisibleRect(bounds) &&
                 bounds.contains(event.rawX.toInt(), event.rawY.toInt())
         }

@@ -28,7 +28,7 @@ class DictionaryContextTest {
         assertTrue(scaling.primary.any { "缩放" in it.text })
         assertTrue(scaling.alternatives.any { "鱼鳞" in it.text })
         val related = dictionary.lookup("IT-related").parts.first { it.text == "related" }.reading!!
-        assertTrue(related.primary.any { "关系" in it.text || "关联" in it.text })
+        assertTrue(related.toString(), related.primary.any { "关系" in it.text || "关联" in it.text || "有关" in it.text })
         for ((form, base) in
             listOf(
                 "mice" to "mouse",

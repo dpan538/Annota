@@ -73,6 +73,10 @@ try:
                 data = package.read('assets/dictionary/' + asset)
                 if asset.endswith('.pack'): data = gzip.decompress(data)
                 assert hashlib.sha256(data).hexdigest() == dictionaries[file]['sha256']
+            translation = json.loads(package.read('assets/translation/manifest.json'))
+            for name, record in translation['files'].items():
+                assert hashlib.sha256(package.read('assets/translation/' + name)).hexdigest() == record['sha256']
+            report['offlineTranslation'] = translation['revision']
             report['zipEntries'] = len(names)
             report['nativeAbis'] = sorted({n.split('/')[1] for n in names if n.startswith('lib/') and n.endswith('.so')})
         badging = run([build_tools/'aapt', 'dump', 'badging', downloaded])

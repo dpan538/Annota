@@ -5,7 +5,7 @@
 数据、来源和许可随安装包提供。查词只读本机，不上传输入、手写轨迹或文档。
 
 支持完整词组、显式词形、保留边界的连字符变体、前缀和轻微拼写建议。
-词库随 APK 安装和更新，无需另外下载。当前提供单词与词组查询，不提供整句翻译。
+词库随 APK 安装和更新，无需另外下载。提供单词与词组查询；未整体收录的英文长词组和短句可使用随包模型生成独立的离线参考译文。
 词条检索、词形处理、词组匹配与局部语境简释由 Annota 在设备内完成。
 
 ## Annota 原创词组与术语
@@ -44,6 +44,27 @@ Princeton WordNet 3.0，Copyright Princeton University；Chinese Open WordNet，
 完整许可：licenses/WordNet-3.0.txt、licenses/Chinese-Open-WordNet.txt。
 来源：https://wordnet.princeton.edu/ 与 https://github.com/omwn/omw-data/tree/406bf83b3c507a3d1f26e88252d5d66893fd36bf/wns/cow 。
 随包 sources/wordnet-cow.json 按同义词集关联中英文，保留英文释义、词义顺序及不规则词形；wordnet.sqlite 提供独立只读索引，展示时去除中文分词标记“+”。
-共有 61,340 个英文词头、77,708 条词义关联、6,053 条不规则词形关联，与主词库存在重叠，不计为同等数量的新增单词。
+共有 61,340 个英文词头、77,708 条词义关联、原始 6,053 条不规则词形关联（另补充 LemmInflect 显式词形），与主词库存在重叠，不计为同等数量的新增单词。
 
 仓库保留上述来源的 .gz 压缩文件；Android 打包时自动展开，APK 内使用不带 .gz 的文件名。
+
+## English Wiktionary / Kaikki
+
+English Wiktionary contributors，CC BY-SA 4.0。提取自 https://kaikki.org/dictionary/English/ 。
+独立 wiktionary.sqlite 包含 48,077 个词头、61,076 个义项，和主词库存在重叠。
+仅使用带普通话译词且有义项说明的记录，筛除古旧/罕见标记，建立词形和词头索引。
+来源哈希及转换说明：sources/kaikki-provenance.json；详细署名：licenses/Wiktionary-NOTICE.md。
+CC BY-SA 4.0 许可文本已随包提供。词条作者与历史可通过 Wiktionary 同名英文条目查阅。
+
+## LemmInflect
+
+Bradley J. Ascob, LemmInflect，MIT。https://github.com/bjascob/LemmInflect
+固定提交 b7699808106a4ce843fc7f0e8e5d87fcb84cc636，导入查找表与上游 overrides，仅使用显式非自身词形候选。
+上游词形资料源自 NIH SPECIALIST Lexicon；原始资料条款：https://lhncbc.nlm.nih.gov/LSG/Projects/lexicon/current/web/termsAndConditions.html 。
+来源：sources/lemminflect-provenance.json；完整 MIT 许可：licenses/LemmInflect-MIT.txt。
+
+## 离线参考翻译
+
+OPUS-MT / University of Helsinki，Xenova ONNX 量化转换，Microsoft ONNX Runtime。
+模型、分词器、推理均在设备本地，无运行时下载，遥测关闭。
+完整许可和模型来源另见应用关于页面“开源与词库许可”中的离线翻译段落；译文属于机器生成参考，不能视为已校验词典释义。

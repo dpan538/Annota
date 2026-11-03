@@ -7,6 +7,14 @@
     "sourceRevision": "406bf83b3c507a3d1f26e88252d5d66893fd36bf",
     "url": "https://github.com/omwn/omw-data/tree/main/wns/cow"
   },
+  "wiktionary": {
+    "senses": 61076,
+    "headwords": 48077,
+    "phrases": 15628,
+    "license": "CC-BY-SA-4.0",
+    "source": "English Wiktionary contributors / Kaikki",
+    "url": "https://kaikki.org/dictionary/English/"
+  },
   "schemaVersion": 3,
   "networkRequired": false,
   "en-zh": {
@@ -43,13 +51,18 @@
   "files": {
     "en-zh.sqlite": {
       "asset": "en-zh.sqlite.pack",
-      "bytes": 238063616,
-      "sha256": "3a368b24aabe3924cec4c6aa2f5da895dd837bf7ba8b4b763443d4c4c862b6cc"
+      "bytes": 238342144,
+      "sha256": "8904412f606996e962ea111cb1f868dccc0ef789fec5e1ede4a9b03dafd19744"
+    },
+    "wiktionary.sqlite": {
+      "asset": "wiktionary.sqlite",
+      "bytes": 13926400,
+      "sha256": "a143ec6f25d7720a205705642dc71321b790570b9e409915629958d8e985cd8e"
     },
     "wordnet.sqlite": {
       "asset": "wordnet.sqlite",
-      "bytes": 12988416,
-      "sha256": "ebbf62b21ede0aa6719663a53dc8681ce380a31655d36b139602efb0ce965e3f"
+      "bytes": 15683584,
+      "sha256": "b54c4ba933937200cf077a8d94637dad04d6f1e049fc70963f34fe846873e92e"
     },
     "zh-en.sqlite": {
       "asset": "zh-en.sqlite",
@@ -61,6 +74,10 @@
     "annota-phrases.tsv": "47fad91cc431ba663ab3320298e8e94312d8574fcd936dd372241ebfd0333582",
     "cedict.txt.gz": "2d42d41f75df8708d9d9b236d8ae15ecf1cef525aef8ebb8499a74cb09e1b096",
     "ecdict-core.csv.gz": "790881495775749e17433898b2d85608f985b5bdbaef3e4dbc8b6b5ae592f931",
+    "kaikki-en-mandarin.jsonl.gz": "03099f0dd78b570caf81e204d6433318447b312fd98beade5cc4117297b15c77",
+    "kaikki-provenance.json": "b8a87ff6d31ff391ab3c6b4706854a09f1919a872e36bcbc9d29dd4709878799",
+    "lemminflect-forms.jsonl.gz": "54bdc9e10c5b707678bee555fd5207c2a097976bf1bbb1770be8ae46ae93dc39",
+    "lemminflect-provenance.json": "5bfe441d547d54e044e3dc514d92151f8d8fe326e081d7b265a8056805f6e55e",
     "provenance.json": "171cb01b5f8be59b7e01098867a6eed7f5afe13fd489ce83ba29578ec7db8453",
     "wordnet-cow.json.gz": "e3d739bed1c8741e1ae5d1fddfab5ea10ff718a14a65e467990282136b554f0d"
   }

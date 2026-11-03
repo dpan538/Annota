@@ -43,6 +43,7 @@ class MainActivity : Activity() {
     private var readerPanelKey = ""
     private val readerTools = mutableMapOf<String, ToolButton>()
     private var readerHost: FrameLayout? = null
+    private var readerChrome: ReaderChrome? = null
     private var pageSidebar: View? = null
     private var navigationPanel: ReaderNavigator? = null
     private var activePage = 0
@@ -319,6 +320,7 @@ class MainActivity : Activity() {
     }
 
     override fun onDestroy() {
+        readerChrome?.dispose()
         signatureDialog?.dismiss()
         feedbackDialog?.dismiss()
         operationCancel?.set(true)
@@ -356,6 +358,7 @@ class MainActivity : Activity() {
     }
 
     override fun onStop() {
+        readerChrome?.pause()
         trimRenderMemory(true)
         book?.let { ContinueReadingWidget.remember(this, it) }
         super.onStop()
@@ -563,6 +566,8 @@ class MainActivity : Activity() {
         readerPopup?.dismiss()
         pageCovers?.close()
         pageCovers = null
+        readerChrome?.dispose()
+        readerChrome = null
         reader?.dispose()
         reader = null
         readerHost = null
@@ -824,6 +829,8 @@ class MainActivity : Activity() {
         readerPopup?.dismiss()
         pageCovers?.close()
         pageCovers = null
+        readerChrome?.dispose()
+        readerChrome = null
         val old = reader
         val oldTool = old?.tool ?: "hand"
         old?.dispose()
@@ -838,11 +845,17 @@ class MainActivity : Activity() {
         fun rp(value: Float) = (value * ru).roundToInt()
         val bar = android.widget.FrameLayout(this).apply { setBackgroundColor(colors[3]) }
         bar.tag = "reader-toolbar"
-        root.addView(bar, LinearLayout.LayoutParams(-1, rp(39f * controls)))
+        val barHeight = rp(39f * controls)
+        val chromeHost =
+            FrameLayout(this).apply {
+                tag = "reader-chrome-host"
+                clipChildren = true
+                addView(bar, FrameLayout.LayoutParams(-1, barHeight))
+            }
+        root.addView(chromeHost, LinearLayout.LayoutParams(-1, barHeight))
         val left = row()
         val center = row()
         val right = row()
-        var chromeHidden = false
         readerTools.clear()
         pageSidebar = null
         val toolButtons = readerTools
@@ -968,8 +981,29 @@ class MainActivity : Activity() {
         if (old != null) view.color = old.color
         else if (!view.reading)
             view.color = if (b.pages[b.current].paper == "black") Color.WHITE else colors[2]
+        val chrome =
+            ReaderChrome(
+                chromeHost,
+                bar,
+                barHeight,
+                view,
+                canHide = {
+                    readerPopup?.isShowing != true &&
+                        paperPopup?.isShowing != true &&
+                        pageSidebar == null &&
+                        view.lookupContext() == null
+                },
+                onHidden = { hidden ->
+                    root.setBackgroundColor(
+                        if (hidden && view.reading) view.readingStyle.surround else colors[3]
+                    )
+                    androidx.core.view.WindowCompat.getInsetsController(window, root)
+                        .isAppearanceLightStatusBars = hidden || prefs.getInt("theme", 0) == 3
+                },
+            )
+        readerChrome = chrome
         view.onToolChanged = {
-            if (!view.reading) chromeHidden = false
+            chrome.syncMode()
             center.visibility =
                 if (view.readOnly || view.placingSignature) View.GONE else View.VISIBLE
             toolButtons["add"]?.visibility = if (view.readOnly) View.GONE else View.VISIBLE
@@ -980,12 +1014,6 @@ class MainActivity : Activity() {
                     if (view.reading) tr("开始批注", "Annotate") else tr("阅读模式", "Read")
                 button.tooltipText = button.contentDescription
             }
-            bar.visibility = if (chromeHidden) View.INVISIBLE else View.VISIBLE
-            androidx.core.view.WindowCompat.getInsetsController(window, root)
-                .isAppearanceLightStatusBars = chromeHidden || prefs.getInt("theme", 0) == 3
-            root.setBackgroundColor(
-                if (view.reading && chromeHidden) view.readingStyle.surround else colors[3]
-            )
             toolButtons.forEach { (name, button) ->
                 button.isEnabled = !view.placingSignature || name == "back"
                 button.isSelected =
@@ -1010,17 +1038,10 @@ class MainActivity : Activity() {
             activePage = it
             navigationPanel?.updateCurrent()
         }
-        view.onSelectionAdjust = { readerPopup?.dismiss() }
+        view.onSelectionAdjust = { if (readerPanelKey == "selection") readerPopup?.dismiss() }
+        view.onSelectionCleared = { if (readerPanelKey == "selection") readerPopup?.dismiss() }
         view.onSelection = { selection(it) }
-        view.onToolbarToggle = {
-            if (view.reading) {
-                chromeHidden = !chromeHidden
-                bar.visibility = if (chromeHidden) View.INVISIBLE else View.VISIBLE
-                root.setBackgroundColor(if (chromeHidden) view.readingStyle.surround else colors[3])
-                androidx.core.view.WindowCompat.getInsetsController(window, root)
-                    .isAppearanceLightStatusBars = chromeHidden || prefs.getInt("theme", 0) == 3
-            } else bar.visibility = if (bar.visibility == View.VISIBLE) View.GONE else View.VISIBLE
-        }
+        view.onToolbarToggle = { chrome.toggle() }
         val canvas = FrameLayout(this).apply { setBackgroundColor(0xfff4f4f4.toInt()) }
         canvas.addView(view, FrameLayout.LayoutParams(-1, -1))
         val returnUi =
@@ -1168,6 +1189,7 @@ class MainActivity : Activity() {
             english,
             width,
             prefs.getInt("buttonSize", 68),
+            toggleAnchor = view !is ReaderView,
         )
     }
 
@@ -1728,7 +1750,7 @@ class MainActivity : Activity() {
 
     private fun selection(value: String) {
         val r = reader ?: return
-        val menu = readerPanel("hand", if (english) 176f else 132f, r)
+        val menu = readerPanel("selection", if (english) 176f else 132f, r)
         menu.content.setPadding(menu.ui.px(6f), menu.ui.px(4f), menu.ui.px(6f), menu.ui.px(4f))
         menu.popup.contentView.background =
             menu.ui.background(menu.palette.color("panel"), 12f, menu.palette.color("rule"))
@@ -2091,6 +2113,8 @@ class MainActivity : Activity() {
         paperPopup?.dismiss()
         section = "settings"
         settingsTab = tab
+        readerChrome?.dispose()
+        readerChrome = null
         reader?.dispose()
         reader = null
         readerHost = null
@@ -2319,6 +2343,7 @@ class MainActivity : Activity() {
     }
 
     override fun dispatchTouchEvent(e: MotionEvent): Boolean {
+        readerChrome?.touch(e.actionMasked)
         if (e.pointerCount > 0 && e.getToolType(e.actionIndex) == MotionEvent.TOOL_TYPE_STYLUS) {
             val d = e.device
             inputInfo =
@@ -2374,6 +2399,11 @@ class MainActivity : Activity() {
         val files =
             listOf(
                 "dictionary/ATTRIBUTION.md",
+                "dictionary/licenses/Wiktionary-NOTICE.md",
+                "dictionary/licenses/LemmInflect-MIT.txt",
+                "translation/NOTICE.md",
+                "translation/LICENSE-Apache-2.0.txt",
+                "translation/LICENSE-ONNX-Runtime-MIT.txt",
                 "dictionary/licenses/ECDICT-MIT.txt",
                 "dictionary/licenses/WordNet-3.0.txt",
                 "dictionary/licenses/Chinese-Open-WordNet.txt",
@@ -2821,6 +2851,7 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+        readerChrome?.resume()
         reader?.resumeMemory()
         pageCovers?.resume()
         if (::root.isInitialized) (root.getChildAt(0) as? LibraryScreen)?.resumeMemory()

@@ -188,6 +188,14 @@ class DictionaryReadings(context: Context) {
                 }
             if (corroborated.isNotEmpty()) primary = corroborated.take(primaryLimit)
         }
+        if (defaults.isEmpty() && entry.source != "annota") {
+            val current = lexical.filter { it.source == "wiktionary" }
+            if (current.isNotEmpty()) {
+                primary = current.take(primaryLimit).map {
+                    DictionarySense(it.label, compact(it.text.split("；").take(2).joinToString("；")))
+                }
+            }
+        }
         var contextual = false
         var selectedPhrase = ""
         if (active != null && rule != null) {

@@ -1,0 +1,247 @@
+[
+  {
+    "text": "The server scales to meet demand.",
+    "ids": [
+      26,
+      27405,
+      25291,
+      9,
+      1176,
+      3002,
+      6
+    ],
+    "matched": true
+  },
+  {
+    "text": "IT-related resources are measured and monitored.",
+    "ids": [
+      9784,
+      16,
+      1897,
+      247,
+      46,
+      14847,
+      7,
+      11174,
+      6
+    ],
+    "matched": true
+  },
+  {
+    "text": "The bank raised interest rates.",
+    "ids": [
+      26,
+      5044,
+      2789,
+      1521,
+      2271,
+      6
+    ],
+    "matched": true
+  },
+  {
+    "text": "The river overflowed its banks after heavy rain.",
+    "ids": [
+      26,
+      14414,
+      57973,
+      258,
+      45,
+      6370,
+      560,
+      7610,
+      18964,
+      6
+    ],
+    "matched": true
+  },
+  {
+    "text": "Patients should take this medicine after meals.",
+    "ids": [
+      55299,
+      24,
+      90,
+      239,
+      58,
+      14299,
+      560,
+      39105,
+      6
+    ],
+    "matched": true
+  },
+  {
+    "text": "The experiment did not support the original hypothesis.",
+    "ids": [
+      26,
+      26244,
+      429,
+      56,
+      125,
+      3,
+      5099,
+      55888,
+      6
+    ],
+    "matched": true
+  },
+  {
+    "text": "A high-performance distributed grid shares computing resources.",
+    "ids": [
+      80,
+      610,
+      16,
+      44921,
+      6639,
+      33834,
+      13135,
+      42398,
+      247,
+      6
+    ],
+    "matched": true
+  },
+  {
+    "text": "The researchers controlled for age and income.",
+    "ids": [
+      26,
+      20918,
+      8742,
+      15,
+      1557,
+      7,
+      1526,
+      6
+    ],
+    "matched": true
+  },
+  {
+    "text": "Keep up with market demands.",
+    "ids": [
+      8785,
+      186,
+      29,
+      1648,
+      6892,
+      6
+    ],
+    "matched": true
+  },
+  {
+    "text": "Please save your work before closing this window.",
+    "ids": [
+      1878,
+      6464,
+      171,
+      119,
+      438,
+      10297,
+      58,
+      10966,
+      6
+    ],
+    "matched": true
+  },
+  {
+    "text": "There is no significant difference between the two groups.",
+    "ids": [
+      477,
+      32,
+      182,
+      1194,
+      7102,
+      192,
+      3,
+      263,
+      558,
+      6
+    ],
+    "matched": true
+  },
+  {
+    "text": "The device can operate without an internet connection.",
+    "ids": [
+      26,
+      17923,
+      123,
+      7538,
+      537,
+      59,
+      30354,
+      1842,
+      6
+    ],
+    "matched": true
+  },
+  {
+    "text": "It’s an naïve café’s résumé — ₹100; α + β = 2.",
+    "ids": [
+      84,
+      1247,
+      24,
+      59,
+      30246,
+      32200,
+      411,
+      56847,
+      1,
+      24,
+      15174,
+      1062,
+      20397,
+      1062,
+      8,
+      920,
+      8,
+      1,
+      3093,
+      27,
+      8,
+      53832,
+      8,
+      5669,
+      8,
+      57558,
+      8,
+      6873,
+      325
+    ],
+    "matched": true
+  },
+  {
+    "text": "  This\t has\nmultiple spaces  ",
+    "ids": [
+      208,
+      66,
+      6879,
+      26315
+    ],
+    "matched": true
+  },
+  {
+    "text": "ＩＴ resources ﬁ ﬂ ﬀ ­word",
+    "ids": [
+      9784,
+      247,
+      37501,
+      32192,
+      8,
+      10775,
+      8,
+      60326,
+      33607
+    ],
+    "matched": true
+  },
+  {
+    "text": "Hello 🦄🦄 world.",
+    "ids": [
+      3828,
+      8,
+      1,
+      431,
+      6
+    ],
+    "matched": true
+  }
+]

@@ -25,6 +25,17 @@ def build_wordnet():
         db.execute('INSERT INTO senses VALUES(?,?,?,?,?,?)',
                    (word.replace('_', ' '), pos, rank, synset, '；'.join(meanings), gloss))
     db.executemany('INSERT OR IGNORE INTO forms VALUES(?,?,?)', data['exceptions'])
+    with gzip.open(ROOT / 'sources/lemminflect-forms.jsonl.gz', 'rt') as src:
+        for line in src:
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            pos = {'NOUN': 'n', 'VERB': 'v', 'AUX': 'v', 'ADJ': 'a', 'ADV': 'r'}.get(row['pos'])
+            if pos:
+                for lemma in row['lemmas']:
+                    if lemma.lower() != row['form'].lower():
+                        db.execute('INSERT OR IGNORE INTO forms VALUES(?,?,?)',
+                                   (row['form'].lower(), lemma.lower(), pos))
     db.commit()
     assert db.execute('PRAGMA integrity_check').fetchone()[0] == 'ok'
     db.execute('VACUUM')

@@ -1,0 +1,25 @@
+{
+  "source": "Helsinki-NLP/opus-mt-en-zh",
+  "conversion": "Xenova/opus-mt-en-zh",
+  "revision": "046f55aec303cdee3e0318604406d4df20f1e8ea",
+  "direction": "English to Simplified Chinese",
+  "networkRequired": false,
+  "files": {
+    "decoder.onnx": {
+      "bytes": 60212804,
+      "sha256": "023be4f841f4c47cd65fffcbaa81c0d99d7f7e0138f7ba0e03fa220a4e688aff"
+    },
+    "encoder.onnx": {
+      "bytes": 52899742,
+      "sha256": "d3b7912bf6a9bd27e4c074c2df91d4ff3d5b4bc5f7f6c8d7cc9c805c98fbafee"
+    },
+    "source-unigram.json": {
+      "bytes": 1257978,
+      "sha256": "1e3cb590c4227ac8a3604468649f80117293dc37c28293c9661dd5eb6e675608"
+    },
+    "vocab.json": {
+      "bytes": 1747795,
+      "sha256": "22c957348eed495ee925afc40a36da3e387c8a34a734c8486967c2dca271613e"
+    }
+  }
+}

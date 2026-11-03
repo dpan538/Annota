@@ -756,11 +756,12 @@ class ReadingModeTest {
                 location[1] + bounds.top + word.box.centerY() / b.pages[0].h * bounds.height(),
             )
         }
-        val toolbar = ui { all(a.window.decorView).first { it.tag == "reader-toolbar" } }
+        val toolbar = ui { all(a.window.decorView).first { it.tag == "reader-chrome-host" } }
         val position = ui { listOf(r.zoom, r.panX, r.panY, r.height.toFloat()) }
         val before = ui { r.book.state() }
         wordPoint().let { tapAt(it.first, it.second) }
-        assertEquals(View.INVISIBLE, ui { toolbar.visibility })
+        waitFor { ui { toolbar.visibility == View.GONE } }
+        assertEquals(0, ui { toolbar.layoutParams.height })
         assertTrue(
             ui {
                 androidx.core.view.WindowCompat.getInsetsController(a.window, a.window.decorView)
@@ -769,7 +770,11 @@ class ReadingModeTest {
         )
         assertNull(popup()?.takeIf { it.isShowing })
         assertNull(ui { r.lookupContext() })
-        assertEquals(position, ui { listOf(r.zoom, r.panX, r.panY, r.height.toFloat()) })
+        assertEquals(position[0], ui { r.zoom })
+        assertTrue(
+            "Document takes the freed toolbar space",
+            ui { r.height.toFloat() > position[3] },
+        )
         SystemClock.sleep(400)
         wordPoint().let {
             tapAt(it.first, it.second, ViewConfiguration.getLongPressTimeout() + 180L)
@@ -826,5 +831,109 @@ class ReadingModeTest {
                     .put("physicalXiaomiEvidence", false)
                     .toString(2)
             )
+    }
+
+    @Test
+    fun selectionMenuAndHighlightCancelOnBlankTapSwipeAndNavigation() {
+        val b = fixture()
+        start(b)
+        val r = reader()
+        ready(r)
+        ui { r.tool = "hand" }
+        val word = pdf.words(b, b.pages[0]).first { it.text.lowercase() == "attention" }
+        fun select() {
+            ui { r.navigatePage(b.pages[0].id) }
+            ready(r)
+            val point = ui {
+                val bounds = r.pageBounds(0)!!
+                val at = IntArray(2).also(r::getLocationOnScreen)
+                (at[0] + bounds.left + word.box.centerX() / b.pages[0].w * bounds.width()) to
+                    (at[1] + bounds.top + word.box.centerY() / b.pages[0].h * bounds.height())
+            }
+            tapAt(point.first, point.second, ViewConfiguration.getLongPressTimeout() + 150L)
+            waitFor { ui { popup()?.isShowing == true && r.lookupContext() != null } }
+            SystemClock.sleep(250)
+        }
+        fun blank() = ui {
+            val at = IntArray(2).also(r::getLocationOnScreen)
+            (at[0] + r.width * .92f) to (at[1] + r.height * .78f)
+        }
+        select()
+        blank().let { tapAt(it.first, it.second) }
+        waitFor { ui { popup()?.isShowing != true && r.lookupContext() == null } }
+        select()
+        val from = blank()
+        val now = SystemClock.uptimeMillis()
+        for (i in 0..12) {
+            val action =
+                if (i == 0) MotionEvent.ACTION_DOWN
+                else if (i == 12) MotionEvent.ACTION_UP else MotionEvent.ACTION_MOVE
+            val e =
+                MotionEvent.obtain(
+                        now,
+                        SystemClock.uptimeMillis(),
+                        action,
+                        from.first,
+                        from.second - i * 25f,
+                        0,
+                    )
+                    .apply { source = InputDevice.SOURCE_TOUCHSCREEN }
+            assertTrue(inst.uiAutomation.injectInputEvent(e, true))
+            e.recycle()
+            SystemClock.sleep(16)
+        }
+        waitFor { ui { popup()?.isShowing != true && r.lookupContext() == null } }
+        select()
+        ui { r.navigatePage(b.pages[1].id) }
+        waitFor { ui { popup()?.isShowing != true && r.lookupContext() == null } }
+        // Repeat in reading mode: dismissing a selection does not also toggle the toolbar.
+        tap("阅读模式")
+        select()
+        blank().let { tapAt(it.first, it.second) }
+        waitFor { ui { popup()?.isShowing != true && r.lookupContext() == null } }
+        assertTrue(
+            ui { all(activity!!.window.decorView).first { it.tag == "reader-toolbar" }.isShown }
+        )
+    }
+
+    @Test
+    fun readingChromeReclaimsSpaceOnIdleAndTapRestoresWithoutFading() {
+        val b = fixture()
+        val a = start(b)
+        val r = reader()
+        ready(r)
+        tap("阅读模式")
+        val host = ui { all(a.window.decorView).first { it.tag == "reader-chrome-host" } }
+        val bar = ui { all(a.window.decorView).first { it.tag == "reader-toolbar" } }
+        val normalHeight = ui { r.height }
+        val fullHeight = ui { host.height }
+        waitFor { ui { host.visibility == View.GONE } }
+        ui {
+            assertEquals(0, host.layoutParams.height)
+            assertEquals(normalHeight + fullHeight, r.height)
+            assertEquals(-fullHeight.toFloat(), bar.translationY, .1f)
+            assertEquals(1f, bar.alpha, 0f)
+            val root = host.parent as ViewGroup
+            val readerAt = IntArray(2).also(r::getLocationOnScreen)
+            val rootAt = IntArray(2).also(root::getLocationOnScreen)
+            assertEquals("No white toolbar placeholder", rootAt[1] + root.paddingTop, readerAt[1])
+        }
+        capture("111-reading-chrome-collapsed")
+        val at = ui { IntArray(2).also(r::getLocationOnScreen) }
+        tapAt(at[0] + r.width * .95f, at[1] + r.height * .5f)
+        waitFor { ui { host.height == fullHeight && bar.translationY == 0f } }
+        assertEquals(normalHeight, ui { r.height })
+        // Idle timer must not collapse the toolbar beneath an open menu.
+        tap("更多")
+        SystemClock.sleep(ReaderChrome.IDLE_MS + 400)
+        assertTrue(ui { host.isShown && popup()?.isShowing == true })
+        ui { popup()?.dismiss() }
+        waitFor { ui { host.visibility == View.GONE } }
+        val hiddenAt = ui { IntArray(2).also(r::getLocationOnScreen) }
+        tapAt(hiddenAt[0] + r.width * .95f, hiddenAt[1] + r.height * .5f)
+        waitFor { ui { host.height == fullHeight } }
+        tap("开始批注")
+        SystemClock.sleep(ReaderChrome.IDLE_MS + 400)
+        assertTrue("Annotation mode never auto-hides", ui { host.isShown })
     }
 }

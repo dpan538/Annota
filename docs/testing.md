@@ -31,3 +31,7 @@ python3 design/dictionary/test_lookup.py
 ## 历史记录
 
 [1.0.5-preview](1.0.5-PREVIEW-NOTES.md) · [1.0.4-preview](1.0.4-PREVIEW-NOTES.md) · [首版集成验收](INTEGRATION-ACCEPTANCE.md) · [测试索引](../log/README.md)
+
+## 1.1.1 待发布修复
+
+[修复范围与复核清单](1.1.1-RELEASE-NOTES.md) · [测试记录](../android/verification/stable-1.1.1/)。仅准备候选，不创建 Release，不改变 1.1.0 默认下载与更新入口。

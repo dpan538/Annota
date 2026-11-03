@@ -5,7 +5,7 @@ import android.util.LruCache
 import java.io.File
 
 /** Frozen, bundled synset joins. No network, model download, or guessed translations. */
-class WordNetDictionary(private val file: File) {
+class WordNetDictionary(private val file: File, private val source: String = "wordnet") {
     data class Sense(
         val word: String,
         val label: String,
@@ -13,9 +13,25 @@ class WordNetDictionary(private val file: File) {
         val gloss: String,
         val rank: Int,
         val contextual: Boolean = false,
+        val source: String = "wordnet",
     )
 
     private val cache = LruCache<String, List<Sense>>(256)
+    private val morphology = LruCache<String, Set<String>>(1024)
+
+    private fun contentForms(words: Collection<String>): Set<String> {
+        val result = mutableSetOf<String>()
+        SQLiteDatabase.openDatabase(file.path, null, SQLiteDatabase.OPEN_READONLY).use { db ->
+            words.forEach { word ->
+                result += word
+                result += morphology.get(word) ?: db.rawQuery(
+                    "SELECT DISTINCT lemma FROM forms WHERE form=? LIMIT 4", arrayOf(word),
+                ).use { cursor -> buildSet { while (cursor.moveToNext()) add(cursor.getString(0)) } }
+                    .also { morphology.put(word, it) }
+            }
+        }
+        return result
+    }
 
     @Synchronized
     fun lookup(query: String, lemmas: List<String>, context: LookupContext?): List<Sense> {
@@ -56,11 +72,13 @@ class WordNetDictionary(private val file: File) {
                                                                 "v" -> "v."
                                                                 "a",
                                                                 "s" -> "a."
-                                                                else -> "adv."
+                                                                "r" -> "adv."
+                                                                else -> c.getString(1) + "."
                                                             },
                                                             c.getString(3),
                                                             c.getString(4),
                                                             c.getInt(2),
+                                                            source = source,
                                                         )
                                                     )
                                                 }
@@ -72,6 +90,7 @@ class WordNetDictionary(private val file: File) {
                 .distinctBy { it.word + it.label + it.text }
         val active = context?.takeIf { it.matches(query) }
         val window = active?.let { (it.before.takeLast(12) + it.after.take(12)).toSet() }.orEmpty()
+        if (window.isEmpty() || values.isEmpty()) return values.sortedBy { it.rank }
         // Simplified Lesk: only independent content-word overlaps, never an opaque confidence
         // claim.
         val stop =
@@ -101,20 +120,22 @@ class WordNetDictionary(private val file: File) {
                 "most",
                 "only",
             )
-        val cues = window.filter { it.length >= 4 && it !in stop && it != key }.toSet()
-        val ranked =
-            values
-                .map { s ->
-                    val words = LookupContext.tokens(s.gloss).toSet()
-                    (cues intersect words).size to s
-                }
-                .sortedWith(
-                    compareByDescending<Pair<Int, Sense>> { it.first }.thenBy { it.second.rank }
-                )
-        val best = ranked.firstOrNull()
-        val confident =
-            best != null && best.first >= 2 && best.first > (ranked.getOrNull(1)?.first ?: 0)
-        return if (confident) ranked.mapIndexed { i, item -> item.second.copy(contextual = i == 0) }
-        else values.sortedBy { it.rank }
+        val cues = window.filter { it.length >= 4 && it !in stop && it != key }
+            .map { contentForms(listOf(it)).filterNot { form -> form in keys || form in stop }.toSet() }
+            .filter { it.isNotEmpty() }.distinct()
+        if (cues.size < 2) return values.sortedBy { it.rank }
+        val ranked = values.map { sense ->
+            val words = contentForms(LookupContext.tokens(sense.gloss).filter { it.length >= 4 && it !in stop })
+            cues.count { forms -> forms.any { it in words } } to sense
+        }.sortedWith(compareByDescending<Pair<Int, Sense>> { it.first }.thenBy { it.second.rank })
+        // Equivalent records for one sense are not competing meanings. Compare distinct
+        // gloss/POS groups, so a lemma and its inflected headword do not cancel real evidence.
+        val groups = ranked.distinctBy { it.second.label + "|" + it.second.gloss }
+        val best = groups.firstOrNull()
+        val confident = best != null && best.first >= 2 && best.first > (groups.getOrNull(1)?.first ?: 0)
+        return if (confident) ranked.map { item ->
+            item.second.copy(contextual = item.second.label == best!!.second.label && item.second.gloss == best.second.gloss)
+        } else values.sortedBy { it.rank }
+
     }
 }

@@ -1,0 +1,24 @@
+{
+  "version": "1.1.1",
+  "versionCode": 21,
+  "releaseStatus": "prepared, not published",
+  "publicStableUnchanged": "1.1.0",
+  "device": "dedicated Android 16 / API 36 ARM64 emulator, emulator-5584",
+  "network": "Wi-Fi and mobile data disabled during regression and translation UI checks",
+  "regressionTests": 129,
+  "regressionPassed": true,
+  "additionalUiRetestPassed": true,
+  "pythonLexiconTests": 14,
+  "lintErrors": 0,
+  "lintWarnings": 96,
+  "translationDirection": "English to Simplified Chinese",
+  "modelBundled": true,
+  "translationSamples": "5 synthetic held-out probes, not a general accuracy benchmark",
+  "translationWarmDecodeRangeMs": [
+    116,
+    232
+  ],
+  "timingLimit": "Excludes session construction and first model copy; emulator timing is not Xiaomi hardware timing.",
+  "sourceScope": "Reading-selection/chrome fixes, dictionary sources/indexing, offline short translation; no release or update-channel changes.",
+  "remainingValidation": "Xiaomi Pad 9 Pro Max touch/idle transitions, translation latency/memory/heat and expert semantic evaluation."
+}

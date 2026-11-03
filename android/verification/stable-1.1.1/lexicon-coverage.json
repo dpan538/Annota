@@ -1,0 +1,8 @@
+{
+  "wiktionaryHeads": 48077,
+  "wiktionarySenses": 61076,
+  "wiktionaryMultiwordHeads": 15628,
+  "headsNotInEcdict": 11054,
+  "multiwordHeadsNotInEcdict": 6187,
+  "note": "Set difference after NFKC/lowercase/whitespace normalization, not an accuracy score."
+}

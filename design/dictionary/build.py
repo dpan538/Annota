@@ -9,6 +9,7 @@ import re
 import sqlite3
 import unicodedata
 from wordnet import build_wordnet
+from wiktionary import build_wiktionary
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -126,6 +127,17 @@ def build(ecdict_path):
                 if form.startswith("0:") and form[2:]:
                     en.execute("INSERT INTO forms SELECT ?,id FROM entries WHERE key=?",
                                (normalize(row["word"]), normalize(form[2:])))
+    # The frozen SPECIALIST-derived LemmInflect lookup adds attested morphology,
+    # not heuristic suffix deletion. Keep ambiguous bases instead of guessing one.
+    with gzip.open(ROOT / "sources/lemminflect-forms.jsonl.gz", "rt") as src:
+        for line in src:
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            for lemma in row["lemmas"]:
+                if normalize(lemma) != normalize(row["form"]):
+                    en.execute("INSERT INTO forms SELECT ?,id FROM entries WHERE key=?",
+                               (normalize(row["form"]), normalize(lemma)))
     en.execute("DELETE FROM forms WHERE rowid NOT IN (SELECT min(rowid) FROM forms GROUP BY key,entry_id)")
     base_en_count = en.execute("SELECT count(*) FROM entries").fetchone()[0]
     for row in phrases:
@@ -176,6 +188,7 @@ def build(ecdict_path):
     wordnet = build_wordnet()
     manifest = {
         "wordnet": wordnet,
+        "wiktionary": build_wiktionary(),
         "schemaVersion": 3, "networkRequired": False,
         "en-zh": {"entries": en_count, "baseEntries": base_en_count,
                   "source": "ECDICT complete translated vocabulary + Annota authored phrases",

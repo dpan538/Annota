@@ -10,8 +10,8 @@ android {
         applicationId = "io.github.dpan538.annota"
         minSdk = 29
         targetSdk = 36
-        versionCode = providers.gradleProperty("annotaVersionCode").orElse("20").get().toInt()
-        versionName = providers.gradleProperty("annotaVersionName").orElse("1.1.0").get()
+        versionCode = providers.gradleProperty("annotaVersionCode").orElse("21").get().toInt()
+        versionName = providers.gradleProperty("annotaVersionName").orElse("1.1.1").get()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "FEEDBACK_ENDPOINT", "\"https://annota-feedback-dpan538s-projects.vercel.app/v1/feedback\"")
     }
@@ -32,6 +32,8 @@ android {
     }
     buildTypes {
         release {
+            // The supported Xiaomi Pad 9 Pro Max and release validation device are ARM64.
+            ndk { abiFilters += "arm64-v8a" }
             isMinifyEnabled = false
             signingConfig = signingConfigs.findByName("production")
         }
@@ -44,6 +46,7 @@ android {
 }
 
 dependencies {
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.31.1")
     implementation("com.tom-roush:pdfbox-android:2.0.27.0")
     implementation("org.bouncycastle:bcpkix-jdk15to18:1.86")
     implementation("org.bouncycastle:bcprov-jdk15to18:1.86")

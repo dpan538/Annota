@@ -1,0 +1,11 @@
+
+io.github.dpan538.annota.ReadingModeTest:........
+io.github.dpan538.annota.ReaderMenuToggleTest:.
+io.github.dpan538.annota.VersionIdentityTest:.
+io.github.dpan538.annota.SelectionInputTest:..
+io.github.dpan538.annota.SelectionRotationTest:...
+io.github.dpan538.annota.ActivityMotionTest:.
+
+Time: 127.337
+
+OK (16 tests)
