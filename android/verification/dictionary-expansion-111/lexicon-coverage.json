@@ -1,0 +1,64 @@
+{
+  "counts": {
+    "wordnet": {
+      "senses": 77708,
+      "headwords": 61340,
+      "source": "Princeton WordNet 3.0 + Chinese Open WordNet",
+      "license": "WordNet / Chinese Open WordNet permissive notices",
+      "sourceRevision": "406bf83b3c507a3d1f26e88252d5d66893fd36bf",
+      "url": "https://github.com/omwn/omw-data/tree/main/wns/cow"
+    },
+    "wiktionary": {
+      "senses": 61076,
+      "headwords": 48077,
+      "phrases": 15628,
+      "sourceFormPairs": 338228,
+      "sourceFormPairsWithChineseTarget": 203325,
+      "englishHeadwords": 192058,
+      "englishSenses": 208999,
+      "license": "CC-BY-SA-4.0",
+      "source": "English Wiktionary contributors / Kaikki",
+      "url": "https://kaikki.org/dictionary/English/"
+    },
+    "en-zh": {
+      "entries": 771180,
+      "baseEntries": 770238,
+      "source": "ECDICT complete translated vocabulary + Annota authored phrases",
+      "license": "MIT",
+      "url": "https://github.com/skywind3000/ECDICT"
+    },
+    "zh-en": {
+      "entries": 126272,
+      "baseEntries": 125301,
+      "source": "CC-CEDICT + Annota authored reverse equivalents",
+      "license": "CC-BY-SA-4.0",
+      "url": "https://www.mdbg.net/chinese/dictionary?page=cc-cedict"
+    }
+  },
+  "assets": {
+    "en-zh.sqlite": {
+      "asset": "en-zh.sqlite.pack",
+      "bytes": 238342144,
+      "sha256": "8904412f606996e962ea111cb1f868dccc0ef789fec5e1ede4a9b03dafd19744"
+    },
+    "wiktionary.sqlite": {
+      "asset": "wiktionary.sqlite",
+      "bytes": 87228416,
+      "sha256": "ce7198a57990d39d797cf7df74460fee4668689dbc12116d6faabc7189128622"
+    },
+    "wordnet.sqlite": {
+      "asset": "wordnet.sqlite",
+      "bytes": 15683584,
+      "sha256": "b54c4ba933937200cf077a8d94637dad04d6f1e049fc70963f34fe846873e92e"
+    },
+    "zh-en.sqlite": {
+      "asset": "zh-en.sqlite",
+      "bytes": 15622144,
+      "sha256": "bda7b4c5fd8742ed776445e59bcdbb651086e20e1f76ea2954b62b24f54a8a35"
+    }
+  },
+  "method": "Final SQLite counts, not translation accuracy or unique words summed across overlapping dictionaries",
+  "networkRequired": false,
+  "wiktionaryEnglishMultiwordHeads": 53742,
+  "sourceFormSurfaceKeys": 337585
+}

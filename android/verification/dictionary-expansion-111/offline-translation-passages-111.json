@@ -1,0 +1,24 @@
+[
+  {
+    "source": "The laboratory measures the temperature, pressure, and electrical conductivity of each sample before it begins the experiment, and the technician records all three measurements in a separate table. If any reading falls outside the permitted range, the experiment must be stopped and the instrument must be checked before a new sample is introduced into the chamber. The final report should include the calibration method, the number of samples, and any observations that could explain differences between the measurements, rather than reporting only an average value. The investigators also documented the humidity, the duration of each observation, and the identification number of the equipment so that another team could reproduce the procedure under comparable conditions.",
+    "segments": [
+      "The laboratory measures the temperature, pressure, and electrical conductivity of each sample before it begins the experiment, and the technician records all three measurements in a separate table.",
+      "If any reading falls outside the permitted range, the experiment must be stopped and the instrument must be checked before a new sample is introduced into the chamber.",
+      "The final report should include the calibration method, the number of samples, and any observations that could explain differences between the measurements, rather than reporting only an average value.",
+      "The investigators also documented the humidity, the duration of each observation, and the identification number of the equipment so that another team could reproduce the procedure under comparable conditions."
+    ],
+    "translation": "实验室在试验开始之前测量每个样品的温度、压力和电导率,技术员将所有三项测量结果记录在一个单独的表格中。\n如果任何读数超出允许的范围,必须停止试验,在将新的样品引入试验室之前必须检查仪器。\n最后报告应包括校准方法、样品数量以及可以解释测量之间差异的任何观测,而不是只报告平均值。\n调查员还记录了设备的湿度、每次观察的时间和识别号码,以便另一组人员在类似条件下复制程序。",
+    "check": "Structural completeness only, not semantic accuracy"
+  },
+  {
+    "source": "Dr. Lee arrived at 9.30 a.m. and asked the receptionist to confirm the booking, because the confirmation message showed a different date from the one printed on the ticket. The receptionist checked the original request and explained that the room would be available after noon, but breakfast and transportation were not included in the price of the booking. After discussing the alternatives, they agreed to keep the room for two nights, leave the bags at the front desk, and collect a written receipt before returning in the afternoon. Before leaving the building, they checked the cancellation policy and asked whether an earlier departure would affect the total charge, because their travel plans might change after the next meeting.",
+    "segments": [
+      "Dr. Lee arrived at 9.30 a.m. and asked the receptionist to confirm the booking, because the confirmation message showed a different date from the one printed on the ticket.",
+      "The receptionist checked the original request and explained that the room would be available after noon, but breakfast and transportation were not included in the price of the booking.",
+      "After discussing the alternatives, they agreed to keep the room for two nights, leave the bags at the front desk, and collect a written receipt before returning in the afternoon.",
+      "Before leaving the building, they checked the cancellation policy and asked whether an earlier departure would affect the total charge, because their travel plans might change after the next meeting."
+    ],
+    "translation": "Lee医生上午9时30分抵达,要求接待员确认预订,因为确认信息显示的日期与罚单上打印的日期不同。\n接待员检查了最初的请求,并解释说,中午后房间可以使用,但早餐和运输费不包括在预订价格中。\n在讨论各种替代办法后,他们同意把房间保留两个晚上,把袋子放在前台,并在下午返回之前收集一份书面收据。\n在离开大楼之前,他们检查了取消政策,并询问提前离开是否会影响总收费,因为下次会议后,他们的旅行计划可能会改变。",
+    "check": "Structural completeness only, not semantic accuracy"
+  }
+]

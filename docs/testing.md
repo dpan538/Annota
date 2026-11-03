@@ -35,3 +35,5 @@ python3 design/dictionary/test_lookup.py
 ## 1.1.1 待发布修复
 
 [修复范围与复核清单](1.1.1-RELEASE-NOTES.md) · [测试记录](../android/verification/stable-1.1.1/)。仅准备候选，不创建 Release，不改变 1.1.0 默认下载与更新入口。
+
+[继续扩词与检索验证](../android/verification/dictionary-expansion-111/)包含来源资产校验、英文释义回退、词形索引、长选区取消与完整句翻译；保留初次失败和最终专项重测记录。模型语义质量限制另见 [离线翻译研究](../design/translation/RESEARCH-NEXT.md)。

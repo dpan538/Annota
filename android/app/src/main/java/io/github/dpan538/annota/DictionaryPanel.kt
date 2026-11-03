@@ -260,6 +260,13 @@ class DictionaryPanel(
                 menu.label(entry.pronunciation, 13f, true).apply { setPadding(0, 0, 0, ui.px(2f)) }
             )
         divider(card, 8f)
+        if (entry.englishDefinition)
+            card.addView(
+                menu.label(ui.tr("英文释义", "English definition"), 12f, true).apply {
+                    tag = "dictionary-definition-language"
+                    setPadding(0, 0, 0, ui.px(8f))
+                }
+            )
         if (entry.contextual)
             card.addView(
                 menu.label(ui.tr("当前语境", "In this context"), 12f, true).apply {
@@ -355,13 +362,21 @@ class DictionaryPanel(
         }
         val activeContext = queryContext
         lookup.execute {
-            val result = runCatching { dictionary.lookup(q, activeContext) }
+            // Rapid input can queue several selections. Discard obsolete work before querying.
+            if (!open || id != generation) return@execute
+            val result = runCatching {
+                dictionary.lookup(q, activeContext) { open && id == generation }
+            }
             handler.post {
                 if (!open || id != generation) return@post
                 result.fold(
                     { result ->
                         render(result, false)
-                        if (OfflineTranslator.eligible(q) && result.reading == null) translate(q, id)
+                        if (
+                            OfflineTranslator.eligible(q) &&
+                                (result.reading == null || result.reading.englishDefinition)
+                        )
+                            translate(q, id)
                     },
                     {
                         results.removeAllViews()
@@ -380,26 +395,38 @@ class DictionaryPanel(
     }
 
     private fun translate(text: String, id: Int) {
-        val block = LinearLayout(activity).apply {
-            orientation = LinearLayout.VERTICAL
-            tag = "offline-translation"
-            setPadding(ui.px(8f), ui.px(8f), ui.px(8f), ui.px(16f))
-        }
+        val block =
+            LinearLayout(activity).apply {
+                orientation = LinearLayout.VERTICAL
+                tag = "offline-translation"
+                setPadding(ui.px(8f), ui.px(8f), ui.px(8f), ui.px(16f))
+            }
         block.addView(menu.label(ui.tr("离线参考译文", "Offline reference translation"), 13f, true))
-        val value = menu.label(ui.tr("正在本机翻译…", "Translating on this device…"), 15f).apply {
-            tag = "translation-result"
-            setPadding(0, ui.px(8f), 0, 0)
-            setLineSpacing(ui.px(3f).toFloat(), 1f)
-        }
+        val value =
+            menu.label(ui.tr("正在本机翻译…", "Translating on this device…"), 15f).apply {
+                tag = "translation-result"
+                setPadding(0, ui.px(8f), 0, 0)
+                setLineSpacing(ui.px(3f).toFloat(), 1f)
+            }
         block.addView(value)
         results.addView(block, 0)
         menu.refreshSize()
         OfflineTranslator.get(activity).request(text, { open && generation == id }) { outcome ->
             handler.post {
                 if (!open || generation != id) return@post
-                value.text = outcome.getOrElse {
-                    ui.tr("暂未生成译文，可继续查看下方词义", "Translation unavailable. Word meanings remain below.")
-                }
+                value.text =
+                    outcome.getOrElse {
+                        if (it is TranslationInput.LimitExceeded)
+                            ui.tr(
+                                "选区较长，请选取更短的完整句子；下方词义仍可查看",
+                                "Select a shorter complete sentence. Word meanings remain below.",
+                            )
+                        else
+                            ui.tr(
+                                "暂未生成译文，可继续查看下方词义",
+                                "Translation unavailable. Word meanings remain below.",
+                            )
+                    }
                 menu.refreshSize()
             }
         }
@@ -426,6 +453,8 @@ class DictionaryPanel(
                         tag = "dictionary-part"
                     }
                 row.addView(menu.label(part.text, 15f).apply { setTextColor(palette.accent) })
+                if (part.reading?.englishDefinition == true)
+                    row.addView(menu.label(ui.tr("英文释义", "English definition"), 12f, true))
                 row.addView(
                     menu.label(
                         part.reading?.primary?.joinToString("；") { it.text }
@@ -476,8 +505,12 @@ class DictionaryPanel(
                 )
             }
         }
-        if (result.entries.isEmpty() && result.suggestions.isEmpty() && result.parts.isEmpty() &&
-            (empty || !OfflineTranslator.eligible(edit.text.toString()))) {
+        if (
+            result.entries.isEmpty() &&
+                result.suggestions.isEmpty() &&
+                result.parts.isEmpty() &&
+                (empty || !OfflineTranslator.eligible(edit.text.toString()))
+        ) {
             results.addView(
                 menu
                     .label(

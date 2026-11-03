@@ -21,7 +21,7 @@ Copyright (c) 2026 Dai Pan and Annota contributors. MIT License.
 
 Linwei / skywind3000, ECDICT，项目许可 MIT。
 来源：https://github.com/skywind3000/ECDICT
-完整许可：licenses/ECDICT-MIT.txt；完整中文释义记录：sources/ecdict-core.csv。
+完整许可：licenses/ECDICT-MIT.txt；APK 内完整中文释义记录：sources/ecdict-core.csv（仓库为 .csv.gz）。
 Annota 保留全部有中文释义的 770,238 条记录，进行换行标准化及 SQLite 索引转换，不按词频或考试标签筛选。
 上游包含多种资料来源；仓库代码许可不等于所有外部材料的单独授权证明。
 
@@ -31,7 +31,7 @@ CC-CEDICT 社区维护，MDBG 发布；来源版本 2026-10-19。
 来源：https://www.mdbg.net/chinese/dictionary?page=cc-cedict
 许可：Creative Commons Attribution-ShareAlike 4.0 International（CC BY-SA 4.0）。
 包括 Paul Andrew Denisowski 的贡献，原始署名见 licenses/CC-CEDICT-header.txt。
-完整许可：licenses/CC-BY-SA-4.0.txt；原始源数据：sources/cedict.txt。
+完整许可：licenses/CC-BY-SA-4.0.txt；APK 内原始源数据：sources/cedict.txt（仓库为 .txt.gz）。
 原始释义保持不变；zh-en.sqlite 的格式转换和数据组合按 CC BY-SA 4.0 分发。
 
 ## 字体与输入法
@@ -46,7 +46,7 @@ Princeton WordNet 3.0，Copyright Princeton University；Chinese Open WordNet，
 随包 sources/wordnet-cow.json 按同义词集关联中英文，保留英文释义、词义顺序及不规则词形；wordnet.sqlite 提供独立只读索引，展示时去除中文分词标记“+”。
 共有 61,340 个英文词头、77,708 条词义关联、原始 6,053 条不规则词形关联（另补充 LemmInflect 显式词形），与主词库存在重叠，不计为同等数量的新增单词。
 
-仓库保留上述来源的 .gz 压缩文件；Android 打包时自动展开，APK 内使用不带 .gz 的文件名。
+仓库保留上述来源的 .gz 压缩文件；Android 打包后 APK 中对应材料去掉 .gz 扩展名，解压后的内容相同。查询使用预构建的 SQLite 索引，不需要联网处理源数据。
 
 ## English Wiktionary / Kaikki
 
@@ -54,6 +54,8 @@ English Wiktionary contributors，CC BY-SA 4.0。提取自 https://kaikki.org/di
 独立 wiktionary.sqlite 包含 48,077 个词头、61,076 个义项，和主词库存在重叠。
 仅使用带普通话译词且有义项说明的记录，筛除古旧/罕见标记，建立词形和词头索引。
 来源哈希及转换说明：sources/kaikki-provenance.json；详细署名：licenses/Wiktionary-NOTICE.md。
+另提取完整英文数据中的明确词形关系，以及无汉译词头的实质英文释义；运行时优先中文，英文补充明确标注，不冒充中文翻译。
+两份新增源数据与转换哈希：sources/kaikki-forms-provenance.json、sources/kaikki-en-definitions-provenance.json；独立派生表继续按 CC BY-SA 4.0 分发。
 CC BY-SA 4.0 许可文本已随包提供。词条作者与历史可通过 Wiktionary 同名英文条目查阅。
 
 ## LemmInflect

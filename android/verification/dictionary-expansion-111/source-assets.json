@@ -1,0 +1,110 @@
+{
+  "passed": true,
+  "note": "AAPT expands gzip source assets and removes .gz; decompressed source contents match APK bytes. Frozen repository gzip hashes separately match the manifest.",
+  "checks": [
+    {
+      "source": "annota-phrases.tsv",
+      "asset": "annota-phrases.tsv",
+      "sourceSha256": "47fad91cc431ba663ab3320298e8e94312d8574fcd936dd372241ebfd0333582",
+      "packagedBytes": 38645,
+      "packagedSha256": "47fad91cc431ba663ab3320298e8e94312d8574fcd936dd372241ebfd0333582",
+      "passed": true
+    },
+    {
+      "source": "cedict.txt.gz",
+      "asset": "cedict.txt",
+      "sourceSha256": "2d42d41f75df8708d9d9b236d8ae15ecf1cef525aef8ebb8499a74cb09e1b096",
+      "packagedBytes": 9867186,
+      "packagedSha256": "fd7933557c9b149dfb041a6d98f0b07b939f4a4f2bed6077ceb37312b158e422",
+      "passed": true
+    },
+    {
+      "source": "ecdict-core.csv.gz",
+      "asset": "ecdict-core.csv",
+      "sourceSha256": "790881495775749e17433898b2d85608f985b5bdbaef3e4dbc8b6b5ae592f931",
+      "packagedBytes": 57620074,
+      "packagedSha256": "7baea8cedc649be89837ae93a9ca88853d2779fa927443c0caf1b764d9a73b48",
+      "passed": true
+    },
+    {
+      "source": "kaikki-en-definitions-provenance.json",
+      "asset": "kaikki-en-definitions-provenance.json",
+      "sourceSha256": "ed15a3d775be8ccb568b854c0d958407176a47132928f070f49ba635f32bc86a",
+      "packagedBytes": 1707,
+      "packagedSha256": "ed15a3d775be8ccb568b854c0d958407176a47132928f070f49ba635f32bc86a",
+      "passed": true
+    },
+    {
+      "source": "kaikki-en-definitions.jsonl.gz",
+      "asset": "kaikki-en-definitions.jsonl",
+      "sourceSha256": "8d6c2e27dd23ac3ad61ba2d8f8d1de98c9a8d639bd99310447b1161b8be017ac",
+      "packagedBytes": 30904584,
+      "packagedSha256": "828f426672a1111550c7e1733808d1dd9159e364ddd31ddac785b27c11716f06",
+      "passed": true
+    },
+    {
+      "source": "kaikki-en-mandarin.jsonl.gz",
+      "asset": "kaikki-en-mandarin.jsonl",
+      "sourceSha256": "03099f0dd78b570caf81e204d6433318447b312fd98beade5cc4117297b15c77",
+      "packagedBytes": 40727872,
+      "packagedSha256": "174661c7213899c0cb0b93a2cc37f2b6f6f769a86e74b4db0aeb47dc698dcfc8",
+      "passed": true
+    },
+    {
+      "source": "kaikki-forms-provenance.json",
+      "asset": "kaikki-forms-provenance.json",
+      "sourceSha256": "a3d870da8616a5062acc45ec10ac808c8ec5acb584b62255130baa9709773037",
+      "packagedBytes": 1387,
+      "packagedSha256": "a3d870da8616a5062acc45ec10ac808c8ec5acb584b62255130baa9709773037",
+      "passed": true
+    },
+    {
+      "source": "kaikki-forms.jsonl.gz",
+      "asset": "kaikki-forms.jsonl",
+      "sourceSha256": "67db39dc3fe083a36ab77c70de4e1e760cc3dec5cab8cf9a01c8460c73ac18f4",
+      "packagedBytes": 27366979,
+      "packagedSha256": "89f0e8acb66214e0eddcf8d954254a27d989bbf5aa4f4c4689894a60e47be5b7",
+      "passed": true
+    },
+    {
+      "source": "kaikki-provenance.json",
+      "asset": "kaikki-provenance.json",
+      "sourceSha256": "b8a87ff6d31ff391ab3c6b4706854a09f1919a872e36bcbc9d29dd4709878799",
+      "packagedBytes": 12943,
+      "packagedSha256": "b8a87ff6d31ff391ab3c6b4706854a09f1919a872e36bcbc9d29dd4709878799",
+      "passed": true
+    },
+    {
+      "source": "lemminflect-forms.jsonl.gz",
+      "asset": "lemminflect-forms.jsonl",
+      "sourceSha256": "54bdc9e10c5b707678bee555fd5207c2a097976bf1bbb1770be8ae46ae93dc39",
+      "packagedBytes": 4413372,
+      "packagedSha256": "f381facf6015bac1ea879344b8f880bfd484b3083cd13a36567f9fe46e30874a",
+      "passed": true
+    },
+    {
+      "source": "lemminflect-provenance.json",
+      "asset": "lemminflect-provenance.json",
+      "sourceSha256": "5bfe441d547d54e044e3dc514d92151f8d8fe326e081d7b265a8056805f6e55e",
+      "packagedBytes": 677,
+      "packagedSha256": "5bfe441d547d54e044e3dc514d92151f8d8fe326e081d7b265a8056805f6e55e",
+      "passed": true
+    },
+    {
+      "source": "provenance.json",
+      "asset": "provenance.json",
+      "sourceSha256": "171cb01b5f8be59b7e01098867a6eed7f5afe13fd489ce83ba29578ec7db8453",
+      "packagedBytes": 1498,
+      "packagedSha256": "171cb01b5f8be59b7e01098867a6eed7f5afe13fd489ce83ba29578ec7db8453",
+      "passed": true
+    },
+    {
+      "source": "wordnet-cow.json.gz",
+      "asset": "wordnet-cow.json",
+      "sourceSha256": "e3d739bed1c8741e1ae5d1fddfab5ea10ff718a14a65e467990282136b554f0d",
+      "packagedBytes": 11656484,
+      "packagedSha256": "130018dd93858c98cac8f0c2d142dcacdd76f7c721ae49ed466f89286cb16961",
+      "passed": true
+    }
+  ]
+}

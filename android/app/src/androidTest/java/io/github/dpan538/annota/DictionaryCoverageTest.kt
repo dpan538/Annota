@@ -51,7 +51,7 @@ class DictionaryCoverageTest {
             dictionary.lookup("set up").entries.first().word,
             dictionary.lookup("setup").entries.first().word,
         )
-        assertTrue(dictionary.lookup("virtual instances ".repeat(30)).parts.isEmpty())
+        assertTrue(dictionary.lookup("virtual instances ".repeat(80)).parts.isEmpty())
         val manifest =
             org.json.JSONObject(
                 context.assets.open("dictionary/manifest.json").bufferedReader().use {

@@ -31,17 +31,79 @@ class Dictionary(private val context: Context) {
 
     private val wordnet by lazy { WordNetDictionary(File(dir, "wordnet.sqlite")) }
 
-    private val wiktionary by lazy { WordNetDictionary(File(dir, "wiktionary.sqlite"), "wiktionary") }
+    private val wiktionary by lazy {
+        WordNetDictionary(File(dir, "wiktionary.sqlite"), "wiktionary")
+    }
 
-    private fun lexical(text: String, lemmas: List<String>, context: LookupContext?) =
-        wiktionary.lookup(text, lemmas, context) + wordnet.lookup(text, lemmas, context)
+    private fun lexical(
+        text: String,
+        lemmas: List<String>,
+        context: LookupContext?,
+    ): List<WordNetDictionary.Sense> {
+        val attested = (wiktionary.sourceLemmas(text) + lemmas).distinct()
+        return wiktionary.lookup(text, attested, context) + wordnet.lookup(text, attested, context)
+    }
 
     private val readings by lazy { DictionaryReadings(context) }
+    private val englishCache = android.util.LruCache<String, List<Entry>>(512)
 
     private val dir = File(context.filesDir, "dictionary").apply { mkdirs() }
 
-    fun lookup(text: String, context: LookupContext? = null): Result {
-        if (text.length > MAX_QUERY_LENGTH) return Result(emptyList(), emptyList())
+    private fun englishEntries(text: String, db: SQLiteDatabase): List<Entry> {
+        if (text.length > MAX_QUERY_LENGTH) return emptyList()
+        englishCache.get(text)?.let {
+            return it
+        }
+        val keys = queryKeys(text)
+        val bases =
+            keys.flatMap { key ->
+                db.rawQuery(
+                        "SELECT lemma FROM source_forms WHERE form=? ORDER BY lemma LIMIT 8",
+                        arrayOf(key),
+                    )
+                    .use { c -> buildList { while (c.moveToNext()) add(c.getString(0)) } }
+            }
+        return (keys + bases)
+            .distinct()
+            .take(16)
+            .flatMap { key ->
+                db.rawQuery(
+                        "SELECT s.word,s.pos,s.gloss FROM english_senses s JOIN english_aliases a ON s.word=a.word WHERE a.key=? ORDER BY s.rank LIMIT 3",
+                        arrayOf(boundaryKey(key)),
+                    )
+                    .use { c ->
+                        buildList {
+                            while (c.moveToNext()) add(
+                                Entry(
+                                    c.getString(0),
+                                    "",
+                                    c.getString(1) + ". " + c.getString(2),
+                                    "wiktionary-english",
+                                )
+                            )
+                        }
+                    }
+            }
+            .distinctBy { it.word + "|" + it.meaning }
+            .take(3)
+            .also { englishCache.put(text, it) }
+    }
+
+    fun lookup(
+        text: String,
+        context: LookupContext? = null,
+        isActive: () -> Boolean = { true },
+    ): Result {
+        checkLookupActive(isActive)
+        if (text.length > MAX_SELECTION_LENGTH) return Result(emptyList(), emptyList())
+        if (text.length > MAX_QUERY_LENGTH) {
+            // Long selections are bounded reading aids, not fuzzy full-sentence headwords.
+            return Result(
+                emptyList(),
+                emptyList(),
+                parts = decompose(text, context?.takeIf { it.matches(text) }, isActive),
+            )
+        }
         readings.acronym(text, context)?.let { reading ->
             return Result(
                 listOf(
@@ -56,7 +118,7 @@ class Dictionary(private val context: Context) {
                 reading,
             )
         }
-        val result = query(text)
+        val result = query(text, withSuggestions = false)
         val lexical = lexical(text, result.entries.map { it.word }, context)
         val active = context?.takeIf { it.matches(text) }
         val phrase = if (active == null || text.length > MAX_QUERY_LENGTH) null else phrase(active)
@@ -74,139 +136,275 @@ class Dictionary(private val context: Context) {
             return resolved.copy(
                 reading = readings.present(text, resolved, active, phrase, lexical)
             )
-        val parts = decompose(text, active)
+        val english =
+            SQLiteDatabase.openDatabase(
+                    File(dir, "wiktionary.sqlite").path,
+                    null,
+                    SQLiteDatabase.OPEN_READONLY,
+                )
+                .use { englishEntries(text, it) }
+        if (english.isNotEmpty()) {
+            val fallback = Result(english, emptyList())
+            return fallback.copy(reading = readings.present(text, fallback, active, null))
+        }
+        val parts = decompose(text, active, isActive)
         return if (parts.any { it.reading != null })
             resolved.copy(suggestions = emptyList(), parts = parts)
-        else resolved
+        else query(text)
     }
 
     /**
      * Exact phrase -> explicit source inflection -> longest covered chunks. Never invent a sentence
      * translation.
      */
-    private fun decompose(text: String, surrounding: LookupContext?): List<Part> {
-        if (text.length > MAX_QUERY_LENGTH) return emptyList()
+    private fun checkLookupActive(isActive: () -> Boolean) {
+        if (!isActive())
+            throw java.util.concurrent.CancellationException("Obsolete dictionary query")
+    }
+
+    private fun decompose(
+        text: String,
+        surrounding: LookupContext?,
+        isActive: () -> Boolean,
+    ): List<Part> {
+        if (text.length > MAX_SELECTION_LENGTH) return emptyList()
         // Keep punctuation as boundaries, not a reason to reject the entire selection.
         // A sentence's full text goes to the offline translator; this remains a dictionary view.
-        val clean = Normalizer.normalize(text, Normalizer.Form.NFKC).replace("\u00ad", "")
+        val clean =
+            repairPdfHyphenation(Normalizer.normalize(text, Normalizer.Form.NFKC))
+                .replace("\u00ad", "")
         if (clean.any { it in '\u3400'..'\u9fff' }) return emptyList()
         val matches = Regex("[A-Za-z0-9]+(?:['’][A-Za-z]+)?").findAll(clean).toList()
         val originalTokens = matches.map { it.value }
         val tokens = originalTokens.map(::normalize)
-        if (tokens.size !in 2..40) return emptyList()
+        if (tokens.size !in 2..MAX_SELECTION_WORDS) return emptyList()
         SQLiteDatabase.openDatabase(
                 File(dir, "en-zh.sqlite").path,
                 null,
                 SQLiteDatabase.OPEN_READONLY,
             )
             .use { db ->
-            SQLiteDatabase.openDatabase(File(dir, "wiktionary.sqlite").path, null, SQLiteDatabase.OPEN_READONLY).use { wiki ->
-                val cache = mutableMapOf<String, Entry?>()
-                fun exact(key: String): Entry? {
-                    if (cache.containsKey(key)) return cache[key]
-                    fun find(table: String, column: String): Entry? =
-                        db.rawQuery(
-                                "SELECT e.word,e.phonetic,e.translation,e.definition,e.source FROM entries e JOIN $table a ON e.id=a.entry_id WHERE a.$column=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 1",
-                                arrayOf(key),
-                            )
-                            .use { c ->
-                                if (!c.moveToFirst()) null
-                                else
-                                    Entry(
-                                        c.getString(0),
-                                        c.getString(1).orEmpty(),
-                                        c.getString(2).orEmpty().ifBlank {
-                                            c.getString(3).orEmpty()
-                                        },
-                                        c.getString(4).orEmpty(),
+                SQLiteDatabase.openDatabase(
+                        File(dir, "wiktionary.sqlite").path,
+                        null,
+                        SQLiteDatabase.OPEN_READONLY,
+                    )
+                    .use { wiki ->
+                        val cache = mutableMapOf<String, Entry?>()
+                        fun exact(key: String): Entry? {
+                            if (cache.containsKey(key)) return cache[key]
+                            fun find(
+                                table: String,
+                                column: String,
+                                candidate: String = key,
+                            ): Entry? =
+                                db.rawQuery(
+                                        "SELECT e.word,e.phonetic,e.translation,e.definition,e.source FROM entries e JOIN $table a ON e.id=a.entry_id WHERE a.$column=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 1",
+                                        arrayOf(candidate),
                                     )
+                                    .use { c ->
+                                        if (!c.moveToFirst()) null
+                                        else
+                                            Entry(
+                                                c.getString(0),
+                                                c.getString(1).orEmpty(),
+                                                c.getString(2).orEmpty().ifBlank {
+                                                    c.getString(3).orEmpty()
+                                                },
+                                                c.getString(4).orEmpty(),
+                                            )
+                                    }
+                            fun extra(candidate: String): Entry? =
+                                wiki
+                                    .rawQuery(
+                                        "SELECT s.word,s.pos,s.meaning FROM senses s JOIN aliases a ON s.word=a.word WHERE a.key=? ORDER BY s.rank LIMIT 1",
+                                        arrayOf(boundaryKey(candidate)),
+                                    )
+                                    .use { c ->
+                                        if (c.moveToFirst())
+                                            Entry(
+                                                c.getString(0),
+                                                "",
+                                                c.getString(1) + ". " + c.getString(2),
+                                                "wiktionary",
+                                            )
+                                        else null
+                                    }
+                            val direct =
+                                find("aliases", "boundary_key")
+                                    ?: find("forms", "key")
+                                    ?: extra(key)
+                            val attested =
+                                if (direct != null) null
+                                else
+                                    wiki
+                                        .rawQuery(
+                                            "SELECT lemma FROM source_forms WHERE form=? ORDER BY lemma LIMIT 8",
+                                            arrayOf(key),
+                                        )
+                                        .use { c ->
+                                            buildList { while (c.moveToNext()) add(c.getString(0)) }
+                                        }
+                                        .firstNotNullOfOrNull { base ->
+                                            find("aliases", "boundary_key", boundaryKey(base))
+                                                ?: extra(base)
+                                        }
+                            return (direct ?: attested ?: englishEntries(key, wiki).firstOrNull())
+                                .also { cache[key] = it }
+                        }
+                        val lemmaCache = mutableMapOf<String, List<String>>()
+                        fun lemmas(word: String): List<String> =
+                            lemmaCache.getOrPut(word) {
+                                val base =
+                                    db.rawQuery(
+                                            "SELECT DISTINCT e.word FROM entries e JOIN forms f ON e.id=f.entry_id WHERE f.key=? LIMIT 8",
+                                            arrayOf(word),
+                                        )
+                                        .use { c ->
+                                            buildList { while (c.moveToNext()) add(c.getString(0)) }
+                                        }
+                                val extra =
+                                    wiki
+                                        .rawQuery(
+                                            "SELECT DISTINCT lemma FROM forms WHERE form=? LIMIT 8",
+                                            arrayOf(word),
+                                        )
+                                        .use { c ->
+                                            buildList { while (c.moveToNext()) add(c.getString(0)) }
+                                        }
+                                val source =
+                                    wiki
+                                        .rawQuery(
+                                            "SELECT lemma FROM source_forms WHERE form=? ORDER BY lemma LIMIT 8",
+                                            arrayOf(word),
+                                        )
+                                        .use { c ->
+                                            buildList { while (c.moveToNext()) add(c.getString(0)) }
+                                        }
+                                (base + extra + source).filter { ' ' !in it }.distinct().take(8)
                             }
-                    val extra = if (' ' in key) wiki.rawQuery(
-                        "SELECT word,pos,meaning FROM senses WHERE word=? ORDER BY rank LIMIT 1", arrayOf(key),
-                    ).use { c -> if (c.moveToFirst()) Entry(c.getString(0), "", c.getString(1) + ". " + c.getString(2), "wiktionary") else null } else null
-                    return (find("aliases", "boundary_key") ?: find("forms", "key") ?: extra).also {
-                        cache[key] = it
-                    }
-                }
-                val lemmaCache = mutableMapOf<String, List<String>>()
-                fun lemmas(word: String): List<String> = lemmaCache.getOrPut(word) {
-                    db.rawQuery(
-                        "SELECT DISTINCT e.word FROM entries e JOIN forms f ON e.id=f.entry_id WHERE f.key=? LIMIT 8",
-                        arrayOf(word),
-                    ).use { c -> buildList { while (c.moveToNext()) add(c.getString(0)) } }
-                }
-                fun match(start: Int, end: Int): Entry? {
-                    // A comma/semicolon/full stop separates phrases. Hyphens and spaces may join.
-                    for (i in start until end - 1) {
-                        val gap = clean.substring(matches[i].range.last + 1, matches[i + 1].range.first)
-                        if (gap.any { !it.isWhitespace() && it !in "-‐‑‒–—" }) return null
-                    }
-                    val words = tokens.subList(start, end)
-                    exact(words.joinToString(" "))?.let {
-                        return it
-                    }
-                    // Use only lemmas attested in the bundled source, never unverified suffix
-                    // chopping.
-                    if (words.size > 1) {
-                        for (index in words.indices) {
-                            for (base in lemmas(words[index])) {
-                                val candidate = words.toMutableList().apply { set(index, base) }
-                                exact(candidate.joinToString(" "))?.let { return it }
+                        fun match(start: Int, end: Int): Entry? {
+                            checkLookupActive(isActive)
+                            // A comma/semicolon/full stop separates phrases. Hyphens and spaces may
+                            // join.
+                            for (i in start until end - 1) {
+                                val gap =
+                                    clean.substring(
+                                        matches[i].range.last + 1,
+                                        matches[i + 1].range.first,
+                                    )
+                                if (gap.any { !it.isWhitespace() && it !in "-‐‑‒–—" }) return null
                             }
+                            val words = tokens.subList(start, end)
+                            exact(words.joinToString(" "))?.let {
+                                return it
+                            }
+                            // Use only lemmas attested in the bundled source, never unverified
+                            // suffix
+                            // chopping.
+                            if (words.size > 1) {
+                                for (candidate in phraseVariants(words, ::lemmas)) exact(candidate)
+                                    ?.let {
+                                        return it
+                                    }
+                            }
+                            return null
+                        }
+                        data class Chunk(val start: Int, val end: Int, val entry: Entry?)
+                        data class Path(val covered: Int, val chunks: List<Chunk>)
+                        val best = arrayOfNulls<Path>(tokens.size + 1)
+                        best[tokens.size] = Path(0, emptyList())
+                        for (start in tokens.lastIndex downTo 0) {
+                            val rest = best[start + 1]!!
+                            var chosen =
+                                Path(
+                                    rest.covered,
+                                    listOf(Chunk(start, start + 1, null)) + rest.chunks,
+                                )
+                            for (end in start + 1..minOf(tokens.size, start + 8)) {
+                                val entry = match(start, end) ?: continue
+                                val tail = best[end]!!
+                                val option =
+                                    Path(
+                                        tail.covered + end - start,
+                                        listOf(Chunk(start, end, entry)) + tail.chunks,
+                                    )
+                                if (
+                                    option.covered > chosen.covered ||
+                                        (option.covered == chosen.covered &&
+                                            option.chunks.size < chosen.chunks.size)
+                                )
+                                    chosen = option
+                            }
+                            best[start] = chosen
+                        }
+                        return best[0]!!.chunks.map { chunk ->
+                            checkLookupActive(isActive)
+                            val selected =
+                                originalTokens.subList(chunk.start, chunk.end).joinToString(" ")
+                            val local =
+                                LookupContext(
+                                    selected,
+                                    (surrounding?.before.orEmpty() + tokens.take(chunk.start))
+                                        .takeLast(22),
+                                    (tokens.drop(chunk.end) + surrounding?.after.orEmpty()).take(22),
+                                )
+                            Part(
+                                selected,
+                                readings.acronym(selected, local)
+                                    ?: run {
+                                        // Do not throw away the other senses/lemmas after
+                                        // segmentation.
+                                        // An uncovered token should not run thousands of
+                                        // fuzzy-distance
+                                        // comparisons; suggestions belong to a single-word query
+                                        // only.
+                                        val entries =
+                                            when {
+                                                chunk.entry == null -> emptyList()
+                                                chunk.entry.source == "wiktionary-english" ->
+                                                    englishEntries(selected, wiki).ifEmpty {
+                                                        listOf(chunk.entry)
+                                                    }
+                                                else ->
+                                                    query(selected, withSuggestions = false)
+                                                        .entries
+                                                        .ifEmpty { listOf(chunk.entry) }
+                                            }
+                                        val lexical =
+                                            lexical(selected, entries.map { it.word }, local)
+                                        val resolved =
+                                            entries
+                                                .takeUnless {
+                                                    lexical.isNotEmpty() &&
+                                                        it.all { entry ->
+                                                            entry.source == "wiktionary-english"
+                                                        }
+                                                }
+                                                .orEmpty()
+                                                .ifEmpty {
+                                                    lexical.map {
+                                                        Entry(
+                                                            it.word,
+                                                            "",
+                                                            it.label + " " + it.text,
+                                                            it.source,
+                                                        )
+                                                    }
+                                                }
+                                        readings.present(
+                                            selected,
+                                            Result(resolved, emptyList()),
+                                            local,
+                                            null,
+                                            lexical,
+                                        )
+                                    },
+                                local,
+                            )
                         }
                     }
-                    return null
-                }
-                data class Chunk(val start: Int, val end: Int, val entry: Entry?)
-                data class Path(val covered: Int, val chunks: List<Chunk>)
-                val best = arrayOfNulls<Path>(tokens.size + 1)
-                best[tokens.size] = Path(0, emptyList())
-                for (start in tokens.lastIndex downTo 0) {
-                    val rest = best[start + 1]!!
-                    var chosen =
-                        Path(rest.covered, listOf(Chunk(start, start + 1, null)) + rest.chunks)
-                    for (end in start + 1..minOf(tokens.size, start + 8)) {
-                        val entry = match(start, end) ?: continue
-                        val tail = best[end]!!
-                        val option =
-                            Path(
-                                tail.covered + end - start,
-                                listOf(Chunk(start, end, entry)) + tail.chunks,
-                            )
-                        if (
-                            option.covered > chosen.covered ||
-                                (option.covered == chosen.covered &&
-                                    option.chunks.size < chosen.chunks.size)
-                        )
-                            chosen = option
-                    }
-                    best[start] = chosen
-                }
-                return best[0]!!.chunks.map { chunk ->
-                    val selected = originalTokens.subList(chunk.start, chunk.end).joinToString(" ")
-                    val local =
-                        LookupContext(
-                            selected,
-                            (surrounding?.before.orEmpty() + tokens.take(chunk.start)).takeLast(22),
-                            (tokens.drop(chunk.end) + surrounding?.after.orEmpty()).take(22),
-                        )
-                    Part(
-                        selected,
-                        readings.acronym(selected, local)
-                            ?: run {
-                                // Do not throw away the other senses/lemmas after segmentation.
-                                val entries = query(selected).entries.ifEmpty { listOfNotNull(chunk.entry) }
-                                val lexical = lexical(selected, entries.map { it.word }, local)
-                                val resolved = entries.ifEmpty {
-                                    lexical.map { Entry(it.word, "", it.label + " " + it.text, it.source) }
-                                }
-                                readings.present(selected, Result(resolved, emptyList()), local, null, lexical)
-                            },
-                        local,
-                    )
-                }
             }
-        }
     }
 
     private fun phrase(context: LookupContext): Pair<String, Entry>? {
@@ -233,36 +431,62 @@ class Dictionary(private val context: Context) {
                 SQLiteDatabase.OPEN_READONLY,
             )
             .use { db ->
-                val matches = mutableListOf<Pair<String, Entry>>()
-                candidates.forEach { value ->
-                    db.rawQuery(
-                            "SELECT e.word,e.phonetic,e.translation,e.definition,e.source FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.boundary_key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 1",
-                            arrayOf(boundaryKey(value)),
-                        )
-                        .use { c ->
-                            if (c.moveToFirst())
-                                matches +=
-                                    value to
-                                        Entry(
-                                            c.getString(0),
-                                            c.getString(1).orEmpty(),
-                                            c.getString(2).orEmpty().ifBlank {
-                                                c.getString(3).orEmpty()
-                                            },
-                                            c.getString(4).orEmpty(),
-                                        )
+                SQLiteDatabase.openDatabase(
+                        File(dir, "wiktionary.sqlite").path,
+                        null,
+                        SQLiteDatabase.OPEN_READONLY,
+                    )
+                    .use { wiki ->
+                        val matches = mutableListOf<Pair<String, Entry>>()
+                        candidates.forEach { value ->
+                            var match: Entry? = null
+                            db.rawQuery(
+                                    "SELECT e.word,e.phonetic,e.translation,e.definition,e.source FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.boundary_key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 1",
+                                    arrayOf(boundaryKey(value)),
+                                )
+                                .use { c ->
+                                    if (c.moveToFirst())
+                                        match =
+                                            Entry(
+                                                c.getString(0),
+                                                c.getString(1).orEmpty(),
+                                                c.getString(2).orEmpty().ifBlank {
+                                                    c.getString(3).orEmpty()
+                                                },
+                                                c.getString(4).orEmpty(),
+                                            )
+                                }
+                            if (match == null) {
+                                wiki
+                                    .rawQuery(
+                                        "SELECT s.word,s.pos,s.meaning FROM senses s JOIN aliases a ON s.word=a.word WHERE a.key=? ORDER BY s.rank LIMIT 1",
+                                        arrayOf(boundaryKey(value)),
+                                    )
+                                    .use { c ->
+                                        if (c.moveToFirst())
+                                            match =
+                                                Entry(
+                                                    c.getString(0),
+                                                    "",
+                                                    c.getString(1) + ". " + c.getString(2),
+                                                    "wiktionary",
+                                                )
+                                    }
+                            }
+                            match?.let { matches += value to it }
                         }
-                }
-                // Equal-length competing phrases do not justify silently selecting one meaning.
-                val longest = matches.firstOrNull() ?: return null
-                val count = longest.first.count { it == ' ' }
-                return longest.takeIf {
-                    matches
-                        .filter { it.first.count { ch -> ch == ' ' } == count }
-                        .map { it.second.word }
-                        .distinct()
-                        .size == 1
-                }
+                        // Equal-length competing phrases do not justify silently selecting one
+                        // meaning.
+                        val longest = matches.firstOrNull() ?: return null
+                        val count = longest.first.count { it == ' ' }
+                        return longest.takeIf {
+                            matches
+                                .filter { it.first.count { ch -> ch == ' ' } == count }
+                                .map { it.second.word }
+                                .distinct()
+                                .size == 1
+                        }
+                    }
             }
     }
 
@@ -275,7 +499,8 @@ class Dictionary(private val context: Context) {
                     }
                 )
                 .getJSONObject("files")
-        listOf("en-zh.sqlite", "zh-en.sqlite", "wordnet.sqlite", "wiktionary.sqlite").forEach { name ->
+        listOf("en-zh.sqlite", "zh-en.sqlite", "wordnet.sqlite", "wiktionary.sqlite").forEach { name
+            ->
             val f = File(dir, name)
             val hash = manifest.getJSONObject(name).getString("sha256")
             if (!f.exists() || sha256(f) != hash) {
@@ -293,7 +518,7 @@ class Dictionary(private val context: Context) {
         }
     }
 
-    fun query(text: String): Result {
+    fun query(text: String, withSuggestions: Boolean = true): Result {
         // Long passages are not dictionary entries. Never silently truncate a selection.
         if (text.length > MAX_QUERY_LENGTH) return Result(emptyList(), emptyList())
         val keys = queryKeys(text)
@@ -361,7 +586,21 @@ class Dictionary(private val context: Context) {
                         if (rows.isNotEmpty()) break
                     }
                 }
+                if (!zh) {
+                    // Explicit form_of records supply recall, never a guessed suffix stem. Keep
+                    // exact heads first and preserve competing attested base forms.
+                    for (base in wiktionary.sourceLemmas(text)) {
+                        val extra =
+                            entries(
+                                    "SELECT DISTINCT e.* FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.key=? OR a.boundary_key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 12",
+                                    arrayOf(base, boundaryKey(base)),
+                                )
+                                .filter { candidate -> rows.none { it.word == candidate.word } }
+                        rows = rows + extra.map { it.copy(lemma = true) }
+                    }
+                }
                 if (rows.isNotEmpty()) return Result(rows, emptyList())
+                if (!withSuggestions) return Result(emptyList(), emptyList())
                 val s = mutableListOf<String>()
                 if (zh) {
                     s +=
@@ -420,6 +659,37 @@ class Dictionary(private val context: Context) {
 
     companion object {
         const val MAX_QUERY_LENGTH = 160
+        const val MAX_SELECTION_LENGTH = 1024
+        const val MAX_SELECTION_WORDS = 160
+
+        /** Only explicit dictionary lemmas, at most two changed positions and 32 probes. */
+        fun phraseVariants(words: List<String>, lemmas: (String) -> List<String>): List<String> {
+            val choices =
+                words.map { word ->
+                    lemmas(word).filter { it != word && ' ' !in it }.distinct().take(4)
+                }
+            val variants = linkedSetOf<String>()
+            for (i in words.indices) for (base in choices[i]) {
+                variants += words.toMutableList().apply { set(i, base) }.joinToString(" ")
+                if (variants.size == 32) return variants.toList()
+            }
+            for (i in words.indices) for (j in i + 1 until words.size) for (a in
+                choices[i]) for (b in choices[j]) {
+                variants +=
+                    words
+                        .toMutableList()
+                        .apply {
+                            set(i, a)
+                            set(j, b)
+                        }
+                        .joinToString(" ")
+                if (variants.size == 32) return variants.toList()
+            }
+            return variants.toList()
+        }
+
+        internal fun repairPdfHyphenation(value: String): String =
+            value.replace(Regex("(?<=[\\p{L}])[-‐\u00ad][ \\t]*\\r?\\n[ \\t]*(?=[\\p{L}])"), "")
 
         fun normalize(value: String): String = normalizeLiteral(value).trim(' ', '.')
 
@@ -435,7 +705,11 @@ class Dictionary(private val context: Context) {
         fun boundaryKey(value: String): String = normalize(value).replace(Regex("[ -]+"), " ")
 
         fun queryKeys(value: String): List<String> =
-            listOf(value, value.replace(Regex("(?<=[\\p{L}])[-‐‑–—]\\s+(?=[\\p{L}])"), ""))
+            listOf(
+                    value,
+                    repairPdfHyphenation(value),
+                    value.replace(Regex("(?<=[\\p{L}])[-‐‑–—]\\s+(?=[\\p{L}])"), ""),
+                )
                 // Preserve lexical periods (i.e., P.M.) before stripping sentence punctuation.
                 .flatMap { listOf(normalizeLiteral(it), normalize(it)) }
                 .distinct()

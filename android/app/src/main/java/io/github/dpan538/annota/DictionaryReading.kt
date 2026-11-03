@@ -12,6 +12,7 @@ data class DictionaryReading(
     val alternatives: List<DictionarySense>,
     val contextual: Boolean,
     val phrase: String = "",
+    val englishDefinition: Boolean = false,
 )
 
 /**
@@ -150,6 +151,27 @@ class DictionaryReadings(context: Context) {
             return it
         }
         val entry = result.entries.firstOrNull() ?: return null
+        if (result.entries.all { it.source == "wiktionary-english" }) {
+            // A real English definition is preferable to inventing a Chinese equivalent.
+            // Keep clauses and qualifiers intact: the Chinese-equivalent compactor below
+            // intentionally splits synonyms and would corrupt an explanatory sentence.
+            val prefix = Regex("^[a-z]{1,6}\\.\\s+")
+            val definitions =
+                result.entries
+                    .map {
+                        val label = prefix.find(it.meaning)?.value?.trim().orEmpty()
+                        DictionarySense(label, it.meaning.removePrefix(label).trim())
+                    }
+                    .distinctBy { it.text }
+            return DictionaryReading(
+                entry.word,
+                entry.pronunciation,
+                definitions.take(1),
+                definitions.drop(1),
+                false,
+                englishDefinition = true,
+            )
+        }
         val sourceSenses = result.entries.flatMap(::senses).distinctBy { it.text }
         val lexicalSenses =
             lexical.flatMap { sense ->
@@ -191,9 +213,13 @@ class DictionaryReadings(context: Context) {
         if (defaults.isEmpty() && entry.source != "annota") {
             val current = lexical.filter { it.source == "wiktionary" }
             if (current.isNotEmpty()) {
-                primary = current.take(primaryLimit).map {
-                    DictionarySense(it.label, compact(it.text.split("；").take(2).joinToString("；")))
-                }
+                primary =
+                    current.take(primaryLimit).map {
+                        DictionarySense(
+                            it.label,
+                            compact(it.text.split("；").take(2).joinToString("；")),
+                        )
+                    }
             }
         }
         var contextual = false

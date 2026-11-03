@@ -18,16 +18,54 @@ class WordNetDictionary(private val file: File, private val source: String = "wo
 
     private val cache = LruCache<String, List<Sense>>(256)
     private val morphology = LruCache<String, Set<String>>(1024)
+    private val sourceMorphology = LruCache<String, List<String>>(512)
+
+    @Synchronized
+    fun sourceLemmas(query: String): List<String> {
+        if (source != "wiktionary" || query.length > Dictionary.MAX_QUERY_LENGTH || !file.exists())
+            return emptyList()
+        sourceMorphology.get(query)?.let {
+            return it
+        }
+        return SQLiteDatabase.openDatabase(file.path, null, SQLiteDatabase.OPEN_READONLY)
+            .use { db ->
+                Dictionary.queryKeys(query)
+                    .flatMap { key ->
+                        db.rawQuery(
+                                "SELECT lemma FROM source_forms WHERE form=? ORDER BY lemma LIMIT 8",
+                                arrayOf(key),
+                            )
+                            .use { c -> buildList { while (c.moveToNext()) add(c.getString(0)) } }
+                    }
+                    .distinct()
+                    .take(8)
+            }
+            .also { sourceMorphology.put(query, it) }
+    }
 
     private fun contentForms(words: Collection<String>): Set<String> {
-        val result = mutableSetOf<String>()
+        val result = words.toMutableSet()
+        val missing =
+            words.distinct().filter { word ->
+                val cached = morphology.get(word)
+                if (cached == null) true
+                else {
+                    result += cached
+                    false
+                }
+            }
+        if (missing.isEmpty()) return result
         SQLiteDatabase.openDatabase(file.path, null, SQLiteDatabase.OPEN_READONLY).use { db ->
-            words.forEach { word ->
-                result += word
-                result += morphology.get(word) ?: db.rawQuery(
-                    "SELECT DISTINCT lemma FROM forms WHERE form=? LIMIT 4", arrayOf(word),
-                ).use { cursor -> buildSet { while (cursor.moveToNext()) add(cursor.getString(0)) } }
-                    .also { morphology.put(word, it) }
+            missing.forEach { word ->
+                result +=
+                    db.rawQuery(
+                            "SELECT DISTINCT lemma FROM forms WHERE form=? LIMIT 4",
+                            arrayOf(word),
+                        )
+                        .use { cursor ->
+                            buildSet { while (cursor.moveToNext()) add(cursor.getString(0)) }
+                        }
+                        .also { morphology.put(word, it) }
             }
         }
         return result
@@ -38,7 +76,11 @@ class WordNetDictionary(private val file: File, private val source: String = "wo
         if (query.length > Dictionary.MAX_QUERY_LENGTH) return emptyList()
         val key = Dictionary.normalize(query)
         if (key.length > Dictionary.MAX_QUERY_LENGTH || !file.exists()) return emptyList()
-        val keys = (listOf(key) + lemmas.map(Dictionary::normalize)).distinct().take(12)
+        val keys =
+            (Dictionary.queryKeys(query) +
+                    (sourceLemmas(query) + lemmas).flatMap(Dictionary::queryKeys))
+                .distinct()
+                .take(16)
         val values =
             keys
                 .flatMap { word ->
@@ -50,6 +92,17 @@ class WordNetDictionary(private val file: File, private val source: String = "wo
                             )
                             .use { db ->
                                 val bases = mutableListOf(word)
+                                // Shared boundary normalization is indexed at build time. Do not
+                                // scan all senses with SQL replace() on every PDF selection.
+                                if (source == "wiktionary") {
+                                    db.rawQuery(
+                                            "SELECT word FROM aliases WHERE key=? LIMIT 12",
+                                            arrayOf(Dictionary.boundaryKey(word)),
+                                        )
+                                        .use { c -> while (c.moveToNext()) bases += c.getString(0) }
+                                } else {
+                                    bases += Dictionary.boundaryKey(word)
+                                }
                                 db.rawQuery(
                                         "SELECT lemma FROM forms WHERE form=? LIMIT 8",
                                         arrayOf(word),
@@ -120,22 +173,45 @@ class WordNetDictionary(private val file: File, private val source: String = "wo
                 "most",
                 "only",
             )
-        val cues = window.filter { it.length >= 4 && it !in stop && it != key }
-            .map { contentForms(listOf(it)).filterNot { form -> form in keys || form in stop }.toSet() }
-            .filter { it.isNotEmpty() }.distinct()
+        val cues =
+            window
+                .filter { it.length >= 4 && it !in stop && it != key }
+                .map {
+                    contentForms(listOf(it))
+                        .filterNot { form -> form in keys || form in stop }
+                        .toSet()
+                }
+                .filter { it.isNotEmpty() }
+                .distinct()
         if (cues.size < 2) return values.sortedBy { it.rank }
-        val ranked = values.map { sense ->
-            val words = contentForms(LookupContext.tokens(sense.gloss).filter { it.length >= 4 && it !in stop })
-            cues.count { forms -> forms.any { it in words } } to sense
-        }.sortedWith(compareByDescending<Pair<Int, Sense>> { it.first }.thenBy { it.second.rank })
+        val ranked =
+            values
+                .map { sense ->
+                    val words =
+                        contentForms(
+                            LookupContext.tokens(sense.gloss).filter {
+                                it.length >= 4 && it !in stop
+                            }
+                        )
+                    cues.count { forms -> forms.any { it in words } } to sense
+                }
+                .sortedWith(
+                    compareByDescending<Pair<Int, Sense>> { it.first }.thenBy { it.second.rank }
+                )
         // Equivalent records for one sense are not competing meanings. Compare distinct
         // gloss/POS groups, so a lemma and its inflected headword do not cancel real evidence.
         val groups = ranked.distinctBy { it.second.label + "|" + it.second.gloss }
         val best = groups.firstOrNull()
-        val confident = best != null && best.first >= 2 && best.first > (groups.getOrNull(1)?.first ?: 0)
-        return if (confident) ranked.map { item ->
-            item.second.copy(contextual = item.second.label == best!!.second.label && item.second.gloss == best.second.gloss)
-        } else values.sortedBy { it.rank }
-
+        val confident =
+            best != null && best.first >= 2 && best.first > (groups.getOrNull(1)?.first ?: 0)
+        return if (confident)
+            ranked.map { item ->
+                item.second.copy(
+                    contextual =
+                        item.second.label == best!!.second.label &&
+                            item.second.gloss == best.second.gloss
+                )
+            }
+        else values.sortedBy { it.rank }
     }
 }

@@ -84,12 +84,15 @@ class OfflineDictionaryTest {
             assertTrue(text(menu, "translation-result")!!.contains("窗口"))
             inst.waitForIdleSync()
             val image = inst.uiAutomation.takeScreenshot()!!
-            java.io.File(inst.targetContext.filesDir, "offline-translation-panel-111.png").outputStream().use {
-                image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
-            }
+            java.io
+                .File(inst.targetContext.filesDir, "offline-translation-panel-111.png")
+                .outputStream()
+                .use { image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
             image.recycle()
             fun query(value: String) = ui {
-                (all(menu.content).first { it.tag == "dictionary-query" } as EditText).setText(value)
+                (all(menu.content).first { it.tag == "dictionary-query" } as EditText).setText(
+                    value
+                )
             }
             query("The experiment did not support the original hypothesis.")
             until { text(menu, "translation-result") != null }
@@ -104,7 +107,37 @@ class OfflineDictionaryTest {
             ui { menu.popup.dismiss() }
             SystemClock.sleep(1200)
             assertFalse(ui { menu.popup.isShowing })
-            assertEquals("Dismissed results must not be mutated by a late callback", old, text(menu, "translation-result"))
+            assertEquals(
+                "Dismissed results must not be mutated by a late callback",
+                old,
+                text(menu, "translation-result"),
+            )
+        }
+    }
+
+    @Test
+    fun englishFallbackIsLabelledAndKeepsItsCompleteExplanation() {
+        withPanel("hosts file") { menu ->
+            until { text(menu, "dictionary-definition-language") == "英文释义" }
+            assertEquals(
+                "A plain text file used by an operating system to map hostnames to IP addresses.",
+                text(menu, "dictionary-definition"),
+            )
+            until { text(menu, "translation-result")?.let { !it.contains("正在") } == true }
+            inst.waitForIdleSync()
+            val screenshot = inst.uiAutomation.takeScreenshot()!!
+            java.io
+                .File(inst.targetContext.filesDir, "english-definition-panel-111.png")
+                .outputStream()
+                .use { screenshot.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
+            screenshot.recycle()
+            ui {
+                (all(menu.content).first { it.tag == "dictionary-query" } as EditText).setText(
+                    "attention"
+                )
+            }
+            until { text(menu, "dictionary-definition")?.contains("注意") == true }
+            assertNull(text(menu, "dictionary-definition-language"))
         }
     }
 

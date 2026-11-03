@@ -11,6 +11,10 @@
     "senses": 61076,
     "headwords": 48077,
     "phrases": 15628,
+    "sourceFormPairs": 338228,
+    "sourceFormPairsWithChineseTarget": 203325,
+    "englishHeadwords": 192058,
+    "englishSenses": 208999,
     "license": "CC-BY-SA-4.0",
     "source": "English Wiktionary contributors / Kaikki",
     "url": "https://kaikki.org/dictionary/English/"
@@ -56,8 +60,8 @@
     },
     "wiktionary.sqlite": {
       "asset": "wiktionary.sqlite",
-      "bytes": 13926400,
-      "sha256": "a143ec6f25d7720a205705642dc71321b790570b9e409915629958d8e985cd8e"
+      "bytes": 87228416,
+      "sha256": "ce7198a57990d39d797cf7df74460fee4668689dbc12116d6faabc7189128622"
     },
     "wordnet.sqlite": {
       "asset": "wordnet.sqlite",
@@ -74,7 +78,11 @@
     "annota-phrases.tsv": "47fad91cc431ba663ab3320298e8e94312d8574fcd936dd372241ebfd0333582",
     "cedict.txt.gz": "2d42d41f75df8708d9d9b236d8ae15ecf1cef525aef8ebb8499a74cb09e1b096",
     "ecdict-core.csv.gz": "790881495775749e17433898b2d85608f985b5bdbaef3e4dbc8b6b5ae592f931",
+    "kaikki-en-definitions-provenance.json": "ed15a3d775be8ccb568b854c0d958407176a47132928f070f49ba635f32bc86a",
+    "kaikki-en-definitions.jsonl.gz": "8d6c2e27dd23ac3ad61ba2d8f8d1de98c9a8d639bd99310447b1161b8be017ac",
     "kaikki-en-mandarin.jsonl.gz": "03099f0dd78b570caf81e204d6433318447b312fd98beade5cc4117297b15c77",
+    "kaikki-forms-provenance.json": "a3d870da8616a5062acc45ec10ac808c8ec5acb584b62255130baa9709773037",
+    "kaikki-forms.jsonl.gz": "67db39dc3fe083a36ab77c70de4e1e760cc3dec5cab8cf9a01c8460c73ac18f4",
     "kaikki-provenance.json": "b8a87ff6d31ff391ab3c6b4706854a09f1919a872e36bcbc9d29dd4709878799",
     "lemminflect-forms.jsonl.gz": "54bdc9e10c5b707678bee555fd5207c2a097976bf1bbb1770be8ae46ae93dc39",
     "lemminflect-provenance.json": "5bfe441d547d54e044e3dc514d92151f8d8fe326e081d7b265a8056805f6e55e",

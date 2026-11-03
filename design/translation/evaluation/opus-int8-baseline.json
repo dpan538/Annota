@@ -1,0 +1,578 @@
+{
+  "model": "Helsinki-NLP/opus-mt-en-zh, Xenova 046f55aec303cdee3e0318604406d4df20f1e8ea",
+  "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+  "onnxruntime": "1.31.1",
+  "provider": "CPUExecutionProvider",
+  "threads": 2,
+  "sessionLoadSeconds": 0.3916,
+  "sourceSpmSha256": "5775ddc9e3ff2fae91554da56468ad35ff56edaba870fea74447bc7234bfdaa8",
+  "modelSha256": {
+    "encoder.onnx": "d3b7912bf6a9bd27e4c074c2df91d4ff3d5b4bc5f7f6c8d7cc9c805c98fbafee",
+    "decoder.onnx": "023be4f841f4c47cd65fffcbaa81c0d99d7f7e0138f7ba0e03fa220a4e688aff"
+  },
+  "limit": "Authored diagnostic probes, not a random held-out corpus or accuracy benchmark; macOS timings are not Android timings.",
+  "cases": [
+    {
+      "id": "daily-01",
+      "domain": "daily",
+      "source": "The train has been delayed by twenty minutes.",
+      "review": "火车晚点二十分钟；不能变成提前。",
+      "whole": {
+        "inputTokens": 11,
+        "outputTokens": 7,
+        "translation": "火车已经延误了20分钟",
+        "seconds": 0.1581,
+        "ended": true
+      }
+    },
+    {
+      "id": "daily-02",
+      "domain": "daily",
+      "source": "You can return the item within thirty days if you keep the receipt.",
+      "review": "保留收据是三十天内退货的条件。",
+      "whole": {
+        "inputTokens": 16,
+        "outputTokens": 15,
+        "translation": "30天内,如果有收据,您可以把货还回去。",
+        "seconds": 0.2756,
+        "ended": true
+      }
+    },
+    {
+      "id": "daily-03",
+      "domain": "daily",
+      "source": "The room is available from Monday, but breakfast is not included.",
+      "review": "星期一起可用；早餐不包含；保留否定。",
+      "whole": {
+        "inputTokens": 15,
+        "outputTokens": 11,
+        "translation": "会议室星期一开始开放,但早餐不包括在内。",
+        "seconds": 0.2091,
+        "ended": true
+      }
+    },
+    {
+      "id": "daily-04",
+      "domain": "daily",
+      "source": "Please turn down the volume before answering the call.",
+      "review": "接电话前调低音量；不能理解为拒绝音量。",
+      "whole": {
+        "inputTokens": 12,
+        "outputTokens": 13,
+        "translation": "请在接通电话前先把音量调小一点",
+        "seconds": 0.1927,
+        "ended": true
+      }
+    },
+    {
+      "id": "computing-01",
+      "domain": "computing",
+      "source": "The database uses an index to avoid scanning every row.",
+      "review": "索引、数据库行、避免全表扫描的因果关系。",
+      "whole": {
+        "inputTokens": 13,
+        "outputTokens": 10,
+        "translation": "数据库使用索引来避免扫描每行。",
+        "seconds": 0.1534,
+        "ended": true
+      }
+    },
+    {
+      "id": "computing-02",
+      "domain": "computing",
+      "source": "A cache miss increases the latency of this request.",
+      "review": "缓存未命中、请求延迟增加。",
+      "whole": {
+        "inputTokens": 14,
+        "outputTokens": 13,
+        "translation": "缓存错误会增加此请求的延迟度 。",
+        "seconds": 0.2385,
+        "ended": true
+      }
+    },
+    {
+      "id": "computing-03",
+      "domain": "computing",
+      "source": "The process was terminated because it exceeded its memory limit.",
+      "review": "进程因超过内存限制被终止。",
+      "whole": {
+        "inputTokens": 13,
+        "outputTokens": 11,
+        "translation": "这一过程因超过其内存限度而终止。",
+        "seconds": 0.1821,
+        "ended": true
+      }
+    },
+    {
+      "id": "computing-04",
+      "domain": "computing",
+      "source": "The certificate expired yesterday, so the connection is no longer trusted.",
+      "review": "证书昨天过期；连接不再受信任。",
+      "whole": {
+        "inputTokens": 15,
+        "outputTokens": 12,
+        "translation": "证书昨天过期了, 因此连接不再可信 。",
+        "seconds": 0.2086,
+        "ended": true
+      }
+    },
+    {
+      "id": "finance-01",
+      "domain": "finance",
+      "source": "Compound interest is calculated on both the principal and the accumulated interest.",
+      "review": "复利、本金、已累积利息都应出现。",
+      "whole": {
+        "inputTokens": 15,
+        "outputTokens": 11,
+        "translation": "复利按本金和累计利息计算。",
+        "seconds": 0.1677,
+        "ended": true
+      }
+    },
+    {
+      "id": "finance-02",
+      "domain": "finance",
+      "source": "The bond matures in five years and pays a fixed rate of interest.",
+      "review": "债券五年后到期、固定利率。",
+      "whole": {
+        "inputTokens": 17,
+        "outputTokens": 11,
+        "translation": "债券在五年后到期,支付固定利率。",
+        "seconds": 0.1586,
+        "ended": true
+      }
+    },
+    {
+      "id": "law-01",
+      "domain": "law",
+      "source": "The agreement remains valid unless either party gives written notice.",
+      "review": "除非任一方书面通知，否则协议有效；条件方向不能反转。",
+      "whole": {
+        "inputTokens": 13,
+        "outputTokens": 9,
+        "translation": "除非任何一方发出书面通知,否则协议仍然有效。",
+        "seconds": 0.1381,
+        "ended": true
+      }
+    },
+    {
+      "id": "law-02",
+      "domain": "law",
+      "source": "The court dismissed the claim without prejudice.",
+      "review": "without prejudice 指不妨碍再起诉/不影响权利，不能仅字面无偏见。",
+      "whole": {
+        "inputTokens": 10,
+        "outputTokens": 11,
+        "translation": "法院在无损于要求的情况下驳回了该要求。",
+        "seconds": 0.1933,
+        "ended": true
+      }
+    },
+    {
+      "id": "science-01",
+      "domain": "science",
+      "source": "The confidence interval includes zero, so the effect may not be statistically significant.",
+      "review": "置信区间含零；可能无统计显著性。",
+      "whole": {
+        "inputTokens": 18,
+        "outputTokens": 18,
+        "translation": "置信区间包括零,因此其影响在统计上可能不重要。",
+        "seconds": 0.2784,
+        "ended": true
+      }
+    },
+    {
+      "id": "science-02",
+      "domain": "science",
+      "source": "Correlation does not imply causation.",
+      "review": "相关不意味着因果。",
+      "whole": {
+        "inputTokens": 10,
+        "outputTokens": 5,
+        "translation": "关联并不意味着因果关系。",
+        "seconds": 0.0838,
+        "ended": true
+      }
+    },
+    {
+      "id": "science-03",
+      "domain": "science",
+      "source": "The samples were randomly assigned to the treatment and control groups.",
+      "review": "样本随机分配至处理组和对照组。",
+      "whole": {
+        "inputTokens": 15,
+        "outputTokens": 9,
+        "translation": "样本被随机分配给治疗和控制组。",
+        "seconds": 0.1477,
+        "ended": true
+      }
+    },
+    {
+      "id": "science-04",
+      "domain": "science",
+      "source": "The membrane is permeable to water but not to these ions.",
+      "review": "膜透水但不透这些离子；保留对比和否定。",
+      "whole": {
+        "inputTokens": 20,
+        "outputTokens": 17,
+        "translation": "膜可以渗透到水中,但不能渗透到这些离子中。",
+        "seconds": 0.281,
+        "ended": true
+      }
+    },
+    {
+      "id": "phrase-01",
+      "domain": "long-phrase",
+      "source": "a statistically significant reduction in energy consumption",
+      "review": "能耗降低具有统计显著性。",
+      "whole": {
+        "inputTokens": 10,
+        "outputTokens": 10,
+        "translation": "a 统计学上显著的能源消耗减少",
+        "seconds": 0.1774,
+        "ended": true
+      }
+    },
+    {
+      "id": "phrase-02",
+      "domain": "long-phrase",
+      "source": "end-to-end encryption with forward secrecy",
+      "review": "端到端加密、前向保密。",
+      "whole": {
+        "inputTokens": 11,
+        "outputTokens": 10,
+        "translation": "带有远端保密的端对端加密",
+        "seconds": 0.1605,
+        "ended": true
+      }
+    },
+    {
+      "id": "phrase-03",
+      "domain": "long-phrase",
+      "source": "a cost-effective alternative to conventional heating systems",
+      "review": "传统供暖系统的经济有效替代方案。",
+      "whole": {
+        "inputTokens": 11,
+        "outputTokens": 10,
+        "translation": "一种成本效益高的常规供暖系统替代品",
+        "seconds": 0.1918,
+        "ended": true
+      }
+    },
+    {
+      "id": "phrase-04",
+      "domain": "long-phrase",
+      "source": "the long-term consequences of habitat fragmentation",
+      "review": "栖息地破碎化的长期后果。",
+      "whole": {
+        "inputTokens": 10,
+        "outputTokens": 5,
+        "translation": "生境分裂的长期后果",
+        "seconds": 0.0966,
+        "ended": true
+      }
+    },
+    {
+      "id": "multi-01",
+      "domain": "multi-sentence",
+      "source": "The shop closes at six. Orders placed later will be processed tomorrow.",
+      "segments": [
+        "The shop closes at six.",
+        "Orders placed later will be processed tomorrow."
+      ],
+      "review": "两句完整：六点关门；之后订单明天处理。",
+      "whole": {
+        "inputTokens": 17,
+        "outputTokens": 13,
+        "translation": "店6点关门 晚点下的命令明天会处理",
+        "seconds": 0.1922,
+        "ended": true
+      },
+      "segmented": [
+        {
+          "inputTokens": 9,
+          "outputTokens": 5,
+          "translation": "店6点关门",
+          "seconds": 0.0906,
+          "ended": true
+        },
+        {
+          "inputTokens": 10,
+          "outputTokens": 8,
+          "translation": "稍后下达的命令明天将处理。",
+          "seconds": 0.1297,
+          "ended": true
+        }
+      ]
+    },
+    {
+      "id": "multi-02",
+      "domain": "multi-sentence",
+      "source": "Do not unplug the device. Wait until the update is complete.",
+      "segments": [
+        "Do not unplug the device.",
+        "Wait until the update is complete."
+      ],
+      "review": "两句保留：不能拔电；等待更新结束。",
+      "whole": {
+        "inputTokens": 16,
+        "outputTokens": 11,
+        "translation": "不要拔出设备。 等待更新完成 。",
+        "seconds": 0.1838,
+        "ended": true
+      },
+      "segmented": [
+        {
+          "inputTokens": 9,
+          "outputTokens": 6,
+          "translation": "不要拔掉设备 。",
+          "seconds": 0.1175,
+          "ended": true
+        },
+        {
+          "inputTokens": 9,
+          "outputTokens": 6,
+          "translation": "等待更新完成 。",
+          "seconds": 0.1241,
+          "ended": true
+        }
+      ]
+    },
+    {
+      "id": "multi-03",
+      "domain": "multi-sentence",
+      "source": "The sample weighed 3.5 g. Dr. Lee repeated the measurement.",
+      "segments": [
+        "The sample weighed 3.5 g.",
+        "Dr. Lee repeated the measurement."
+      ],
+      "review": "3.5不能拆分；Dr.不能成为一句；重复测量。",
+      "whole": {
+        "inputTokens": 15,
+        "outputTokens": 12,
+        "translation": "样本重3.5克,李博士重复了测量。",
+        "seconds": 0.2084,
+        "ended": true
+      },
+      "segmented": [
+        {
+          "inputTokens": 8,
+          "outputTokens": 6,
+          "translation": "样本重3.5克。",
+          "seconds": 0.1097,
+          "ended": true
+        },
+        {
+          "inputTokens": 9,
+          "outputTokens": 6,
+          "translation": "李博士重复了测量结果",
+          "seconds": 0.1103,
+          "ended": true
+        }
+      ]
+    },
+    {
+      "id": "multi-04",
+      "domain": "multi-sentence",
+      "source": "The file is read-only. Create a copy before making changes.",
+      "segments": [
+        "The file is read-only.",
+        "Create a copy before making changes."
+      ],
+      "review": "只读、改动前复制；两句不能遗漏。",
+      "whole": {
+        "inputTokens": 16,
+        "outputTokens": 12,
+        "translation": "文件只读。 修改前先创建副本 。",
+        "seconds": 0.1993,
+        "ended": true
+      },
+      "segmented": [
+        {
+          "inputTokens": 9,
+          "outputTokens": 5,
+          "translation": "文件只读 。",
+          "seconds": 0.1192,
+          "ended": true
+        },
+        {
+          "inputTokens": 9,
+          "outputTokens": 8,
+          "translation": "在修改前先创建副本 。",
+          "seconds": 0.148,
+          "ended": true
+        }
+      ]
+    },
+    {
+      "id": "long-word-01",
+      "domain": "single-word",
+      "source": "electroencephalography",
+      "review": "脑电图描记术；检验模型是否适合未收录单词兜底。",
+      "whole": {
+        "inputTokens": 7,
+        "outputTokens": 4,
+        "translation": "电脑摄影",
+        "seconds": 0.0744,
+        "ended": true
+      }
+    },
+    {
+      "id": "long-word-02",
+      "domain": "single-word",
+      "source": "immunohistochemistry",
+      "review": "免疫组织化学。",
+      "whole": {
+        "inputTokens": 9,
+        "outputTokens": 4,
+        "translation": "免疫史化学",
+        "seconds": 0.0708,
+        "ended": true
+      }
+    },
+    {
+      "id": "long-word-03",
+      "domain": "single-word",
+      "source": "decentralization",
+      "review": "去中心化/分权，应作为参考而非可靠词条。",
+      "whole": {
+        "inputTokens": 4,
+        "outputTokens": 2,
+        "translation": "权力下放",
+        "seconds": 0.0415,
+        "ended": true
+      }
+    },
+    {
+      "id": "long-word-04",
+      "domain": "single-word",
+      "source": "biodegradability",
+      "review": "生物可降解性。",
+      "whole": {
+        "inputTokens": 6,
+        "outputTokens": 4,
+        "translation": "可生物降解性",
+        "seconds": 0.074,
+        "ended": true
+      }
+    },
+    {
+      "id": "long-word-05",
+      "domain": "single-word",
+      "source": "photosynthesis",
+      "review": "光合作用。",
+      "whole": {
+        "inputTokens": 6,
+        "outputTokens": 4,
+        "translation": "光合作用",
+        "seconds": 0.0756,
+        "ended": true
+      }
+    },
+    {
+      "id": "long-word-06",
+      "domain": "single-word",
+      "source": "hyperparameterization",
+      "review": "超参数化；长词不得因外形像专业词而虚构可信译义。",
+      "whole": {
+        "inputTokens": 6,
+        "outputTokens": 4,
+        "translation": "超参数化",
+        "seconds": 0.0714,
+        "ended": true
+      }
+    },
+    {
+      "id": "long-multi-01",
+      "domain": "long-multi-sentence",
+      "source": "The laboratory measures the temperature, pressure, and electrical conductivity of each sample before it begins the experiment, and the technician records all three measurements in a separate table. If any reading falls outside the permitted range, the experiment must be stopped and the instrument must be checked before a new sample is introduced into the chamber. The final report should include the calibration method, the number of samples, and any observations that could explain differences between the measurements, rather than reporting only an average value. The investigators also documented the humidity, the duration of each observation, and the identification number of the equipment so that another team could reproduce the procedure under comparable conditions.",
+      "segments": [
+        "The laboratory measures the temperature, pressure, and electrical conductivity of each sample before it begins the experiment, and the technician records all three measurements in a separate table.",
+        "If any reading falls outside the permitted range, the experiment must be stopped and the instrument must be checked before a new sample is introduced into the chamber.",
+        "The final report should include the calibration method, the number of samples, and any observations that could explain differences between the measurements, rather than reporting only an average value.",
+        "The investigators also documented the humidity, the duration of each observation, and the identification number of the equipment so that another team could reproduce the procedure under comparable conditions."
+      ],
+      "review": "保留四句顺序、每句所有条件与检查事项；不应把最终报告句截掉。",
+      "whole": {
+        "inputTokens": 131,
+        "error": "source-token-budget"
+      },
+      "segmented": [
+        {
+          "inputTokens": 35,
+          "outputTokens": 31,
+          "translation": "实验室在试验开始之前测量每个样品的温度、压力和电导率,技术员将所有三项测量结果记录在一个单独的表格中。",
+          "seconds": 0.4977,
+          "ended": true
+        },
+        {
+          "inputTokens": 32,
+          "outputTokens": 24,
+          "translation": "如果任何读数超出允许的范围,必须停止试验,在将新的样品引入试验室之前必须检查仪器。",
+          "seconds": 0.3801,
+          "ended": true
+        },
+        {
+          "inputTokens": 36,
+          "outputTokens": 24,
+          "translation": "最后报告应包括校准方法、样品数量以及可以解释测量之间差异的任何观测,而不是只报告平均值。",
+          "seconds": 0.3788,
+          "ended": true
+        },
+        {
+          "inputTokens": 34,
+          "outputTokens": 26,
+          "translation": "调查员还记录了设备的湿度、每次观察的时间和识别号码,以便另一组人员在类似条件下复制程序。",
+          "seconds": 0.4458,
+          "ended": true
+        }
+      ]
+    },
+    {
+      "id": "long-multi-02",
+      "domain": "long-multi-sentence",
+      "source": "Dr. Lee arrived at 9.30 a.m. and asked the receptionist to confirm the booking, because the confirmation message showed a different date from the one printed on the ticket. The receptionist checked the original request and explained that the room would be available after noon, but breakfast and transportation were not included in the price of the booking. After discussing the alternatives, they agreed to keep the room for two nights, leave the bags at the front desk, and collect a written receipt before returning in the afternoon. Before leaving the building, they checked the cancellation policy and asked whether an earlier departure would affect the total charge, because their travel plans might change after the next meeting.",
+      "segments": [
+        "Dr. Lee arrived at 9.30 a.m. and asked the receptionist to confirm the booking, because the confirmation message showed a different date from the one printed on the ticket.",
+        "The receptionist checked the original request and explained that the room would be available after noon, but breakfast and transportation were not included in the price of the booking.",
+        "After discussing the alternatives, they agreed to keep the room for two nights, leave the bags at the front desk, and collect a written receipt before returning in the afternoon.",
+        "Before leaving the building, they checked the cancellation policy and asked whether an earlier departure would affect the total charge, because their travel plans might change after the next meeting."
+      ],
+      "review": "4句整体超token预算；Dr.和a.m.不得误断，9.30不得拆分，保留否定及收据事项。",
+      "whole": {
+        "inputTokens": 139,
+        "error": "source-token-budget"
+      },
+      "segmented": [
+        {
+          "inputTokens": 39,
+          "outputTokens": 29,
+          "translation": "Lee医生上午9时30分抵达,要求接待员确认预订,因为确认信息显示的日期与罚单上打印的日期不同。",
+          "seconds": 0.4038,
+          "ended": true
+        },
+        {
+          "inputTokens": 35,
+          "outputTokens": 27,
+          "translation": "接待员检查了最初的请求,并解释说,中午后房间可以使用,但早餐和运输费不包括在预订价格中。",
+          "seconds": 0.4102,
+          "ended": true
+        },
+        {
+          "inputTokens": 36,
+          "outputTokens": 29,
+          "translation": "在讨论各种替代办法后,他们同意把房间保留两个晚上,把袋子放在前台,并在下午返回之前收集一份书面收据。",
+          "seconds": 0.4417,
+          "ended": true
+        },
+        {
+          "inputTokens": 35,
+          "outputTokens": 31,
+          "translation": "在离开大楼之前,他们检查了取消政策,并询问提前离开是否会影响总收费,因为下次会议后,他们的旅行计划可能会改变。",
+          "seconds": 0.4819,
+          "ended": true
+        }
+      ]
+    }
+  ]
+}

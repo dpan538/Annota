@@ -1,0 +1,26 @@
+[
+  {
+    "id": "long-multi-01",
+    "domain": "long-multi-sentence",
+    "source": "The laboratory measures the temperature, pressure, and electrical conductivity of each sample before it begins the experiment, and the technician records all three measurements in a separate table. If any reading falls outside the permitted range, the experiment must be stopped and the instrument must be checked before a new sample is introduced into the chamber. The final report should include the calibration method, the number of samples, and any observations that could explain differences between the measurements, rather than reporting only an average value. The investigators also documented the humidity, the duration of each observation, and the identification number of the equipment so that another team could reproduce the procedure under comparable conditions.",
+    "segments": [
+      "The laboratory measures the temperature, pressure, and electrical conductivity of each sample before it begins the experiment, and the technician records all three measurements in a separate table.",
+      "If any reading falls outside the permitted range, the experiment must be stopped and the instrument must be checked before a new sample is introduced into the chamber.",
+      "The final report should include the calibration method, the number of samples, and any observations that could explain differences between the measurements, rather than reporting only an average value.",
+      "The investigators also documented the humidity, the duration of each observation, and the identification number of the equipment so that another team could reproduce the procedure under comparable conditions."
+    ],
+    "review": "保留四句顺序、每句所有条件与检查事项；不应把最终报告句截掉。"
+  },
+  {
+    "id": "long-multi-02",
+    "domain": "long-multi-sentence",
+    "source": "Dr. Lee arrived at 9.30 a.m. and asked the receptionist to confirm the booking, because the confirmation message showed a different date from the one printed on the ticket. The receptionist checked the original request and explained that the room would be available after noon, but breakfast and transportation were not included in the price of the booking. After discussing the alternatives, they agreed to keep the room for two nights, leave the bags at the front desk, and collect a written receipt before returning in the afternoon. Before leaving the building, they checked the cancellation policy and asked whether an earlier departure would affect the total charge, because their travel plans might change after the next meeting.",
+    "segments": [
+      "Dr. Lee arrived at 9.30 a.m. and asked the receptionist to confirm the booking, because the confirmation message showed a different date from the one printed on the ticket.",
+      "The receptionist checked the original request and explained that the room would be available after noon, but breakfast and transportation were not included in the price of the booking.",
+      "After discussing the alternatives, they agreed to keep the room for two nights, leave the bags at the front desk, and collect a written receipt before returning in the afternoon.",
+      "Before leaving the building, they checked the cancellation policy and asked whether an earlier departure would affect the total charge, because their travel plans might change after the next meeting."
+    ],
+    "review": "4句整体超token预算；Dr.和a.m.不得误断，9.30不得拆分，保留否定及收据事项。"
+  }
+]

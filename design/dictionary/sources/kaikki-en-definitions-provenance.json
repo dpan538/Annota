@@ -1,0 +1,35 @@
+{
+  "source": "https://kaikki.org/dictionary/English/kaikki.org-dictionary-English.jsonl.gz",
+  "source_sha256": "4d03b6cba283744756c57ff661c2c6cbfe34fcf8ff513a966576cf7d97e91a99",
+  "source_bytes": 534186395,
+  "license": "CC-BY-SA-4.0",
+  "attribution": "English Wiktionary contributors; extracted by Kaikki / Wiktextract",
+  "records_scanned": 1499161,
+  "headwords": 192058,
+  "senses": 208999,
+  "multiword_headwords": 53742,
+  "pos_senses": {
+    "adj": 31783,
+    "noun": 156660,
+    "adv": 4231,
+    "verb": 16325
+  },
+  "extract_bytes": 7484730,
+  "extract_sha256": "8d6c2e27dd23ac3ad61ba2d8f8d1de98c9a8d639bd99310447b1161b8be017ac",
+  "bilingual_exclusion_baseline": [
+    {
+      "file": "en-zh.sqlite",
+      "sha256": "8904412f606996e962ea111cb1f868dccc0ef789fec5e1ede4a9b03dafd19744"
+    },
+    {
+      "file": "wiktionary.sqlite",
+      "sha256": "e4ef5a43985d6ff54564e69b23674d8c98637db62018d636b1e6b0312df882f0"
+    },
+    {
+      "file": "wordnet.sqlite",
+      "sha256": "b54c4ba933937200cf077a8d94637dad04d6f1e049fc70963f34fe846873e92e"
+    }
+  ],
+  "filter": "lowercase ordinary noun/verb/adj/adv; exclude existing bilingual headwords, forms, alternatives, outdated/nonstandard/rare/offensive/derogatory/vulgar forms, reference-only and short derivational glosses, missing-reference glosses, capitalized names and explicit place/person glosses; 20-500 characters and >=5 words; first three distinct substantive senses per headword in source order",
+  "integration": "English definitions only, never Chinese translations. Display explicit English-definition label only after bilingual lookup fails. Community dictionary quality is not guaranteed; all fields retain source provenance."
+}

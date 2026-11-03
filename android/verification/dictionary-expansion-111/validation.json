@@ -1,0 +1,65 @@
+{
+  "date": "2026-11-04",
+  "version": "1.1.1",
+  "published": false,
+  "publicStableVersion": "1.1.0",
+  "environment": "Android 16 / API 36 ARM64 emulator-5584; Wi-Fi and mobile data disabled",
+  "pythonTests": {
+    "run": 23,
+    "passed": 23
+  },
+  "initialAndroidRegression": {
+    "run": 141,
+    "passed": 139,
+    "failed": 2,
+    "record": "regression.txt"
+  },
+  "finalAndroidLanguageTests": {
+    "run": 20,
+    "passed": 20,
+    "record": "final-language.txt"
+  },
+  "otherInitialRegressionCasesPassed": 123,
+  "singleCombined143CaseRun": false,
+  "lint": {
+    "errors": 0,
+    "existingWarnings": 96
+  },
+  "buildsPassed": [
+    "assembleDebug",
+    "assembleDebugAndroidTest",
+    "lintDebug",
+    "assembleRelease"
+  ],
+  "sourceAssetsVerified": 13,
+  "apk": {
+    "artifact": "Annota-1.1.1.apk",
+    "sha256": "14ab678d3bfaee3c7b0fdb0c5af3b3b75c14fe67ad20f2bb42cc0d5cc6293c89",
+    "bytes": 415461472,
+    "transport": "temporary loopback HTTP; public GitHub download not tested",
+    "contentType": "application/vnd.android.package-archive",
+    "contentLength": 415461472,
+    "offlineTranslation": "046f55aec303cdee3e0318604406d4df20f1e8ea",
+    "zipEntries": 253,
+    "nativeAbis": [
+      "arm64-v8a"
+    ],
+    "packageName": "io.github.dpan538.annota",
+    "versionCode": 21,
+    "versionName": "1.1.1",
+    "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18",
+    "signatureV2": true,
+    "signatureV3": false,
+    "assetsAndArchiveVerified": true,
+    "downloadedCopyInstalledAndColdLaunched": true,
+    "coldStartAmTotalTimeMs": 1200,
+    "passed": true
+  },
+  "finalArtifactChangeAfterTargetedTests": "Source attribution paths only; production code unchanged. Rebuilt, reverified, replaced installation and cold launched.",
+  "limits": [
+    "Emulator evidence is not target tablet acceptance.",
+    "English definitions are not Chinese translations.",
+    "Sentence completion and tests do not establish semantic translation accuracy.",
+    "APK is about 396.2 MiB; first-use storage and device thermal/latency checks remain."
+  ]
+}

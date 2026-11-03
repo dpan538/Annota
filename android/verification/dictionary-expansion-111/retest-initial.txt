@@ -1,0 +1,18 @@
+
+io.github.dpan538.annota.OfflineDictionaryTest:....
+io.github.dpan538.annota.OfflineLanguageTest:....
+io.github.dpan538.annota.DictionaryRetrievalTest:.....
+Error in attestedCompoundInflectionsPrecedeComposedVariants(io.github.dpan538.annota.DictionaryRetrievalTest):
+java.lang.NoSuchMethodError: No virtual method phraseVariants$app_debug(Ljava/util/List;Lkotlin/jvm/functions/Function1;)Ljava/util/List; in class Lio/github/dpan538/annota/Dictionary$Companion; or its super classes (declaration of 'io.github.dpan538.annota.Dictionary$Companion' appears in /data/app/~~weuD5CPNYrC1T9ZfvjLA0g==/io.github.dpan538.annota-Knlq5uwUQ8VgZm8Mv88Bsw==/base.apk)
+	at io.github.dpan538.annota.DictionaryRetrievalTest.attestedCompoundInflectionsPrecedeComposedVariants(DictionaryRetrievalTest.kt:60)
+.
+io.github.dpan538.annota.TranslationInputTest:....
+
+Time: 33.518
+There was 1 failure:
+1) attestedCompoundInflectionsPrecedeComposedVariants(io.github.dpan538.annota.DictionaryRetrievalTest)
+java.lang.NoSuchMethodError: No virtual method phraseVariants$app_debug(Ljava/util/List;Lkotlin/jvm/functions/Function1;)Ljava/util/List; in class Lio/github/dpan538/annota/Dictionary$Companion; or its super classes (declaration of 'io.github.dpan538.annota.Dictionary$Companion' appears in /data/app/~~weuD5CPNYrC1T9ZfvjLA0g==/io.github.dpan538.annota-Knlq5uwUQ8VgZm8Mv88Bsw==/base.apk)
+	at io.github.dpan538.annota.DictionaryRetrievalTest.attestedCompoundInflectionsPrecedeComposedVariants(DictionaryRetrievalTest.kt:60)
+
+FAILURES!!!
+Tests run: 19,  Failures: 1

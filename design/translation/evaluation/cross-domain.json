@@ -1,0 +1,225 @@
+{
+  "description": "Authored English probes with Chinese review criteria, not reference translations or an accuracy benchmark. No private document text. Keep failed cases; never implement output overrides from this set.",
+  "cases": [
+    {
+      "id": "daily-01",
+      "domain": "daily",
+      "source": "The train has been delayed by twenty minutes.",
+      "review": "火车晚点二十分钟；不能变成提前。"
+    },
+    {
+      "id": "daily-02",
+      "domain": "daily",
+      "source": "You can return the item within thirty days if you keep the receipt.",
+      "review": "保留收据是三十天内退货的条件。"
+    },
+    {
+      "id": "daily-03",
+      "domain": "daily",
+      "source": "The room is available from Monday, but breakfast is not included.",
+      "review": "星期一起可用；早餐不包含；保留否定。"
+    },
+    {
+      "id": "daily-04",
+      "domain": "daily",
+      "source": "Please turn down the volume before answering the call.",
+      "review": "接电话前调低音量；不能理解为拒绝音量。"
+    },
+    {
+      "id": "computing-01",
+      "domain": "computing",
+      "source": "The database uses an index to avoid scanning every row.",
+      "review": "索引、数据库行、避免全表扫描的因果关系。"
+    },
+    {
+      "id": "computing-02",
+      "domain": "computing",
+      "source": "A cache miss increases the latency of this request.",
+      "review": "缓存未命中、请求延迟增加。"
+    },
+    {
+      "id": "computing-03",
+      "domain": "computing",
+      "source": "The process was terminated because it exceeded its memory limit.",
+      "review": "进程因超过内存限制被终止。"
+    },
+    {
+      "id": "computing-04",
+      "domain": "computing",
+      "source": "The certificate expired yesterday, so the connection is no longer trusted.",
+      "review": "证书昨天过期；连接不再受信任。"
+    },
+    {
+      "id": "finance-01",
+      "domain": "finance",
+      "source": "Compound interest is calculated on both the principal and the accumulated interest.",
+      "review": "复利、本金、已累积利息都应出现。"
+    },
+    {
+      "id": "finance-02",
+      "domain": "finance",
+      "source": "The bond matures in five years and pays a fixed rate of interest.",
+      "review": "债券五年后到期、固定利率。"
+    },
+    {
+      "id": "law-01",
+      "domain": "law",
+      "source": "The agreement remains valid unless either party gives written notice.",
+      "review": "除非任一方书面通知，否则协议有效；条件方向不能反转。"
+    },
+    {
+      "id": "law-02",
+      "domain": "law",
+      "source": "The court dismissed the claim without prejudice.",
+      "review": "without prejudice 指不妨碍再起诉/不影响权利，不能仅字面无偏见。"
+    },
+    {
+      "id": "science-01",
+      "domain": "science",
+      "source": "The confidence interval includes zero, so the effect may not be statistically significant.",
+      "review": "置信区间含零；可能无统计显著性。"
+    },
+    {
+      "id": "science-02",
+      "domain": "science",
+      "source": "Correlation does not imply causation.",
+      "review": "相关不意味着因果。"
+    },
+    {
+      "id": "science-03",
+      "domain": "science",
+      "source": "The samples were randomly assigned to the treatment and control groups.",
+      "review": "样本随机分配至处理组和对照组。"
+    },
+    {
+      "id": "science-04",
+      "domain": "science",
+      "source": "The membrane is permeable to water but not to these ions.",
+      "review": "膜透水但不透这些离子；保留对比和否定。"
+    },
+    {
+      "id": "phrase-01",
+      "domain": "long-phrase",
+      "source": "a statistically significant reduction in energy consumption",
+      "review": "能耗降低具有统计显著性。"
+    },
+    {
+      "id": "phrase-02",
+      "domain": "long-phrase",
+      "source": "end-to-end encryption with forward secrecy",
+      "review": "端到端加密、前向保密。"
+    },
+    {
+      "id": "phrase-03",
+      "domain": "long-phrase",
+      "source": "a cost-effective alternative to conventional heating systems",
+      "review": "传统供暖系统的经济有效替代方案。"
+    },
+    {
+      "id": "phrase-04",
+      "domain": "long-phrase",
+      "source": "the long-term consequences of habitat fragmentation",
+      "review": "栖息地破碎化的长期后果。"
+    },
+    {
+      "id": "multi-01",
+      "domain": "multi-sentence",
+      "source": "The shop closes at six. Orders placed later will be processed tomorrow.",
+      "segments": [
+        "The shop closes at six.",
+        "Orders placed later will be processed tomorrow."
+      ],
+      "review": "两句完整：六点关门；之后订单明天处理。"
+    },
+    {
+      "id": "multi-02",
+      "domain": "multi-sentence",
+      "source": "Do not unplug the device. Wait until the update is complete.",
+      "segments": [
+        "Do not unplug the device.",
+        "Wait until the update is complete."
+      ],
+      "review": "两句保留：不能拔电；等待更新结束。"
+    },
+    {
+      "id": "multi-03",
+      "domain": "multi-sentence",
+      "source": "The sample weighed 3.5 g. Dr. Lee repeated the measurement.",
+      "segments": [
+        "The sample weighed 3.5 g.",
+        "Dr. Lee repeated the measurement."
+      ],
+      "review": "3.5不能拆分；Dr.不能成为一句；重复测量。"
+    },
+    {
+      "id": "multi-04",
+      "domain": "multi-sentence",
+      "source": "The file is read-only. Create a copy before making changes.",
+      "segments": [
+        "The file is read-only.",
+        "Create a copy before making changes."
+      ],
+      "review": "只读、改动前复制；两句不能遗漏。"
+    },
+    {
+      "id": "long-word-01",
+      "domain": "single-word",
+      "source": "electroencephalography",
+      "review": "脑电图描记术；检验模型是否适合未收录单词兜底。"
+    },
+    {
+      "id": "long-word-02",
+      "domain": "single-word",
+      "source": "immunohistochemistry",
+      "review": "免疫组织化学。"
+    },
+    {
+      "id": "long-word-03",
+      "domain": "single-word",
+      "source": "decentralization",
+      "review": "去中心化/分权，应作为参考而非可靠词条。"
+    },
+    {
+      "id": "long-word-04",
+      "domain": "single-word",
+      "source": "biodegradability",
+      "review": "生物可降解性。"
+    },
+    {
+      "id": "long-word-05",
+      "domain": "single-word",
+      "source": "photosynthesis",
+      "review": "光合作用。"
+    },
+    {
+      "id": "long-word-06",
+      "domain": "single-word",
+      "source": "hyperparameterization",
+      "review": "超参数化；长词不得因外形像专业词而虚构可信译义。"
+    },
+    {
+      "id": "long-multi-01",
+      "domain": "long-multi-sentence",
+      "source": "The laboratory measures the temperature, pressure, and electrical conductivity of each sample before it begins the experiment, and the technician records all three measurements in a separate table. If any reading falls outside the permitted range, the experiment must be stopped and the instrument must be checked before a new sample is introduced into the chamber. The final report should include the calibration method, the number of samples, and any observations that could explain differences between the measurements, rather than reporting only an average value. The investigators also documented the humidity, the duration of each observation, and the identification number of the equipment so that another team could reproduce the procedure under comparable conditions.",
+      "segments": [
+        "The laboratory measures the temperature, pressure, and electrical conductivity of each sample before it begins the experiment, and the technician records all three measurements in a separate table.",
+        "If any reading falls outside the permitted range, the experiment must be stopped and the instrument must be checked before a new sample is introduced into the chamber.",
+        "The final report should include the calibration method, the number of samples, and any observations that could explain differences between the measurements, rather than reporting only an average value.",
+        "The investigators also documented the humidity, the duration of each observation, and the identification number of the equipment so that another team could reproduce the procedure under comparable conditions."
+      ],
+      "review": "保留四句顺序、每句所有条件与检查事项；不应把最终报告句截掉。"
+    },
+    {
+      "id": "long-multi-02",
+      "domain": "long-multi-sentence",
+      "source": "Dr. Lee arrived at 9.30 a.m. and asked the receptionist to confirm the booking, because the confirmation message showed a different date from the one printed on the ticket. The receptionist checked the original request and explained that the room would be available after noon, but breakfast and transportation were not included in the price of the booking. After discussing the alternatives, they agreed to keep the room for two nights, leave the bags at the front desk, and collect a written receipt before returning in the afternoon. Before leaving the building, they checked the cancellation policy and asked whether an earlier departure would affect the total charge, because their travel plans might change after the next meeting.",
+      "segments": [
+        "Dr. Lee arrived at 9.30 a.m. and asked the receptionist to confirm the booking, because the confirmation message showed a different date from the one printed on the ticket.",
+        "The receptionist checked the original request and explained that the room would be available after noon, but breakfast and transportation were not included in the price of the booking.",
+        "After discussing the alternatives, they agreed to keep the room for two nights, leave the bags at the front desk, and collect a written receipt before returning in the afternoon.",
+        "Before leaving the building, they checked the cancellation policy and asked whether an earlier departure would affect the total charge, because their travel plans might change after the next meeting."
+      ],
+      "review": "4句整体超token预算；Dr.和a.m.不得误断，9.30不得拆分，保留否定及收据事项。"
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+[
+  {
+    "source": "attention",
+    "pass": 0,
+    "milliseconds": 4,
+    "entries": 1,
+    "parts": 0
+  },
+  {
+    "source": "microarchitectures",
+    "pass": 0,
+    "milliseconds": 4,
+    "entries": 1,
+    "parts": 0
+  },
+  {
+    "source": "looked forward to",
+    "pass": 0,
+    "milliseconds": 4,
+    "entries": 1,
+    "parts": 0
+  },
+  {
+    "source": "hosts file",
+    "pass": 0,
+    "milliseconds": 6,
+    "entries": 1,
+    "parts": 0
+  },
+  {
+    "source": "pseudoreplication",
+    "pass": 0,
+    "milliseconds": 2,
+    "entries": 1,
+    "parts": 0
+  },
+  {
+    "source": "qzxwnewnotaword",
+    "pass": 0,
+    "milliseconds": 10,
+    "entries": 0,
+    "parts": 0
+  },
+  {
+    "source": "The laboratory measures the temperature, pressure, and electrical conductivity of each sample before it begins the experiment, and the technician records all three measurements in a separate table. If any reading falls outside the permitted range, the experiment must be stopped and the instrument must be checked before a new sample is introduced into the chamber. The final report should include the calibration method, the number of samples, and any observations that could explain differences between the measurements, rather than reporting only an average value. The investigators also documented the humidity, the duration of each observation, and the identification number of the equipment so that another team could reproduce the procedure under comparable conditions.",
+    "pass": 0,
+    "milliseconds": 1437,
+    "entries": 0,
+    "parts": 104
+  },
+  {
+    "source": "Dr. Lee arrived at 9.30 a.m. and asked the receptionist to confirm the booking, because the confirmation message showed a different date from the one printed on the ticket. The receptionist checked the original request and explained that the room would be available after noon, but breakfast and transportation were not included in the price of the booking. After discussing the alternatives, they agreed to keep the room for two nights, leave the bags at the front desk, and collect a written receipt before returning in the afternoon. Before leaving the building, they checked the cancellation policy and asked whether an earlier departure would affect the total charge, because their travel plans might change after the next meeting.",
+    "pass": 0,
+    "milliseconds": 1313,
+    "entries": 0,
+    "parts": 108
+  },
+  {
+    "source": "attention",
+    "pass": 1,
+    "milliseconds": 3,
+    "entries": 1,
+    "parts": 0
+  },
+  {
+    "source": "microarchitectures",
+    "pass": 1,
+    "milliseconds": 2,
+    "entries": 1,
+    "parts": 0
+  },
+  {
+    "source": "looked forward to",
+    "pass": 1,
+    "milliseconds": 2,
+    "entries": 1,
+    "parts": 0
+  },
+  {
+    "source": "hosts file",
+    "pass": 1,
+    "milliseconds": 2,
+    "entries": 1,
+    "parts": 0
+  },
+  {
+    "source": "pseudoreplication",
+    "pass": 1,
+    "milliseconds": 1,
+    "entries": 1,
+    "parts": 0
+  },
+  {
+    "source": "qzxwnewnotaword",
+    "pass": 1,
+    "milliseconds": 9,
+    "entries": 0,
+    "parts": 0
+  },
+  {
+    "source": "The laboratory measures the temperature, pressure, and electrical conductivity of each sample before it begins the experiment, and the technician records all three measurements in a separate table. If any reading falls outside the permitted range, the experiment must be stopped and the instrument must be checked before a new sample is introduced into the chamber. The final report should include the calibration method, the number of samples, and any observations that could explain differences between the measurements, rather than reporting only an average value. The investigators also documented the humidity, the duration of each observation, and the identification number of the equipment so that another team could reproduce the procedure under comparable conditions.",
+    "pass": 1,
+    "milliseconds": 1265,
+    "entries": 0,
+    "parts": 104
+  },
+  {
+    "source": "Dr. Lee arrived at 9.30 a.m. and asked the receptionist to confirm the booking, because the confirmation message showed a different date from the one printed on the ticket. The receptionist checked the original request and explained that the room would be available after noon, but breakfast and transportation were not included in the price of the booking. After discussing the alternatives, they agreed to keep the room for two nights, leave the bags at the front desk, and collect a written receipt before returning in the afternoon. Before leaving the building, they checked the cancellation policy and asked whether an earlier departure would affect the total charge, because their travel plans might change after the next meeting.",
+    "pass": 1,
+    "milliseconds": 1275,
+    "entries": 0,
+    "parts": 108
+  }
+]

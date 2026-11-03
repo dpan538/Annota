@@ -1,0 +1,30 @@
+{
+  "source": "https://kaikki.org/dictionary/English/kaikki.org-dictionary-English.jsonl.gz",
+  "source_sha256": "4d03b6cba283744756c57ff661c2c6cbfe34fcf8ff513a966576cf7d97e91a99",
+  "source_bytes": 534186395,
+  "license": "CC-BY-SA-4.0",
+  "attribution": "English Wiktionary contributors; extracted by Kaikki / Wiktextract",
+  "records_scanned": 1499161,
+  "pairs": 473958,
+  "surface_forms": 462400,
+  "multiword_surface_forms": 129943,
+  "pos_pairs": {
+    "noun": 321146,
+    "verb": 152800,
+    "adv": 2,
+    "adj": 10
+  },
+  "extract_bytes": 3062036,
+  "extract_sha256": "67db39dc3fe083a36ab77c70de4e1e760cc3dec5cab8cf9a01c8460c73ac18f4",
+  "filter": "noun/verb/adj/adv; form-of plus inflection tag; one target; gloss ends in that target; exclude archaic/rare/nonstandard/misspelling/dialectal forms; no alt_of; no heuristic morphology",
+  "integration": "Keep as separate CC BY-SA index; only resolve targets with definitions in bundled dictionaries. Counts are attested forms, not new translated lemmas.",
+  "coverage_baseline": {
+    "base": "1.1.1 commit 13d78b6; ECDICT, Wiktionary Mandarin, WordNet-COW; compared normalized lower-case headwords plus existing form keys",
+    "pairs_with_defined_target": 211091,
+    "new_surface_forms": 121155,
+    "new_multiword_surface_forms": 32554,
+    "ambiguous_surface_forms": 535,
+    "sample_seed": 111,
+    "sample_size": 80
+  }
+}
