@@ -196,6 +196,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     /** Scale cached page pixels during spatial transitions; refine once the viewport settles. */
     fun setLayoutTransition(moving: Boolean) {
         movingLayout = moving
+        semanticWarmup.defer(if (moving) 1000 else 700)
         if (!moving) invalidate()
     }
 
@@ -214,6 +215,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 16 + value.sumOf { 64 + it.text.length * 2 }
         }
     private val pendingWords = mutableSetOf<String>()
+    private val semanticPreferences = Prefs(context)
+    private val semanticWarmup = SemanticDocumentWarmup(context)
     private val links = LruCache<String, List<PageLink>>(64)
     private var searchHits = emptyList<SearchHit>()
     private var currentSearchHit = -1
@@ -288,6 +291,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         stopMotion()
         epoch++
         suspended = background
+        semanticWarmup.pause(background)
+        semanticWarmup.clearPending()
         constrained = true
         executor.queue.clear()
         pending.clear()
@@ -309,6 +314,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     fun resumeMemory() {
         if (closed) return
         suspended = false
+        semanticWarmup.pause(false)
         constrained = false
         cache.resize(memory.pages / 4)
         tiles.resize(memory.pages * 3 / 4)
@@ -416,6 +422,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private val scale = resources.displayMetrics.density
 
     init {
+        semanticWarmup.prepareModel()
         isFocusable = true
         isFocusableInTouchMode = true
         contentDescription = tr("PDF 阅读与批注画布", "PDF reading and annotation canvas")
@@ -433,6 +440,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         velocity = null
         cancelStroke()
         closed = true
+        semanticWarmup.close()
         executor.shutdownNow()
         epoch++
         magnifier?.dismiss()
@@ -1060,6 +1068,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                             val bytes = 16 + result.sumOf { 64 + it.text.length * 2 }
                             if (bytes <= words.maxSize()) {
                                 words.put(p.id, result)
+                                semanticWarmup.offer(p.id, result)
                                 links.put(p.id, content.links)
                             } else {
                                 words.put(p.id, emptyList())
@@ -1093,6 +1102,14 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         documentPaint.colorFilter = if (reading) readingStyle.filter else null
         placements.clear()
         if (suspended || closed) return
+        book.pages.getOrNull(book.current)?.let { semanticWarmup.prefer(it.id) }
+        if (
+            movingLayout ||
+                !scroller.isFinished ||
+                viewportAnimator?.isRunning == true ||
+                stroke != null
+        )
+            semanticWarmup.defer()
         val layout = ensureGeometry() ?: return
         clampViewport(layout)
         val firstRow = layout.rowAt(max(0f, (-panY - layout.margin) / zoom))
@@ -1231,7 +1248,9 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 selected.forEach { canvas.drawRect(it.box, paint) }
             }
             canvas.restore()
-            if (browsing) requestWords(p)
+            if (browsing || (i == book.current && semanticPreferences.semanticDictionary))
+                requestWords(p)
+            words.get(p.id)?.let { semanticWarmup.offer(p.id, it) }
         }
         preload.forEach {
             if (book.pages[it.index].source >= 0)
@@ -1537,6 +1556,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     override fun onTouchEvent(e: MotionEvent): Boolean {
+        semanticWarmup.defer()
         val index =
             (0 until e.pointerCount).firstOrNull {
                 e.getToolType(it) == MotionEvent.TOOL_TYPE_STYLUS ||
@@ -2091,13 +2111,17 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                         }
                         if (!readOnly) onChanged()
                     } else if (
-                        cancelledTextSelection && !moved && maxPointers == 1 && selected.isEmpty() &&
-                            (readOnly || active?.let { placement ->
-                                val p = point(placement, e.x, e.y, 1f)
-                                words.get(book.pages[placement.index].id).orEmpty().none {
-                                    RectF(it.box).apply { inset(-6f, -6f) }.contains(p.x, p.y)
-                                }
-                            } != false)
+                        cancelledTextSelection &&
+                            !moved &&
+                            maxPointers == 1 &&
+                            selected.isEmpty() &&
+                            (readOnly ||
+                                active?.let { placement ->
+                                    val p = point(placement, e.x, e.y, 1f)
+                                    words.get(book.pages[placement.index].id).orEmpty().none {
+                                        RectF(it.box).apply { inset(-6f, -6f) }.contains(p.x, p.y)
+                                    }
+                                } != false)
                     ) {
                         // Cancelling a selection must not also hide the reading toolbar.
                     } else if (

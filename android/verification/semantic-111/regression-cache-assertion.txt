@@ -1,0 +1,26 @@
+
+io.github.dpan538.annota.WordPieceTokenizerTest:...
+io.github.dpan538.annota.MiniLmEncoderTest:...
+io.github.dpan538.annota.SemanticLookupTest:..
+Error in inferenceRunsBeforeReturningAndCanCorrectAParaphrasedSense(io.github.dpan538.annota.SemanticLookupTest):
+java.lang.AssertionError: {encoded=0, cacheHits=3, rerankAttempts=1, accepted=1, fallbacks=0}
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at io.github.dpan538.annota.SemanticLookupTest.inferenceRunsBeforeReturningAndCanCorrectAParaphrasedSense(SemanticLookupTest.kt:78)
+
+io.github.dpan538.annota.SemanticDocumentWarmupTest:....
+io.github.dpan538.annota.SemanticPreferenceTest:...
+io.github.dpan538.annota.DictionarySenseIntegrationTest:......
+
+Time: 14.694
+There was 1 failure:
+1) inferenceRunsBeforeReturningAndCanCorrectAParaphrasedSense(io.github.dpan538.annota.SemanticLookupTest)
+java.lang.AssertionError: {encoded=0, cacheHits=3, rerankAttempts=1, accepted=1, fallbacks=0}
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at io.github.dpan538.annota.SemanticLookupTest.inferenceRunsBeforeReturningAndCanCorrectAParaphrasedSense(SemanticLookupTest.kt:78)
+
+FAILURES!!!
+Tests run: 22,  Failures: 1
+
+

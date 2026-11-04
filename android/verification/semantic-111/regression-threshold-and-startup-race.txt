@@ -1,0 +1,59 @@
+
+io.github.dpan538.annota.WordPieceTokenizerTest:...
+io.github.dpan538.annota.MiniLmEncoderTest:...
+io.github.dpan538.annota.SemanticLookupTest:..
+Error in inferenceRunsBeforeReturningAndCanCorrectAParaphrasedSense(io.github.dpan538.annota.SemanticLookupTest):
+org.junit.ComparisonFailure: expected:<[河岸]> but was:<[银行]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at io.github.dpan538.annota.SemanticLookupTest.inferenceRunsBeforeReturningAndCanCorrectAParaphrasedSense(SemanticLookupTest.kt:82)
+
+io.github.dpan538.annota.SemanticDocumentWarmupTest:....
+io.github.dpan538.annota.SemanticPreferenceTest:
+Error in aboutRowDefaultsOnAndTogglesDirectlyWithItsStateLabel(io.github.dpan538.annota.SemanticPreferenceTest):
+java.util.NoSuchElementException: Collection contains no element matching the predicate.
+	at io.github.dpan538.annota.SemanticPreferenceTest.aboutRowDefaultsOnAndTogglesDirectlyWithItsStateLabel$lambda$7(SemanticPreferenceTest.kt:122)
+	at io.github.dpan538.annota.SemanticPreferenceTest.$r8$lambda$iXTT0zuYKwJp0aS9_xXBkyPjPVI(Unknown Source:0)
+	at io.github.dpan538.annota.SemanticPreferenceTest$$ExternalSyntheticLambda4.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2616)
+	at android.os.Handler.handleCallback(Handler.java:995)
+	at android.os.Handler.dispatchMessage(Handler.java:103)
+	at android.os.Looper.loopOnce(Looper.java:248)
+	at android.os.Looper.loop(Looper.java:338)
+	at android.app.ActivityThread.main(ActivityThread.java:9067)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+..
+io.github.dpan538.annota.DictionarySenseIntegrationTest:......
+
+Time: 12.632
+There were 2 failures:
+1) inferenceRunsBeforeReturningAndCanCorrectAParaphrasedSense(io.github.dpan538.annota.SemanticLookupTest)
+org.junit.ComparisonFailure: expected:<[河岸]> but was:<[银行]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at io.github.dpan538.annota.SemanticLookupTest.inferenceRunsBeforeReturningAndCanCorrectAParaphrasedSense(SemanticLookupTest.kt:82)
+2) aboutRowDefaultsOnAndTogglesDirectlyWithItsStateLabel(io.github.dpan538.annota.SemanticPreferenceTest)
+java.util.NoSuchElementException: Collection contains no element matching the predicate.
+	at io.github.dpan538.annota.SemanticPreferenceTest.aboutRowDefaultsOnAndTogglesDirectlyWithItsStateLabel$lambda$7(SemanticPreferenceTest.kt:122)
+	at io.github.dpan538.annota.SemanticPreferenceTest.$r8$lambda$iXTT0zuYKwJp0aS9_xXBkyPjPVI(Unknown Source:0)
+	at io.github.dpan538.annota.SemanticPreferenceTest$$ExternalSyntheticLambda4.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2616)
+	at android.os.Handler.handleCallback(Handler.java:995)
+	at android.os.Handler.dispatchMessage(Handler.java:103)
+	at android.os.Looper.loopOnce(Looper.java:248)
+	at android.os.Looper.loop(Looper.java:338)
+	at android.app.ActivityThread.main(ActivityThread.java:9067)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+
+FAILURES!!!
+Tests run: 22,  Failures: 2
+
+

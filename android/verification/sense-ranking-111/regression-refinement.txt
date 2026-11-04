@@ -1,0 +1,73 @@
+
+io.github.dpan538.annota.SenseRankerTest:..................
+io.github.dpan538.annota.DictionarySenseIntegrationTest:......
+io.github.dpan538.annota.DictionaryContextTest:
+Error in selectionWindowExcludesTheOtherPdfColumnAndOtherSentence(io.github.dpan538.annota.DictionaryContextTest):
+org.junit.ComparisonFailure: expected:<河岸[]> but was:<河岸[；河堤]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at io.github.dpan538.annota.DictionaryContextTest.selectionWindowExcludesTheOtherPdfColumnAndOtherSentence(DictionaryContextTest.kt:221)
+...
+Error in scientificAndOrdinaryUsesStaySeparate(io.github.dpan538.annota.DictionaryContextTest):
+org.junit.ComparisonFailure: expected:<[模特儿]> but was:<[时装模特儿；服装模特]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at io.github.dpan538.annota.DictionaryContextTest.scientificAndOrdinaryUsesStaySeparate(DictionaryContextTest.kt:154)
+
+Error in indexedSensesAndInflectionsWorkAcrossSubjectsWithoutDocumentSpecificRules(io.github.dpan538.annota.DictionaryContextTest):
+java.lang.AssertionError
+	at org.junit.Assert.fail(Assert.java:87)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertTrue(Assert.java:53)
+	at io.github.dpan538.annota.DictionaryContextTest.indexedSensesAndInflectionsWorkAcrossSubjectsWithoutDocumentSpecificRules(DictionaryContextTest.kt:28)
+
+Error in oneWordChangesMeaningWithItsLocalSentence(io.github.dpan538.annota.DictionaryContextTest):
+org.junit.ComparisonFailure: expected:<河岸[]> but was:<河岸[；河堤]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at io.github.dpan538.annota.DictionaryContextTest.oneWordChangesMeaningWithItsLocalSentence(DictionaryContextTest.kt:145)
+........
+io.github.dpan538.annota.DictionaryCoverageTest:.
+io.github.dpan538.annota.DictionaryContextUiTest:
+Error in realPdfSelectionChangesSenseAndManualEditsClearContext(io.github.dpan538.annota.DictionaryContextUiTest):
+java.lang.IllegalStateException: bank: selected=bank context=LookupContext(selected=bank, before=[the, river], after=[was, flooded]) labels=[字典, 离线, bank, 英汉 · 汉英, bank, bæŋk, 当前语境, river bank, 河岸；河堤, 更多释义 · 16, Annota 离线词库]
+	at io.github.dpan538.annota.DictionaryContextUiTest.realPdfSelectionChangesSenseAndManualEditsClearContext$select(DictionaryContextUiTest.kt:154)
+	at io.github.dpan538.annota.DictionaryContextUiTest.realPdfSelectionChangesSenseAndManualEditsClearContext(DictionaryContextUiTest.kt:205)
+
+io.github.dpan538.annota.OfflineDictionaryTest:....
+io.github.dpan538.annota.OfflineLanguageTest:....
+io.github.dpan538.annota.DictionaryRetrievalTest:........
+io.github.dpan538.annota.TranslationInputTest:....
+
+Time: 78.444
+There were 5 failures:
+1) selectionWindowExcludesTheOtherPdfColumnAndOtherSentence(io.github.dpan538.annota.DictionaryContextTest)
+org.junit.ComparisonFailure: expected:<河岸[]> but was:<河岸[；河堤]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at io.github.dpan538.annota.DictionaryContextTest.selectionWindowExcludesTheOtherPdfColumnAndOtherSentence(DictionaryContextTest.kt:221)
+2) scientificAndOrdinaryUsesStaySeparate(io.github.dpan538.annota.DictionaryContextTest)
+org.junit.ComparisonFailure: expected:<[模特儿]> but was:<[时装模特儿；服装模特]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at io.github.dpan538.annota.DictionaryContextTest.scientificAndOrdinaryUsesStaySeparate(DictionaryContextTest.kt:154)
+3) indexedSensesAndInflectionsWorkAcrossSubjectsWithoutDocumentSpecificRules(io.github.dpan538.annota.DictionaryContextTest)
+java.lang.AssertionError
+	at org.junit.Assert.fail(Assert.java:87)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertTrue(Assert.java:53)
+	at io.github.dpan538.annota.DictionaryContextTest.indexedSensesAndInflectionsWorkAcrossSubjectsWithoutDocumentSpecificRules(DictionaryContextTest.kt:28)
+4) oneWordChangesMeaningWithItsLocalSentence(io.github.dpan538.annota.DictionaryContextTest)
+org.junit.ComparisonFailure: expected:<河岸[]> but was:<河岸[；河堤]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at io.github.dpan538.annota.DictionaryContextTest.oneWordChangesMeaningWithItsLocalSentence(DictionaryContextTest.kt:145)
+5) realPdfSelectionChangesSenseAndManualEditsClearContext(io.github.dpan538.annota.DictionaryContextUiTest)
+java.lang.IllegalStateException: bank: selected=bank context=LookupContext(selected=bank, before=[the, river], after=[was, flooded]) labels=[字典, 离线, bank, 英汉 · 汉英, bank, bæŋk, 当前语境, river bank, 河岸；河堤, 更多释义 · 16, Annota 离线词库]
+	at io.github.dpan538.annota.DictionaryContextUiTest.realPdfSelectionChangesSenseAndManualEditsClearContext$select(DictionaryContextUiTest.kt:154)
+	at io.github.dpan538.annota.DictionaryContextUiTest.realPdfSelectionChangesSenseAndManualEditsClearContext(DictionaryContextUiTest.kt:205)
+
+FAILURES!!!
+Tests run: 61,  Failures: 5
+
+

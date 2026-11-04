@@ -163,12 +163,32 @@ class DictionaryReadings(context: Context) {
                         DictionarySense(label, it.meaning.removePrefix(label).trim())
                     }
                     .distinctBy { it.text }
+            val active =
+                context?.takeIf {
+                    it.matches(query) && !SenseRanker.hasUnresolvedContrast(it.before, it.after)
+                }
+            val decision =
+                active?.let {
+                    SenseRanker.rank(
+                        query,
+                        it.before,
+                        it.after,
+                        definitions.mapIndexed { index, sense ->
+                            SenseRanker.Candidate(index, sense.text, sense.label, index)
+                        },
+                    )
+                }
+            val semantic = lexical.takeIf { it.any { sense -> sense.semantic } }
+            val ordered =
+                semantic?.map { DictionarySense(it.label, it.text) }
+                    ?: decision?.ordered?.map { definitions[it.id] }
+                    ?: definitions
             return DictionaryReading(
                 entry.word,
                 entry.pronunciation,
-                definitions.take(1),
-                definitions.drop(1),
-                false,
+                ordered.take(1),
+                ordered.drop(1),
+                semantic != null || decision?.confidentIds?.isNotEmpty() == true,
                 englishDefinition = true,
             )
         }
@@ -180,7 +200,10 @@ class DictionaryReadings(context: Context) {
                 }
             }
         val all = (sourceSenses + lexicalSenses).distinctBy { it.text }
-        val active = context?.takeIf { it.matches(query) }
+        val active =
+            context?.takeIf {
+                it.matches(query) && !SenseRanker.hasUnresolvedContrast(it.before, it.after)
+            }
         val key = LookupContext.key(entry.word)
         val rule =
             (0 until rules.length())
@@ -201,16 +224,20 @@ class DictionaryReadings(context: Context) {
             }
         // Rank independently corroborated equivalents by WordNet's sense order. Additional
         // meanings remain available; do not let a broad synonym silently replace the source.
+        var corroboratedDefault = false
         if (defaults.isEmpty()) {
-            val first = lexical.firstOrNull()
+            val first = lexical.firstOrNull { it.source == "wordnet" } ?: lexical.firstOrNull()
             val terms = first?.text?.split("；").orEmpty().toSet()
             val corroborated =
                 sourceSenses.filter { sense ->
                     sense.text.split(Regex("[；;，,]")).any { it.trim() in terms }
                 }
-            if (corroborated.isNotEmpty()) primary = corroborated.take(primaryLimit)
+            if (corroborated.isNotEmpty()) {
+                primary = corroborated.take(primaryLimit)
+                corroboratedDefault = true
+            }
         }
-        if (defaults.isEmpty() && entry.source != "annota") {
+        if (defaults.isEmpty() && entry.source != "annota" && !corroboratedDefault) {
             val current = lexical.filter { it.source == "wiktionary" }
             if (current.isNotEmpty()) {
                 primary =
@@ -222,9 +249,11 @@ class DictionaryReadings(context: Context) {
                     }
             }
         }
+        val semantic = lexical.firstOrNull { it.semantic }
         var contextual = false
         var selectedPhrase = ""
-        if (active != null && rule != null) {
+        var conflictingRuleEvidence = false
+        if (active != null && rule != null && !contextual) {
             val window = active.before.takeLast(6) + active.after.take(6)
             val variants = rule.getJSONArray("senses")
             val ranked =
@@ -255,10 +284,28 @@ class DictionaryReadings(context: Context) {
                             .thenBy { it.second }
                     )
             val best = ranked.firstOrNull()
-            if (best != null && best.first >= 3 && (ranked.getOrNull(1)?.first ?: 0) < best.first) {
+            conflictingRuleEvidence = (ranked.getOrNull(1)?.first ?: 0) > 0
+            val verbConflict =
+                best?.third?.label in setOf("v.", "vt.", "vi.") &&
+                    SenseRanker.hasShortDeterminerPhrase(active.before)
+            if (best != null && best.first >= 3 && !conflictingRuleEvidence && !verbConflict) {
                 primary = listOf(best.third)
                 contextual = true
             }
+        }
+        if (active != null && !contextual) {
+            lexical
+                .firstOrNull { it.contextual }
+                ?.let { sense ->
+                    primary =
+                        listOf(
+                            DictionarySense(
+                                sense.label,
+                                compact(sense.text.split("；").take(2).joinToString("；")),
+                            )
+                        )
+                    contextual = true
+                }
         }
         if (active != null && !contextual) {
             val fields =
@@ -347,26 +394,20 @@ class DictionaryReadings(context: Context) {
             val best = ranked.first()
             val matching = sourceSenses.filter { it.label == best.first }
             if (best.second >= 2 && best.second > ranked[1].second && matching.isNotEmpty()) {
-                primary = matching.take(1)
-                contextual = true
-            } else
-                lexical
-                    .firstOrNull { it.contextual }
-                    ?.let { sense ->
-                        primary =
-                            listOf(
-                                DictionarySense(
-                                    sense.label,
-                                    compact(sense.text.split("；").take(2).joinToString("；")),
-                                )
-                            )
-                        contextual = true
-                    }
+                primary = matching.take(primaryLimit)
+                // Domain hints do not distinguish senses within the domain.
+            }
         }
-        // Curated context rules retain authority over broad upstream collocations; otherwise
-        // a phrase such as "river bank" would override deliberately ambiguous local evidence.
+        // A recorded phrase can refine an unresolved or general lexical result. Do not
+        // replace a confident curated sense with an unreviewed upstream collocation:
+        // longer expressions can contain noisy or incorrect source translations.
         if (
-            active != null && phrase != null && (rule == null || phrase.second.source == "annota")
+            active != null &&
+                phrase != null &&
+                (!conflictingRuleEvidence || phrase.second.source == "annota") &&
+                (!contextual ||
+                    (rule == null && semantic == null) ||
+                    phrase.second.source == "annota")
         ) {
             primary = senses(phrase.second).take(1)
             contextual = primary.isNotEmpty()
@@ -379,8 +420,8 @@ class DictionaryReadings(context: Context) {
                     setOf("to", "will", "would", "can", "could", "should", "must", "please")
             val verbs = all.filter { it.label in setOf("v.", "vt.", "vi.") }
             if (verbCue && verbs.isNotEmpty()) {
-                primary = verbs.take(1)
-                contextual = true
+                primary = verbs.take(primaryLimit)
+                // A verb cue is only POS evidence, not confirmation of one verb meaning.
             }
         }
         primary = primary.ifEmpty { all.take(2) }.distinctBy { it.text }.take(2)

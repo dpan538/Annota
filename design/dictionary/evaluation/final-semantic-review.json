@@ -1,0 +1,537 @@
+{
+  "schema": 1,
+  "date": "2026-11-04",
+  "reviewer": "research subagent semantic review; not independent human gold annotation",
+  "scope": "Semantic review of frozen diagnostics-reviewed.json copied from final-production diagnostics. Compared all 36 primary/phrase/contextual results and lexical candidate arrays with refinement. Exactly three primary/phrase result sets changed; lexical candidate arrays unchanged. No device operation, code changes, or fixture edits. Not an overall accuracy benchmark.",
+  "input": "android/verification/sense-ranking-111/diagnostics-reviewed.json",
+  "inputSha256": "38fbed71f801b8ea1b97ebc15d648d618b1f583bd2aee366d20dc8e42ba0561d",
+  "counts": {
+    "accepted_contextual": 15,
+    "appropriate_abstention": 4,
+    "abstention_default_mismatch": 9,
+    "partial_source_translation": 1,
+    "partial_sense_granularity": 1,
+    "usable_default_without_contextual": 4,
+    "default_too_broad": 1,
+    "source_translation_gap": 1
+  },
+  "limitations": [
+    "Single research-agent semantic judgment on 36 authored diagnostic cases; not independently human-annotated gold data or a statistically representative accuracy benchmark.",
+    "All final primary meanings, phrase labels and contextual flags were reviewed. Keyword matching alone is insufficient. Seven phrase outputs must not be counted as general word-sense disambiguation success.",
+    "Four contextual outputs have no confident lexicalCandidate; they cannot be attributed to generic gloss ranking. Other contextual outputs can have both curated rules and lexical support, so support alone does not establish causal attribution.",
+    "Fifteen contextual outputs are acceptable; criminal-charge Chinese synonyms and bacterial-culture sense granularity remain partial-quality results rather than full successes.",
+    "Abstention avoids unsupported certainty but does not guarantee the default first meaning matches context. Missing or inaccurate Chinese sense mappings require data-quality work.",
+    "Input is a byte-frozen final-production snapshot. Later reruns may differ in elapsedMs; semantic equivalence must be checked separately."
+  ],
+  "cases": [
+    {
+      "id": "bank-river",
+      "query": "bank",
+      "primary": [
+        "河岸"
+      ],
+      "phrase": "",
+      "contextual": true,
+      "classification": "accepted_contextual",
+      "review": "河岸符合canoe/river语境。",
+      "changedSinceRefinement": [],
+      "evidenceType": "contextual_result_with_ranked_lexical_support_not_exclusive_causal_attribution"
+    },
+    {
+      "id": "bank-finance",
+      "query": "bank",
+      "primary": [
+        "银行"
+      ],
+      "phrase": "",
+      "contextual": true,
+      "classification": "accepted_contextual",
+      "review": "银行符合salary deposit/mortgage语境。",
+      "changedSinceRefinement": [],
+      "evidenceType": "upper_layer_or_curated_context_no_confident_lexical_candidate"
+    },
+    {
+      "id": "bank-short",
+      "query": "bank",
+      "primary": [
+        "银行",
+        "河岸"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "appropriate_abstention",
+      "review": "上下文证据不足；不标contextual且保留普通释义是正确拒判。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    },
+    {
+      "id": "bank-distractor",
+      "query": "bank",
+      "primary": [
+        "岸；河边"
+      ],
+      "phrase": "",
+      "contextual": true,
+      "classification": "accepted_contextual",
+      "review": "主句目标是河岸，附近deposit/money未使其误提升为银行。",
+      "changedSinceRefinement": [],
+      "evidenceType": "contextual_result_with_ranked_lexical_support_not_exclusive_causal_attribution"
+    },
+    {
+      "id": "cell-biology",
+      "query": "cell",
+      "primary": [
+        "细胞"
+      ],
+      "phrase": "",
+      "contextual": true,
+      "classification": "accepted_contextual",
+      "review": "细胞符合nucleus/membrane语境。",
+      "changedSinceRefinement": [],
+      "evidenceType": "upper_layer_or_curated_context_no_confident_lexical_candidate"
+    },
+    {
+      "id": "cell-battery",
+      "query": "cell",
+      "primary": [
+        "电池单元"
+      ],
+      "phrase": "",
+      "contextual": true,
+      "classification": "accepted_contextual",
+      "review": "最终返回电池单元，不再扩展electrochemical cell。符合电池中的单个电化学单元；WordNet候选的chemical reaction/electric current定义也支持该语义。与refinement同为可接受结果。",
+      "changedSinceRefinement": [
+        "primary",
+        "phrase"
+      ],
+      "previousResult": {
+        "primary": [
+          "电化电池"
+        ],
+        "phrase": "electrochemical cell"
+      },
+      "evidenceType": "contextual_result_with_ranked_lexical_support_not_exclusive_causal_attribution"
+    },
+    {
+      "id": "cell-prison",
+      "query": "cell",
+      "primary": [
+        "细胞",
+        "单元"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "abstention_default_mismatch",
+      "review": "保守未提升，但默认细胞/单元不合囚犯牢房语境；牢房候选存在。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    },
+    {
+      "id": "cell-spreadsheet",
+      "query": "cell",
+      "primary": [
+        "单元格"
+      ],
+      "phrase": "",
+      "contextual": true,
+      "classification": "accepted_contextual",
+      "review": "单元格符合formula/column语境。",
+      "changedSinceRefinement": [],
+      "evidenceType": "upper_layer_or_curated_context_no_confident_lexical_candidate"
+    },
+    {
+      "id": "charge-fee",
+      "query": "charge",
+      "primary": [
+        "服务费"
+      ],
+      "phrase": "service charge",
+      "contextual": true,
+      "classification": "accepted_contextual",
+      "review": "service charge→服务费，消除了首轮选择动词收费义的词性错配。",
+      "changedSinceRefinement": [],
+      "evidenceType": "attested_phrase_result_not_general_wsd"
+    },
+    {
+      "id": "charge-physics",
+      "query": "charge",
+      "primary": [
+        "电荷"
+      ],
+      "phrase": "",
+      "contextual": true,
+      "classification": "accepted_contextual",
+      "review": "最终返回电荷，不再自动扩展electric charge，仍符合电子和质子的电荷语境；有匹配电荷的名词gloss。",
+      "changedSinceRefinement": [
+        "phrase"
+      ],
+      "previousResult": {
+        "phrase": "electric charge"
+      },
+      "evidenceType": "contextual_result_with_ranked_lexical_support_not_exclusive_causal_attribution"
+    },
+    {
+      "id": "charge-accusation",
+      "query": "charge",
+      "primary": [
+        "刑事控告；刑事罪"
+      ],
+      "phrase": "criminal charge",
+      "contextual": true,
+      "classification": "partial_source_translation",
+      "review": "criminal charge→刑事控告可接受，但并列的刑事罪将指控与罪混在一起。候选含准确指控；不能仅因控告关键词命中判整条正确。",
+      "changedSinceRefinement": [],
+      "evidenceType": "attested_phrase_result_not_general_wsd"
+    },
+    {
+      "id": "charge-negation",
+      "query": "charge",
+      "primary": [
+        "费用",
+        "充电"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "abstention_default_mismatch",
+      "review": "保守未提升避免被rather than后的费用信息带偏，但默认费用/充电仍不表达目标电荷。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    },
+    {
+      "id": "culture-lab",
+      "query": "culture",
+      "primary": [
+        "培养；培植"
+      ],
+      "phrase": "",
+      "contextual": true,
+      "classification": "partial_sense_granularity",
+      "review": "选中的WordNet名词gloss是the growing of microorganisms，表示培养活动；本句grew a bacterial culture中的culture更偏培养物。POS名词正确，活动/实体义项及中文粒度仍不充分。",
+      "changedSinceRefinement": [],
+      "evidenceType": "contextual_result_with_ranked_lexical_support_not_exclusive_causal_attribution"
+    },
+    {
+      "id": "culture-society",
+      "query": "culture",
+      "primary": [
+        "文化"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "usable_default_without_contextual",
+      "review": "未提升，默认文化可用于艺术与社区语境。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    },
+    {
+      "id": "culture-refinement",
+      "query": "culture",
+      "primary": [
+        "文化"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "default_too_broad",
+      "review": "默认由初轮文化/修养变为文化，失去本句礼仪/修养的精准度。候选仍有修养；另一WordNet精致义候选混入培养/栽培的源问题未消失。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    },
+    {
+      "id": "current-time",
+      "query": "current",
+      "primary": [
+        "时事"
+      ],
+      "phrase": "current events",
+      "contextual": true,
+      "classification": "accepted_contextual",
+      "review": "明确扩为current events→时事可接受，不应拿current单词的现在的关键词否定词组结果。",
+      "changedSinceRefinement": [],
+      "evidenceType": "attested_phrase_result_not_general_wsd"
+    },
+    {
+      "id": "current-water",
+      "query": "current",
+      "primary": [
+        "当前的；流行的",
+        "当前的"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "abstention_default_mismatch",
+      "review": "未提升，默认当前的/流行的不合河流推动独木舟语境；水流候选存在。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    },
+    {
+      "id": "current-electric",
+      "query": "current",
+      "primary": [
+        "电流"
+      ],
+      "phrase": "electric current",
+      "contextual": true,
+      "classification": "accepted_contextual",
+      "review": "electric current→电流正确。",
+      "changedSinceRefinement": [],
+      "evidenceType": "attested_phrase_result_not_general_wsd"
+    },
+    {
+      "id": "draft-writing",
+      "query": "draft",
+      "primary": [
+        "初稿"
+      ],
+      "phrase": "first draft",
+      "contextual": true,
+      "classification": "accepted_contextual",
+      "review": "first draft→初稿符合原句，是词组正确结果。",
+      "changedSinceRefinement": [],
+      "evidenceType": "attested_phrase_result_not_general_wsd"
+    },
+    {
+      "id": "draft-air",
+      "query": "draft",
+      "primary": [
+        "汇票；草案"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "abstention_default_mismatch",
+      "review": "未提升，默认汇票/草案不合窗户冷风语境；气流候选存在。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    },
+    {
+      "id": "draft-conscription",
+      "query": "draft",
+      "primary": [
+        "汇票；草案"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "abstention_default_mismatch",
+      "review": "未提升，默认汇票/草案不合军队征兵语境；征兵候选存在。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    },
+    {
+      "id": "draft-short",
+      "query": "draft",
+      "primary": [
+        "汇票；草案"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "appropriate_abstention",
+      "review": "上下文证据不足；不标contextual且保留普通释义是正确拒判。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    },
+    {
+      "id": "field-physics",
+      "query": "field",
+      "primary": [
+        "磁场"
+      ],
+      "phrase": "magnetic field",
+      "contextual": true,
+      "classification": "accepted_contextual",
+      "review": "magnetic field→磁场正确。",
+      "changedSinceRefinement": [],
+      "evidenceType": "attested_phrase_result_not_general_wsd"
+    },
+    {
+      "id": "field-database",
+      "query": "field",
+      "primary": [
+        "田间；野外",
+        "田；田野"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "abstention_default_mismatch",
+      "review": "未提升，默认田/野外不合数据库字段语境；字段候选存在。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    },
+    {
+      "id": "field-farm",
+      "query": "field",
+      "primary": [
+        "田；田野"
+      ],
+      "phrase": "",
+      "contextual": true,
+      "classification": "accepted_contextual",
+      "review": "田/田野符合planted wheat；首轮自动in the field→在作战/参加比赛问题已消失。",
+      "changedSinceRefinement": [],
+      "evidenceType": "contextual_result_with_ranked_lexical_support_not_exclusive_causal_attribution"
+    },
+    {
+      "id": "solution-chemistry",
+      "query": "solution",
+      "primary": [
+        "溶液"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "usable_default_without_contextual",
+      "review": "未提升但默认溶液与盐溶于水正确。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    },
+    {
+      "id": "solution-math",
+      "query": "solution",
+      "primary": [
+        "溶液"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "abstention_default_mismatch",
+      "review": "未提升，默认溶液不合二次方程解；解/答案候选存在。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    },
+    {
+      "id": "interest-loan",
+      "query": "interest",
+      "primary": [
+        "借款利息"
+      ],
+      "phrase": "interest on the loan",
+      "contextual": true,
+      "classification": "accepted_contextual",
+      "review": "interest on the loan→借款利息符合百分比借款语境。",
+      "changedSinceRefinement": [],
+      "evidenceType": "attested_phrase_result_not_general_wsd"
+    },
+    {
+      "id": "interest-curiosity",
+      "query": "interest",
+      "primary": [
+        "兴趣",
+        "使……感興趣 /使……感兴趣"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "usable_default_without_contextual",
+      "review": "未提升，首项兴趣可接受；并列动词使感兴趣较冗余但不算确定错提升。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    },
+    {
+      "id": "mean-math",
+      "query": "mean",
+      "primary": [
+        "平均值"
+      ],
+      "phrase": "",
+      "contextual": true,
+      "classification": "accepted_contextual",
+      "review": "最终由算术均数词组结果变为单词平均值，符合求和除以观测数量的语境。没有contextual lexicalCandidate，故不可将此成功记为通用gloss WSD成功；属于已有context规则或其他上层逻辑。",
+      "changedSinceRefinement": [
+        "primary",
+        "phrase"
+      ],
+      "previousResult": {
+        "primary": [
+          "算术中项；算术均数"
+        ],
+        "phrase": "arithmetic mean"
+      },
+      "evidenceType": "upper_layer_or_curated_context_no_confident_lexical_candidate"
+    },
+    {
+      "id": "mean-unkind",
+      "query": "mean",
+      "primary": [
+        "意思是",
+        "平均值"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "abstention_default_mismatch",
+      "review": "未提升，默认意思是/平均值不合对孩子刻薄语境；卑鄙的等近义候选存在。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    },
+    {
+      "id": "significant-statistics",
+      "query": "significant",
+      "primary": [
+        "重要的；有效的",
+        "值得注意的"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "source_translation_gap",
+      "review": "未提升，仍无精确显著汉译。统计gloss对应有意义的，主要是源中文语义不足；不能通过提高WSD置信度解决。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    },
+    {
+      "id": "significant-important",
+      "query": "significant",
+      "primary": [
+        "重要的；有效的",
+        "值得注意的"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "usable_default_without_contextual",
+      "review": "未提升，默认重要的/值得注意的适合contribution；有效的较宽，非本句推荐首义。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    },
+    {
+      "id": "bank-negated-finance",
+      "query": "bank",
+      "primary": [
+        "银行",
+        "河岸"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "abstention_default_mismatch",
+      "review": "现已不标contextual，消除首轮错误确定银行。普通默认仍银行在前、河岸在后，不代表识别出否定后的正确目标。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    },
+    {
+      "id": "current-no-evidence",
+      "query": "current",
+      "primary": [
+        "当前的；流行的",
+        "当前的"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "appropriate_abstention",
+      "review": "上下文证据不足；不标contextual且保留普通释义是正确拒判。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    },
+    {
+      "id": "field-no-evidence",
+      "query": "field",
+      "primary": [
+        "田间；野外",
+        "田；田野"
+      ],
+      "phrase": "",
+      "contextual": false,
+      "classification": "appropriate_abstention",
+      "review": "上下文证据不足；不标contextual且保留普通释义是正确拒判。",
+      "changedSinceRefinement": [],
+      "evidenceType": "ordinary_default_no_contextual_assertion"
+    }
+  ],
+  "evidenceTypeCounts": {
+    "contextual_result_with_ranked_lexical_support_not_exclusive_causal_attribution": 6,
+    "upper_layer_or_curated_context_no_confident_lexical_candidate": 4,
+    "ordinary_default_no_contextual_assertion": 19,
+    "attested_phrase_result_not_general_wsd": 7
+  }
+}

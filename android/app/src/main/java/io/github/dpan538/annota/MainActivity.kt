@@ -2215,6 +2215,11 @@ class MainActivity : Activity() {
                             if (parts[0] == "twoFinger") "undo" else "redo",
                         )
                     "check-update" -> checkUpdate()
+                    "semantic-dictionary" -> {
+                        val dictionaryPrefs = Prefs(this)
+                        dictionaryPrefs.semanticDictionary = !dictionaryPrefs.semanticDictionary
+                        refreshControls()
+                    }
                     "device" -> deviceInfo()
                     "licenses" -> licenses()
                     "github" ->
@@ -2402,6 +2407,8 @@ class MainActivity : Activity() {
                 "dictionary/licenses/Wiktionary-NOTICE.md",
                 "dictionary/licenses/LemmInflect-MIT.txt",
                 "translation/NOTICE.md",
+                "semantic/NOTICE.md",
+                "semantic/LICENSE-APACHE-2.0.txt",
                 "translation/LICENSE-Apache-2.0.txt",
                 "translation/LICENSE-ONNX-Runtime-MIT.txt",
                 "dictionary/licenses/ECDICT-MIT.txt",

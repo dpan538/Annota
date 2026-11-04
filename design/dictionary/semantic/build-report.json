@@ -1,0 +1,77 @@
+{
+  "metadata": {
+    "schema_version": 1,
+    "model_id": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "model_sha256": "4278337fd0ff3c68bfb6291042cad8ab363e1d9fbc43dcb499fe91c871902474",
+    "embedding_dimension": 384,
+    "max_tokens": 128,
+    "key": "sha256(raw exact gloss UTF-8), lowercase hex",
+    "encoding": "signed-int8-symmetric-per-vector",
+    "normalization": "masked-token mean including CLS/SEP, then L2",
+    "truncation": "offline only: first 127 token IDs then SEP; raw full gloss still supplies key",
+    "truncated_glosses": 0,
+    "longest_untruncated_tokens": 118,
+    "gloss_count": 92869,
+    "sources": [
+      {
+        "path": "design/dictionary/bundle/wordnet.sqlite",
+        "sha256": "b54c4ba933937200cf077a8d94637dad04d6f1e049fc70963f34fe846873e92e",
+        "rows": 77708,
+        "distinct_glosses": 42119
+      },
+      {
+        "path": "design/dictionary/bundle/wiktionary.sqlite",
+        "sha256": "ce7198a57990d39d797cf7df74460fee4668689dbc12116d6faabc7189128622",
+        "rows": 61076,
+        "distinct_glosses": 50820
+      }
+    ]
+  },
+  "build_seconds": 205.147,
+  "sqlite_bytes": 55091200,
+  "sqlite_sha256": "9e9fc196a85748749d7de4a9f6877007795a6128a31aa2dd70494afa358197b2",
+  "quantization_worst_cosine": 0.9998997449874878,
+  "known_pair_checks": [
+    {
+      "query": "The bank approved a loan.",
+      "related": "a financial institution that accepts deposits and lends money",
+      "unrelated": "sloping land beside a river",
+      "related_cosine": 0.4753817915916443,
+      "unrelated_cosine": 0.13472330570220947,
+      "passed": true
+    },
+    {
+      "query": "The fisherman sat on the river bank.",
+      "related": "sloping land beside a river",
+      "unrelated": "a financial institution that accepts deposits and lends money",
+      "related_cosine": 0.37368324398994446,
+      "unrelated_cosine": 0.19144341349601746,
+      "passed": true
+    },
+    {
+      "query": "He paid the fee for the service.",
+      "related": "a financial charge imposed for a service",
+      "unrelated": "sloping land beside a river",
+      "related_cosine": 0.6084742546081543,
+      "unrelated_cosine": 0.006099382881075144,
+      "passed": true
+    },
+    {
+      "query": "The cells were examined under a microscope.",
+      "related": "the basic structural unit of living organisms",
+      "unrelated": "a small room in a prison",
+      "related_cosine": 0.3159538507461548,
+      "unrelated_cosine": 0.1443096399307251,
+      "passed": true
+    }
+  ],
+  "environment": {
+    "python": "3.13.5",
+    "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+    "onnxruntime": "1.31.1",
+    "numpy": "2.5.4",
+    "threads": 4,
+    "batch_size": 1
+  }
+}

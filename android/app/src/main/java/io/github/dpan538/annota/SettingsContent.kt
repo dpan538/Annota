@@ -412,6 +412,44 @@ class SettingsContent(
                         tr("检查更新", "Check update"),
                         "check-update",
                     )
+                    val semanticEnabled = Prefs(context).semanticDictionary
+                    val dictionaryState = if (semanticEnabled) tr("开启", "On") else tr("关闭", "Off")
+                    val dictionaryRow =
+                        action(tr("本地词典", "Local dictionary")) { onEvent("semantic-dictionary") }
+                            .apply {
+                                tag = "semantic-dictionary-toggle"
+                                isSelected = semanticEnabled
+                                background =
+                                    background(palette.color("panel"), 14f, palette.color("rule"))
+                                androidx.core.view.ViewCompat.setStateDescription(
+                                    this,
+                                    dictionaryState,
+                                )
+                            }
+                    box(
+                        dictionaryRow,
+                        label(tr("本地词典", "Local dictionary"), 18f, palette.ink, 500),
+                        24f,
+                        0f,
+                        width - 144f,
+                        72f,
+                    )
+                    box(
+                        dictionaryRow,
+                        label(
+                                dictionaryState,
+                                15f,
+                                if (semanticEnabled) palette.accent else palette.color("muted"),
+                                500,
+                            )
+                            .apply { gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL },
+                        width - 104f,
+                        0f,
+                        80f,
+                        72f,
+                    )
+                    box(parent, dictionaryRow, 0f, y, width, 72f)
+                    y += 86f
                     fontCredit()
                     listOf(
                             "backup" to tr("导出本地备份", "Export local backup"),

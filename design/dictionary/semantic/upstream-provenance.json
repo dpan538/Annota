@@ -1,0 +1,19 @@
+{
+  "model_id": "sentence-transformers/all-MiniLM-L6-v2",
+  "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "api_url": "https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2/tree/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/onnx",
+  "official_model_metadata": {
+    "type": "file",
+    "oid": "31cb234cd3ea9b17b5806bad552fa59d7d05929b",
+    "size": 23026053,
+    "lfs": {
+      "oid": "4278337fd0ff3c68bfb6291042cad8ab363e1d9fbc43dcb499fe91c871902474",
+      "size": 23026053,
+      "pointerSize": 133
+    },
+    "xetHash": "35b363afb9df4b2003fa3154c65b08833ba4632fc938a11d5f0dcadd966dfe4a",
+    "path": "onnx/model_qint8_arm64.onnx"
+  },
+  "license": "Apache-2.0 as declared by pinned model card",
+  "checked_date": "2026-11-04"
+}

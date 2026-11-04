@@ -1,0 +1,881 @@
+{
+  "note": "Author-created held-out diagnostics, not an independent accuracy benchmark. Timing is dedicated ARM64 emulator only.",
+  "cases": [
+    {
+      "id": "seal-animal",
+      "query": "seal",
+      "target": "seal",
+      "before": "The marine biologist watched a",
+      "after": "dive underwater to catch fish.",
+      "context": "The marine biologist watched a [seal] dive underwater to catch fish.",
+      "expected": [
+        "海豹"
+      ],
+      "expectedGloss": "a marine mammal with flippers",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "封闭；盖印"
+      ],
+      "alternatives": [
+        "印章；封条",
+        "海豹；海豹皮",
+        "火漆；封蜡",
+        "玺；保证",
+        "批准；象征",
+        "标志",
+        "盖章",
+        "猎海豹",
+        "海豹；海狗",
+        "印章；图章",
+        "密封",
+        "印章",
+        "封锁",
+        "密封；封",
+        "封牢；封闭",
+        "海豹皮",
+        "封条",
+        "海豹"
+      ],
+      "contextual": false,
+      "noContextPrimary": [
+        "封闭；盖印"
+      ],
+      "elapsedMs": 15.402916,
+      "repeatMs": 8.7645,
+      "semanticAccepted": false,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "seal-closure",
+      "query": "seal",
+      "target": "seal",
+      "before": "Check the airtight",
+      "after": "around the jar lid before storing the food.",
+      "context": "Check the airtight [seal] around the jar lid before storing the food.",
+      "expected": [
+        "密封",
+        "封条"
+      ],
+      "expectedGloss": "a closure or device that prevents leakage",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "封闭；盖印"
+      ],
+      "alternatives": [
+        "印章；封条",
+        "海豹；海豹皮",
+        "火漆；封蜡",
+        "玺；保证",
+        "批准；象征",
+        "标志",
+        "盖章",
+        "猎海豹",
+        "海豹；海狗",
+        "印章；图章",
+        "密封",
+        "印章",
+        "封锁",
+        "密封；封",
+        "封牢；封闭",
+        "海豹皮",
+        "封条",
+        "海豹"
+      ],
+      "contextual": false,
+      "noContextPrimary": [
+        "封闭；盖印"
+      ],
+      "elapsedMs": 9.452584,
+      "repeatMs": 8.176625,
+      "semanticAccepted": false,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "spring-season",
+      "query": "spring",
+      "target": "spring",
+      "before": "The flowers bloom in",
+      "after": "as the weather warms after winter.",
+      "context": "The flowers bloom in [spring] as the weather warms after winter.",
+      "expected": [
+        "春",
+        "春季"
+      ],
+      "expectedGloss": "the season between winter and summer",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "春天；春季"
+      ],
+      "alternatives": [
+        "春天；弹簧",
+        "跳跃；弹性",
+        "活力；泉",
+        "源泉",
+        "春天的",
+        "跳；弹跳",
+        "涌出；生长",
+        "裂开；高耸",
+        "使跳起；使爆炸",
+        "突然提出",
+        "春；春天",
+        "泉；源泉",
+        "弹跳；跃过",
+        "跳；跳动",
+        "跳越；跳跃",
+        "跳过；蹦",
+        "蹦跳；飞跃",
+        "喷泉；泉",
+        "泉水；源泉",
+        "发条；弹簧",
+        "形成；成形",
+        "弹簧；发条"
+      ],
+      "contextual": true,
+      "noContextPrimary": [
+        "春天；弹簧"
+      ],
+      "elapsedMs": 23.287791,
+      "repeatMs": 14.7135,
+      "semanticAccepted": true,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "spring-coil",
+      "query": "spring",
+      "target": "spring",
+      "before": "The mechanic replaced the compressed metal",
+      "after": "inside the suspension.",
+      "context": "The mechanic replaced the compressed metal [spring] inside the suspension.",
+      "expected": [
+        "弹簧"
+      ],
+      "expectedGloss": "an elastic coil that stores mechanical energy",
+      "expectAbstain": false,
+      "category": "technology",
+      "primary": [
+        "发条；弹簧"
+      ],
+      "alternatives": [
+        "春天；弹簧",
+        "跳跃；弹性",
+        "活力；泉",
+        "源泉",
+        "春天的",
+        "跳；弹跳",
+        "涌出；生长",
+        "裂开；高耸",
+        "使跳起；使爆炸",
+        "突然提出",
+        "泉；源泉",
+        "春；春天",
+        "春季",
+        "弹跳；跃过",
+        "跳；跳动",
+        "跳越；跳跃",
+        "跳过；蹦",
+        "蹦跳；飞跃",
+        "喷泉；泉",
+        "泉水；源泉",
+        "春天；春季",
+        "形成；成形"
+      ],
+      "contextual": true,
+      "noContextPrimary": [
+        "春天；弹簧"
+      ],
+      "elapsedMs": 17.543583,
+      "repeatMs": 8.402625,
+      "semanticAccepted": true,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "volume-sound",
+      "query": "volume",
+      "target": "volume",
+      "before": "Turn down the",
+      "after": "of the loudspeaker because the music is too loud.",
+      "context": "Turn down the [volume] of the loudspeaker because the music is too loud.",
+      "expected": [
+        "音量"
+      ],
+      "expectedGloss": "the loudness of a sound",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "音量"
+      ],
+      "alternatives": [
+        "册；卷",
+        "体积；容量",
+        "大量；许多",
+        "份量；音量",
+        "成团卷起",
+        "把...收集成卷",
+        "大量的",
+        "卷",
+        "音量；响度",
+        "大量",
+        "体积；容积",
+        "册",
+        "容积；体积",
+        "书；书籍"
+      ],
+      "contextual": true,
+      "noContextPrimary": [
+        "体积；容量"
+      ],
+      "elapsedMs": 14.249417,
+      "repeatMs": 7.962625,
+      "semanticAccepted": true,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "volume-space",
+      "query": "volume",
+      "target": "volume",
+      "before": "The cylinder has a",
+      "after": "of twenty cubic centimetres.",
+      "context": "The cylinder has a [volume] of twenty cubic centimetres.",
+      "expected": [
+        "体积",
+        "容积"
+      ],
+      "expectedGloss": "the amount of three-dimensional space occupied",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "体积；容积"
+      ],
+      "alternatives": [
+        "册；卷",
+        "体积；容量",
+        "大量；许多",
+        "份量；音量",
+        "成团卷起",
+        "把...收集成卷",
+        "大量的",
+        "卷",
+        "大量",
+        "音量；响度",
+        "音量",
+        "书；书籍",
+        "册"
+      ],
+      "contextual": true,
+      "noContextPrimary": [
+        "体积；容量"
+      ],
+      "elapsedMs": 7.840375,
+      "repeatMs": 7.861959,
+      "semanticAccepted": true,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "organ-body",
+      "query": "organ",
+      "target": "organ",
+      "before": "The liver is an",
+      "after": "that processes nutrients and removes toxins.",
+      "context": "The liver is an [organ] that processes nutrients and removes toxins.",
+      "expected": [
+        "器官"
+      ],
+      "expectedGloss": "a differentiated part of an animal body with a specific function",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "风琴；器官"
+      ],
+      "alternatives": [
+        "元件；机构",
+        "机关",
+        "机关；机构",
+        "电子琴",
+        "管风琴；风琴",
+        "小风琴"
+      ],
+      "contextual": false,
+      "noContextPrimary": [
+        "风琴；器官"
+      ],
+      "elapsedMs": 12.999792,
+      "repeatMs": 7.440209,
+      "semanticAccepted": false,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "organ-music",
+      "query": "organ",
+      "target": "organ",
+      "before": "The musician played the pipe",
+      "after": "during the cathedral concert.",
+      "context": "The musician played the pipe [organ] during the cathedral concert.",
+      "expected": [
+        "管风琴",
+        "风琴"
+      ],
+      "expectedGloss": "a keyboard musical instrument with pipes",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "管风琴"
+      ],
+      "alternatives": [
+        "风琴；器官",
+        "元件；机构",
+        "机关",
+        "风琴",
+        "器官",
+        "机关；机构",
+        "电子琴",
+        "管风琴；风琴",
+        "小风琴"
+      ],
+      "contextual": true,
+      "noContextPrimary": [
+        "风琴；器官"
+      ],
+      "elapsedMs": 9.434875,
+      "repeatMs": 12.002,
+      "semanticAccepted": false,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "pupil-eye",
+      "query": "pupil",
+      "target": "pupil",
+      "before": "Bright light causes the",
+      "after": "in the centre of the eye to become smaller.",
+      "context": "Bright light causes the [pupil] in the centre of the eye to become smaller.",
+      "expected": [
+        "瞳孔"
+      ],
+      "expectedGloss": "the opening in the iris through which light enters the eye",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "瞳孔；瞳子"
+      ],
+      "alternatives": [
+        "学生；门生",
+        "未成年人；瞳孔",
+        "学生；弟子",
+        "生徒"
+      ],
+      "contextual": true,
+      "noContextPrimary": [
+        "学生；门生"
+      ],
+      "elapsedMs": 10.553458,
+      "repeatMs": 7.973459,
+      "semanticAccepted": true,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "pupil-student",
+      "query": "pupil",
+      "target": "pupil",
+      "before": "The teacher asked each",
+      "after": "to complete the classroom assignment.",
+      "context": "The teacher asked each [pupil] to complete the classroom assignment.",
+      "expected": [
+        "学生",
+        "学童"
+      ],
+      "expectedGloss": "a learner attending school",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "学生；门生"
+      ],
+      "alternatives": [
+        "未成年人；瞳孔",
+        "瞳孔",
+        "学生；弟子",
+        "生徒",
+        "瞳孔；瞳子"
+      ],
+      "contextual": false,
+      "noContextPrimary": [
+        "学生；门生"
+      ],
+      "elapsedMs": 7.639166,
+      "repeatMs": 8.263292,
+      "semanticAccepted": false,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "bond-chemical",
+      "query": "bond",
+      "target": "bond",
+      "before": "The two atoms share electrons in a covalent",
+      "after": "within the molecule.",
+      "context": "The two atoms share electrons in a covalent [bond] within the molecule.",
+      "expected": [
+        "化学键",
+        "键"
+      ],
+      "expectedGloss": "an electrical or chemical attraction holding atoms together",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "共价键"
+      ],
+      "alternatives": [
+        "捆绑物；结合",
+        "债券；契约",
+        "粘合剂；保证人",
+        "键；关栈保留",
+        "存入关栈；使黏合",
+        "结合",
+        "债券",
+        "邦德",
+        "使黏合；粘住",
+        "粘着；粘附",
+        "附着；附著",
+        "黏合；黏着",
+        "黏著；黏附",
+        "依附；结合",
+        "联系",
+        "关系",
+        "保释金",
+        "手铐；束缚物",
+        "枷锁；桎梏",
+        "扣拴物；黏合剂",
+        "证券纸；铜版纸",
+        "高级书写纸"
+      ],
+      "contextual": true,
+      "noContextPrimary": [
+        "存入关栈；使黏合"
+      ],
+      "elapsedMs": 18.716708,
+      "repeatMs": 8.338125,
+      "semanticAccepted": false,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "bond-financial",
+      "query": "bond",
+      "target": "bond",
+      "before": "The investor bought a government",
+      "after": "that pays annual interest until maturity.",
+      "context": "The investor bought a government [bond] that pays annual interest until maturity.",
+      "expected": [
+        "债券",
+        "公债"
+      ],
+      "expectedGloss": "a debt security that promises payment of principal and interest",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "公债"
+      ],
+      "alternatives": [
+        "捆绑物；结合",
+        "债券；契约",
+        "粘合剂；保证人",
+        "键；关栈保留",
+        "存入关栈；使黏合",
+        "结合",
+        "债券",
+        "邦德",
+        "使黏合；粘住",
+        "粘着；粘附",
+        "附着；附著",
+        "黏合；黏着",
+        "黏著；黏附",
+        "依附；结合",
+        "联系",
+        "关系",
+        "保释金",
+        "手铐；束缚物",
+        "枷锁；桎梏",
+        "扣拴物；黏合剂",
+        "证券纸；铜版纸",
+        "高级书写纸"
+      ],
+      "contextual": true,
+      "noContextPrimary": [
+        "存入关栈；使黏合"
+      ],
+      "elapsedMs": 8.718209,
+      "repeatMs": 9.167959,
+      "semanticAccepted": false,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "root-plant",
+      "query": "root",
+      "target": "root",
+      "before": "The plant absorbs water through its",
+      "after": "below the soil surface.",
+      "context": "The plant absorbs water through its [root] below the soil surface.",
+      "expected": [
+        "根",
+        "植物根"
+      ],
+      "expectedGloss": "the part of a plant normally below ground that absorbs water",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "根"
+      ],
+      "alternatives": [
+        "根；根本",
+        "根源；基础",
+        "底部",
+        "使扎根；使固定",
+        "根除；肃清",
+        "搜出；用鼻拱",
+        "生根；固定",
+        "源于；用鼻拱土",
+        "寻找；捧场",
+        "支持",
+        "树根",
+        "使扎根；使生根",
+        "开始；开端",
+        "根；根源",
+        "起因；起源",
+        "根源在于",
+        "词根",
+        "语根",
+        "定居",
+        "根源",
+        "祖先；祖宗"
+      ],
+      "contextual": true,
+      "noContextPrimary": [
+        "根；根本"
+      ],
+      "elapsedMs": 22.104667,
+      "repeatMs": 8.823958,
+      "semanticAccepted": true,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "root-math",
+      "query": "root",
+      "target": "root",
+      "before": "Three is the positive square",
+      "after": "of nine because three multiplied by itself equals nine.",
+      "context": "Three is the positive square [root] of nine because three multiplied by itself equals nine.",
+      "expected": [
+        "平方根",
+        "根"
+      ],
+      "expectedGloss": "a number whose specified power gives another number",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "平方根"
+      ],
+      "alternatives": [
+        "根；根本",
+        "根源；基础",
+        "底部",
+        "使扎根；使固定",
+        "根除；肃清",
+        "搜出；用鼻拱",
+        "生根；固定",
+        "源于；用鼻拱土",
+        "寻找；捧场",
+        "支持",
+        "根",
+        "树根",
+        "根源",
+        "语根",
+        "词根",
+        "开始；开端",
+        "根；根源",
+        "起因；起源",
+        "根源在于",
+        "定居",
+        "祖先；祖宗",
+        "使扎根；使生根"
+      ],
+      "contextual": true,
+      "noContextPrimary": [
+        "根；根本"
+      ],
+      "elapsedMs": 8.639459,
+      "repeatMs": 8.254167,
+      "semanticAccepted": false,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "tissue-biology",
+      "query": "tissue",
+      "target": "tissue",
+      "before": "The biopsy contained damaged muscle",
+      "after": "which the pathologist examined under a microscope.",
+      "context": "The biopsy contained damaged muscle [tissue] which the pathologist examined under a microscope.",
+      "expected": [
+        "组织"
+      ],
+      "expectedGloss": "a group of biological cells performing a function",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "棉纸；组织",
+        "组织"
+      ],
+      "alternatives": [
+        "薄的织物；薄纱",
+        "一套",
+        "纸巾",
+        "面巾纸；纸巾",
+        "纺织；织",
+        "编；编织",
+        "卫生纸；棉纸",
+        "薄纸；餐巾纸"
+      ],
+      "contextual": false,
+      "noContextPrimary": [
+        "棉纸；组织",
+        "组织"
+      ],
+      "elapsedMs": 11.919208,
+      "repeatMs": 7.681833,
+      "semanticAccepted": false,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "tissue-paper",
+      "query": "tissue",
+      "target": "tissue",
+      "before": "She used a disposable paper",
+      "after": "to wipe her nose and then threw it away.",
+      "context": "She used a disposable paper [tissue] to wipe her nose and then threw it away.",
+      "expected": [
+        "纸巾",
+        "薄纸",
+        "面巾"
+      ],
+      "expectedGloss": "a soft piece of absorbent paper",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "棉纸；组织",
+        "组织"
+      ],
+      "alternatives": [
+        "薄的织物；薄纱",
+        "一套",
+        "纸巾",
+        "面巾纸；纸巾",
+        "纺织；织",
+        "编；编织",
+        "卫生纸；棉纸",
+        "薄纸；餐巾纸"
+      ],
+      "contextual": false,
+      "noContextPrimary": [
+        "棉纸；组织",
+        "组织"
+      ],
+      "elapsedMs": 7.195584,
+      "repeatMs": 8.134917,
+      "semanticAccepted": false,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "seal-low-evidence",
+      "query": "seal",
+      "target": "seal",
+      "before": "The word",
+      "after": "appears on the next page.",
+      "context": "The word [seal] appears on the next page.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient",
+      "primary": [
+        "封闭；盖印"
+      ],
+      "alternatives": [
+        "印章；封条",
+        "海豹；海豹皮",
+        "火漆；封蜡",
+        "玺；保证",
+        "批准；象征",
+        "标志",
+        "盖章",
+        "猎海豹",
+        "海豹；海狗",
+        "印章；图章",
+        "密封",
+        "印章",
+        "封锁",
+        "密封；封",
+        "封牢；封闭",
+        "海豹皮",
+        "封条",
+        "海豹"
+      ],
+      "contextual": false,
+      "noContextPrimary": [
+        "封闭；盖印"
+      ],
+      "elapsedMs": 7.78225,
+      "repeatMs": 6.694875,
+      "semanticAccepted": false,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "spring-low-evidence",
+      "query": "spring",
+      "target": "spring",
+      "before": "They mentioned",
+      "after": "again yesterday.",
+      "context": "They mentioned [spring] again yesterday.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient",
+      "primary": [
+        "春天；弹簧"
+      ],
+      "alternatives": [
+        "跳跃；弹性",
+        "活力；泉",
+        "源泉",
+        "春天的",
+        "跳；弹跳",
+        "涌出；生长",
+        "裂开；高耸",
+        "使跳起；使爆炸",
+        "突然提出",
+        "春天；春季",
+        "泉；源泉",
+        "弹簧；发条",
+        "春；春天",
+        "春季",
+        "弹跳；跃过",
+        "跳；跳动",
+        "跳越；跳跃",
+        "跳过；蹦",
+        "蹦跳；飞跃",
+        "发条；弹簧",
+        "形成；成形",
+        "喷泉；泉",
+        "泉水；源泉"
+      ],
+      "contextual": false,
+      "noContextPrimary": [
+        "春天；弹簧"
+      ],
+      "elapsedMs": 5.739042,
+      "repeatMs": 5.058834,
+      "semanticAccepted": false,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "organ-low-evidence",
+      "query": "organ",
+      "target": "organ",
+      "before": "Please explain",
+      "after": "to me.",
+      "context": "Please explain [organ] to me.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient",
+      "primary": [
+        "风琴；器官"
+      ],
+      "alternatives": [
+        "元件；机构",
+        "机关",
+        "机关；机构",
+        "电子琴",
+        "管风琴；风琴",
+        "小风琴"
+      ],
+      "contextual": false,
+      "noContextPrimary": [
+        "风琴；器官"
+      ],
+      "elapsedMs": 5.226375,
+      "repeatMs": 4.750667,
+      "semanticAccepted": false,
+      "inferenceCount": 0,
+      "failures": 0
+    },
+    {
+      "id": "bond-low-evidence",
+      "query": "bond",
+      "target": "bond",
+      "before": "We are discussing",
+      "after": "today.",
+      "context": "We are discussing [bond] today.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient",
+      "primary": [
+        "存入关栈；使黏合"
+      ],
+      "alternatives": [
+        "捆绑物；结合",
+        "债券；契约",
+        "粘合剂；保证人",
+        "键；关栈保留",
+        "结合",
+        "债券",
+        "邦德",
+        "使黏合；粘住",
+        "粘着；粘附",
+        "附着；附著",
+        "黏合；黏着",
+        "黏著；黏附",
+        "依附；结合",
+        "联系",
+        "关系",
+        "保释金",
+        "手铐；束缚物",
+        "枷锁；桎梏",
+        "扣拴物；黏合剂",
+        "证券纸；铜版纸",
+        "高级书写纸"
+      ],
+      "contextual": false,
+      "noContextPrimary": [
+        "存入关栈；使黏合"
+      ],
+      "elapsedMs": 5.440875,
+      "repeatMs": 5.109167,
+      "semanticAccepted": false,
+      "inferenceCount": 0,
+      "failures": 0
+    }
+  ],
+  "statistics": {
+    "encoded": 163,
+    "cacheHits": 421,
+    "rerankAttempts": 429,
+    "accepted": 61,
+    "fallbacks": 0
+  }
+}

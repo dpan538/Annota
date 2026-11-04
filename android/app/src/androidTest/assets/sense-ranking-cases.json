@@ -1,0 +1,464 @@
+{
+  "schema": 1,
+  "date": "2026-11-04",
+  "purpose": "Author-created contrastive diagnostic cases; not an independently annotated benchmark or overall accuracy estimate. Expected Chinese strings are alternatives/substrings, not required exact translations. expectAbstain means no contextual confidence assertion; ordinary dictionary results remain valid.",
+  "cases": [
+    {
+      "id": "bank-river",
+      "query": "bank",
+      "before": "The canoe landed on the muddy",
+      "after": "beside the river.",
+      "expected": [
+        "岸",
+        "河边"
+      ],
+      "expectedGloss": "river or lake",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "bank-finance",
+      "query": "bank",
+      "before": "She deposited her salary at the",
+      "after": "and applied for a mortgage.",
+      "expected": [
+        "银行"
+      ],
+      "expectedGloss": "financial institution",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "bank-short",
+      "query": "bank",
+      "before": "The",
+      "after": "is nearby.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient"
+    },
+    {
+      "id": "bank-distractor",
+      "query": "bank",
+      "before": "We discussed deposits and money while sitting on the",
+      "after": "beside the river.",
+      "expected": [
+        "岸",
+        "河边"
+      ],
+      "expectedGloss": "river or lake",
+      "expectAbstain": false,
+      "category": "distractor",
+      "note": "Correct sense is asserted, but conservative abstention is safer than a wrong contextual promotion."
+    },
+    {
+      "id": "cell-biology",
+      "query": "cell",
+      "before": "Under the microscope each",
+      "after": "contained a nucleus and a membrane.",
+      "expected": [
+        "细胞"
+      ],
+      "expectedGloss": "living organism",
+      "expectAbstain": false,
+      "category": "science"
+    },
+    {
+      "id": "cell-battery",
+      "query": "cell",
+      "before": "The battery contains a single electrochemical",
+      "after": "which supplies electric current.",
+      "expected": [
+        "电池"
+      ],
+      "expectedGloss": "battery",
+      "expectAbstain": false,
+      "category": "technology"
+    },
+    {
+      "id": "cell-prison",
+      "query": "cell",
+      "before": "The prisoner was locked in a small",
+      "after": "behind iron bars.",
+      "expected": [
+        "牢房",
+        "囚室"
+      ],
+      "expectedGloss": "prison",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "cell-spreadsheet",
+      "query": "cell",
+      "before": "Enter the formula into this spreadsheet",
+      "after": "and copy it down the column.",
+      "expected": [
+        "单元格"
+      ],
+      "expectedGloss": "spreadsheet",
+      "expectAbstain": false,
+      "category": "candidate-gap",
+      "sourceIssue": "Verify exact semantic candidate exists before treating failure as ranking error."
+    },
+    {
+      "id": "charge-fee",
+      "query": "charge",
+      "before": "The hotel added a service",
+      "after": "to the bill for room cleaning.",
+      "expected": [
+        "收费",
+        "费用"
+      ],
+      "expectedGloss": "money",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "charge-physics",
+      "query": "charge",
+      "before": "The electron carries a negative electric",
+      "after": "while a proton carries a positive one.",
+      "expected": [
+        "电荷"
+      ],
+      "expectedGloss": "electric",
+      "expectAbstain": false,
+      "category": "science"
+    },
+    {
+      "id": "charge-accusation",
+      "query": "charge",
+      "before": "The defendant denied the criminal",
+      "after": "during the trial.",
+      "expected": [
+        "指控",
+        "控告"
+      ],
+      "expectedGloss": "accusation",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "charge-negation",
+      "query": "charge",
+      "before": "The report concerns electric",
+      "after": "rather than the fee paid for a service.",
+      "expected": [
+        "电荷"
+      ],
+      "expectedGloss": "electric",
+      "expectAbstain": false,
+      "category": "distractor",
+      "note": "Correct sense is asserted, but conservative abstention is safer than a wrong contextual promotion."
+    },
+    {
+      "id": "culture-lab",
+      "query": "culture",
+      "before": "The laboratory grew a bacterial",
+      "after": "in a nutrient medium.",
+      "expected": [
+        "培养",
+        "培植"
+      ],
+      "expectedGloss": "microorganisms",
+      "expectAbstain": false,
+      "category": "science"
+    },
+    {
+      "id": "culture-society",
+      "query": "culture",
+      "before": "The exhibition explores the art and",
+      "after": "of the local community.",
+      "expected": [
+        "文化",
+        "文明"
+      ],
+      "expectedGloss": "society",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "culture-refinement",
+      "query": "culture",
+      "before": "Her refined manners and",
+      "after": "impressed the guests.",
+      "expected": [
+        "修养",
+        "教养",
+        "精致"
+      ],
+      "expectedGloss": "perfection",
+      "expectAbstain": false,
+      "category": "source-quality",
+      "sourceIssue": "WordNet 14459824-n mixes refinement gloss with 培养/栽培; keeping 精致 later does not validate wrong leading terms.",
+      "rejectPrimary": [
+        "培养",
+        "栽培"
+      ]
+    },
+    {
+      "id": "current-time",
+      "query": "current",
+      "before": "The newspaper reports the",
+      "after": "events and latest developments.",
+      "expected": [
+        "当前",
+        "现在",
+        "最近"
+      ],
+      "expectedGloss": "present time",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "current-water",
+      "query": "current",
+      "before": "The strong river",
+      "after": "carried the canoe downstream.",
+      "expected": [
+        "水流",
+        "流"
+      ],
+      "expectedGloss": "fluid",
+      "expectAbstain": false,
+      "category": "science"
+    },
+    {
+      "id": "current-electric",
+      "query": "current",
+      "before": "The wire carries an electric",
+      "after": "of two amperes.",
+      "expected": [
+        "电流"
+      ],
+      "expectedGloss": "electric",
+      "expectAbstain": false,
+      "category": "technology"
+    },
+    {
+      "id": "draft-writing",
+      "query": "draft",
+      "before": "Please revise the first",
+      "after": "of the article before publication.",
+      "expected": [
+        "草稿",
+        "草案"
+      ],
+      "expectedGloss": "written work",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "draft-air",
+      "query": "draft",
+      "before": "A cold",
+      "after": "came through the open window.",
+      "expected": [
+        "气流",
+        "穿堂风"
+      ],
+      "expectedGloss": "air",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "draft-conscription",
+      "query": "draft",
+      "before": "The army introduced a military",
+      "after": "to recruit soldiers.",
+      "expected": [
+        "征兵"
+      ],
+      "expectedGloss": "military service",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "draft-short",
+      "query": "draft",
+      "before": "Look at this",
+      "after": "again.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient"
+    },
+    {
+      "id": "field-physics",
+      "query": "field",
+      "before": "A magnet creates a magnetic",
+      "after": "around it.",
+      "expected": [
+        "场"
+      ],
+      "expectedGloss": "force",
+      "expectAbstain": false,
+      "category": "science"
+    },
+    {
+      "id": "field-database",
+      "query": "field",
+      "before": "Store the customer identifier in the database",
+      "after": "and index that column.",
+      "expected": [
+        "字段"
+      ],
+      "expectedGloss": "database",
+      "expectAbstain": false,
+      "category": "technology"
+    },
+    {
+      "id": "field-farm",
+      "query": "field",
+      "before": "The farmer planted wheat in the",
+      "after": "beside the barn.",
+      "expected": [
+        "田",
+        "地"
+      ],
+      "expectedGloss": "land",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "solution-chemistry",
+      "query": "solution",
+      "before": "Dissolve the salt in water to prepare a",
+      "after": "of the required concentration.",
+      "expected": [
+        "溶液"
+      ],
+      "expectedGloss": "mixture",
+      "expectAbstain": false,
+      "category": "science"
+    },
+    {
+      "id": "solution-math",
+      "query": "solution",
+      "before": "Find the",
+      "after": "of this quadratic equation.",
+      "expected": [
+        "解",
+        "答案"
+      ],
+      "expectedGloss": "mathematical problem",
+      "expectAbstain": false,
+      "category": "science"
+    },
+    {
+      "id": "interest-loan",
+      "query": "interest",
+      "before": "The borrower pays annual",
+      "after": "on the loan at a fixed percentage.",
+      "expected": [
+        "利息"
+      ],
+      "expectedGloss": "borrowing money",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "interest-curiosity",
+      "query": "interest",
+      "before": "The child showed a keen",
+      "after": "in dinosaurs and asked many questions.",
+      "expected": [
+        "兴趣",
+        "感兴趣"
+      ],
+      "expectedGloss": "attention",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "mean-math",
+      "query": "mean",
+      "before": "Add the observations and divide by their count to obtain the arithmetic",
+      "after": "of the sample.",
+      "expected": [
+        "平均"
+      ],
+      "expectedGloss": "average",
+      "expectAbstain": false,
+      "category": "candidate-gap",
+      "sourceIssue": "Arithmetic noun is absent from current exact Wiki/WordNet bilingual sense rows; ECDICT has 平均数 without aligned per-sense English gloss."
+    },
+    {
+      "id": "mean-unkind",
+      "query": "mean",
+      "before": "It was",
+      "after": "of him to mock a frightened child.",
+      "expected": [
+        "卑鄙",
+        "刻薄",
+        "恶意"
+      ],
+      "expectedGloss": "unkind",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "significant-statistics",
+      "query": "significant",
+      "before": "The result was statistically",
+      "after": "at the 0.01 level after hypothesis testing.",
+      "expected": [
+        "显著"
+      ],
+      "expectedGloss": "chance",
+      "expectAbstain": false,
+      "category": "source-quality",
+      "sourceIssue": "WordNet 02165655-a has statistical gloss but Chinese only 有意义的; ranking this sense does not produce precise 显著."
+    },
+    {
+      "id": "significant-important",
+      "query": "significant",
+      "before": "The discovery made a",
+      "after": "contribution to our understanding.",
+      "expected": [
+        "重要",
+        "重大",
+        "有意义"
+      ],
+      "expectedGloss": "important",
+      "expectAbstain": false,
+      "category": "science"
+    },
+    {
+      "id": "bank-negated-finance",
+      "query": "bank",
+      "before": "Not the financial institution accepting deposits: the muddy",
+      "after": "where the canoe landed was flooded.",
+      "expected": [
+        "岸",
+        "河边"
+      ],
+      "expectedGloss": "river",
+      "expectAbstain": false,
+      "category": "distractor",
+      "note": "Correct sense is asserted, but conservative abstention is safer than a wrong contextual promotion."
+    },
+    {
+      "id": "current-no-evidence",
+      "query": "current",
+      "before": "The word",
+      "after": "appears in the heading.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient"
+    },
+    {
+      "id": "field-no-evidence",
+      "query": "field",
+      "before": "Choose a",
+      "after": "from the list.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient"
+    }
+  ]
+}

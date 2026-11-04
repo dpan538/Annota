@@ -1,0 +1,1180 @@
+{
+  "kind": "candidate inventory only; no runtime predictions or correctness rate",
+  "databases": {
+    "en-zh": {
+      "sha256": "8904412f606996e962ea111cb1f868dccc0ef789fec5e1ede4a9b03dafd19744",
+      "bytes": 238342144,
+      "entries": 771180,
+      "with_english_definition": 160511
+    },
+    "wiktionary": {
+      "sha256": "ce7198a57990d39d797cf7df74460fee4668689dbc12116d6faabc7189128622",
+      "bytes": 87228416,
+      "senses": 61076,
+      "words": 48077,
+      "missing_gloss": 0,
+      "polysemous_words": 8229,
+      "duplicate_word_pos_rank_groups": 930,
+      "same_chinese_distinct_gloss_groups": 1488
+    },
+    "wordnet": {
+      "sha256": "b54c4ba933937200cf077a8d94637dad04d6f1e049fc70963f34fe846873e92e",
+      "bytes": 15683584,
+      "senses": 77708,
+      "words": 61340,
+      "missing_gloss": 0,
+      "polysemous_words": 8648,
+      "duplicate_word_pos_rank_groups": 0,
+      "same_chinese_distinct_gloss_groups": 546
+    }
+  },
+  "words": {
+    "bank": {
+      "en-zh": [
+        {
+          "word": "bank",
+          "translation": "n. 银行, 堤, 岸\n[医] 库",
+          "definition": "n. sloping land (especially the slope beside a body of water)\nn. a long ridge or pile\nn. an arrangement of similar objects in a row or in tiers\nn. a supply or stock held in reserve for future use (especially in emergencies)",
+          "source": "ecdict"
+        }
+      ],
+      "wiktionary": [
+        {
+          "word": "bank",
+          "pos": "n",
+          "rank": 0,
+          "synset": "wiktionary:bank",
+          "meaning": "银行",
+          "gloss": "institution"
+        },
+        {
+          "word": "bank",
+          "pos": "n",
+          "rank": 0,
+          "synset": "wiktionary:bank",
+          "meaning": "岸",
+          "gloss": "edge of river or lake"
+        },
+        {
+          "word": "bank",
+          "pos": "n",
+          "rank": 1,
+          "synset": "wiktionary:bank",
+          "meaning": "银行",
+          "gloss": "branch office"
+        }
+      ],
+      "wordnet": [
+        {
+          "word": "bank",
+          "pos": "n",
+          "rank": 0,
+          "synset": "09213565-n",
+          "meaning": "岸；河边",
+          "gloss": "sloping land (especially the slope beside a body of water); \"they pulled the canoe up on the bank\"; \"he sat on the bank of the river and watched the currents\""
+        },
+        {
+          "word": "bank",
+          "pos": "v",
+          "rank": 0,
+          "synset": "02039413-v",
+          "meaning": "倾斜飞行；带坡度转弯",
+          "gloss": "tip laterally; \"the pilot had to bank the aircraft\""
+        },
+        {
+          "word": "bank",
+          "pos": "n",
+          "rank": 1,
+          "synset": "08420278-n",
+          "meaning": "存放款金融机构；银行",
+          "gloss": "a financial institution that accepts deposits and channels the money into lending activities; \"he cashed a check at the bank\"; \"that bank holds the mortgage on my home\""
+        },
+        {
+          "word": "bank",
+          "pos": "v",
+          "rank": 2,
+          "synset": "02343374-v",
+          "meaning": "把钱存入银行",
+          "gloss": "do business with a bank or keep an account at a bank; \"Where do you bank in this town?\""
+        },
+        {
+          "word": "bank",
+          "pos": "v",
+          "rank": 3,
+          "synset": "02343252-v",
+          "meaning": "当庄家",
+          "gloss": "act as the banker in a game or in gambling"
+        },
+        {
+          "word": "bank",
+          "pos": "n",
+          "rank": 4,
+          "synset": "13368318-n",
+          "meaning": "储备金",
+          "gloss": "a supply or stock held in reserve for future use (especially in emergencies)"
+        },
+        {
+          "word": "bank",
+          "pos": "v",
+          "rank": 4,
+          "synset": "02343056-v",
+          "meaning": "经营银行业",
+          "gloss": "be in the banking business"
+        },
+        {
+          "word": "bank",
+          "pos": "n",
+          "rank": 5,
+          "synset": "13356402-n",
+          "meaning": "庄家的赌本",
+          "gloss": "the funds held by a gambling house or the dealer in some gambling games; \"he tried to break the bank at Monte Carlo\""
+        },
+        {
+          "word": "bank",
+          "pos": "v",
+          "rank": 5,
+          "synset": "02310855-v",
+          "meaning": "存款；把存入银行；把钱存入银行",
+          "gloss": "put into a bank account; \"She deposits her paycheck every month\""
+        },
+        {
+          "word": "bank",
+          "pos": "v",
+          "rank": 7,
+          "synset": "00688377-v",
+          "meaning": "依赖；依靠；信任；信赖",
+          "gloss": "have confidence or faith in; \"We can trust in God\"; \"Rely on your friends\"; \"bank on your good education\"; \"I swear by my grandmother's recipes\""
+        },
+        {
+          "word": "bank",
+          "pos": "n",
+          "rank": 8,
+          "synset": "02787772-n",
+          "meaning": "银行大厦",
+          "gloss": "a building in which the business of banking transacted; \"the bank is on the corner of Nassau and Witherspoon\""
+        }
+      ]
+    },
+    "cell": {
+      "en-zh": [
+        {
+          "word": "cell",
+          "translation": "n. 单元, 细胞, 电池\n[计] 单元",
+          "definition": "n. any small compartment\nn. (biology) the basic structural and functional unit of all organisms; they may exist as independent units of life (as in monads) or may form colonies or tissues as in higher plants and animals\nn. a device that delivers an electric current as the result of a chemical reaction\nn. a small unit serving as part of or as the nucleus of a larger political movement",
+          "source": "ecdict"
+        }
+      ],
+      "wiktionary": [
+        {
+          "word": "cell",
+          "pos": "n",
+          "rank": 0,
+          "synset": "wiktionary:cell",
+          "meaning": "电池",
+          "gloss": "component of an electrical battery"
+        },
+        {
+          "word": "cell",
+          "pos": "n",
+          "rank": 0,
+          "synset": "wiktionary:cell",
+          "meaning": "手机；大哥大",
+          "gloss": "informal: a cellular telephone — see also mobile phone"
+        },
+        {
+          "word": "cell",
+          "pos": "n",
+          "rank": 1,
+          "synset": "wiktionary:cell",
+          "meaning": "牢房；独房；囚室",
+          "gloss": "room in a prison for containing inmates"
+        },
+        {
+          "word": "cell",
+          "pos": "n",
+          "rank": 2,
+          "synset": "wiktionary:cell",
+          "meaning": "细胞",
+          "gloss": "basic unit of a living organism"
+        },
+        {
+          "word": "cell",
+          "pos": "n",
+          "rank": 3,
+          "synset": "wiktionary:cell",
+          "meaning": "支部；部",
+          "gloss": "small group of people forming part of a larger organization"
+        }
+      ],
+      "wordnet": [
+        {
+          "word": "cell",
+          "pos": "n",
+          "rank": 1,
+          "synset": "00006484-n",
+          "meaning": "细胞",
+          "gloss": "(biology) the basic structural and functional unit of all organisms; they may exist as independent units of life (as in monads) or may form colonies or tissues as in higher plants and animals"
+        },
+        {
+          "word": "cell",
+          "pos": "n",
+          "rank": 2,
+          "synset": "02991048-n",
+          "meaning": "电池",
+          "gloss": "a device that delivers an electric current as the result of a chemical reaction"
+        },
+        {
+          "word": "cell",
+          "pos": "n",
+          "rank": 4,
+          "synset": "02992529-n",
+          "meaning": "大哥大；手提电话；手机；移动电话；蜂窝式移动电话",
+          "gloss": "a hand-held mobile radiotelephone for use in an area divided into small sections, each with its own short-range transmitter/receiver"
+        },
+        {
+          "word": "cell",
+          "pos": "n",
+          "rank": 5,
+          "synset": "02991555-n",
+          "meaning": "和尚或尼姑的生活的小房间",
+          "gloss": "small room in which a monk or nun lives"
+        },
+        {
+          "word": "cell",
+          "pos": "n",
+          "rank": 6,
+          "synset": "02991302-n",
+          "meaning": "牢房",
+          "gloss": "a room where a prisoner is kept"
+        }
+      ]
+    },
+    "charge": {
+      "en-zh": [
+        {
+          "word": "charge",
+          "translation": "n. 指控, 费用, 冲锋, 电荷, 炸药, 主管, 被托管人, 命令\nvt. 控诉, 加罪于, 使充满, 使充电, 使承担\nvi. 冲锋, 要价, 收费",
+          "definition": "n. an impetuous rush toward someone or something\nn. (criminal law) a pleading describing some wrong or offense\nn. the price charged for some article or service\nn. the quantity of unbalanced electricity in a body (either positive or negative) and construed as an excess or deficiency of electrons",
+          "source": "ecdict"
+        }
+      ],
+      "wiktionary": [
+        {
+          "word": "charge",
+          "pos": "n",
+          "rank": 0,
+          "synset": "wiktionary:charge",
+          "meaning": "冲打；冲锋",
+          "gloss": "military: ground attack"
+        },
+        {
+          "word": "charge",
+          "pos": "v",
+          "rank": 0,
+          "synset": "wiktionary:charge",
+          "meaning": "收费",
+          "gloss": "to demand, require payment"
+        },
+        {
+          "word": "charge",
+          "pos": "n",
+          "rank": 1,
+          "synset": "wiktionary:charge",
+          "meaning": "指控；起诉",
+          "gloss": "accusation"
+        },
+        {
+          "word": "charge",
+          "pos": "v",
+          "rank": 1,
+          "synset": "wiktionary:charge",
+          "meaning": "控告",
+          "gloss": "criminal law, law enforcement: to formally accuse of a crime"
+        },
+        {
+          "word": "charge",
+          "pos": "n",
+          "rank": 2,
+          "synset": "wiktionary:charge",
+          "meaning": "费用；收费",
+          "gloss": "amount of money levied for a service"
+        },
+        {
+          "word": "charge",
+          "pos": "v",
+          "rank": 2,
+          "synset": "wiktionary:charge",
+          "meaning": "充电",
+          "gloss": "to cause to take on an electric charge"
+        },
+        {
+          "word": "charge",
+          "pos": "n",
+          "rank": 3,
+          "synset": "wiktionary:charge",
+          "meaning": "冲",
+          "gloss": "forceful forward movement"
+        },
+        {
+          "word": "charge",
+          "pos": "v",
+          "rank": 3,
+          "synset": "wiktionary:charge",
+          "meaning": "冲锋；攻击",
+          "gloss": "military: to attack by moving forward quickly"
+        },
+        {
+          "word": "charge",
+          "pos": "n",
+          "rank": 4,
+          "synset": "wiktionary:charge",
+          "meaning": "电荷",
+          "gloss": "electric charge"
+        },
+        {
+          "word": "charge",
+          "pos": "n",
+          "rank": 5,
+          "synset": "wiktionary:charge",
+          "meaning": "照顾范围；管理范围",
+          "gloss": "scope of responsibility"
+        },
+        {
+          "word": "charge",
+          "pos": "n",
+          "rank": 6,
+          "synset": "wiktionary:charge",
+          "meaning": "托付",
+          "gloss": "someone or something entrusted to one's care"
+        },
+        {
+          "word": "charge",
+          "pos": "n",
+          "rank": 7,
+          "synset": "wiktionary:charge",
+          "meaning": "负载",
+          "gloss": "load or burden"
+        },
+        {
+          "word": "charge",
+          "pos": "n",
+          "rank": 8,
+          "synset": "wiktionary:charge",
+          "meaning": "指示",
+          "gloss": "instruction"
+        },
+        {
+          "word": "charge",
+          "pos": "n",
+          "rank": 9,
+          "synset": "wiktionary:charge",
+          "meaning": "带球撞人",
+          "gloss": "basketball: offensive foul"
+        },
+        {
+          "word": "charge",
+          "pos": "n",
+          "rank": 10,
+          "synset": "wiktionary:charge",
+          "meaning": "弹药",
+          "gloss": "measured amount of powder and/or shot"
+        },
+        {
+          "word": "charge",
+          "pos": "n",
+          "rank": 11,
+          "synset": "wiktionary:charge",
+          "meaning": "纹章",
+          "gloss": "heraldry: image displayed on an escutcheon"
+        }
+      ],
+      "wordnet": [
+        {
+          "word": "charge",
+          "pos": "n",
+          "rank": 2,
+          "synset": "13306870-n",
+          "meaning": "费用",
+          "gloss": "the price charged for some article or service; \"the admission charge\""
+        },
+        {
+          "word": "charge",
+          "pos": "v",
+          "rank": 2,
+          "synset": "02320374-v",
+          "meaning": "收费；要求支付",
+          "gloss": "demand payment; \"Will I get charged for this service?\"; \"We were billed for 4 nights in the hotel, although we stayed only 3 nights\""
+        },
+        {
+          "word": "charge",
+          "pos": "n",
+          "rank": 3,
+          "synset": "11435028-n",
+          "meaning": "电荷",
+          "gloss": "the quantity of unbalanced electricity in a body (either positive or negative) and construed as an excess or deficiency of electrons; \"the battery needed a fresh charge\""
+        },
+        {
+          "word": "charge",
+          "pos": "v",
+          "rank": 3,
+          "synset": "02055267-v",
+          "meaning": "急速前进；狂奔；飞奔；飞跑",
+          "gloss": "move quickly and violently; \"The car tore down the street\"; \"He came charging into my office\""
+        },
+        {
+          "word": "charge",
+          "pos": "v",
+          "rank": 4,
+          "synset": "02475922-v",
+          "meaning": "分派；委派；指派",
+          "gloss": "assign a duty, responsibility or obligation to; \"He was appointed deputy manager\"; \"She was charged with supervising the creation of a concordance\""
+        },
+        {
+          "word": "charge",
+          "pos": "v",
+          "rank": 6,
+          "synset": "00843959-v",
+          "meaning": "指控",
+          "gloss": "make an accusatory claim; \"The defense attorney charged that the jurors were biased\""
+        },
+        {
+          "word": "charge",
+          "pos": "v",
+          "rank": 8,
+          "synset": "02321046-v",
+          "meaning": "收费",
+          "gloss": "enter a certain amount as a charge; \"he charged me $15\""
+        },
+        {
+          "word": "charge",
+          "pos": "n",
+          "rank": 10,
+          "synset": "07190941-n",
+          "meaning": "还款要求",
+          "gloss": "request for payment of a debt; \"they submitted their charges at the end of each month\""
+        },
+        {
+          "word": "charge",
+          "pos": "v",
+          "rank": 10,
+          "synset": "02347637-v",
+          "meaning": "委托；寄存；托管",
+          "gloss": "give over to another for care or safekeeping; \"consign your baggage\""
+        },
+        {
+          "word": "charge",
+          "pos": "v",
+          "rank": 11,
+          "synset": "02317289-v",
+          "meaning": "信用卡支付；赊购",
+          "gloss": "pay with a credit card; pay with plastic money; postpone payment by recording a purchase as a debt; \"Will you pay cash or charge the purchase?\""
+        },
+        {
+          "word": "charge",
+          "pos": "n",
+          "rank": 12,
+          "synset": "06730780-n",
+          "meaning": "指控；指责；控告；控诉；谴责",
+          "gloss": "an assertion that someone is guilty of a fault or offence; \"the newspaper published charges that Jones was guilty of drunken driving\""
+        },
+        {
+          "word": "charge",
+          "pos": "n",
+          "rank": 13,
+          "synset": "03008565-n",
+          "meaning": "纹章模型",
+          "gloss": "heraldry consisting of a design or image depicted on a shield"
+        },
+        {
+          "word": "charge",
+          "pos": "v",
+          "rank": 13,
+          "synset": "01762528-v",
+          "meaning": "使骚动；激动",
+          "gloss": "cause to be agitated, excited, or roused; \"The speaker charged up the crowd with his inflammatory remarks\""
+        },
+        {
+          "word": "charge",
+          "pos": "n",
+          "rank": 14,
+          "synset": "03008275-n",
+          "meaning": "爆裂药",
+          "gloss": "a quantity of explosive to be set off at one time; \"this cartridge has a powder charge of 50 grains\""
+        },
+        {
+          "word": "charge",
+          "pos": "v",
+          "rank": 23,
+          "synset": "00517847-v",
+          "meaning": "充电",
+          "gloss": "energize a battery by passing a current through it in the direction opposite to discharge; \"I need to charge my car battery\""
+        }
+      ]
+    },
+    "culture": {
+      "en-zh": [
+        {
+          "word": "culture",
+          "translation": "n. 文化, 修养, 耕种\nvt. 耕种, 培养",
+          "definition": "n. a particular society at a particular time and place\nn. the tastes in art and manners that are favored by a social group\nn. (biology) the growing of microorganisms in a nutrient medium (such as gelatin or agar)\nn. the attitudes and behavior that are characteristic of a particular social group or organization",
+          "source": "ecdict"
+        }
+      ],
+      "wiktionary": [
+        {
+          "word": "culture",
+          "pos": "n",
+          "rank": 0,
+          "synset": "wiktionary:culture",
+          "meaning": "文化",
+          "gloss": "arts, customs and habits"
+        }
+      ],
+      "wordnet": [
+        {
+          "word": "culture",
+          "pos": "n",
+          "rank": 0,
+          "synset": "08287844-n",
+          "meaning": "教化；文明",
+          "gloss": "a particular society at a particular time and place; \"early Mayan civilization\""
+        },
+        {
+          "word": "culture",
+          "pos": "n",
+          "rank": 3,
+          "synset": "00920510-n",
+          "meaning": "培养；培植",
+          "gloss": "(biology) the growing of microorganisms in a nutrient medium (such as gelatin or agar); \"the culture of cells in a Petri dish\""
+        },
+        {
+          "word": "culture",
+          "pos": "n",
+          "rank": 4,
+          "synset": "14459824-n",
+          "meaning": "培养；栽培；精致；近乎完美",
+          "gloss": "a highly developed state of perfection; having a flawless or impeccable quality; \"they performed with great polish\"; \"I admired the exquisite refinement of his prose\"; \"almost an inspiration which gives to all work that finish which is almost art\"--Joseph Conrad"
+        },
+        {
+          "word": "culture",
+          "pos": "n",
+          "rank": 5,
+          "synset": "06194409-n",
+          "meaning": "文化",
+          "gloss": "the attitudes and behavior that are characteristic of a particular social group or organization; \"the developing drug culture\"; \"the reason that the agency is doomed to inaction has something to do with the FBI culture\""
+        }
+      ]
+    },
+    "current": {
+      "en-zh": [
+        {
+          "word": "current",
+          "translation": "n. 涌流, 趋势, 流\na. 流通的, 现在的, 当前的, 流行的\n[计] 当前的",
+          "definition": "n. a flow of electricity through a conductor\nn. a steady flow of a fluid (usually from natural causes)\na. occurring in or belonging to the present time",
+          "source": "ecdict"
+        }
+      ],
+      "wiktionary": [
+        {
+          "word": "current",
+          "pos": "a",
+          "rank": 0,
+          "synset": "wiktionary:current",
+          "meaning": "活期；通用；现在的",
+          "gloss": "existing or occurring at the moment"
+        },
+        {
+          "word": "current",
+          "pos": "n",
+          "rank": 0,
+          "synset": "wiktionary:current",
+          "meaning": "电流",
+          "gloss": "time rate of flow of electric charge"
+        },
+        {
+          "word": "current",
+          "pos": "n",
+          "rank": 1,
+          "synset": "wiktionary:current",
+          "meaning": "水流；流",
+          "gloss": "part of a fluid that moves continuously in a certain direction — see also ocean current"
+        }
+      ],
+      "wordnet": [
+        {
+          "word": "current",
+          "pos": "a",
+          "rank": 0,
+          "synset": "00666058-a",
+          "meaning": "当前的；最近的",
+          "gloss": "occurring in or belonging to the present time; \"current events\"; \"the current topic\"; \"current negotiations\"; \"current psychoanalytic theories\"; \"the ship's current position\""
+        },
+        {
+          "word": "current",
+          "pos": "n",
+          "rank": 0,
+          "synset": "11443532-n",
+          "meaning": "电流",
+          "gloss": "a flow of electricity through a conductor; \"the current was measured in amperes\""
+        }
+      ]
+    },
+    "draft": {
+      "en-zh": [
+        {
+          "word": "draft",
+          "translation": "n. 气流, 草稿, 汇票, 草案\nvt. 起草, 征兵\n[计] 草稿",
+          "definition": "n. a document ordering the payment of money; drawn by one person or bank on another\nn. a current of air (usually coming into a chimney or room or vehicle)\nn. a preliminary sketch of a design or picture\nn. a serving of drink (usually alcoholic) drawn from a keg",
+          "source": "ecdict"
+        }
+      ],
+      "wiktionary": [
+        {
+          "word": "draft",
+          "pos": "n",
+          "rank": 0,
+          "synset": "wiktionary:draft",
+          "meaning": "一口",
+          "gloss": "amount of liquid that is drunk in one swallow"
+        },
+        {
+          "word": "draft",
+          "pos": "n",
+          "rank": 1,
+          "synset": "wiktionary:draft",
+          "meaning": "生啤",
+          "gloss": "beer drawn from a cask or keg"
+        },
+        {
+          "word": "draft",
+          "pos": "n",
+          "rank": 2,
+          "synset": "wiktionary:draft",
+          "meaning": "草稿",
+          "gloss": "early version of a written work"
+        },
+        {
+          "word": "draft",
+          "pos": "n",
+          "rank": 3,
+          "synset": "wiktionary:draft",
+          "meaning": "草案",
+          "gloss": "preliminary sketch or outline"
+        },
+        {
+          "word": "draft",
+          "pos": "n",
+          "rank": 4,
+          "synset": "wiktionary:draft",
+          "meaning": "征兵",
+          "gloss": "conscription"
+        },
+        {
+          "word": "draft",
+          "pos": "n",
+          "rank": 5,
+          "synset": "wiktionary:draft",
+          "meaning": "选秀",
+          "gloss": "system of assigning rookie players to professional sports teams"
+        }
+      ],
+      "wordnet": [
+        {
+          "word": "draft",
+          "pos": "n",
+          "rank": 0,
+          "synset": "13377268-n",
+          "meaning": "汇票",
+          "gloss": "a document ordering the payment of money; drawn by one person or bank on another"
+        },
+        {
+          "word": "draft",
+          "pos": "n",
+          "rank": 1,
+          "synset": "11522448-n",
+          "meaning": "气流",
+          "gloss": "a current of air (usually coming into a chimney or room or vehicle)"
+        },
+        {
+          "word": "draft",
+          "pos": "n",
+          "rank": 2,
+          "synset": "03230785-n",
+          "meaning": "略图；草图；设计图",
+          "gloss": "a preliminary sketch of a design or picture"
+        },
+        {
+          "word": "draft",
+          "pos": "n",
+          "rank": 4,
+          "synset": "06390962-n",
+          "meaning": "草稿",
+          "gloss": "any of the various versions in the development of a written work; \"a preliminary draft\"; \"the final draft of the constitution\""
+        },
+        {
+          "word": "draft",
+          "pos": "n",
+          "rank": 8,
+          "synset": "01157850-n",
+          "meaning": "应征入伍；征兵",
+          "gloss": "compulsory military service"
+        }
+      ]
+    },
+    "field": {
+      "en-zh": [
+        {
+          "word": "field",
+          "translation": "n. 领域, 田地, 场地, 战场, 场, 域\nvt. 使...晒在场上, 使上场\na. 田间的, 野生的, 野外的, 田赛的\n[计] 域, 字段",
+          "definition": "n. a piece of land cleared of trees and usually enclosed\nn. somewhere (away from a studio or office or library or laboratory) where practical work is done or data is collected\nn. the space around a radiating body within which its electromagnetic oscillations can exert force on another similar body not in contact with it\nn. a particular kind of commercial enterprise",
+          "source": "ecdict"
+        }
+      ],
+      "wiktionary": [
+        {
+          "word": "field",
+          "pos": "n",
+          "rank": 0,
+          "synset": "wiktionary:field",
+          "meaning": "田间；野外；野；田",
+          "gloss": "land area free of woodland, cities, and towns; open country"
+        },
+        {
+          "word": "field",
+          "pos": "n",
+          "rank": 1,
+          "synset": "wiktionary:field",
+          "meaning": "田；田野",
+          "gloss": "wide, open space used to grow crops or to hold farm animals"
+        },
+        {
+          "word": "field",
+          "pos": "n",
+          "rank": 2,
+          "synset": "wiktionary:field",
+          "meaning": "场",
+          "gloss": "physics: region affected by a particular force"
+        },
+        {
+          "word": "field",
+          "pos": "n",
+          "rank": 3,
+          "synset": "wiktionary:field",
+          "meaning": "战场",
+          "gloss": "place where a battle is fought"
+        },
+        {
+          "word": "field",
+          "pos": "n",
+          "rank": 4,
+          "synset": "wiktionary:field",
+          "meaning": "领域",
+          "gloss": "course of study or domain of knowledge or practice"
+        },
+        {
+          "word": "field",
+          "pos": "n",
+          "rank": 5,
+          "synset": "wiktionary:field",
+          "meaning": "域",
+          "gloss": "mathematics (algebra): a commutative ring satisfying the field axioms"
+        },
+        {
+          "word": "field",
+          "pos": "n",
+          "rank": 6,
+          "synset": "wiktionary:field",
+          "meaning": "字段；信息组",
+          "gloss": "computing: area of memory or storage reserved for a particular value"
+        }
+      ],
+      "wordnet": [
+        {
+          "word": "field",
+          "pos": "n",
+          "rank": 0,
+          "synset": "08569998-n",
+          "meaning": "田；田野；野外",
+          "gloss": "a piece of land cleared of trees and usually enclosed; \"he planted a field of wheat\""
+        },
+        {
+          "word": "field",
+          "pos": "n",
+          "rank": 1,
+          "synset": "08506641-n",
+          "meaning": "战场；沙场",
+          "gloss": "a region where a battle is being (or has been) fought; \"they made a tour of Civil War battlefields\""
+        },
+        {
+          "word": "field",
+          "pos": "n",
+          "rank": 3,
+          "synset": "05996646-n",
+          "meaning": "主题；学科；领域；题目",
+          "gloss": "a branch of knowledge; \"in what discipline is his doctorate?\"; \"teachers should be well trained in their subject\"; \"anthropology is the study of human beings\""
+        },
+        {
+          "word": "field",
+          "pos": "n",
+          "rank": 6,
+          "synset": "14514039-n",
+          "meaning": "场；场地；田地；范围；领域",
+          "gloss": "a particular environment or walk of life; \"his social sphere is limited\"; \"it was a closed area of employment\"; \"he's out of my orbit\""
+        },
+        {
+          "word": "field",
+          "pos": "n",
+          "rank": 7,
+          "synset": "08570758-n",
+          "meaning": "运动场",
+          "gloss": "a piece of land prepared for playing a game; \"the home crowd cheered when Princeton took the field\""
+        },
+        {
+          "word": "field",
+          "pos": "n",
+          "rank": 16,
+          "synset": "02687992-n",
+          "meaning": "机场；飞机场",
+          "gloss": "a place where planes take off and land"
+        }
+      ]
+    },
+    "interest": {
+      "en-zh": [
+        {
+          "word": "interest",
+          "translation": "n. 兴趣, 嗜好, 利息, 利益, 爱好, 趣味, 势力\nvt. 使感兴趣, 与...有关系",
+          "definition": "n. a sense of concern with and curiosity about someone or something\nn. the power of attracting or holding one's attention (because it is unusual or exciting etc.)\nn. a fixed charge for borrowing money; usually a percentage of the amount borrowed\nn. (law) a right or legal share of something; a financial involvement with something",
+          "source": "ecdict"
+        }
+      ],
+      "wiktionary": [
+        {
+          "word": "interest",
+          "pos": "n",
+          "rank": 0,
+          "synset": "wiktionary:interest",
+          "meaning": "兴趣",
+          "gloss": "great attention and concern from someone"
+        },
+        {
+          "word": "interest",
+          "pos": "v",
+          "rank": 0,
+          "synset": "wiktionary:interest",
+          "meaning": "使……感興趣 /使……感兴趣",
+          "gloss": "to attract attention or concern"
+        },
+        {
+          "word": "interest",
+          "pos": "n",
+          "rank": 1,
+          "synset": "wiktionary:interest",
+          "meaning": "利息",
+          "gloss": "finance: price of credit"
+        },
+        {
+          "word": "interest",
+          "pos": "n",
+          "rank": 2,
+          "synset": "wiktionary:interest",
+          "meaning": "利益",
+          "gloss": "involvement in or link with financial, business, or other undertaking"
+        }
+      ],
+      "wordnet": [
+        {
+          "word": "interest",
+          "pos": "v",
+          "rank": 1,
+          "synset": "02678438-v",
+          "meaning": "关心；感兴趣；挂念",
+          "gloss": "be on the mind of; \"I worry about the second Germanic consonant shift\""
+        },
+        {
+          "word": "interest",
+          "pos": "v",
+          "rank": 2,
+          "synset": "02678663-v",
+          "meaning": "要紧；重要",
+          "gloss": "be of importance or consequence; \"This matters to me!\""
+        },
+        {
+          "word": "interest",
+          "pos": "n",
+          "rank": 3,
+          "synset": "13318584-n",
+          "meaning": "利息",
+          "gloss": "a fixed charge for borrowing money; usually a percentage of the amount borrowed; \"how much interest do you pay on your mortgage?\""
+        },
+        {
+          "word": "interest",
+          "pos": "n",
+          "rank": 4,
+          "synset": "13286801-n",
+          "meaning": "利润；权益；股份",
+          "gloss": "(law) a right or legal share of something; a financial involvement with something; \"they have interests all over the world\"; \"a stake in the company's future\""
+        },
+        {
+          "word": "interest",
+          "pos": "n",
+          "rank": 6,
+          "synset": "00431552-n",
+          "meaning": "娱乐；消遣",
+          "gloss": "a diversion that occupies one's time and thoughts (usually pleasantly); \"sailing is her favorite pastime\"; \"his main pastime is gambling\"; \"he counts reading among his interests\"; \"they criticized the boy for his limited pursuits\""
+        }
+      ]
+    },
+    "mean": {
+      "en-zh": [
+        {
+          "word": "mean",
+          "translation": "a. 低劣的, 卑贱的, 简陋的, 吝啬的, 惭愧的, 平均的, 中间的, 普通的\nvt. 意谓, 想要, 意欲, 预定\nvi. 用意, 有意义\nn. 平均数, 中间, 中庸",
+          "definition": "n. an average of n numbers computed by adding some function of the numbers and dividing by some function of n\nv. mean or intend to express or convey\nv. denote or connote\nv. have a specified degree of importance",
+          "source": "ecdict"
+        }
+      ],
+      "wiktionary": [
+        {
+          "word": "mean",
+          "pos": "a",
+          "rank": 0,
+          "synset": "wiktionary:mean",
+          "meaning": "卑鄙的",
+          "gloss": "low-minded; acting without consideration of others"
+        },
+        {
+          "word": "mean",
+          "pos": "v",
+          "rank": 0,
+          "synset": "wiktionary:mean",
+          "meaning": "意味；是……的意思",
+          "gloss": "to convey, indicate"
+        },
+        {
+          "word": "mean",
+          "pos": "v",
+          "rank": 1,
+          "synset": "wiktionary:mean",
+          "meaning": "……的意思是……",
+          "gloss": "of a word: to signify"
+        }
+      ],
+      "wordnet": [
+        {
+          "word": "mean",
+          "pos": "v",
+          "rank": 1,
+          "synset": "02635189-v",
+          "meaning": "意味着；意思是；暗示；蕴涵；衍推",
+          "gloss": "have as a logical consequence; \"The water shortage means that we have to stop taking long showers\""
+        },
+        {
+          "word": "mean",
+          "pos": "v",
+          "rank": 2,
+          "synset": "00931852-v",
+          "meaning": "意味着；意思是；意指",
+          "gloss": "denote or connote; \"`maison' means `house' in French\"; \"An example sentence would show what this word means\""
+        },
+        {
+          "word": "mean",
+          "pos": "a",
+          "rank": 3,
+          "synset": "02227663-a",
+          "meaning": "优秀的；出色的；有效的；灵巧的；熟练的；绝妙的",
+          "gloss": "excellent; \"famous for a mean backhand\""
+        },
+        {
+          "word": "mean",
+          "pos": "a",
+          "rank": 4,
+          "synset": "02025718-a",
+          "meaning": "似乞丐的；赤贫如洗的；非常穷的",
+          "gloss": "marked by poverty befitting a beggar; \"a beggarly existence in the slums\"; \"a mean hut\""
+        },
+        {
+          "word": "mean",
+          "pos": "v",
+          "rank": 4,
+          "synset": "02742482-v",
+          "meaning": "意味；意味着",
+          "gloss": "have a specified degree of importance; \"My ex-husband means nothing to me\"; \"Happiness means everything\""
+        }
+      ]
+    },
+    "measured": {
+      "en-zh": [
+        {
+          "word": "measured",
+          "translation": "a. 整齐的, 慎重的, 基于标准的",
+          "definition": "s. the rhythmic arrangement of syllables",
+          "source": "ecdict"
+        }
+      ],
+      "wiktionary": [],
+      "wordnet": [
+        {
+          "word": "measured",
+          "pos": "a",
+          "rank": 0,
+          "synset": "02931947-a",
+          "meaning": "定量的",
+          "gloss": "having notes of fixed rhythmic value"
+        },
+        {
+          "word": "measured",
+          "pos": "a",
+          "rank": 1,
+          "synset": "02020310-a",
+          "meaning": "有韵律的；格律的；韵律的",
+          "gloss": "the rhythmic arrangement of syllables"
+        }
+      ]
+    },
+    "related": {
+      "en-zh": [
+        {
+          "word": "related",
+          "translation": "a. 讲述的, 叙述的；有关系的, 有关联的",
+          "definition": "a. being connected either logically or causally or by shared characteristics\na. connected by kinship, common origin, or marriage",
+          "source": "ecdict"
+        }
+      ],
+      "wiktionary": [
+        {
+          "word": "related",
+          "pos": "a",
+          "rank": 0,
+          "synset": "wiktionary:related",
+          "meaning": "有关",
+          "gloss": "standing in relation or connection"
+        }
+      ],
+      "wordnet": [
+        {
+          "word": "related",
+          "pos": "a",
+          "rank": 0,
+          "synset": "01972820-a",
+          "meaning": "有关系的；有关联的",
+          "gloss": "being connected either logically or causally or by shared characteristics ; \"painting and the related arts\"; \"school-related activities\"; \"related to micelle formation is the...ability of detergent actives to congregate at oil-water interfaces\""
+        },
+        {
+          "word": "related",
+          "pos": "a",
+          "rank": 1,
+          "synset": "01971237-a",
+          "meaning": "有亲缘关系的",
+          "gloss": "connected by kinship, common origin, or marriage"
+        }
+      ]
+    },
+    "scaling": {
+      "en-zh": [
+        {
+          "word": "scaling",
+          "translation": "n. 鱼鳞, 鳞片排列, 去鳞, 鳞片剥落, 攀登进攻, 按比例测量, 按比例缩放\n[计] 缩放比例",
+          "definition": "n. the act of arranging in a graduated series\nn. act of measuring or arranging or adjusting according to a scale\nn. ascent by or as if by a ladder",
+          "source": "ecdict"
+        }
+      ],
+      "wiktionary": [],
+      "wordnet": []
+    },
+    "significant": {
+      "en-zh": [
+        {
+          "word": "significant",
+          "translation": "a. 重要的, 有效的, 有含义的, 暗示的, 值得注意的",
+          "definition": "a. important in effect or meaning\ns. fairly large\na. too closely correlated to be attributed to chance and therefore indicating a systematic relation",
+          "source": "ecdict"
+        }
+      ],
+      "wiktionary": [
+        {
+          "word": "significant",
+          "pos": "a",
+          "rank": 0,
+          "synset": "wiktionary:significant",
+          "meaning": "重要；有意义",
+          "gloss": "having noticeable effect"
+        }
+      ],
+      "wordnet": [
+        {
+          "word": "significant",
+          "pos": "a",
+          "rank": 0,
+          "synset": "02161432-a",
+          "meaning": "值得注意的；有意义的；重大的；重要的",
+          "gloss": "important in effect or meaning; \"a significant change in tax laws\"; \"a significant change in the Constitution\"; \"a significant contribution\"; \"significant details\"; \"statistically significant\""
+        },
+        {
+          "word": "significant",
+          "pos": "a",
+          "rank": 2,
+          "synset": "02165655-a",
+          "meaning": "有意义的",
+          "gloss": "too closely correlated to be attributed to chance and therefore indicating a systematic relation; \"the interaction effect is significant at the .01 level\"; \"no significant difference was found\""
+        }
+      ]
+    },
+    "solution": {
+      "en-zh": [
+        {
+          "word": "solution",
+          "translation": "n. 解决, 解答, 溶液\n[化] 溶液",
+          "definition": "n. a homogeneous mixture of two or more substances; frequently (but not necessarily) a liquid solution\nn. a statement that solves a problem or explains how to solve the problem\nn. a method for solving a problem\nn. the set of values that give a true statement when substituted into an equation",
+          "source": "ecdict"
+        }
+      ],
+      "wiktionary": [
+        {
+          "word": "solution",
+          "pos": "n",
+          "rank": 0,
+          "synset": "wiktionary:solution",
+          "meaning": "溶液",
+          "gloss": "liquid mixture"
+        },
+        {
+          "word": "solution",
+          "pos": "n",
+          "rank": 1,
+          "synset": "wiktionary:solution",
+          "meaning": "解；解决",
+          "gloss": "an act, plan or other means, used or proposed, to solve a problem."
+        },
+        {
+          "word": "solution",
+          "pos": "n",
+          "rank": 2,
+          "synset": "wiktionary:solution",
+          "meaning": "解答；答案；方法",
+          "gloss": "answer to a problem (mathematics)"
+        }
+      ],
+      "wordnet": [
+        {
+          "word": "solution",
+          "pos": "n",
+          "rank": 0,
+          "synset": "14589223-n",
+          "meaning": "溶体；溶液",
+          "gloss": "a homogeneous mixture of two or more substances; frequently (but not necessarily) a liquid solution; \"he used a solution of peroxide and water\""
+        },
+        {
+          "word": "solution",
+          "pos": "n",
+          "rank": 4,
+          "synset": "00190783-n",
+          "meaning": "解答",
+          "gloss": "the successful action of solving a problem; \"the solution took three hours\""
+        }
+      ]
+    }
+  },
+  "case_count": 36,
+  "abstention_case_count": 4
+}

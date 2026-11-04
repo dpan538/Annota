@@ -1,0 +1,29 @@
+
+io.github.dpan538.annota.SenseRankerTest:..................
+io.github.dpan538.annota.DictionarySenseIntegrationTest:......
+io.github.dpan538.annota.DictionaryContextTest:....
+Error in scientificAndOrdinaryUsesStaySeparate(io.github.dpan538.annota.DictionaryContextTest):
+org.junit.ComparisonFailure: expected:<电池[单元]> but was:<电池[组电池]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at io.github.dpan538.annota.DictionaryContextTest.scientificAndOrdinaryUsesStaySeparate(DictionaryContextTest.kt:161)
+..........
+io.github.dpan538.annota.DictionaryCoverageTest:.
+io.github.dpan538.annota.DictionaryContextUiTest:.
+io.github.dpan538.annota.OfflineDictionaryTest:....
+io.github.dpan538.annota.OfflineLanguageTest:....
+io.github.dpan538.annota.DictionaryRetrievalTest:........
+io.github.dpan538.annota.TranslationInputTest:....
+
+Time: 62.096
+There was 1 failure:
+1) scientificAndOrdinaryUsesStaySeparate(io.github.dpan538.annota.DictionaryContextTest)
+org.junit.ComparisonFailure: expected:<电池[单元]> but was:<电池[组电池]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at io.github.dpan538.annota.DictionaryContextTest.scientificAndOrdinaryUsesStaySeparate(DictionaryContextTest.kt:161)
+
+FAILURES!!!
+Tests run: 61,  Failures: 1
+
+

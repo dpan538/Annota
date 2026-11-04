@@ -1,0 +1,31 @@
+
+io.github.dpan538.annota.SenseRankerTest:.............
+io.github.dpan538.annota.DictionarySenseIntegrationTest:.....
+io.github.dpan538.annota.DictionaryContextTest:.....
+Error in indexedSensesAndInflectionsWorkAcrossSubjectsWithoutDocumentSpecificRules(io.github.dpan538.annota.DictionaryContextTest):
+java.lang.AssertionError
+	at org.junit.Assert.fail(Assert.java:87)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertTrue(Assert.java:53)
+	at io.github.dpan538.annota.DictionaryContextTest.indexedSensesAndInflectionsWorkAcrossSubjectsWithoutDocumentSpecificRules(DictionaryContextTest.kt:28)
+.........
+io.github.dpan538.annota.DictionaryCoverageTest:.
+io.github.dpan538.annota.DictionaryContextUiTest:.
+io.github.dpan538.annota.OfflineDictionaryTest:....
+io.github.dpan538.annota.OfflineLanguageTest:....
+io.github.dpan538.annota.DictionaryRetrievalTest:........
+io.github.dpan538.annota.TranslationInputTest:....
+
+Time: 72.638
+There was 1 failure:
+1) indexedSensesAndInflectionsWorkAcrossSubjectsWithoutDocumentSpecificRules(io.github.dpan538.annota.DictionaryContextTest)
+java.lang.AssertionError
+	at org.junit.Assert.fail(Assert.java:87)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertTrue(Assert.java:53)
+	at io.github.dpan538.annota.DictionaryContextTest.indexedSensesAndInflectionsWorkAcrossSubjectsWithoutDocumentSpecificRules(DictionaryContextTest.kt:28)
+
+FAILURES!!!
+Tests run: 55,  Failures: 1
+
+

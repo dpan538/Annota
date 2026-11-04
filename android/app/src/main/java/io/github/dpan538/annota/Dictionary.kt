@@ -39,9 +39,30 @@ class Dictionary(private val context: Context) {
         text: String,
         lemmas: List<String>,
         context: LookupContext?,
+        isActive: () -> Boolean,
     ): List<WordNetDictionary.Sense> {
         val attested = (wiktionary.sourceLemmas(text) + lemmas).distinct()
-        return wiktionary.lookup(text, attested, context) + wordnet.lookup(text, attested, context)
+        val candidates =
+            wiktionary.lookup(text, attested, null) + wordnet.lookup(text, attested, null)
+        return SemanticLookup.get(this.context)
+            .rerank(text, context, wordnet.rankSenses(text, context, candidates), isActive)
+    }
+
+    private fun englishSenses(
+        text: String,
+        entries: List<Entry>,
+        lookup: LookupContext?,
+        isActive: () -> Boolean,
+    ): List<WordNetDictionary.Sense> {
+        val prefix = Regex("^[a-z]{1,6}\\.\\s+")
+        val senses =
+            entries.mapIndexed { i, entry ->
+                val label = prefix.find(entry.meaning)?.value?.trim().orEmpty()
+                val gloss = entry.meaning.removePrefix(label).trim()
+                WordNetDictionary.Sense(entry.word, label, gloss, gloss, i, source = entry.source)
+            }
+        return SemanticLookup.get(context)
+            .rerank(text, lookup, wordnet.rankSenses(text, lookup, senses), isActive)
     }
 
     private val readings by lazy { DictionaryReadings(context) }
@@ -119,7 +140,7 @@ class Dictionary(private val context: Context) {
             )
         }
         val result = query(text, withSuggestions = false)
-        val lexical = lexical(text, result.entries.map { it.word }, context)
+        val lexical = lexical(text, result.entries.map { it.word }, context, isActive)
         val active = context?.takeIf { it.matches(text) }
         val phrase = if (active == null || text.length > MAX_QUERY_LENGTH) null else phrase(active)
         val base =
@@ -145,7 +166,16 @@ class Dictionary(private val context: Context) {
                 .use { englishEntries(text, it) }
         if (english.isNotEmpty()) {
             val fallback = Result(english, emptyList())
-            return fallback.copy(reading = readings.present(text, fallback, active, null))
+            return fallback.copy(
+                reading =
+                    readings.present(
+                        text,
+                        fallback,
+                        active,
+                        null,
+                        englishSenses(text, english, active, isActive),
+                    )
+            )
         }
         val parts = decompose(text, active, isActive)
         return if (parts.any { it.reading != null })
@@ -342,12 +372,43 @@ class Dictionary(private val context: Context) {
                             checkLookupActive(isActive)
                             val selected =
                                 originalTokens.subList(chunk.start, chunk.end).joinToString(" ")
+                            // Clause/sentence boundaries constrain sense evidence as well as
+                            // phrase matching. Never borrow a different sentence's topic.
+                            fun boundaryBetween(left: Int, right: Int): Boolean =
+                                clean
+                                    .substring(
+                                        matches[left].range.last + 1,
+                                        matches[right].range.first,
+                                    )
+                                    .any { it in ".!?;" }
+                            var sentenceStart = chunk.start
+                            while (
+                                sentenceStart > 0 &&
+                                    !boundaryBetween(sentenceStart - 1, sentenceStart)
+                            ) sentenceStart--
+                            var sentenceEnd = chunk.end
+                            while (
+                                sentenceEnd < tokens.size &&
+                                    !boundaryBetween(sentenceEnd - 1, sentenceEnd)
+                            ) sentenceEnd++
+                            val prefix = clean.substring(0, matches.first().range.first)
+                            val suffix = clean.substring(matches.last().range.last + 1)
                             val local =
                                 LookupContext(
                                     selected,
-                                    (surrounding?.before.orEmpty() + tokens.take(chunk.start))
+                                    ((if (sentenceStart == 0 && prefix.none { it in ".!?;" })
+                                            surrounding?.before.orEmpty()
+                                        else emptyList()) +
+                                            tokens.subList(sentenceStart, chunk.start))
                                         .takeLast(22),
-                                    (tokens.drop(chunk.end) + surrounding?.after.orEmpty()).take(22),
+                                    (tokens.subList(chunk.end, sentenceEnd) +
+                                            (if (
+                                                sentenceEnd == tokens.size &&
+                                                    suffix.none { it in ".!?;" }
+                                            )
+                                                surrounding?.after.orEmpty()
+                                            else emptyList()))
+                                        .take(22),
                                 )
                             Part(
                                 selected,
@@ -372,7 +433,12 @@ class Dictionary(private val context: Context) {
                                                         .ifEmpty { listOf(chunk.entry) }
                                             }
                                         val lexical =
-                                            lexical(selected, entries.map { it.word }, local)
+                                            lexical(
+                                                selected,
+                                                entries.map { it.word },
+                                                local,
+                                                isActive,
+                                            )
                                         val resolved =
                                             entries
                                                 .takeUnless {
@@ -397,7 +463,14 @@ class Dictionary(private val context: Context) {
                                             Result(resolved, emptyList()),
                                             local,
                                             null,
-                                            lexical,
+                                            if (
+                                                resolved.isNotEmpty() &&
+                                                    resolved.all {
+                                                        it.source == "wiktionary-english"
+                                                    }
+                                            )
+                                                englishSenses(selected, resolved, local, isActive)
+                                            else lexical,
                                         )
                                     },
                                 local,
@@ -408,6 +481,7 @@ class Dictionary(private val context: Context) {
     }
 
     private fun phrase(context: LookupContext): Pair<String, Entry>? {
+        if (SenseRanker.hasUnresolvedContrast(context.before, context.after)) return null
         val target = LookupContext.tokens(context.selected)
         if (target.size != 1 || !target.single().matches(Regex("[a-z]+"))) return null
         val candidates =
@@ -473,7 +547,40 @@ class Dictionary(private val context: Context) {
                                                 )
                                     }
                             }
-                            match?.let { matches += value to it }
+                            match?.let {
+                                // A preposition/article + head is not enough to establish an idiom:
+                                // "in the field" also occurs literally on a farm. Keep explicit
+                                // whole-phrase lookup available; only automatic expansion is gated.
+                                val functionWords =
+                                    setOf(
+                                        "a",
+                                        "an",
+                                        "the",
+                                        "of",
+                                        "in",
+                                        "on",
+                                        "at",
+                                        "by",
+                                        "for",
+                                        "to",
+                                        "from",
+                                        "with",
+                                        "as",
+                                        "and",
+                                        "or",
+                                        "up",
+                                        "out",
+                                        "off",
+                                        "into",
+                                    )
+                                if (
+                                    it.source == "annota" ||
+                                        LookupContext.tokens(value).count { word ->
+                                            word !in functionWords
+                                        } >= 2
+                                )
+                                    matches += value to it
+                            }
                         }
                         // Equal-length competing phrases do not justify silently selecting one
                         // meaning.

@@ -1,0 +1,369 @@
+{
+  "schema": 1,
+  "date": "2026-11-04",
+  "reviewer": "Research subagent manual semantic review; not independent human gold annotation",
+  "input": "android/verification/semantic-111/semantic-heldout-diagnostics.json",
+  "inputSha256": "0eb54d794d5ef13891d89807a4ef4c30a455759fe9e41ba2944386d497163ade",
+  "scope": "Final frozen production diagnostics, 20 authored cases. All primary meanings and contextual/semanticAccepted flags reviewed. No production code or fixtures changed.",
+  "evaluationStatus": "Observed development/calibration cases; no longer blind held-out data.",
+  "limitations": [
+    "These 20 examples were observed while tuning generic-context gates, equivalent-sense competition and restrictive-definition guards. The input filename and legacy note do not make them independent held-out evidence.",
+    "No aggregate accuracy or generalization claim is made. Class counts below summarize this small reviewed diagnostic set only; they are not a benchmark score.",
+    "A passing instrumentation suite establishes tested behavior, not semantic correctness. Five final outputs below still have incorrect or mixed default meanings despite not asserting contextual confidence.",
+    "Four correct phrase/nonsemantic resolutions must not be counted as general vector word-sense disambiguation successes. contextual=true alone does not identify the algorithm responsible.",
+    "The diagnostics statistics counters are cumulative across execution/repeated queries and cannot be interpreted as the number of unique cases correctly resolved.",
+    "Community Chinese equivalents may combine broad and narrow meanings. Default ordering, part-of-speech selection and sense granularity still need improvement beyond similarity thresholds.",
+    "No target-device feel, latency or battery conclusion is inferred from these semantic judgments; performance measurements are dedicated emulator observations."
+  ],
+  "classificationCounts": {
+    "default_context_mismatch": 3,
+    "acceptable_semantic_promotion": 6,
+    "mixed_default_without_resolution": 2,
+    "acceptable_phrase_or_nonsemantic_resolution": 4,
+    "usable_default_without_semantic_promotion": 1,
+    "appropriate_abstention": 4
+  },
+  "knownLimitations": [
+    {
+      "caseIds": [
+        "seal-animal",
+        "seal-closure",
+        "tissue-paper"
+      ],
+      "type": "Incorrect default despite available candidates",
+      "detail": "Abstention prevents an unsupported promotion but does not make the shown first meaning fit context. These remain unresolved user-visible failures."
+    },
+    {
+      "caseIds": [
+        "organ-body",
+        "tissue-biology"
+      ],
+      "type": "Mixed default meaning",
+      "detail": "The correct Chinese word is present together with unrelated meanings; keyword presence is not contextual usability."
+    },
+    {
+      "caseIds": [
+        "spring-coil"
+      ],
+      "type": "Chinese equivalent granularity",
+      "detail": "弹簧 is appropriate; 发条 is an unnecessarily narrow additional equivalent for the suspension example."
+    }
+  ],
+  "sourceQualityAudit": [
+    {
+      "word": "organ",
+      "database": "design/dictionary/bundle/wordnet.sqlite",
+      "previousWrongMeaning": "电子琴",
+      "sourceGloss": "(music) an electronic simulation of a pipe organ",
+      "availableCorrectMeaning": "管风琴；风琴",
+      "availableCorrectGloss": "wind instrument whose sound is produced by means of pipes arranged in sets supplied with air from a bellows and controlled from a large complex musical keyboard",
+      "conclusion": "The previous pipe-organ -> electronic-organ promotion was primarily semantic subtype/restrictive-qualifier confusion, not a missing candidate or a mistranslation of the electronic-organ source definition. The final output is 管风琴 through a nonsemantic path."
+    }
+  ],
+  "cases": [
+    {
+      "id": "seal-animal",
+      "query": "seal",
+      "context": "The marine biologist watched a [seal] dive underwater to catch fish.",
+      "primary": [
+        "封闭；盖印"
+      ],
+      "noContextPrimary": [
+        "封闭；盖印"
+      ],
+      "contextual": false,
+      "semanticAccepted": false,
+      "classification": "default_context_mismatch",
+      "review": "动物语境需要“海豹”。默认“封闭；盖印”与语境不符，虽然未标记 contextual，仍然是用户可见的错误首义；海豹候选已在 alternatives 中，属于选义未解决而非缺词。"
+    },
+    {
+      "id": "seal-closure",
+      "query": "seal",
+      "context": "Check the airtight [seal] around the jar lid before storing the food.",
+      "primary": [
+        "封闭；盖印"
+      ],
+      "noContextPrimary": [
+        "封闭；盖印"
+      ],
+      "contextual": false,
+      "semanticAccepted": false,
+      "classification": "default_context_mismatch",
+      "review": "airtight seal around the jar lid 是名词“密封／密封结构／封口”；“封闭；盖印”偏动词且混入盖印义，未解决词性及词义选择。正确相关候选已有。"
+    },
+    {
+      "id": "spring-season",
+      "query": "spring",
+      "context": "The flowers bloom in [spring] as the weather warms after winter.",
+      "primary": [
+        "春天；春季"
+      ],
+      "noContextPrimary": [
+        "春天；弹簧"
+      ],
+      "contextual": true,
+      "semanticAccepted": true,
+      "classification": "acceptable_semantic_promotion",
+      "review": "flowers bloom / weather warms after winter 支持“春天；春季”，与实际首义一致。"
+    },
+    {
+      "id": "spring-coil",
+      "query": "spring",
+      "context": "The mechanic replaced the compressed metal [spring] inside the suspension.",
+      "primary": [
+        "发条；弹簧"
+      ],
+      "noContextPrimary": [
+        "春天；弹簧"
+      ],
+      "contextual": true,
+      "semanticAccepted": true,
+      "classification": "acceptable_semantic_promotion",
+      "review": "机械悬架里的压缩金属件是“弹簧”。“发条；弹簧”选择了正确机械义族，但“发条”是较窄子类，仍有合并汉译粒度上的噪声。"
+    },
+    {
+      "id": "volume-sound",
+      "query": "volume",
+      "context": "Turn down the [volume] of the loudspeaker because the music is too loud.",
+      "primary": [
+        "音量"
+      ],
+      "noContextPrimary": [
+        "体积；容量"
+      ],
+      "contextual": true,
+      "semanticAccepted": true,
+      "classification": "acceptable_semantic_promotion",
+      "review": "loudspeaker / music / too loud 支持“音量”；最终结果比先前拒判后显示“体积；容量”更合适。"
+    },
+    {
+      "id": "volume-space",
+      "query": "volume",
+      "context": "The cylinder has a [volume] of twenty cubic centimetres.",
+      "primary": [
+        "体积；容积"
+      ],
+      "noContextPrimary": [
+        "体积；容量"
+      ],
+      "contextual": true,
+      "semanticAccepted": true,
+      "classification": "acceptable_semantic_promotion",
+      "review": "cylinder / cubic centimetres 支持“体积；容积”。"
+    },
+    {
+      "id": "organ-body",
+      "query": "organ",
+      "context": "The liver is an [organ] that processes nutrients and removes toxins.",
+      "primary": [
+        "风琴；器官"
+      ],
+      "noContextPrimary": [
+        "风琴；器官"
+      ],
+      "contextual": false,
+      "semanticAccepted": false,
+      "classification": "mixed_default_without_resolution",
+      "review": "liver / nutrients / toxins 明确支持“器官”；默认“风琴；器官”虽含正确义项，仍混入无关乐器义，不能算语境选义成功。"
+    },
+    {
+      "id": "organ-music",
+      "query": "organ",
+      "context": "The musician played the pipe [organ] during the cathedral concert.",
+      "primary": [
+        "管风琴"
+      ],
+      "noContextPrimary": [
+        "风琴；器官"
+      ],
+      "contextual": true,
+      "semanticAccepted": false,
+      "classification": "acceptable_phrase_or_nonsemantic_resolution",
+      "review": "pipe organ / cathedral concert 对应“管风琴”。最终已纠正此前“电子琴”的错误子类型提升，但 semanticAccepted=false，不能将此项归功于向量排序或通用 WSD。"
+    },
+    {
+      "id": "pupil-eye",
+      "query": "pupil",
+      "context": "Bright light causes the [pupil] in the centre of the eye to become smaller.",
+      "primary": [
+        "瞳孔；瞳子"
+      ],
+      "noContextPrimary": [
+        "学生；门生"
+      ],
+      "contextual": true,
+      "semanticAccepted": true,
+      "classification": "acceptable_semantic_promotion",
+      "review": "bright light / centre of the eye / smaller 支持“瞳孔；瞳子”。"
+    },
+    {
+      "id": "pupil-student",
+      "query": "pupil",
+      "context": "The teacher asked each [pupil] to complete the classroom assignment.",
+      "primary": [
+        "学生；门生"
+      ],
+      "noContextPrimary": [
+        "学生；门生"
+      ],
+      "contextual": false,
+      "semanticAccepted": false,
+      "classification": "usable_default_without_semantic_promotion",
+      "review": "teacher / classroom assignment 支持“学生；门生”；无上下文默认值本来相同，没有观察到向量增益。"
+    },
+    {
+      "id": "bond-chemical",
+      "query": "bond",
+      "context": "The two atoms share electrons in a covalent [bond] within the molecule.",
+      "primary": [
+        "共价键"
+      ],
+      "noContextPrimary": [
+        "存入关栈；使黏合"
+      ],
+      "contextual": true,
+      "semanticAccepted": false,
+      "classification": "acceptable_phrase_or_nonsemantic_resolution",
+      "review": "covalent bond 对应“共价键”；semanticAccepted=false，是短语或其他非向量路径命中，不算通用单词消歧成功。"
+    },
+    {
+      "id": "bond-financial",
+      "query": "bond",
+      "context": "The investor bought a government [bond] that pays annual interest until maturity.",
+      "primary": [
+        "公债"
+      ],
+      "noContextPrimary": [
+        "存入关栈；使黏合"
+      ],
+      "contextual": true,
+      "semanticAccepted": false,
+      "classification": "acceptable_phrase_or_nonsemantic_resolution",
+      "review": "government bond 支持“公债”；与旧阶段误选“保释金”不同，最终正确。semanticAccepted=false，不能算向量选义收益。"
+    },
+    {
+      "id": "root-plant",
+      "query": "root",
+      "context": "The plant absorbs water through its [root] below the soil surface.",
+      "primary": [
+        "根"
+      ],
+      "noContextPrimary": [
+        "根；根本"
+      ],
+      "contextual": true,
+      "semanticAccepted": true,
+      "classification": "acceptable_semantic_promotion",
+      "review": "plant / absorbs water / below soil 支持植物“根”。"
+    },
+    {
+      "id": "root-math",
+      "query": "root",
+      "context": "Three is the positive square [root] of nine because three multiplied by itself equals nine.",
+      "primary": [
+        "平方根"
+      ],
+      "noContextPrimary": [
+        "根；根本"
+      ],
+      "contextual": true,
+      "semanticAccepted": false,
+      "classification": "acceptable_phrase_or_nonsemantic_resolution",
+      "review": "square root of nine 对应“平方根”；semanticAccepted=false，归为短语或非向量路径。"
+    },
+    {
+      "id": "tissue-biology",
+      "query": "tissue",
+      "context": "The biopsy contained damaged muscle [tissue] which the pathologist examined under a microscope.",
+      "primary": [
+        "棉纸；组织",
+        "组织"
+      ],
+      "noContextPrimary": [
+        "棉纸；组织",
+        "组织"
+      ],
+      "contextual": false,
+      "semanticAccepted": false,
+      "classification": "mixed_default_without_resolution",
+      "review": "muscle / biopsy / pathologist 支持生物“组织”。默认同时显示“棉纸；组织”和“组织”，正确词出现不代表完成消歧，且重复／无关义项会干扰阅读。"
+    },
+    {
+      "id": "tissue-paper",
+      "query": "tissue",
+      "context": "She used a disposable paper [tissue] to wipe her nose and then threw it away.",
+      "primary": [
+        "棉纸；组织",
+        "组织"
+      ],
+      "noContextPrimary": [
+        "棉纸；组织",
+        "组织"
+      ],
+      "contextual": false,
+      "semanticAccepted": false,
+      "classification": "default_context_mismatch",
+      "review": "disposable paper / wipe her nose 需要“纸巾／面巾纸”。“棉纸；组织”加“组织”既混入生物义，也没有给出这一日常使用的准确首义；纸巾候选已存在。"
+    },
+    {
+      "id": "seal-low-evidence",
+      "query": "seal",
+      "context": "The word [seal] appears on the next page.",
+      "primary": [
+        "封闭；盖印"
+      ],
+      "noContextPrimary": [
+        "封闭；盖印"
+      ],
+      "contextual": false,
+      "semanticAccepted": false,
+      "classification": "appropriate_abstention",
+      "review": "只说明单词出现在下一页，缺少语义证据。不标 contextual 且不接受向量提升合理；不能据此断言默认汉译适合某个未知实际义项。"
+    },
+    {
+      "id": "spring-low-evidence",
+      "query": "spring",
+      "context": "They mentioned [spring] again yesterday.",
+      "primary": [
+        "春天；弹簧"
+      ],
+      "noContextPrimary": [
+        "春天；弹簧"
+      ],
+      "contextual": false,
+      "semanticAccepted": false,
+      "classification": "appropriate_abstention",
+      "review": "mentioned again yesterday 不足以区分季节和弹簧；拒绝提升合理。"
+    },
+    {
+      "id": "organ-low-evidence",
+      "query": "organ",
+      "context": "Please explain [organ] to me.",
+      "primary": [
+        "风琴；器官"
+      ],
+      "noContextPrimary": [
+        "风琴；器官"
+      ],
+      "contextual": false,
+      "semanticAccepted": false,
+      "classification": "appropriate_abstention",
+      "review": "Please explain ... to me 不足以区分器官与风琴；拒绝提升合理。"
+    },
+    {
+      "id": "bond-low-evidence",
+      "query": "bond",
+      "context": "We are discussing [bond] today.",
+      "primary": [
+        "存入关栈；使黏合"
+      ],
+      "noContextPrimary": [
+        "存入关栈；使黏合"
+      ],
+      "contextual": false,
+      "semanticAccepted": false,
+      "classification": "appropriate_abstention",
+      "review": "discussing ... today 不足以区分化学键、债券等义项；拒绝提升合理。旧式默认动词释义的质量另属词库排序问题，不因为拒判正确就视为可用性已完善。"
+    }
+  ]
+}

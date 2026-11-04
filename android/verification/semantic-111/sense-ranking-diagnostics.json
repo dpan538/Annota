@@ -1,0 +1,5382 @@
+{
+  "note": "Author-created diagnostics, not an accuracy benchmark. Baseline means no context, not previous release. Keyword hits do not prove correct gloss alignment.",
+  "cases": [
+    {
+      "id": "bank-river",
+      "query": "bank",
+      "before": "The canoe landed on the muddy",
+      "after": "beside the river.",
+      "expected": [
+        "岸",
+        "河边"
+      ],
+      "expectedGloss": "river or lake",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "河岸"
+      ],
+      "alternatives": [
+        "银行",
+        "银行；堤",
+        "岸",
+        "库",
+        "岸；河边",
+        "倾斜飞行；带坡度转弯",
+        "银行大厦",
+        "存放款金融机构；银行",
+        "把钱存入银行",
+        "经营银行业",
+        "存款；把存入银行",
+        "当庄家",
+        "庄家的赌本",
+        "储备金",
+        "依赖；依靠",
+        "信任；信赖"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "bank",
+          "text": "岸；河边",
+          "gloss": "sloping land (especially the slope beside a body of water); \"they pulled the canoe up on the bank\"; \"he sat on the bank of the river and watched the currents\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": true
+        },
+        {
+          "word": "bank",
+          "text": "岸",
+          "gloss": "edge of river or lake",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "银行",
+          "gloss": "institution",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "银行",
+          "gloss": "branch office",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "倾斜飞行；带坡度转弯",
+          "gloss": "tip laterally; \"the pilot had to bank the aircraft\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "存放款金融机构；银行",
+          "gloss": "a financial institution that accepts deposits and channels the money into lending activities; \"he cashed a check at the bank\"; \"that bank holds the mortgage on my home\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "把钱存入银行",
+          "gloss": "do business with a bank or keep an account at a bank; \"Where do you bank in this town?\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "当庄家",
+          "gloss": "act as the banker in a game or in gambling",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "储备金",
+          "gloss": "a supply or stock held in reserve for future use (especially in emergencies)",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "经营银行业",
+          "gloss": "be in the banking business",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "庄家的赌本",
+          "gloss": "the funds held by a gambling house or the dealer in some gambling games; \"he tried to break the bank at Monte Carlo\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "存款；把存入银行；把钱存入银行",
+          "gloss": "put into a bank account; \"She deposits her paycheck every month\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "依赖；依靠；信任；信赖",
+          "gloss": "have confidence or faith in; \"We can trust in God\"; \"Rely on your friends\"; \"bank on your good education\"; \"I swear by my grandmother's recipes\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 7,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "银行大厦",
+          "gloss": "a building in which the business of banking transacted; \"the bank is on the corner of Nassau and Witherspoon\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 8,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "银行",
+        "河岸"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 61.387208
+    },
+    {
+      "id": "bank-finance",
+      "query": "bank",
+      "before": "She deposited her salary at the",
+      "after": "and applied for a mortgage.",
+      "expected": [
+        "银行"
+      ],
+      "expectedGloss": "financial institution",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "银行"
+      ],
+      "alternatives": [
+        "河岸",
+        "银行；堤",
+        "岸",
+        "库",
+        "岸；河边",
+        "倾斜飞行；带坡度转弯",
+        "存放款金融机构；银行",
+        "把钱存入银行",
+        "当庄家",
+        "储备金",
+        "经营银行业",
+        "庄家的赌本",
+        "存款；把存入银行",
+        "依赖；依靠",
+        "信任；信赖",
+        "银行大厦"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "bank",
+          "text": "银行",
+          "gloss": "institution",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "岸",
+          "gloss": "edge of river or lake",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "银行",
+          "gloss": "branch office",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "岸；河边",
+          "gloss": "sloping land (especially the slope beside a body of water); \"they pulled the canoe up on the bank\"; \"he sat on the bank of the river and watched the currents\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "倾斜飞行；带坡度转弯",
+          "gloss": "tip laterally; \"the pilot had to bank the aircraft\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "存放款金融机构；银行",
+          "gloss": "a financial institution that accepts deposits and channels the money into lending activities; \"he cashed a check at the bank\"; \"that bank holds the mortgage on my home\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "把钱存入银行",
+          "gloss": "do business with a bank or keep an account at a bank; \"Where do you bank in this town?\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "当庄家",
+          "gloss": "act as the banker in a game or in gambling",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "储备金",
+          "gloss": "a supply or stock held in reserve for future use (especially in emergencies)",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "经营银行业",
+          "gloss": "be in the banking business",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "庄家的赌本",
+          "gloss": "the funds held by a gambling house or the dealer in some gambling games; \"he tried to break the bank at Monte Carlo\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "存款；把存入银行；把钱存入银行",
+          "gloss": "put into a bank account; \"She deposits her paycheck every month\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "依赖；依靠；信任；信赖",
+          "gloss": "have confidence or faith in; \"We can trust in God\"; \"Rely on your friends\"; \"bank on your good education\"; \"I swear by my grandmother's recipes\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 7,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "银行大厦",
+          "gloss": "a building in which the business of banking transacted; \"the bank is on the corner of Nassau and Witherspoon\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 8,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "银行",
+        "河岸"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 12.389417
+    },
+    {
+      "id": "bank-short",
+      "query": "bank",
+      "before": "The",
+      "after": "is nearby.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient",
+      "primary": [
+        "银行",
+        "河岸"
+      ],
+      "alternatives": [
+        "银行；堤",
+        "岸",
+        "库",
+        "岸；河边",
+        "倾斜飞行；带坡度转弯",
+        "存放款金融机构；银行",
+        "把钱存入银行",
+        "当庄家",
+        "储备金",
+        "经营银行业",
+        "庄家的赌本",
+        "存款；把存入银行",
+        "依赖；依靠",
+        "信任；信赖",
+        "银行大厦"
+      ],
+      "contextual": false,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "bank",
+          "text": "银行",
+          "gloss": "institution",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "岸",
+          "gloss": "edge of river or lake",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "银行",
+          "gloss": "branch office",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "岸；河边",
+          "gloss": "sloping land (especially the slope beside a body of water); \"they pulled the canoe up on the bank\"; \"he sat on the bank of the river and watched the currents\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "倾斜飞行；带坡度转弯",
+          "gloss": "tip laterally; \"the pilot had to bank the aircraft\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "存放款金融机构；银行",
+          "gloss": "a financial institution that accepts deposits and channels the money into lending activities; \"he cashed a check at the bank\"; \"that bank holds the mortgage on my home\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "把钱存入银行",
+          "gloss": "do business with a bank or keep an account at a bank; \"Where do you bank in this town?\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "当庄家",
+          "gloss": "act as the banker in a game or in gambling",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "储备金",
+          "gloss": "a supply or stock held in reserve for future use (especially in emergencies)",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "经营银行业",
+          "gloss": "be in the banking business",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "庄家的赌本",
+          "gloss": "the funds held by a gambling house or the dealer in some gambling games; \"he tried to break the bank at Monte Carlo\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "存款；把存入银行；把钱存入银行",
+          "gloss": "put into a bank account; \"She deposits her paycheck every month\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "依赖；依靠；信任；信赖",
+          "gloss": "have confidence or faith in; \"We can trust in God\"; \"Rely on your friends\"; \"bank on your good education\"; \"I swear by my grandmother's recipes\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 7,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "银行大厦",
+          "gloss": "a building in which the business of banking transacted; \"the bank is on the corner of Nassau and Witherspoon\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 8,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": false,
+      "noContextPrimary": [
+        "银行",
+        "河岸"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 7.361917
+    },
+    {
+      "id": "bank-distractor",
+      "query": "bank",
+      "before": "We discussed deposits and money while sitting on the",
+      "after": "beside the river.",
+      "expected": [
+        "岸",
+        "河边"
+      ],
+      "expectedGloss": "river or lake",
+      "expectAbstain": false,
+      "category": "distractor",
+      "note": "Correct sense is asserted, but conservative abstention is safer than a wrong contextual promotion.",
+      "primary": [
+        "岸；河边"
+      ],
+      "alternatives": [
+        "银行",
+        "河岸",
+        "银行；堤",
+        "库",
+        "存放款金融机构；银行",
+        "存款；把存入银行",
+        "把钱存入银行",
+        "倾斜飞行；带坡度转弯",
+        "当庄家",
+        "储备金",
+        "经营银行业",
+        "庄家的赌本",
+        "依赖；依靠",
+        "信任；信赖",
+        "银行大厦"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "bank",
+          "text": "岸；河边",
+          "gloss": "sloping land (especially the slope beside a body of water); \"they pulled the canoe up on the bank\"; \"he sat on the bank of the river and watched the currents\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": true
+        },
+        {
+          "word": "bank",
+          "text": "存放款金融机构；银行",
+          "gloss": "a financial institution that accepts deposits and channels the money into lending activities; \"he cashed a check at the bank\"; \"that bank holds the mortgage on my home\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "岸",
+          "gloss": "edge of river or lake",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "存款；把存入银行；把钱存入银行",
+          "gloss": "put into a bank account; \"She deposits her paycheck every month\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "银行",
+          "gloss": "institution",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "银行",
+          "gloss": "branch office",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "倾斜飞行；带坡度转弯",
+          "gloss": "tip laterally; \"the pilot had to bank the aircraft\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "把钱存入银行",
+          "gloss": "do business with a bank or keep an account at a bank; \"Where do you bank in this town?\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "当庄家",
+          "gloss": "act as the banker in a game or in gambling",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "储备金",
+          "gloss": "a supply or stock held in reserve for future use (especially in emergencies)",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "经营银行业",
+          "gloss": "be in the banking business",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "庄家的赌本",
+          "gloss": "the funds held by a gambling house or the dealer in some gambling games; \"he tried to break the bank at Monte Carlo\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "依赖；依靠；信任；信赖",
+          "gloss": "have confidence or faith in; \"We can trust in God\"; \"Rely on your friends\"; \"bank on your good education\"; \"I swear by my grandmother's recipes\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 7,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "银行大厦",
+          "gloss": "a building in which the business of banking transacted; \"the bank is on the corner of Nassau and Witherspoon\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 8,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "银行",
+        "河岸"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 16.665
+    },
+    {
+      "id": "cell-biology",
+      "query": "cell",
+      "before": "Under the microscope each",
+      "after": "contained a nucleus and a membrane.",
+      "expected": [
+        "细胞"
+      ],
+      "expectedGloss": "living organism",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "细胞"
+      ],
+      "alternatives": [
+        "单元",
+        "单元；细胞",
+        "电池",
+        "手机；大哥大",
+        "大哥大；手提电话",
+        "手机；移动电话",
+        "蜂窝式移动电话",
+        "支部；部",
+        "牢房；独房",
+        "囚室",
+        "牢房",
+        "和尚或尼姑的生活的小房间"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "cell",
+          "text": "电池",
+          "gloss": "component of an electrical battery",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "手机；大哥大",
+          "gloss": "informal: a cellular telephone — see also mobile phone",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "牢房；独房；囚室",
+          "gloss": "room in a prison for containing inmates",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "细胞",
+          "gloss": "basic unit of a living organism",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "支部；部",
+          "gloss": "small group of people forming part of a larger organization",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "细胞",
+          "gloss": "(biology) the basic structural and functional unit of all organisms; they may exist as independent units of life (as in monads) or may form colonies or tissues as in higher plants and animals",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "电池",
+          "gloss": "a device that delivers an electric current as the result of a chemical reaction",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "大哥大；手提电话；手机；移动电话；蜂窝式移动电话",
+          "gloss": "a hand-held mobile radiotelephone for use in an area divided into small sections, each with its own short-range transmitter\/receiver",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "和尚或尼姑的生活的小房间",
+          "gloss": "small room in which a monk or nun lives",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "牢房",
+          "gloss": "a room where a prisoner is kept",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 6,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "细胞",
+        "单元"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 34.778708
+    },
+    {
+      "id": "cell-battery",
+      "query": "cell",
+      "before": "The battery contains a single electrochemical",
+      "after": "which supplies electric current.",
+      "expected": [
+        "电池"
+      ],
+      "expectedGloss": "battery",
+      "expectAbstain": false,
+      "category": "technology",
+      "primary": [
+        "电池单元"
+      ],
+      "alternatives": [
+        "细胞",
+        "单元",
+        "单元；细胞",
+        "电池",
+        "手机；大哥大",
+        "大哥大；手提电话",
+        "手机；移动电话",
+        "蜂窝式移动电话",
+        "牢房",
+        "牢房；独房",
+        "囚室",
+        "支部；部",
+        "和尚或尼姑的生活的小房间"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "cell",
+          "text": "电池",
+          "gloss": "a device that delivers an electric current as the result of a chemical reaction",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": true
+        },
+        {
+          "word": "cell",
+          "text": "牢房；独房；囚室",
+          "gloss": "room in a prison for containing inmates",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "电池",
+          "gloss": "component of an electrical battery",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "手机；大哥大",
+          "gloss": "informal: a cellular telephone — see also mobile phone",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "细胞",
+          "gloss": "basic unit of a living organism",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "支部；部",
+          "gloss": "small group of people forming part of a larger organization",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "细胞",
+          "gloss": "(biology) the basic structural and functional unit of all organisms; they may exist as independent units of life (as in monads) or may form colonies or tissues as in higher plants and animals",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "大哥大；手提电话；手机；移动电话；蜂窝式移动电话",
+          "gloss": "a hand-held mobile radiotelephone for use in an area divided into small sections, each with its own short-range transmitter\/receiver",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "和尚或尼姑的生活的小房间",
+          "gloss": "small room in which a monk or nun lives",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "牢房",
+          "gloss": "a room where a prisoner is kept",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 6,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "细胞",
+        "单元"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 10.180292
+    },
+    {
+      "id": "cell-prison",
+      "query": "cell",
+      "before": "The prisoner was locked in a small",
+      "after": "behind iron bars.",
+      "expected": [
+        "牢房",
+        "囚室"
+      ],
+      "expectedGloss": "prison",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "牢房"
+      ],
+      "alternatives": [
+        "细胞",
+        "单元",
+        "单元；细胞",
+        "电池",
+        "牢房；独房",
+        "囚室",
+        "和尚或尼姑的生活的小房间",
+        "大哥大；手提电话",
+        "手机；移动电话",
+        "蜂窝式移动电话",
+        "支部；部",
+        "手机；大哥大"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "cell",
+          "text": "电池",
+          "gloss": "component of an electrical battery",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "手机；大哥大",
+          "gloss": "informal: a cellular telephone — see also mobile phone",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "牢房；独房；囚室",
+          "gloss": "room in a prison for containing inmates",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "细胞",
+          "gloss": "basic unit of a living organism",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "支部；部",
+          "gloss": "small group of people forming part of a larger organization",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "细胞",
+          "gloss": "(biology) the basic structural and functional unit of all organisms; they may exist as independent units of life (as in monads) or may form colonies or tissues as in higher plants and animals",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "电池",
+          "gloss": "a device that delivers an electric current as the result of a chemical reaction",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "大哥大；手提电话；手机；移动电话；蜂窝式移动电话",
+          "gloss": "a hand-held mobile radiotelephone for use in an area divided into small sections, each with its own short-range transmitter\/receiver",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "和尚或尼姑的生活的小房间",
+          "gloss": "small room in which a monk or nun lives",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "牢房",
+          "gloss": "a room where a prisoner is kept",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 6,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "细胞",
+        "单元"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 10.718041
+    },
+    {
+      "id": "cell-spreadsheet",
+      "query": "cell",
+      "before": "Enter the formula into this spreadsheet",
+      "after": "and copy it down the column.",
+      "expected": [
+        "单元格"
+      ],
+      "expectedGloss": "spreadsheet",
+      "expectAbstain": false,
+      "category": "candidate-gap",
+      "sourceIssue": "Verify exact semantic candidate exists before treating failure as ranking error.",
+      "primary": [
+        "单元格"
+      ],
+      "alternatives": [
+        "细胞",
+        "单元",
+        "单元；细胞",
+        "电池",
+        "手机；大哥大",
+        "牢房；独房",
+        "囚室",
+        "支部；部",
+        "大哥大；手提电话",
+        "手机；移动电话",
+        "蜂窝式移动电话",
+        "和尚或尼姑的生活的小房间",
+        "牢房"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "cell",
+          "text": "电池",
+          "gloss": "component of an electrical battery",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "手机；大哥大",
+          "gloss": "informal: a cellular telephone — see also mobile phone",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "牢房；独房；囚室",
+          "gloss": "room in a prison for containing inmates",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "细胞",
+          "gloss": "basic unit of a living organism",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "支部；部",
+          "gloss": "small group of people forming part of a larger organization",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "细胞",
+          "gloss": "(biology) the basic structural and functional unit of all organisms; they may exist as independent units of life (as in monads) or may form colonies or tissues as in higher plants and animals",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "电池",
+          "gloss": "a device that delivers an electric current as the result of a chemical reaction",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "大哥大；手提电话；手机；移动电话；蜂窝式移动电话",
+          "gloss": "a hand-held mobile radiotelephone for use in an area divided into small sections, each with its own short-range transmitter\/receiver",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "和尚或尼姑的生活的小房间",
+          "gloss": "small room in which a monk or nun lives",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "cell",
+          "text": "牢房",
+          "gloss": "a room where a prisoner is kept",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 6,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "细胞",
+        "单元"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 9.00725
+    },
+    {
+      "id": "charge-fee",
+      "query": "charge",
+      "before": "The hotel added a service",
+      "after": "to the bill for room cleaning.",
+      "expected": [
+        "收费",
+        "费用"
+      ],
+      "expectedGloss": "money",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "服务费"
+      ],
+      "alternatives": [
+        "费用",
+        "充电",
+        "指控；费用",
+        "冲锋；电荷",
+        "炸药；主管",
+        "被托管人；命令",
+        "控诉；加罪于",
+        "使充满；使充电",
+        "使承担",
+        "冲锋；要价",
+        "收费",
+        "冲打；冲锋",
+        "指控；起诉",
+        "控告",
+        "费用；收费",
+        "冲",
+        "冲锋；攻击",
+        "电荷",
+        "照顾范围；管理范围",
+        "托付",
+        "负载",
+        "指示",
+        "带球撞人",
+        "弹药",
+        "纹章",
+        "收费；要求支付",
+        "急速前进；狂奔",
+        "飞奔；飞跑",
+        "分派；委派",
+        "指派",
+        "指控",
+        "还款要求",
+        "委托；寄存",
+        "托管",
+        "信用卡支付；赊购",
+        "指控；指责",
+        "控告；控诉",
+        "谴责",
+        "纹章模型",
+        "使骚动；激动",
+        "爆裂药"
+      ],
+      "contextual": true,
+      "phrase": "service charge",
+      "lexicalCandidates": [
+        {
+          "word": "charge",
+          "text": "冲打；冲锋",
+          "gloss": "military: ground attack",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "收费",
+          "gloss": "to demand, require payment",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "指控；起诉",
+          "gloss": "accusation",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "控告",
+          "gloss": "criminal law, law enforcement: to formally accuse of a crime",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "费用；收费",
+          "gloss": "amount of money levied for a service",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "充电",
+          "gloss": "to cause to take on an electric charge",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "冲",
+          "gloss": "forceful forward movement",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "冲锋；攻击",
+          "gloss": "military: to attack by moving forward quickly",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "电荷",
+          "gloss": "electric charge",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "照顾范围；管理范围",
+          "gloss": "scope of responsibility",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "托付",
+          "gloss": "someone or something entrusted to one's care",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 6,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "负载",
+          "gloss": "load or burden",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 7,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "指示",
+          "gloss": "instruction",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 8,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "带球撞人",
+          "gloss": "basketball: offensive foul",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 9,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "弹药",
+          "gloss": "measured amount of powder and\/or shot",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 10,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "纹章",
+          "gloss": "heraldry: image displayed on an escutcheon",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 11,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "费用",
+          "gloss": "the price charged for some article or service; \"the admission charge\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "收费；要求支付",
+          "gloss": "demand payment; \"Will I get charged for this service?\"; \"We were billed for 4 nights in the hotel, although we stayed only 3 nights\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "电荷",
+          "gloss": "the quantity of unbalanced electricity in a body (either positive or negative) and construed as an excess or deficiency of electrons; \"the battery needed a fresh charge\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "急速前进；狂奔；飞奔；飞跑",
+          "gloss": "move quickly and violently; \"The car tore down the street\"; \"He came charging into my office\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "分派；委派；指派",
+          "gloss": "assign a duty, responsibility or obligation to; \"He was appointed deputy manager\"; \"She was charged with supervising the creation of a concordance\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "指控",
+          "gloss": "make an accusatory claim; \"The defense attorney charged that the jurors were biased\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 6,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "收费",
+          "gloss": "enter a certain amount as a charge; \"he charged me $15\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 8,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "还款要求",
+          "gloss": "request for payment of a debt; \"they submitted their charges at the end of each month\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 10,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "委托；寄存；托管",
+          "gloss": "give over to another for care or safekeeping; \"consign your baggage\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 10,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "信用卡支付；赊购",
+          "gloss": "pay with a credit card; pay with plastic money; postpone payment by recording a purchase as a debt; \"Will you pay cash or charge the purchase?\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 11,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "指控；指责；控告；控诉；谴责",
+          "gloss": "an assertion that someone is guilty of a fault or offence; \"the newspaper published charges that Jones was guilty of drunken driving\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 12,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "纹章模型",
+          "gloss": "heraldry consisting of a design or image depicted on a shield",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 13,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "使骚动；激动",
+          "gloss": "cause to be agitated, excited, or roused; \"The speaker charged up the crowd with his inflammatory remarks\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 13,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "爆裂药",
+          "gloss": "a quantity of explosive to be set off at one time; \"this cartridge has a powder charge of 50 grains\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 14,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "充电",
+          "gloss": "energize a battery by passing a current through it in the direction opposite to discharge; \"I need to charge my car battery\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 23,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "费用",
+        "充电"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 49.400542
+    },
+    {
+      "id": "charge-physics",
+      "query": "charge",
+      "before": "The electron carries a negative electric",
+      "after": "while a proton carries a positive one.",
+      "expected": [
+        "电荷"
+      ],
+      "expectedGloss": "electric",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "电荷"
+      ],
+      "alternatives": [
+        "费用",
+        "充电",
+        "指控；费用",
+        "冲锋；电荷",
+        "炸药；主管",
+        "被托管人；命令",
+        "控诉；加罪于",
+        "使充满；使充电",
+        "使承担",
+        "冲锋；要价",
+        "收费",
+        "信用卡支付；赊购",
+        "还款要求",
+        "急速前进；狂奔",
+        "飞奔；飞跑",
+        "指控；起诉",
+        "负载",
+        "爆裂药",
+        "指控；指责",
+        "控告；控诉",
+        "谴责",
+        "指控",
+        "委托；寄存",
+        "托管",
+        "收费；要求支付",
+        "带球撞人",
+        "冲",
+        "托付",
+        "控告",
+        "冲打；冲锋",
+        "指示",
+        "纹章模型",
+        "照顾范围；管理范围",
+        "分派；委派",
+        "指派",
+        "使骚动；激动",
+        "纹章",
+        "费用；收费",
+        "冲锋；攻击",
+        "弹药"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "charge",
+          "text": "电荷",
+          "gloss": "the quantity of unbalanced electricity in a body (either positive or negative) and construed as an excess or deficiency of electrons; \"the battery needed a fresh charge\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": true
+        },
+        {
+          "word": "charge",
+          "text": "电荷",
+          "gloss": "electric charge",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "充电",
+          "gloss": "to cause to take on an electric charge",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "冲打；冲锋",
+          "gloss": "military: ground attack",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "收费",
+          "gloss": "to demand, require payment",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "指控；起诉",
+          "gloss": "accusation",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "控告",
+          "gloss": "criminal law, law enforcement: to formally accuse of a crime",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "费用；收费",
+          "gloss": "amount of money levied for a service",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "冲",
+          "gloss": "forceful forward movement",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "冲锋；攻击",
+          "gloss": "military: to attack by moving forward quickly",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "照顾范围；管理范围",
+          "gloss": "scope of responsibility",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "托付",
+          "gloss": "someone or something entrusted to one's care",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 6,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "负载",
+          "gloss": "load or burden",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 7,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "指示",
+          "gloss": "instruction",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 8,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "带球撞人",
+          "gloss": "basketball: offensive foul",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 9,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "弹药",
+          "gloss": "measured amount of powder and\/or shot",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 10,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "纹章",
+          "gloss": "heraldry: image displayed on an escutcheon",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 11,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "费用",
+          "gloss": "the price charged for some article or service; \"the admission charge\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "收费；要求支付",
+          "gloss": "demand payment; \"Will I get charged for this service?\"; \"We were billed for 4 nights in the hotel, although we stayed only 3 nights\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "急速前进；狂奔；飞奔；飞跑",
+          "gloss": "move quickly and violently; \"The car tore down the street\"; \"He came charging into my office\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "分派；委派；指派",
+          "gloss": "assign a duty, responsibility or obligation to; \"He was appointed deputy manager\"; \"She was charged with supervising the creation of a concordance\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "指控",
+          "gloss": "make an accusatory claim; \"The defense attorney charged that the jurors were biased\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 6,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "收费",
+          "gloss": "enter a certain amount as a charge; \"he charged me $15\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 8,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "还款要求",
+          "gloss": "request for payment of a debt; \"they submitted their charges at the end of each month\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 10,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "委托；寄存；托管",
+          "gloss": "give over to another for care or safekeeping; \"consign your baggage\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 10,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "信用卡支付；赊购",
+          "gloss": "pay with a credit card; pay with plastic money; postpone payment by recording a purchase as a debt; \"Will you pay cash or charge the purchase?\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 11,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "指控；指责；控告；控诉；谴责",
+          "gloss": "an assertion that someone is guilty of a fault or offence; \"the newspaper published charges that Jones was guilty of drunken driving\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 12,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "纹章模型",
+          "gloss": "heraldry consisting of a design or image depicted on a shield",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 13,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "使骚动；激动",
+          "gloss": "cause to be agitated, excited, or roused; \"The speaker charged up the crowd with his inflammatory remarks\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 13,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "爆裂药",
+          "gloss": "a quantity of explosive to be set off at one time; \"this cartridge has a powder charge of 50 grains\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 14,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "充电",
+          "gloss": "energize a battery by passing a current through it in the direction opposite to discharge; \"I need to charge my car battery\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 23,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "费用",
+        "充电"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 18.264125
+    },
+    {
+      "id": "charge-accusation",
+      "query": "charge",
+      "before": "The defendant denied the criminal",
+      "after": "during the trial.",
+      "expected": [
+        "指控",
+        "控告"
+      ],
+      "expectedGloss": "accusation",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "刑事控告；刑事罪"
+      ],
+      "alternatives": [
+        "费用",
+        "充电",
+        "指控；费用",
+        "冲锋；电荷",
+        "炸药；主管",
+        "被托管人；命令",
+        "控诉；加罪于",
+        "使充满；使充电",
+        "使承担",
+        "冲锋；要价",
+        "收费",
+        "冲打；冲锋",
+        "指控；起诉",
+        "控告",
+        "费用；收费",
+        "冲",
+        "冲锋；攻击",
+        "电荷",
+        "照顾范围；管理范围",
+        "托付",
+        "负载",
+        "指示",
+        "带球撞人",
+        "弹药",
+        "纹章",
+        "收费；要求支付",
+        "急速前进；狂奔",
+        "飞奔；飞跑",
+        "分派；委派",
+        "指派",
+        "指控",
+        "还款要求",
+        "委托；寄存",
+        "托管",
+        "信用卡支付；赊购",
+        "指控；指责",
+        "控告；控诉",
+        "谴责",
+        "纹章模型",
+        "使骚动；激动",
+        "爆裂药"
+      ],
+      "contextual": true,
+      "phrase": "criminal charge",
+      "lexicalCandidates": [
+        {
+          "word": "charge",
+          "text": "冲打；冲锋",
+          "gloss": "military: ground attack",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "收费",
+          "gloss": "to demand, require payment",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "指控；起诉",
+          "gloss": "accusation",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "控告",
+          "gloss": "criminal law, law enforcement: to formally accuse of a crime",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "费用；收费",
+          "gloss": "amount of money levied for a service",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "充电",
+          "gloss": "to cause to take on an electric charge",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "冲",
+          "gloss": "forceful forward movement",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "冲锋；攻击",
+          "gloss": "military: to attack by moving forward quickly",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "电荷",
+          "gloss": "electric charge",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "照顾范围；管理范围",
+          "gloss": "scope of responsibility",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "托付",
+          "gloss": "someone or something entrusted to one's care",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 6,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "负载",
+          "gloss": "load or burden",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 7,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "指示",
+          "gloss": "instruction",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 8,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "带球撞人",
+          "gloss": "basketball: offensive foul",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 9,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "弹药",
+          "gloss": "measured amount of powder and\/or shot",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 10,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "纹章",
+          "gloss": "heraldry: image displayed on an escutcheon",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 11,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "费用",
+          "gloss": "the price charged for some article or service; \"the admission charge\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "收费；要求支付",
+          "gloss": "demand payment; \"Will I get charged for this service?\"; \"We were billed for 4 nights in the hotel, although we stayed only 3 nights\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "电荷",
+          "gloss": "the quantity of unbalanced electricity in a body (either positive or negative) and construed as an excess or deficiency of electrons; \"the battery needed a fresh charge\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "急速前进；狂奔；飞奔；飞跑",
+          "gloss": "move quickly and violently; \"The car tore down the street\"; \"He came charging into my office\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "分派；委派；指派",
+          "gloss": "assign a duty, responsibility or obligation to; \"He was appointed deputy manager\"; \"She was charged with supervising the creation of a concordance\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "指控",
+          "gloss": "make an accusatory claim; \"The defense attorney charged that the jurors were biased\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 6,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "收费",
+          "gloss": "enter a certain amount as a charge; \"he charged me $15\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 8,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "还款要求",
+          "gloss": "request for payment of a debt; \"they submitted their charges at the end of each month\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 10,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "委托；寄存；托管",
+          "gloss": "give over to another for care or safekeeping; \"consign your baggage\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 10,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "信用卡支付；赊购",
+          "gloss": "pay with a credit card; pay with plastic money; postpone payment by recording a purchase as a debt; \"Will you pay cash or charge the purchase?\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 11,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "指控；指责；控告；控诉；谴责",
+          "gloss": "an assertion that someone is guilty of a fault or offence; \"the newspaper published charges that Jones was guilty of drunken driving\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 12,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "纹章模型",
+          "gloss": "heraldry consisting of a design or image depicted on a shield",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 13,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "使骚动；激动",
+          "gloss": "cause to be agitated, excited, or roused; \"The speaker charged up the crowd with his inflammatory remarks\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 13,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "爆裂药",
+          "gloss": "a quantity of explosive to be set off at one time; \"this cartridge has a powder charge of 50 grains\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 14,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "充电",
+          "gloss": "energize a battery by passing a current through it in the direction opposite to discharge; \"I need to charge my car battery\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 23,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "费用",
+        "充电"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 13.750875
+    },
+    {
+      "id": "charge-negation",
+      "query": "charge",
+      "before": "The report concerns electric",
+      "after": "rather than the fee paid for a service.",
+      "expected": [
+        "电荷"
+      ],
+      "expectedGloss": "electric",
+      "expectAbstain": false,
+      "category": "distractor",
+      "note": "Correct sense is asserted, but conservative abstention is safer than a wrong contextual promotion.",
+      "primary": [
+        "费用",
+        "充电"
+      ],
+      "alternatives": [
+        "指控；费用",
+        "冲锋；电荷",
+        "炸药；主管",
+        "被托管人；命令",
+        "控诉；加罪于",
+        "使充满；使充电",
+        "使承担",
+        "冲锋；要价",
+        "收费",
+        "冲打；冲锋",
+        "指控；起诉",
+        "控告",
+        "费用；收费",
+        "冲",
+        "冲锋；攻击",
+        "电荷",
+        "照顾范围；管理范围",
+        "托付",
+        "负载",
+        "指示",
+        "带球撞人",
+        "弹药",
+        "纹章",
+        "收费；要求支付",
+        "急速前进；狂奔",
+        "飞奔；飞跑",
+        "分派；委派",
+        "指派",
+        "指控",
+        "还款要求",
+        "委托；寄存",
+        "托管",
+        "信用卡支付；赊购",
+        "指控；指责",
+        "控告；控诉",
+        "谴责",
+        "纹章模型",
+        "使骚动；激动",
+        "爆裂药"
+      ],
+      "contextual": false,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "charge",
+          "text": "冲打；冲锋",
+          "gloss": "military: ground attack",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "收费",
+          "gloss": "to demand, require payment",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "指控；起诉",
+          "gloss": "accusation",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "控告",
+          "gloss": "criminal law, law enforcement: to formally accuse of a crime",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "费用；收费",
+          "gloss": "amount of money levied for a service",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "充电",
+          "gloss": "to cause to take on an electric charge",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "冲",
+          "gloss": "forceful forward movement",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "冲锋；攻击",
+          "gloss": "military: to attack by moving forward quickly",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "电荷",
+          "gloss": "electric charge",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "照顾范围；管理范围",
+          "gloss": "scope of responsibility",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "托付",
+          "gloss": "someone or something entrusted to one's care",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 6,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "负载",
+          "gloss": "load or burden",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 7,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "指示",
+          "gloss": "instruction",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 8,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "带球撞人",
+          "gloss": "basketball: offensive foul",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 9,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "弹药",
+          "gloss": "measured amount of powder and\/or shot",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 10,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "纹章",
+          "gloss": "heraldry: image displayed on an escutcheon",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 11,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "费用",
+          "gloss": "the price charged for some article or service; \"the admission charge\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "收费；要求支付",
+          "gloss": "demand payment; \"Will I get charged for this service?\"; \"We were billed for 4 nights in the hotel, although we stayed only 3 nights\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "电荷",
+          "gloss": "the quantity of unbalanced electricity in a body (either positive or negative) and construed as an excess or deficiency of electrons; \"the battery needed a fresh charge\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "急速前进；狂奔；飞奔；飞跑",
+          "gloss": "move quickly and violently; \"The car tore down the street\"; \"He came charging into my office\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "分派；委派；指派",
+          "gloss": "assign a duty, responsibility or obligation to; \"He was appointed deputy manager\"; \"She was charged with supervising the creation of a concordance\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "指控",
+          "gloss": "make an accusatory claim; \"The defense attorney charged that the jurors were biased\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 6,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "收费",
+          "gloss": "enter a certain amount as a charge; \"he charged me $15\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 8,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "还款要求",
+          "gloss": "request for payment of a debt; \"they submitted their charges at the end of each month\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 10,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "委托；寄存；托管",
+          "gloss": "give over to another for care or safekeeping; \"consign your baggage\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 10,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "信用卡支付；赊购",
+          "gloss": "pay with a credit card; pay with plastic money; postpone payment by recording a purchase as a debt; \"Will you pay cash or charge the purchase?\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 11,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "指控；指责；控告；控诉；谴责",
+          "gloss": "an assertion that someone is guilty of a fault or offence; \"the newspaper published charges that Jones was guilty of drunken driving\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 12,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "纹章模型",
+          "gloss": "heraldry consisting of a design or image depicted on a shield",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 13,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "使骚动；激动",
+          "gloss": "cause to be agitated, excited, or roused; \"The speaker charged up the crowd with his inflammatory remarks\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 13,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "爆裂药",
+          "gloss": "a quantity of explosive to be set off at one time; \"this cartridge has a powder charge of 50 grains\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 14,
+          "contextual": false
+        },
+        {
+          "word": "charge",
+          "text": "充电",
+          "gloss": "energize a battery by passing a current through it in the direction opposite to discharge; \"I need to charge my car battery\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 23,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "费用",
+        "充电"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 5.91275
+    },
+    {
+      "id": "culture-lab",
+      "query": "culture",
+      "before": "The laboratory grew a bacterial",
+      "after": "in a nutrient medium.",
+      "expected": [
+        "培养",
+        "培植"
+      ],
+      "expectedGloss": "microorganisms",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "培养；培植"
+      ],
+      "alternatives": [
+        "文化；修养",
+        "耕种",
+        "耕种；培养",
+        "文化",
+        "教化；文明",
+        "培养；栽培",
+        "精致；近乎完美"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "culture",
+          "text": "培养；培植",
+          "gloss": "(biology) the growing of microorganisms in a nutrient medium (such as gelatin or agar); \"the culture of cells in a Petri dish\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": true
+        },
+        {
+          "word": "culture",
+          "text": "文化",
+          "gloss": "arts, customs and habits",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "culture",
+          "text": "教化；文明",
+          "gloss": "a particular society at a particular time and place; \"early Mayan civilization\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "culture",
+          "text": "培养；栽培；精致；近乎完美",
+          "gloss": "a highly developed state of perfection; having a flawless or impeccable quality; \"they performed with great polish\"; \"I admired the exquisite refinement of his prose\"; \"almost an inspiration which gives to all work that finish which is almost art\"--Joseph Conrad",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "culture",
+          "text": "文化",
+          "gloss": "the attitudes and behavior that are characteristic of a particular social group or organization; \"the developing drug culture\"; \"the reason that the agency is doomed to inaction has something to do with the FBI culture\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 5,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "文化"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 17.493208
+    },
+    {
+      "id": "culture-society",
+      "query": "culture",
+      "before": "The exhibition explores the art and",
+      "after": "of the local community.",
+      "expected": [
+        "文化",
+        "文明"
+      ],
+      "expectedGloss": "society",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "文化"
+      ],
+      "alternatives": [
+        "文化；修养",
+        "耕种",
+        "耕种；培养",
+        "教化；文明",
+        "培养；栽培",
+        "精致；近乎完美",
+        "培养；培植"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "culture",
+          "text": "文化",
+          "gloss": "arts, customs and habits",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "culture",
+          "text": "教化；文明",
+          "gloss": "a particular society at a particular time and place; \"early Mayan civilization\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "culture",
+          "text": "培养；培植",
+          "gloss": "(biology) the growing of microorganisms in a nutrient medium (such as gelatin or agar); \"the culture of cells in a Petri dish\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "culture",
+          "text": "培养；栽培；精致；近乎完美",
+          "gloss": "a highly developed state of perfection; having a flawless or impeccable quality; \"they performed with great polish\"; \"I admired the exquisite refinement of his prose\"; \"almost an inspiration which gives to all work that finish which is almost art\"--Joseph Conrad",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "culture",
+          "text": "文化",
+          "gloss": "the attitudes and behavior that are characteristic of a particular social group or organization; \"the developing drug culture\"; \"the reason that the agency is doomed to inaction has something to do with the FBI culture\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 5,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "文化"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 10.67575
+    },
+    {
+      "id": "culture-refinement",
+      "query": "culture",
+      "before": "Her refined manners and",
+      "after": "impressed the guests.",
+      "expected": [
+        "修养",
+        "教养",
+        "精致"
+      ],
+      "expectedGloss": "perfection",
+      "expectAbstain": false,
+      "category": "source-quality",
+      "sourceIssue": "WordNet 14459824-n mixes refinement gloss with 培养\/栽培; keeping 精致 later does not validate wrong leading terms.",
+      "rejectPrimary": [
+        "培养",
+        "栽培"
+      ],
+      "primary": [
+        "文化"
+      ],
+      "alternatives": [
+        "文化；修养",
+        "耕种",
+        "耕种；培养",
+        "培养；栽培",
+        "精致；近乎完美",
+        "培养；培植",
+        "教化；文明"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "culture",
+          "text": "文化",
+          "gloss": "arts, customs and habits",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "culture",
+          "text": "教化；文明",
+          "gloss": "a particular society at a particular time and place; \"early Mayan civilization\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "culture",
+          "text": "培养；培植",
+          "gloss": "(biology) the growing of microorganisms in a nutrient medium (such as gelatin or agar); \"the culture of cells in a Petri dish\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "culture",
+          "text": "培养；栽培；精致；近乎完美",
+          "gloss": "a highly developed state of perfection; having a flawless or impeccable quality; \"they performed with great polish\"; \"I admired the exquisite refinement of his prose\"; \"almost an inspiration which gives to all work that finish which is almost art\"--Joseph Conrad",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "culture",
+          "text": "文化",
+          "gloss": "the attitudes and behavior that are characteristic of a particular social group or organization; \"the developing drug culture\"; \"the reason that the agency is doomed to inaction has something to do with the FBI culture\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 5,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "文化"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 10.865792
+    },
+    {
+      "id": "current-time",
+      "query": "current",
+      "before": "The newspaper reports the",
+      "after": "events and latest developments.",
+      "expected": [
+        "当前",
+        "现在",
+        "最近"
+      ],
+      "expectedGloss": "present time",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "时事"
+      ],
+      "alternatives": [
+        "涌流；趋势",
+        "流",
+        "流通的；现在的",
+        "当前的；流行的",
+        "当前的",
+        "活期；通用",
+        "现在的",
+        "电流",
+        "水流；流",
+        "当前的；最近的"
+      ],
+      "contextual": true,
+      "phrase": "current events",
+      "lexicalCandidates": [
+        {
+          "word": "current",
+          "text": "活期；通用；现在的",
+          "gloss": "existing or occurring at the moment",
+          "pos": "a.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "current",
+          "text": "电流",
+          "gloss": "time rate of flow of electric charge",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "current",
+          "text": "水流；流",
+          "gloss": "part of a fluid that moves continuously in a certain direction — see also ocean current",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "current",
+          "text": "当前的；最近的",
+          "gloss": "occurring in or belonging to the present time; \"current events\"; \"the current topic\"; \"current negotiations\"; \"current psychoanalytic theories\"; \"the ship's current position\"",
+          "pos": "a.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "current",
+          "text": "电流",
+          "gloss": "a flow of electricity through a conductor; \"the current was measured in amperes\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "当前的；流行的",
+        "当前的"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 21.014333
+    },
+    {
+      "id": "current-water",
+      "query": "current",
+      "before": "The strong river",
+      "after": "carried the canoe downstream.",
+      "expected": [
+        "水流",
+        "流"
+      ],
+      "expectedGloss": "fluid",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "当前的；流行的",
+        "当前的"
+      ],
+      "alternatives": [
+        "涌流；趋势",
+        "流",
+        "流通的；现在的",
+        "活期；通用",
+        "现在的",
+        "电流",
+        "水流；流",
+        "当前的；最近的"
+      ],
+      "contextual": false,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "current",
+          "text": "活期；通用；现在的",
+          "gloss": "existing or occurring at the moment",
+          "pos": "a.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "current",
+          "text": "电流",
+          "gloss": "time rate of flow of electric charge",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "current",
+          "text": "水流；流",
+          "gloss": "part of a fluid that moves continuously in a certain direction — see also ocean current",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "current",
+          "text": "当前的；最近的",
+          "gloss": "occurring in or belonging to the present time; \"current events\"; \"the current topic\"; \"current negotiations\"; \"current psychoanalytic theories\"; \"the ship's current position\"",
+          "pos": "a.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "current",
+          "text": "电流",
+          "gloss": "a flow of electricity through a conductor; \"the current was measured in amperes\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "当前的；流行的",
+        "当前的"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 13.759916
+    },
+    {
+      "id": "current-electric",
+      "query": "current",
+      "before": "The wire carries an electric",
+      "after": "of two amperes.",
+      "expected": [
+        "电流"
+      ],
+      "expectedGloss": "electric",
+      "expectAbstain": false,
+      "category": "technology",
+      "primary": [
+        "电流"
+      ],
+      "alternatives": [
+        "涌流；趋势",
+        "流",
+        "流通的；现在的",
+        "当前的；流行的",
+        "当前的",
+        "水流；流",
+        "当前的；最近的",
+        "活期；通用",
+        "现在的"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "current",
+          "text": "活期；通用；现在的",
+          "gloss": "existing or occurring at the moment",
+          "pos": "a.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "current",
+          "text": "电流",
+          "gloss": "time rate of flow of electric charge",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "current",
+          "text": "水流；流",
+          "gloss": "part of a fluid that moves continuously in a certain direction — see also ocean current",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "current",
+          "text": "当前的；最近的",
+          "gloss": "occurring in or belonging to the present time; \"current events\"; \"the current topic\"; \"current negotiations\"; \"current psychoanalytic theories\"; \"the ship's current position\"",
+          "pos": "a.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "current",
+          "text": "电流",
+          "gloss": "a flow of electricity through a conductor; \"the current was measured in amperes\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "当前的；流行的",
+        "当前的"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 12.621041
+    },
+    {
+      "id": "draft-writing",
+      "query": "draft",
+      "before": "Please revise the first",
+      "after": "of the article before publication.",
+      "expected": [
+        "草稿",
+        "草案"
+      ],
+      "expectedGloss": "written work",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "草稿"
+      ],
+      "alternatives": [
+        "气流；草稿",
+        "汇票；草案",
+        "起草；征兵",
+        "草案",
+        "征兵",
+        "略图；草图",
+        "设计图",
+        "应征入伍；征兵",
+        "选秀",
+        "生啤",
+        "汇票",
+        "一口",
+        "气流"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "draft",
+          "text": "一口",
+          "gloss": "amount of liquid that is drunk in one swallow",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "生啤",
+          "gloss": "beer drawn from a cask or keg",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "草稿",
+          "gloss": "early version of a written work",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "草案",
+          "gloss": "preliminary sketch or outline",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "征兵",
+          "gloss": "conscription",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "选秀",
+          "gloss": "system of assigning rookie players to professional sports teams",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "汇票",
+          "gloss": "a document ordering the payment of money; drawn by one person or bank on another",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "气流",
+          "gloss": "a current of air (usually coming into a chimney or room or vehicle)",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "略图；草图；设计图",
+          "gloss": "a preliminary sketch of a design or picture",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "草稿",
+          "gloss": "any of the various versions in the development of a written work; \"a preliminary draft\"; \"the final draft of the constitution\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "应征入伍；征兵",
+          "gloss": "compulsory military service",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 8,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "汇票；草案"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 26.963834
+    },
+    {
+      "id": "draft-air",
+      "query": "draft",
+      "before": "A cold",
+      "after": "came through the open window.",
+      "expected": [
+        "气流",
+        "穿堂风"
+      ],
+      "expectedGloss": "air",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "汇票；草案"
+      ],
+      "alternatives": [
+        "气流；草稿",
+        "起草；征兵",
+        "草稿",
+        "一口",
+        "生啤",
+        "征兵",
+        "选秀",
+        "气流",
+        "略图；草图",
+        "设计图",
+        "应征入伍；征兵"
+      ],
+      "contextual": false,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "draft",
+          "text": "一口",
+          "gloss": "amount of liquid that is drunk in one swallow",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "生啤",
+          "gloss": "beer drawn from a cask or keg",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "草稿",
+          "gloss": "early version of a written work",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "草案",
+          "gloss": "preliminary sketch or outline",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "征兵",
+          "gloss": "conscription",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "选秀",
+          "gloss": "system of assigning rookie players to professional sports teams",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "汇票",
+          "gloss": "a document ordering the payment of money; drawn by one person or bank on another",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "气流",
+          "gloss": "a current of air (usually coming into a chimney or room or vehicle)",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "略图；草图；设计图",
+          "gloss": "a preliminary sketch of a design or picture",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "草稿",
+          "gloss": "any of the various versions in the development of a written work; \"a preliminary draft\"; \"the final draft of the constitution\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "应征入伍；征兵",
+          "gloss": "compulsory military service",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 8,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "汇票；草案"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 9.007208
+    },
+    {
+      "id": "draft-conscription",
+      "query": "draft",
+      "before": "The army introduced a military",
+      "after": "to recruit soldiers.",
+      "expected": [
+        "征兵"
+      ],
+      "expectedGloss": "military service",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "征兵"
+      ],
+      "alternatives": [
+        "气流；草稿",
+        "汇票；草案",
+        "起草；征兵",
+        "草稿",
+        "应征入伍；征兵",
+        "选秀",
+        "草案",
+        "略图；草图",
+        "设计图",
+        "汇票",
+        "气流",
+        "生啤",
+        "一口"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "draft",
+          "text": "一口",
+          "gloss": "amount of liquid that is drunk in one swallow",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "生啤",
+          "gloss": "beer drawn from a cask or keg",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "草稿",
+          "gloss": "early version of a written work",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "草案",
+          "gloss": "preliminary sketch or outline",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "征兵",
+          "gloss": "conscription",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "选秀",
+          "gloss": "system of assigning rookie players to professional sports teams",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "汇票",
+          "gloss": "a document ordering the payment of money; drawn by one person or bank on another",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "气流",
+          "gloss": "a current of air (usually coming into a chimney or room or vehicle)",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "略图；草图；设计图",
+          "gloss": "a preliminary sketch of a design or picture",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "草稿",
+          "gloss": "any of the various versions in the development of a written work; \"a preliminary draft\"; \"the final draft of the constitution\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "应征入伍；征兵",
+          "gloss": "compulsory military service",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 8,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "汇票；草案"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 10.007458
+    },
+    {
+      "id": "draft-short",
+      "query": "draft",
+      "before": "Look at this",
+      "after": "again.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient",
+      "primary": [
+        "汇票；草案"
+      ],
+      "alternatives": [
+        "气流；草稿",
+        "起草；征兵",
+        "草稿",
+        "一口",
+        "生啤",
+        "征兵",
+        "选秀",
+        "气流",
+        "略图；草图",
+        "设计图",
+        "应征入伍；征兵"
+      ],
+      "contextual": false,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "draft",
+          "text": "一口",
+          "gloss": "amount of liquid that is drunk in one swallow",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "生啤",
+          "gloss": "beer drawn from a cask or keg",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "草稿",
+          "gloss": "early version of a written work",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "草案",
+          "gloss": "preliminary sketch or outline",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "征兵",
+          "gloss": "conscription",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "选秀",
+          "gloss": "system of assigning rookie players to professional sports teams",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "汇票",
+          "gloss": "a document ordering the payment of money; drawn by one person or bank on another",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "气流",
+          "gloss": "a current of air (usually coming into a chimney or room or vehicle)",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "略图；草图；设计图",
+          "gloss": "a preliminary sketch of a design or picture",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "草稿",
+          "gloss": "any of the various versions in the development of a written work; \"a preliminary draft\"; \"the final draft of the constitution\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "draft",
+          "text": "应征入伍；征兵",
+          "gloss": "compulsory military service",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 8,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": false,
+      "noContextPrimary": [
+        "汇票；草案"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 5.7665
+    },
+    {
+      "id": "field-physics",
+      "query": "field",
+      "before": "A magnet creates a magnetic",
+      "after": "around it.",
+      "expected": [
+        "场"
+      ],
+      "expectedGloss": "force",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "磁场"
+      ],
+      "alternatives": [
+        "领域；田地",
+        "场地；战场",
+        "场；域",
+        "使...晒在场上；使上场",
+        "田间的；野生的",
+        "野外的；田赛的",
+        "域；字段",
+        "田间；野外",
+        "野；田",
+        "田；田野",
+        "场",
+        "战场",
+        "领域",
+        "域",
+        "字段；信息组",
+        "野外",
+        "战场；沙场",
+        "主题；学科",
+        "领域；题目",
+        "场；场地",
+        "田地；范围",
+        "运动场",
+        "机场；飞机场"
+      ],
+      "contextual": true,
+      "phrase": "magnetic field",
+      "lexicalCandidates": [
+        {
+          "word": "field",
+          "text": "田间；野外；野；田",
+          "gloss": "land area free of woodland, cities, and towns; open country",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "田；田野",
+          "gloss": "wide, open space used to grow crops or to hold farm animals",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "场",
+          "gloss": "physics: region affected by a particular force",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "战场",
+          "gloss": "place where a battle is fought",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "领域",
+          "gloss": "course of study or domain of knowledge or practice",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "域",
+          "gloss": "mathematics (algebra): a commutative ring satisfying the field axioms",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "字段；信息组",
+          "gloss": "computing: area of memory or storage reserved for a particular value",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 6,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "田；田野；野外",
+          "gloss": "a piece of land cleared of trees and usually enclosed; \"he planted a field of wheat\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "战场；沙场",
+          "gloss": "a region where a battle is being (or has been) fought; \"they made a tour of Civil War battlefields\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "主题；学科；领域；题目",
+          "gloss": "a branch of knowledge; \"in what discipline is his doctorate?\"; \"teachers should be well trained in their subject\"; \"anthropology is the study of human beings\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "场；场地；田地；范围；领域",
+          "gloss": "a particular environment or walk of life; \"his social sphere is limited\"; \"it was a closed area of employment\"; \"he's out of my orbit\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 6,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "运动场",
+          "gloss": "a piece of land prepared for playing a game; \"the home crowd cheered when Princeton took the field\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 7,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "机场；飞机场",
+          "gloss": "a place where planes take off and land",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 16,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "田间；野外",
+        "田；田野"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 35.156166
+    },
+    {
+      "id": "field-database",
+      "query": "field",
+      "before": "Store the customer identifier in the database",
+      "after": "and index that column.",
+      "expected": [
+        "字段"
+      ],
+      "expectedGloss": "database",
+      "expectAbstain": false,
+      "category": "technology",
+      "primary": [
+        "田间；野外",
+        "田；田野"
+      ],
+      "alternatives": [
+        "领域；田地",
+        "场地；战场",
+        "场；域",
+        "使...晒在场上；使上场",
+        "田间的；野生的",
+        "野外的；田赛的",
+        "域；字段",
+        "野；田",
+        "场",
+        "战场",
+        "领域",
+        "域",
+        "字段；信息组",
+        "战场；沙场",
+        "主题；学科",
+        "领域；题目",
+        "场；场地",
+        "田地；范围",
+        "运动场",
+        "机场；飞机场"
+      ],
+      "contextual": false,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "field",
+          "text": "田间；野外；野；田",
+          "gloss": "land area free of woodland, cities, and towns; open country",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "田；田野",
+          "gloss": "wide, open space used to grow crops or to hold farm animals",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "场",
+          "gloss": "physics: region affected by a particular force",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "战场",
+          "gloss": "place where a battle is fought",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "领域",
+          "gloss": "course of study or domain of knowledge or practice",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "域",
+          "gloss": "mathematics (algebra): a commutative ring satisfying the field axioms",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "字段；信息组",
+          "gloss": "computing: area of memory or storage reserved for a particular value",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 6,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "田；田野；野外",
+          "gloss": "a piece of land cleared of trees and usually enclosed; \"he planted a field of wheat\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "战场；沙场",
+          "gloss": "a region where a battle is being (or has been) fought; \"they made a tour of Civil War battlefields\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "主题；学科；领域；题目",
+          "gloss": "a branch of knowledge; \"in what discipline is his doctorate?\"; \"teachers should be well trained in their subject\"; \"anthropology is the study of human beings\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "场；场地；田地；范围；领域",
+          "gloss": "a particular environment or walk of life; \"his social sphere is limited\"; \"it was a closed area of employment\"; \"he's out of my orbit\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 6,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "运动场",
+          "gloss": "a piece of land prepared for playing a game; \"the home crowd cheered when Princeton took the field\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 7,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "机场；飞机场",
+          "gloss": "a place where planes take off and land",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 16,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "田间；野外",
+        "田；田野"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 19.090792
+    },
+    {
+      "id": "field-farm",
+      "query": "field",
+      "before": "The farmer planted wheat in the",
+      "after": "beside the barn.",
+      "expected": [
+        "田",
+        "地"
+      ],
+      "expectedGloss": "land",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "田；田野"
+      ],
+      "alternatives": [
+        "领域；田地",
+        "场地；战场",
+        "场；域",
+        "使...晒在场上；使上场",
+        "田间的；野生的",
+        "野外的；田赛的",
+        "域；字段",
+        "野外",
+        "田间；野外",
+        "野；田",
+        "域",
+        "运动场",
+        "战场",
+        "场；场地",
+        "田地；范围",
+        "领域",
+        "场",
+        "主题；学科",
+        "领域；题目",
+        "字段；信息组",
+        "战场；沙场",
+        "机场；飞机场"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "field",
+          "text": "田；田野；野外",
+          "gloss": "a piece of land cleared of trees and usually enclosed; \"he planted a field of wheat\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": true
+        },
+        {
+          "word": "field",
+          "text": "田间；野外；野；田",
+          "gloss": "land area free of woodland, cities, and towns; open country",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "田；田野",
+          "gloss": "wide, open space used to grow crops or to hold farm animals",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "场",
+          "gloss": "physics: region affected by a particular force",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "战场",
+          "gloss": "place where a battle is fought",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "领域",
+          "gloss": "course of study or domain of knowledge or practice",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "域",
+          "gloss": "mathematics (algebra): a commutative ring satisfying the field axioms",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "字段；信息组",
+          "gloss": "computing: area of memory or storage reserved for a particular value",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 6,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "战场；沙场",
+          "gloss": "a region where a battle is being (or has been) fought; \"they made a tour of Civil War battlefields\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "主题；学科；领域；题目",
+          "gloss": "a branch of knowledge; \"in what discipline is his doctorate?\"; \"teachers should be well trained in their subject\"; \"anthropology is the study of human beings\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "场；场地；田地；范围；领域",
+          "gloss": "a particular environment or walk of life; \"his social sphere is limited\"; \"it was a closed area of employment\"; \"he's out of my orbit\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 6,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "运动场",
+          "gloss": "a piece of land prepared for playing a game; \"the home crowd cheered when Princeton took the field\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 7,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "机场；飞机场",
+          "gloss": "a place where planes take off and land",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 16,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "田间；野外",
+        "田；田野"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 11.96275
+    },
+    {
+      "id": "solution-chemistry",
+      "query": "solution",
+      "before": "Dissolve the salt in water to prepare a",
+      "after": "of the required concentration.",
+      "expected": [
+        "溶液"
+      ],
+      "expectedGloss": "mixture",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "溶液"
+      ],
+      "alternatives": [
+        "解决；解答",
+        "溶体；溶液",
+        "解答",
+        "解答；答案",
+        "方法",
+        "解；解决"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "solution",
+          "text": "溶液",
+          "gloss": "liquid mixture",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "solution",
+          "text": "解；解决",
+          "gloss": "an act, plan or other means, used or proposed, to solve a problem.",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "solution",
+          "text": "解答；答案；方法",
+          "gloss": "answer to a problem (mathematics)",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "solution",
+          "text": "溶体；溶液",
+          "gloss": "a homogeneous mixture of two or more substances; frequently (but not necessarily) a liquid solution; \"he used a solution of peroxide and water\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "solution",
+          "text": "解答",
+          "gloss": "the successful action of solving a problem; \"the solution took three hours\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "溶液"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 15.571459
+    },
+    {
+      "id": "solution-math",
+      "query": "solution",
+      "before": "Find the",
+      "after": "of this quadratic equation.",
+      "expected": [
+        "解",
+        "答案"
+      ],
+      "expectedGloss": "mathematical problem",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "溶液"
+      ],
+      "alternatives": [
+        "解决；解答",
+        "解；解决",
+        "解答；答案",
+        "方法",
+        "溶体；溶液",
+        "解答"
+      ],
+      "contextual": false,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "solution",
+          "text": "溶液",
+          "gloss": "liquid mixture",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "solution",
+          "text": "解；解决",
+          "gloss": "an act, plan or other means, used or proposed, to solve a problem.",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "solution",
+          "text": "解答；答案；方法",
+          "gloss": "answer to a problem (mathematics)",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "solution",
+          "text": "溶体；溶液",
+          "gloss": "a homogeneous mixture of two or more substances; frequently (but not necessarily) a liquid solution; \"he used a solution of peroxide and water\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "solution",
+          "text": "解答",
+          "gloss": "the successful action of solving a problem; \"the solution took three hours\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "溶液"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 7.575209
+    },
+    {
+      "id": "interest-loan",
+      "query": "interest",
+      "before": "The borrower pays annual",
+      "after": "on the loan at a fixed percentage.",
+      "expected": [
+        "利息"
+      ],
+      "expectedGloss": "borrowing money",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "利息"
+      ],
+      "alternatives": [
+        "兴趣；嗜好",
+        "利息；利益",
+        "爱好；趣味",
+        "势力",
+        "使感兴趣；与...有关系",
+        "利润；权益",
+        "股份",
+        "利益",
+        "娱乐；消遣",
+        "使……感興趣 \/使……感兴趣",
+        "要紧；重要",
+        "兴趣",
+        "关心；感兴趣",
+        "挂念"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "interest",
+          "text": "利息",
+          "gloss": "a fixed charge for borrowing money; usually a percentage of the amount borrowed; \"how much interest do you pay on your mortgage?\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": true
+        },
+        {
+          "word": "interest",
+          "text": "兴趣",
+          "gloss": "great attention and concern from someone",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "interest",
+          "text": "使……感興趣 \/使……感兴趣",
+          "gloss": "to attract attention or concern",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "interest",
+          "text": "利息",
+          "gloss": "finance: price of credit",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "interest",
+          "text": "利益",
+          "gloss": "involvement in or link with financial, business, or other undertaking",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "interest",
+          "text": "关心；感兴趣；挂念",
+          "gloss": "be on the mind of; \"I worry about the second Germanic consonant shift\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "interest",
+          "text": "要紧；重要",
+          "gloss": "be of importance or consequence; \"This matters to me!\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "interest",
+          "text": "利润；权益；股份",
+          "gloss": "(law) a right or legal share of something; a financial involvement with something; \"they have interests all over the world\"; \"a stake in the company's future\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "interest",
+          "text": "娱乐；消遣",
+          "gloss": "a diversion that occupies one's time and thoughts (usually pleasantly); \"sailing is her favorite pastime\"; \"his main pastime is gambling\"; \"he counts reading among his interests\"; \"they criticized the boy for his limited pursuits\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 6,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "兴趣",
+        "使……感興趣 \/使……感兴趣"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 21.967625
+    },
+    {
+      "id": "interest-curiosity",
+      "query": "interest",
+      "before": "The child showed a keen",
+      "after": "in dinosaurs and asked many questions.",
+      "expected": [
+        "兴趣",
+        "感兴趣"
+      ],
+      "expectedGloss": "attention",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "兴趣",
+        "使……感興趣 \/使……感兴趣"
+      ],
+      "alternatives": [
+        "兴趣；嗜好",
+        "利息；利益",
+        "爱好；趣味",
+        "势力",
+        "使感兴趣；与...有关系",
+        "利息",
+        "利益",
+        "关心；感兴趣",
+        "挂念",
+        "要紧；重要",
+        "利润；权益",
+        "股份",
+        "娱乐；消遣"
+      ],
+      "contextual": false,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "interest",
+          "text": "兴趣",
+          "gloss": "great attention and concern from someone",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "interest",
+          "text": "使……感興趣 \/使……感兴趣",
+          "gloss": "to attract attention or concern",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "interest",
+          "text": "利息",
+          "gloss": "finance: price of credit",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "interest",
+          "text": "利益",
+          "gloss": "involvement in or link with financial, business, or other undertaking",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "interest",
+          "text": "关心；感兴趣；挂念",
+          "gloss": "be on the mind of; \"I worry about the second Germanic consonant shift\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "interest",
+          "text": "要紧；重要",
+          "gloss": "be of importance or consequence; \"This matters to me!\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "interest",
+          "text": "利息",
+          "gloss": "a fixed charge for borrowing money; usually a percentage of the amount borrowed; \"how much interest do you pay on your mortgage?\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "interest",
+          "text": "利润；权益；股份",
+          "gloss": "(law) a right or legal share of something; a financial involvement with something; \"they have interests all over the world\"; \"a stake in the company's future\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "interest",
+          "text": "娱乐；消遣",
+          "gloss": "a diversion that occupies one's time and thoughts (usually pleasantly); \"sailing is her favorite pastime\"; \"his main pastime is gambling\"; \"he counts reading among his interests\"; \"they criticized the boy for his limited pursuits\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 6,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "兴趣",
+        "使……感興趣 \/使……感兴趣"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 12.70025
+    },
+    {
+      "id": "mean-math",
+      "query": "mean",
+      "before": "Add the observations and divide by their count to obtain the arithmetic",
+      "after": "of the sample.",
+      "expected": [
+        "平均"
+      ],
+      "expectedGloss": "average",
+      "expectAbstain": false,
+      "category": "candidate-gap",
+      "sourceIssue": "Arithmetic noun is absent from current exact Wiki\/WordNet bilingual sense rows; ECDICT has 平均数 without aligned per-sense English gloss.",
+      "primary": [
+        "平均值"
+      ],
+      "alternatives": [
+        "意思是",
+        "低劣的；卑贱的",
+        "简陋的；吝啬的",
+        "惭愧的；平均的",
+        "中间的；普通的",
+        "意谓；想要",
+        "意欲；预定",
+        "用意；有意义",
+        "平均数；中间",
+        "中庸",
+        "卑鄙的",
+        "意味；是……的意思",
+        "……的意思是……",
+        "意味着；意思是",
+        "暗示；蕴涵",
+        "衍推",
+        "意指",
+        "优秀的；出色的",
+        "有效的；灵巧的",
+        "熟练的；绝妙的",
+        "似乞丐的；赤贫如洗的",
+        "非常穷的",
+        "意味；意味着"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "mean",
+          "text": "卑鄙的",
+          "gloss": "low-minded; acting without consideration of others",
+          "pos": "a.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "mean",
+          "text": "意味；是……的意思",
+          "gloss": "to convey, indicate",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "mean",
+          "text": "……的意思是……",
+          "gloss": "of a word: to signify",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "mean",
+          "text": "意味着；意思是；暗示；蕴涵；衍推",
+          "gloss": "have as a logical consequence; \"The water shortage means that we have to stop taking long showers\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "mean",
+          "text": "意味着；意思是；意指",
+          "gloss": "denote or connote; \"`maison' means `house' in French\"; \"An example sentence would show what this word means\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "mean",
+          "text": "优秀的；出色的；有效的；灵巧的；熟练的；绝妙的",
+          "gloss": "excellent; \"famous for a mean backhand\"",
+          "pos": "a.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "mean",
+          "text": "似乞丐的；赤贫如洗的；非常穷的",
+          "gloss": "marked by poverty befitting a beggar; \"a beggarly existence in the slums\"; \"a mean hut\"",
+          "pos": "a.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "mean",
+          "text": "意味；意味着",
+          "gloss": "have a specified degree of importance; \"My ex-husband means nothing to me\"; \"Happiness means everything\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "意思是",
+        "平均值"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 17.555875
+    },
+    {
+      "id": "mean-unkind",
+      "query": "mean",
+      "before": "It was",
+      "after": "of him to mock a frightened child.",
+      "expected": [
+        "卑鄙",
+        "刻薄",
+        "恶意"
+      ],
+      "expectedGloss": "unkind",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "意思是",
+        "平均值"
+      ],
+      "alternatives": [
+        "低劣的；卑贱的",
+        "简陋的；吝啬的",
+        "惭愧的；平均的",
+        "中间的；普通的",
+        "意谓；想要",
+        "意欲；预定",
+        "用意；有意义",
+        "平均数；中间",
+        "中庸",
+        "卑鄙的",
+        "意味；是……的意思",
+        "……的意思是……",
+        "意味着；意思是",
+        "暗示；蕴涵",
+        "衍推",
+        "意指",
+        "优秀的；出色的",
+        "有效的；灵巧的",
+        "熟练的；绝妙的",
+        "似乞丐的；赤贫如洗的",
+        "非常穷的",
+        "意味；意味着"
+      ],
+      "contextual": false,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "mean",
+          "text": "卑鄙的",
+          "gloss": "low-minded; acting without consideration of others",
+          "pos": "a.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "mean",
+          "text": "意味；是……的意思",
+          "gloss": "to convey, indicate",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "mean",
+          "text": "……的意思是……",
+          "gloss": "of a word: to signify",
+          "pos": "v.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "mean",
+          "text": "意味着；意思是；暗示；蕴涵；衍推",
+          "gloss": "have as a logical consequence; \"The water shortage means that we have to stop taking long showers\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "mean",
+          "text": "意味着；意思是；意指",
+          "gloss": "denote or connote; \"`maison' means `house' in French\"; \"An example sentence would show what this word means\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "mean",
+          "text": "优秀的；出色的；有效的；灵巧的；熟练的；绝妙的",
+          "gloss": "excellent; \"famous for a mean backhand\"",
+          "pos": "a.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "mean",
+          "text": "似乞丐的；赤贫如洗的；非常穷的",
+          "gloss": "marked by poverty befitting a beggar; \"a beggarly existence in the slums\"; \"a mean hut\"",
+          "pos": "a.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "mean",
+          "text": "意味；意味着",
+          "gloss": "have a specified degree of importance; \"My ex-husband means nothing to me\"; \"Happiness means everything\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "意思是",
+        "平均值"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 8.388667
+    },
+    {
+      "id": "significant-statistics",
+      "query": "significant",
+      "before": "The result was statistically",
+      "after": "at the 0.01 level after hypothesis testing.",
+      "expected": [
+        "显著"
+      ],
+      "expectedGloss": "chance",
+      "expectAbstain": false,
+      "category": "source-quality",
+      "sourceIssue": "WordNet 02165655-a has statistical gloss but Chinese only 有意义的; ranking this sense does not produce precise 显著.",
+      "primary": [
+        "有意义的"
+      ],
+      "alternatives": [
+        "重要的；有效的",
+        "有含义的；暗示的",
+        "值得注意的",
+        "重要；有意义",
+        "值得注意的；有意义的",
+        "重大的；重要的"
+      ],
+      "contextual": true,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "significant",
+          "text": "重要；有意义",
+          "gloss": "having noticeable effect",
+          "pos": "a.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "significant",
+          "text": "值得注意的；有意义的；重大的；重要的",
+          "gloss": "important in effect or meaning; \"a significant change in tax laws\"; \"a significant change in the Constitution\"; \"a significant contribution\"; \"significant details\"; \"statistically significant\"",
+          "pos": "a.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "significant",
+          "text": "有意义的",
+          "gloss": "too closely correlated to be attributed to chance and therefore indicating a systematic relation; \"the interaction effect is significant at the .01 level\"; \"no significant difference was found\"",
+          "pos": "a.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": false,
+      "noContextPrimary": [
+        "重要的；有效的",
+        "值得注意的"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 11.263291
+    },
+    {
+      "id": "significant-important",
+      "query": "significant",
+      "before": "The discovery made a",
+      "after": "contribution to our understanding.",
+      "expected": [
+        "重要",
+        "重大",
+        "有意义"
+      ],
+      "expectedGloss": "important",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "重要的；有效的",
+        "值得注意的"
+      ],
+      "alternatives": [
+        "有含义的；暗示的",
+        "重要；有意义",
+        "值得注意的；有意义的",
+        "重大的；重要的",
+        "有意义的"
+      ],
+      "contextual": false,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "significant",
+          "text": "重要；有意义",
+          "gloss": "having noticeable effect",
+          "pos": "a.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "significant",
+          "text": "值得注意的；有意义的；重大的；重要的",
+          "gloss": "important in effect or meaning; \"a significant change in tax laws\"; \"a significant change in the Constitution\"; \"a significant contribution\"; \"significant details\"; \"statistically significant\"",
+          "pos": "a.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "significant",
+          "text": "有意义的",
+          "gloss": "too closely correlated to be attributed to chance and therefore indicating a systematic relation; \"the interaction effect is significant at the .01 level\"; \"no significant difference was found\"",
+          "pos": "a.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "重要的；有效的",
+        "值得注意的"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 9.061917
+    },
+    {
+      "id": "bank-negated-finance",
+      "query": "bank",
+      "before": "Not the financial institution accepting deposits: the muddy",
+      "after": "where the canoe landed was flooded.",
+      "expected": [
+        "岸",
+        "河边"
+      ],
+      "expectedGloss": "river",
+      "expectAbstain": false,
+      "category": "distractor",
+      "note": "Correct sense is asserted, but conservative abstention is safer than a wrong contextual promotion.",
+      "primary": [
+        "银行",
+        "河岸"
+      ],
+      "alternatives": [
+        "银行；堤",
+        "岸",
+        "库",
+        "岸；河边",
+        "倾斜飞行；带坡度转弯",
+        "存放款金融机构；银行",
+        "把钱存入银行",
+        "当庄家",
+        "储备金",
+        "经营银行业",
+        "庄家的赌本",
+        "存款；把存入银行",
+        "依赖；依靠",
+        "信任；信赖",
+        "银行大厦"
+      ],
+      "contextual": false,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "bank",
+          "text": "银行",
+          "gloss": "institution",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "岸",
+          "gloss": "edge of river or lake",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "银行",
+          "gloss": "branch office",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "岸；河边",
+          "gloss": "sloping land (especially the slope beside a body of water); \"they pulled the canoe up on the bank\"; \"he sat on the bank of the river and watched the currents\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "倾斜飞行；带坡度转弯",
+          "gloss": "tip laterally; \"the pilot had to bank the aircraft\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "存放款金融机构；银行",
+          "gloss": "a financial institution that accepts deposits and channels the money into lending activities; \"he cashed a check at the bank\"; \"that bank holds the mortgage on my home\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "把钱存入银行",
+          "gloss": "do business with a bank or keep an account at a bank; \"Where do you bank in this town?\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "当庄家",
+          "gloss": "act as the banker in a game or in gambling",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "储备金",
+          "gloss": "a supply or stock held in reserve for future use (especially in emergencies)",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "经营银行业",
+          "gloss": "be in the banking business",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "庄家的赌本",
+          "gloss": "the funds held by a gambling house or the dealer in some gambling games; \"he tried to break the bank at Monte Carlo\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "存款；把存入银行；把钱存入银行",
+          "gloss": "put into a bank account; \"She deposits her paycheck every month\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "依赖；依靠；信任；信赖",
+          "gloss": "have confidence or faith in; \"We can trust in God\"; \"Rely on your friends\"; \"bank on your good education\"; \"I swear by my grandmother's recipes\"",
+          "pos": "v.",
+          "source": "wordnet",
+          "sourceRank": 7,
+          "contextual": false
+        },
+        {
+          "word": "bank",
+          "text": "银行大厦",
+          "gloss": "a building in which the business of banking transacted; \"the bank is on the corner of Nassau and Witherspoon\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 8,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "银行",
+        "河岸"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 4.646375
+    },
+    {
+      "id": "current-no-evidence",
+      "query": "current",
+      "before": "The word",
+      "after": "appears in the heading.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient",
+      "primary": [
+        "当前的；流行的",
+        "当前的"
+      ],
+      "alternatives": [
+        "涌流；趋势",
+        "流",
+        "流通的；现在的",
+        "活期；通用",
+        "现在的",
+        "电流",
+        "水流；流",
+        "当前的；最近的"
+      ],
+      "contextual": false,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "current",
+          "text": "活期；通用；现在的",
+          "gloss": "existing or occurring at the moment",
+          "pos": "a.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "current",
+          "text": "电流",
+          "gloss": "time rate of flow of electric charge",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "current",
+          "text": "水流；流",
+          "gloss": "part of a fluid that moves continuously in a certain direction — see also ocean current",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "current",
+          "text": "当前的；最近的",
+          "gloss": "occurring in or belonging to the present time; \"current events\"; \"the current topic\"; \"current negotiations\"; \"current psychoanalytic theories\"; \"the ship's current position\"",
+          "pos": "a.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "current",
+          "text": "电流",
+          "gloss": "a flow of electricity through a conductor; \"the current was measured in amperes\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": false,
+      "noContextPrimary": [
+        "当前的；流行的",
+        "当前的"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 6.403667
+    },
+    {
+      "id": "field-no-evidence",
+      "query": "field",
+      "before": "Choose a",
+      "after": "from the list.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient",
+      "primary": [
+        "田间；野外",
+        "田；田野"
+      ],
+      "alternatives": [
+        "领域；田地",
+        "场地；战场",
+        "场；域",
+        "使...晒在场上；使上场",
+        "田间的；野生的",
+        "野外的；田赛的",
+        "域；字段",
+        "野；田",
+        "场",
+        "战场",
+        "领域",
+        "域",
+        "字段；信息组",
+        "战场；沙场",
+        "主题；学科",
+        "领域；题目",
+        "场；场地",
+        "田地；范围",
+        "运动场",
+        "机场；飞机场"
+      ],
+      "contextual": false,
+      "phrase": "",
+      "lexicalCandidates": [
+        {
+          "word": "field",
+          "text": "田间；野外；野；田",
+          "gloss": "land area free of woodland, cities, and towns; open country",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "田；田野",
+          "gloss": "wide, open space used to grow crops or to hold farm animals",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "场",
+          "gloss": "physics: region affected by a particular force",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 2,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "战场",
+          "gloss": "place where a battle is fought",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "领域",
+          "gloss": "course of study or domain of knowledge or practice",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 4,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "域",
+          "gloss": "mathematics (algebra): a commutative ring satisfying the field axioms",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 5,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "字段；信息组",
+          "gloss": "computing: area of memory or storage reserved for a particular value",
+          "pos": "n.",
+          "source": "wiktionary",
+          "sourceRank": 6,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "田；田野；野外",
+          "gloss": "a piece of land cleared of trees and usually enclosed; \"he planted a field of wheat\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 0,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "战场；沙场",
+          "gloss": "a region where a battle is being (or has been) fought; \"they made a tour of Civil War battlefields\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 1,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "主题；学科；领域；题目",
+          "gloss": "a branch of knowledge; \"in what discipline is his doctorate?\"; \"teachers should be well trained in their subject\"; \"anthropology is the study of human beings\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 3,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "场；场地；田地；范围；领域",
+          "gloss": "a particular environment or walk of life; \"his social sphere is limited\"; \"it was a closed area of employment\"; \"he's out of my orbit\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 6,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "运动场",
+          "gloss": "a piece of land prepared for playing a game; \"the home crowd cheered when Princeton took the field\"",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 7,
+          "contextual": false
+        },
+        {
+          "word": "field",
+          "text": "机场；飞机场",
+          "gloss": "a place where planes take off and land",
+          "pos": "n.",
+          "source": "wordnet",
+          "sourceRank": 16,
+          "contextual": false
+        }
+      ],
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": false,
+      "noContextPrimary": [
+        "田间；野外",
+        "田；田野"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 8.282542
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+
+io.github.dpan538.annota.SenseRankerTest:..................
+io.github.dpan538.annota.DictionarySenseIntegrationTest:......
+io.github.dpan538.annota.DictionaryContextTest:...............
+io.github.dpan538.annota.DictionaryCoverageTest:.
+io.github.dpan538.annota.DictionaryContextUiTest:
+Error in realPdfSelectionChangesSenseAndManualEditsClearContext(io.github.dpan538.annota.DictionaryContextUiTest):
+java.lang.IllegalStateException: bank: selected=bank context=LookupContext(selected=bank, before=[the, river], after=[was, flooded]) labels=[字典, 离线, bank, 英汉 · 汉英, bank, bæŋk, 当前语境, n., 河岸, 更多释义 · 16, Annota 离线词库]
+	at io.github.dpan538.annota.DictionaryContextUiTest.realPdfSelectionChangesSenseAndManualEditsClearContext$select(DictionaryContextUiTest.kt:154)
+	at io.github.dpan538.annota.DictionaryContextUiTest.realPdfSelectionChangesSenseAndManualEditsClearContext(DictionaryContextUiTest.kt:205)
+
+io.github.dpan538.annota.OfflineDictionaryTest:....
+io.github.dpan538.annota.OfflineLanguageTest:....
+io.github.dpan538.annota.DictionaryRetrievalTest:........
+io.github.dpan538.annota.TranslationInputTest:....
+
+Time: 79.53
+There was 1 failure:
+1) realPdfSelectionChangesSenseAndManualEditsClearContext(io.github.dpan538.annota.DictionaryContextUiTest)
+java.lang.IllegalStateException: bank: selected=bank context=LookupContext(selected=bank, before=[the, river], after=[was, flooded]) labels=[字典, 离线, bank, 英汉 · 汉英, bank, bæŋk, 当前语境, n., 河岸, 更多释义 · 16, Annota 离线词库]
+	at io.github.dpan538.annota.DictionaryContextUiTest.realPdfSelectionChangesSenseAndManualEditsClearContext$select(DictionaryContextUiTest.kt:154)
+	at io.github.dpan538.annota.DictionaryContextUiTest.realPdfSelectionChangesSenseAndManualEditsClearContext(DictionaryContextUiTest.kt:205)
+
+FAILURES!!!
+Tests run: 61,  Failures: 1
+
+

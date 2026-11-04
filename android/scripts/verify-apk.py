@@ -77,6 +77,12 @@ try:
             for name, record in translation['files'].items():
                 assert hashlib.sha256(package.read('assets/translation/' + name)).hexdigest() == record['sha256']
             report['offlineTranslation'] = translation['revision']
+            semantic = json.loads(package.read('assets/semantic/manifest.json'))
+            for name, record in semantic['files'].items():
+                assert hashlib.sha256(package.read('assets/semantic/' + name)).hexdigest() == record['sha256']
+            assert not any('semantic/' in n and '.tmp.' in n for n in names)
+            report['offlineSemanticModel'] = semantic.get('model', 'all-MiniLM-L6-v2')
+            assert source.stat().st_size < 512 * 1024 * 1024, 'APK exceeds app update download limit'
             report['zipEntries'] = len(names)
             report['nativeAbis'] = sorted({n.split('/')[1] for n in names if n.startswith('lib/') and n.endswith('.so')})
         badging = run([build_tools/'aapt', 'dump', 'badging', downloaded])

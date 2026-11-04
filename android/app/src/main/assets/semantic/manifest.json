@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "model_id": "sentence-transformers/all-MiniLM-L6-v2",
+  "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "model_source_path": "onnx/model_qint8_arm64.onnx",
+  "model_license": "Apache-2.0",
+  "official_lfs_sha256": "4278337fd0ff3c68bfb6291042cad8ab363e1d9fbc43dcb499fe91c871902474",
+  "embedding_dimension": 384,
+  "max_tokens": 128,
+  "normalization": "bert-uncased-wordpiece-v1",
+  "pooling": "attention-mask mean including CLS/SEP followed by L2 normalization",
+  "input_names": [
+    "input_ids",
+    "attention_mask",
+    "token_type_ids"
+  ],
+  "input_dtype": "int64",
+  "output_name": "last_hidden_state",
+  "output_dtype": "float32",
+  "vector_index": {
+    "file": "glosses.sqlite",
+    "table": "vectors",
+    "key_column": "key",
+    "key": "sha256(raw exact gloss UTF-8), lowercase hex",
+    "encoding": "signed-int8-symmetric-per-vector",
+    "decode": "signed byte * scale; L2 normalize before cosine",
+    "count": 92869,
+    "truncated_glosses": 0,
+    "truncation": "Offline glossary only: first127tokens+SEP; context encoder never silently truncates",
+    "sources": [
+      {
+        "path": "design/dictionary/bundle/wordnet.sqlite",
+        "sha256": "b54c4ba933937200cf077a8d94637dad04d6f1e049fc70963f34fe846873e92e",
+        "rows": 77708,
+        "distinct_glosses": 42119
+      },
+      {
+        "path": "design/dictionary/bundle/wiktionary.sqlite",
+        "sha256": "ce7198a57990d39d797cf7df74460fee4668689dbc12116d6faabc7189128622",
+        "rows": 61076,
+        "distinct_glosses": 50820
+      }
+    ]
+  },
+  "network_at_runtime": false,
+  "files": {
+    "CC-BY-SA-4.0.txt": {
+      "sha256": "28a9529c7d0bb4dc51f4bf5c116a3d16ef247a052f7591466768ddf563fd1cf5",
+      "bytes": 20138
+    },
+    "Chinese-Open-WordNet.txt": {
+      "sha256": "81a3cb1f97e120581d67c71424f2de5dd96325d951f991e8a092147a2a4b2321",
+      "bytes": 1441
+    },
+    "LICENSE-APACHE-2.0.txt": {
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "bytes": 11358
+    },
+    "MODEL_CARD.md": {
+      "sha256": "dcd602d2fd35c203a247304a06fec6654a12f7941b739f9221a064fe8dc3b7f0",
+      "bytes": 10502
+    },
+    "NOTICE.md": {
+      "sha256": "3275baa89a6edd4bf7d747692d626b23f9c2849d02aa6334bf0863d9a920fbf8",
+      "bytes": 2327
+    },
+    "Wiktionary-NOTICE.md": {
+      "sha256": "cdac6a3ba7a4a7216e0ea227f6ca5f8349d1bfe48a67056d0e0d13243894856d",
+      "bytes": 1748
+    },
+    "WordNet-3.0.txt": {
+      "sha256": "7731175a77952e259390b496fab905e57118b8d19ad3a8383c67eee724ff443f",
+      "bytes": 1625
+    },
+    "config.json": {
+      "sha256": "953f9c0d463486b10a6871cc2fd59f223b2c70184f49815e7efbcab5d8908b41",
+      "bytes": 612
+    },
+    "glosses.sqlite": {
+      "sha256": "9e9fc196a85748749d7de4a9f6877007795a6128a31aa2dd70494afa358197b2",
+      "bytes": 55091200
+    },
+    "model.onnx": {
+      "sha256": "4278337fd0ff3c68bfb6291042cad8ab363e1d9fbc43dcb499fe91c871902474",
+      "bytes": 23026053
+    },
+    "pooling_config.json": {
+      "sha256": "4be450dde3b0273bb9787637cfbd28fe04a7ba6ab9d36ac48e92b11e350ffc23",
+      "bytes": 190
+    },
+    "sentence_bert_config.json": {
+      "sha256": "fc1993fde0a95c24ec6c022539d41cf6e2f7c9721e5415d6fb6897472a9cd4b7",
+      "bytes": 53
+    },
+    "special_tokens_map.json": {
+      "sha256": "303df45a03609e4ead04bc3dc1536d0ab19b5358db685b6f3da123d05ec200e3",
+      "bytes": 112
+    },
+    "tokenizer.json": {
+      "sha256": "be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037",
+      "bytes": 466247
+    },
+    "tokenizer_config.json": {
+      "sha256": "acb92769e8195aabd29b7b2137a9e6d6e25c476a4f15aa4355c233426c61576b",
+      "bytes": 350
+    },
+    "vocab.txt": {
+      "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3",
+      "bytes": 231508
+    }
+  }
+}

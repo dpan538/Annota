@@ -14,6 +14,7 @@ class WordNetDictionary(private val file: File, private val source: String = "wo
         val rank: Int,
         val contextual: Boolean = false,
         val source: String = "wordnet",
+        val semantic: Boolean = false,
     )
 
     private val cache = LruCache<String, List<Sense>>(256)
@@ -43,7 +44,7 @@ class WordNetDictionary(private val file: File, private val source: String = "wo
             .also { sourceMorphology.put(query, it) }
     }
 
-    private fun contentForms(words: Collection<String>): Set<String> {
+    private fun contentForms(words: Collection<String>, db: SQLiteDatabase): Set<String> {
         val result = words.toMutableSet()
         val missing =
             words.distinct().filter { word ->
@@ -55,18 +56,13 @@ class WordNetDictionary(private val file: File, private val source: String = "wo
                 }
             }
         if (missing.isEmpty()) return result
-        SQLiteDatabase.openDatabase(file.path, null, SQLiteDatabase.OPEN_READONLY).use { db ->
-            missing.forEach { word ->
-                result +=
-                    db.rawQuery(
-                            "SELECT DISTINCT lemma FROM forms WHERE form=? LIMIT 4",
-                            arrayOf(word),
-                        )
-                        .use { cursor ->
-                            buildSet { while (cursor.moveToNext()) add(cursor.getString(0)) }
-                        }
-                        .also { morphology.put(word, it) }
-            }
+        missing.forEach { word ->
+            result +=
+                db.rawQuery("SELECT DISTINCT lemma FROM forms WHERE form=? LIMIT 4", arrayOf(word))
+                    .use { cursor ->
+                        buildSet { while (cursor.moveToNext()) add(cursor.getString(0)) }
+                    }
+                    .also { morphology.put(word, it) }
         }
         return result
     }
@@ -140,78 +136,30 @@ class WordNetDictionary(private val file: File, private val source: String = "wo
                                     .also { cache.put(word, it) }
                             }
                 }
-                .distinctBy { it.word + it.label + it.text }
-        val active = context?.takeIf { it.matches(query) }
-        val window = active?.let { (it.before.takeLast(12) + it.after.take(12)).toSet() }.orEmpty()
-        if (window.isEmpty() || values.isEmpty()) return values.sortedBy { it.rank }
-        // Simplified Lesk: only independent content-word overlaps, never an opaque confidence
-        // claim.
-        val stop =
-            setOf(
-                "that",
-                "this",
-                "with",
-                "from",
-                "have",
-                "been",
-                "being",
-                "were",
-                "their",
-                "which",
-                "into",
-                "such",
-                "other",
-                "used",
-                "than",
-                "they",
-                "there",
-                "will",
-                "when",
-                "also",
-                "some",
-                "more",
-                "most",
-                "only",
-            )
-        val cues =
-            window
-                .filter { it.length >= 4 && it !in stop && it != key }
-                .map {
-                    contentForms(listOf(it))
-                        .filterNot { form -> form in keys || form in stop }
-                        .toSet()
+                .distinctBy { listOf(it.word, it.label, it.text, it.gloss, it.source) }
+        return rankSenses(query, context, values.sortedBy { it.rank })
+    }
+
+    /** Compare all sources together; a winner from one small source is not global evidence. */
+    @Synchronized
+    fun rankSenses(query: String, context: LookupContext?, values: List<Sense>): List<Sense> {
+        val active = context?.takeIf { it.matches(query) } ?: return values
+        if (values.isEmpty()) return values
+        val decision =
+            SQLiteDatabase.openDatabase(file.path, null, SQLiteDatabase.OPEN_READONLY).use { db ->
+                SenseRanker.rank(
+                    query,
+                    active.before,
+                    active.after,
+                    values.mapIndexed { index, sense ->
+                        SenseRanker.Candidate(index, sense.gloss, sense.label, index)
+                    },
+                ) { word ->
+                    contentForms(listOf(word), db)
                 }
-                .filter { it.isNotEmpty() }
-                .distinct()
-        if (cues.size < 2) return values.sortedBy { it.rank }
-        val ranked =
-            values
-                .map { sense ->
-                    val words =
-                        contentForms(
-                            LookupContext.tokens(sense.gloss).filter {
-                                it.length >= 4 && it !in stop
-                            }
-                        )
-                    cues.count { forms -> forms.any { it in words } } to sense
-                }
-                .sortedWith(
-                    compareByDescending<Pair<Int, Sense>> { it.first }.thenBy { it.second.rank }
-                )
-        // Equivalent records for one sense are not competing meanings. Compare distinct
-        // gloss/POS groups, so a lemma and its inflected headword do not cancel real evidence.
-        val groups = ranked.distinctBy { it.second.label + "|" + it.second.gloss }
-        val best = groups.firstOrNull()
-        val confident =
-            best != null && best.first >= 2 && best.first > (groups.getOrNull(1)?.first ?: 0)
-        return if (confident)
-            ranked.map { item ->
-                item.second.copy(
-                    contextual =
-                        item.second.label == best!!.second.label &&
-                            item.second.gloss == best.second.gloss
-                )
             }
-        else values.sortedBy { it.rank }
+        return decision.ordered.map { candidate ->
+            values[candidate.id].copy(contextual = candidate.id in decision.confidentIds)
+        }
     }
 }

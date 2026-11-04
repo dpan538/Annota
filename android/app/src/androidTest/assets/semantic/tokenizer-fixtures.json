@@ -1,0 +1,360 @@
+{
+  "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "cases": [
+    {
+      "text": "The bank approved a loan.",
+      "ids": [
+        101,
+        1996,
+        2924,
+        4844,
+        1037,
+        5414,
+        1012,
+        102
+      ],
+      "tokens": [
+        "[CLS]",
+        "the",
+        "bank",
+        "approved",
+        "a",
+        "loan",
+        ".",
+        "[SEP]"
+      ]
+    },
+    {
+      "text": "Café naïve résumé déjà vu.",
+      "ids": [
+        101,
+        7668,
+        15743,
+        13746,
+        2139,
+        3900,
+        24728,
+        1012,
+        102
+      ],
+      "tokens": [
+        "[CLS]",
+        "cafe",
+        "naive",
+        "resume",
+        "de",
+        "##ja",
+        "vu",
+        ".",
+        "[SEP]"
+      ]
+    },
+    {
+      "text": "中文词典，IT-related resources.",
+      "ids": [
+        101,
+        1746,
+        1861,
+        100,
+        100,
+        1989,
+        2009,
+        1011,
+        3141,
+        4219,
+        1012,
+        102
+      ],
+      "tokens": [
+        "[CLS]",
+        "中",
+        "文",
+        "[UNK]",
+        "[UNK]",
+        "，",
+        "it",
+        "-",
+        "related",
+        "resources",
+        ".",
+        "[SEP]"
+      ]
+    },
+    {
+      "text": "[MASK] [mask] [CLS] [UNK] [SEP] [PAD]",
+      "ids": [
+        101,
+        103,
+        1031,
+        7308,
+        1033,
+        101,
+        100,
+        102,
+        0,
+        102
+      ],
+      "tokens": [
+        "[CLS]",
+        "[MASK]",
+        "[",
+        "mask",
+        "]",
+        "[CLS]",
+        "[UNK]",
+        "[SEP]",
+        "[PAD]",
+        "[SEP]"
+      ]
+    },
+    {
+      "text": "Can't we're John's IT-related resource; 3.14%.",
+      "ids": [
+        101,
+        2064,
+        1005,
+        1056,
+        2057,
+        1005,
+        2128,
+        2198,
+        1005,
+        1055,
+        2009,
+        1011,
+        3141,
+        7692,
+        1025,
+        1017,
+        1012,
+        2403,
+        1003,
+        1012,
+        102
+      ],
+      "tokens": [
+        "[CLS]",
+        "can",
+        "'",
+        "t",
+        "we",
+        "'",
+        "re",
+        "john",
+        "'",
+        "s",
+        "it",
+        "-",
+        "related",
+        "resource",
+        ";",
+        "3",
+        ".",
+        "14",
+        "%",
+        ".",
+        "[SEP]"
+      ]
+    },
+    {
+      "text": "tabs\tlines\ncarriage\rnull\u0000zero​width space end",
+      "ids": [
+        101,
+        21628,
+        2015,
+        3210,
+        9118,
+        19701,
+        6290,
+        5004,
+        3593,
+        2705,
+        2686,
+        2203,
+        102
+      ],
+      "tokens": [
+        "[CLS]",
+        "tab",
+        "##s",
+        "lines",
+        "carriage",
+        "null",
+        "##zer",
+        "##ow",
+        "##id",
+        "##th",
+        "space",
+        "end",
+        "[SEP]"
+      ]
+    },
+    {
+      "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "ids": [
+        101,
+        100,
+        102
+      ],
+      "tokens": [
+        "[CLS]",
+        "[UNK]",
+        "[SEP]"
+      ]
+    },
+    {
+      "text": "Emoji 🧪 and supplementary CJK 𠀀.",
+      "ids": [
+        101,
+        7861,
+        29147,
+        2072,
+        100,
+        1998,
+        26215,
+        1039,
+        15992,
+        100,
+        1012,
+        102
+      ],
+      "tokens": [
+        "[CLS]",
+        "em",
+        "##oj",
+        "##i",
+        "[UNK]",
+        "and",
+        "supplementary",
+        "c",
+        "##jk",
+        "[UNK]",
+        ".",
+        "[SEP]"
+      ]
+    },
+    {
+      "text": "Αλφα русский Français",
+      "ids": [
+        101,
+        1155,
+        29727,
+        29736,
+        14608,
+        1195,
+        29748,
+        29747,
+        29747,
+        23925,
+        15414,
+        22357,
+        102
+      ],
+      "tokens": [
+        "[CLS]",
+        "α",
+        "##λ",
+        "##φ",
+        "##α",
+        "р",
+        "##у",
+        "##с",
+        "##с",
+        "##к",
+        "##ии",
+        "francais",
+        "[SEP]"
+      ]
+    },
+    {
+      "text": "Hello—world… “quotes” /foo_bar",
+      "ids": [
+        101,
+        7592,
+        1517,
+        2088,
+        1529,
+        1523,
+        16614,
+        1524,
+        1013,
+        29379,
+        1035,
+        3347,
+        102
+      ],
+      "tokens": [
+        "[CLS]",
+        "hello",
+        "—",
+        "world",
+        "…",
+        "“",
+        "quotes",
+        "”",
+        "/",
+        "foo",
+        "_",
+        "bar",
+        "[SEP]"
+      ]
+    },
+    {
+      "text": "ΟΣ Σ İ ᾀ",
+      "ids": [
+        101,
+        1169,
+        29733,
+        1173,
+        1045,
+        1155,
+        102
+      ],
+      "tokens": [
+        "[CLS]",
+        "ο",
+        "##σ",
+        "σ",
+        "i",
+        "α",
+        "[SEP]"
+      ]
+    },
+    {
+      "text": "hello world again",
+      "ids": [
+        101,
+        7592,
+        2088,
+        2153,
+        102
+      ],
+      "tokens": [
+        "[CLS]",
+        "hello",
+        "world",
+        "again",
+        "[SEP]"
+      ]
+    },
+    {
+      "text": "a𫠠b a𫤠b",
+      "ids": [
+        101,
+        100,
+        1037,
+        100,
+        1038,
+        102
+      ],
+      "tokens": [
+        "[CLS]",
+        "[UNK]",
+        "a",
+        "[UNK]",
+        "b",
+        "[SEP]"
+      ]
+    }
+  ]
+}

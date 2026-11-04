@@ -1,0 +1,1536 @@
+{
+  "note": "Author-created diagnostics, not an accuracy benchmark. Baseline means no context, not previous release. Keyword hits do not prove correct gloss alignment.",
+  "cases": [
+    {
+      "id": "bank-river",
+      "query": "bank",
+      "before": "The canoe landed on the muddy",
+      "after": "beside the river.",
+      "expected": [
+        "岸",
+        "河边"
+      ],
+      "expectedGloss": "river or lake",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "河岸"
+      ],
+      "alternatives": [
+        "银行",
+        "银行；堤",
+        "岸",
+        "库",
+        "岸；河边",
+        "倾斜飞行；带坡度转弯",
+        "存放款金融机构；银行",
+        "把钱存入银行",
+        "当庄家",
+        "储备金",
+        "经营银行业",
+        "庄家的赌本",
+        "存款；把存入银行",
+        "依赖；依靠",
+        "信任；信赖",
+        "银行大厦"
+      ],
+      "contextual": true,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "银行",
+        "河岸"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 15.900875
+    },
+    {
+      "id": "bank-finance",
+      "query": "bank",
+      "before": "She deposited her salary at the",
+      "after": "and applied for a mortgage.",
+      "expected": [
+        "银行"
+      ],
+      "expectedGloss": "financial institution",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "银行"
+      ],
+      "alternatives": [
+        "河岸",
+        "银行；堤",
+        "岸",
+        "库",
+        "岸；河边",
+        "倾斜飞行；带坡度转弯",
+        "存放款金融机构；银行",
+        "把钱存入银行",
+        "当庄家",
+        "储备金",
+        "经营银行业",
+        "庄家的赌本",
+        "存款；把存入银行",
+        "依赖；依靠",
+        "信任；信赖",
+        "银行大厦"
+      ],
+      "contextual": true,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "银行",
+        "河岸"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 10.235958
+    },
+    {
+      "id": "bank-short",
+      "query": "bank",
+      "before": "The",
+      "after": "is nearby.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient",
+      "primary": [
+        "银行",
+        "河岸"
+      ],
+      "alternatives": [
+        "银行；堤",
+        "岸",
+        "库",
+        "岸；河边",
+        "倾斜飞行；带坡度转弯",
+        "存放款金融机构；银行",
+        "把钱存入银行",
+        "当庄家",
+        "储备金",
+        "经营银行业",
+        "庄家的赌本",
+        "存款；把存入银行",
+        "依赖；依靠",
+        "信任；信赖",
+        "银行大厦"
+      ],
+      "contextual": false,
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": false,
+      "noContextPrimary": [
+        "银行",
+        "河岸"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 6.154417
+    },
+    {
+      "id": "bank-distractor",
+      "query": "bank",
+      "before": "We discussed deposits and money while sitting on the",
+      "after": "beside the river.",
+      "expected": [
+        "岸",
+        "河边"
+      ],
+      "expectedGloss": "river or lake",
+      "expectAbstain": false,
+      "category": "distractor",
+      "note": "Correct sense is asserted, but conservative abstention is safer than a wrong contextual promotion.",
+      "primary": [
+        "岸；河边"
+      ],
+      "alternatives": [
+        "银行",
+        "河岸",
+        "银行；堤",
+        "库",
+        "存放款金融机构；银行",
+        "存款；把存入银行",
+        "把钱存入银行",
+        "倾斜飞行；带坡度转弯",
+        "当庄家",
+        "储备金",
+        "经营银行业",
+        "庄家的赌本",
+        "依赖；依靠",
+        "信任；信赖",
+        "银行大厦"
+      ],
+      "contextual": true,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "银行",
+        "河岸"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 10.163584
+    },
+    {
+      "id": "cell-biology",
+      "query": "cell",
+      "before": "Under the microscope each",
+      "after": "contained a nucleus and a membrane.",
+      "expected": [
+        "细胞"
+      ],
+      "expectedGloss": "living organism",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "细胞"
+      ],
+      "alternatives": [
+        "单元",
+        "单元；细胞",
+        "电池",
+        "手机；大哥大",
+        "牢房；独房",
+        "囚室",
+        "支部；部",
+        "大哥大；手提电话",
+        "手机；移动电话",
+        "蜂窝式移动电话",
+        "和尚或尼姑的生活的小房间",
+        "牢房"
+      ],
+      "contextual": true,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "细胞",
+        "单元"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 11.220792
+    },
+    {
+      "id": "cell-battery",
+      "query": "cell",
+      "before": "The battery contains a single electrochemical",
+      "after": "which supplies electric current.",
+      "expected": [
+        "电池"
+      ],
+      "expectedGloss": "battery",
+      "expectAbstain": false,
+      "category": "technology",
+      "primary": [
+        "电池单元"
+      ],
+      "alternatives": [
+        "细胞",
+        "单元",
+        "单元；细胞",
+        "电池",
+        "牢房；独房",
+        "囚室",
+        "手机；大哥大",
+        "支部；部",
+        "大哥大；手提电话",
+        "手机；移动电话",
+        "蜂窝式移动电话",
+        "和尚或尼姑的生活的小房间",
+        "牢房"
+      ],
+      "contextual": true,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "细胞",
+        "单元"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 12.1055
+    },
+    {
+      "id": "cell-prison",
+      "query": "cell",
+      "before": "The prisoner was locked in a small",
+      "after": "behind iron bars.",
+      "expected": [
+        "牢房",
+        "囚室"
+      ],
+      "expectedGloss": "prison",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "细胞",
+        "单元"
+      ],
+      "alternatives": [
+        "单元；细胞",
+        "电池",
+        "手机；大哥大",
+        "牢房；独房",
+        "囚室",
+        "支部；部",
+        "大哥大；手提电话",
+        "手机；移动电话",
+        "蜂窝式移动电话",
+        "和尚或尼姑的生活的小房间",
+        "牢房"
+      ],
+      "contextual": false,
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "细胞",
+        "单元"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 8.137
+    },
+    {
+      "id": "cell-spreadsheet",
+      "query": "cell",
+      "before": "Enter the formula into this spreadsheet",
+      "after": "and copy it down the column.",
+      "expected": [
+        "单元格"
+      ],
+      "expectedGloss": "spreadsheet",
+      "expectAbstain": false,
+      "category": "candidate-gap",
+      "sourceIssue": "Verify exact semantic candidate exists before treating failure as ranking error.",
+      "primary": [
+        "单元格"
+      ],
+      "alternatives": [
+        "细胞",
+        "单元",
+        "单元；细胞",
+        "电池",
+        "手机；大哥大",
+        "牢房；独房",
+        "囚室",
+        "支部；部",
+        "大哥大；手提电话",
+        "手机；移动电话",
+        "蜂窝式移动电话",
+        "和尚或尼姑的生活的小房间",
+        "牢房"
+      ],
+      "contextual": true,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "细胞",
+        "单元"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 15.317708
+    },
+    {
+      "id": "charge-fee",
+      "query": "charge",
+      "before": "The hotel added a service",
+      "after": "to the bill for room cleaning.",
+      "expected": [
+        "收费",
+        "费用"
+      ],
+      "expectedGloss": "money",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "收费；要求支付"
+      ],
+      "alternatives": [
+        "费用",
+        "充电",
+        "指控；费用",
+        "冲锋；电荷",
+        "炸药；主管",
+        "被托管人；命令",
+        "控诉；加罪于",
+        "使充满；使充电",
+        "使承担",
+        "冲锋；要价",
+        "费用；收费",
+        "冲打；冲锋",
+        "指控；起诉",
+        "控告",
+        "冲",
+        "冲锋；攻击",
+        "电荷",
+        "照顾范围；管理范围",
+        "托付",
+        "负载",
+        "指示",
+        "带球撞人",
+        "弹药",
+        "纹章",
+        "急速前进；狂奔",
+        "飞奔；飞跑",
+        "分派；委派",
+        "指派",
+        "指控",
+        "还款要求",
+        "委托；寄存",
+        "托管",
+        "信用卡支付；赊购",
+        "指控；指责",
+        "控告；控诉",
+        "谴责",
+        "纹章模型",
+        "使骚动；激动",
+        "爆裂药"
+      ],
+      "contextual": true,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "费用",
+        "充电"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 20.389209
+    },
+    {
+      "id": "charge-physics",
+      "query": "charge",
+      "before": "The electron carries a negative electric",
+      "after": "while a proton carries a positive one.",
+      "expected": [
+        "电荷"
+      ],
+      "expectedGloss": "electric",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "电荷"
+      ],
+      "alternatives": [
+        "费用",
+        "充电",
+        "指控；费用",
+        "冲锋；电荷",
+        "炸药；主管",
+        "被托管人；命令",
+        "控诉；加罪于",
+        "使充满；使充电",
+        "使承担",
+        "冲锋；要价",
+        "收费",
+        "冲打；冲锋",
+        "指控；起诉",
+        "控告",
+        "费用；收费",
+        "冲",
+        "冲锋；攻击",
+        "照顾范围；管理范围",
+        "托付",
+        "负载",
+        "指示",
+        "带球撞人",
+        "弹药",
+        "纹章",
+        "收费；要求支付",
+        "急速前进；狂奔",
+        "飞奔；飞跑",
+        "分派；委派",
+        "指派",
+        "指控",
+        "还款要求",
+        "委托；寄存",
+        "托管",
+        "信用卡支付；赊购",
+        "指控；指责",
+        "控告；控诉",
+        "谴责",
+        "纹章模型",
+        "使骚动；激动",
+        "爆裂药"
+      ],
+      "contextual": true,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "费用",
+        "充电"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 19.998208
+    },
+    {
+      "id": "charge-accusation",
+      "query": "charge",
+      "before": "The defendant denied the criminal",
+      "after": "during the trial.",
+      "expected": [
+        "指控",
+        "控告"
+      ],
+      "expectedGloss": "accusation",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "费用",
+        "充电"
+      ],
+      "alternatives": [
+        "指控；费用",
+        "冲锋；电荷",
+        "炸药；主管",
+        "被托管人；命令",
+        "控诉；加罪于",
+        "使充满；使充电",
+        "使承担",
+        "冲锋；要价",
+        "收费",
+        "冲打；冲锋",
+        "指控；起诉",
+        "控告",
+        "费用；收费",
+        "冲",
+        "冲锋；攻击",
+        "电荷",
+        "照顾范围；管理范围",
+        "托付",
+        "负载",
+        "指示",
+        "带球撞人",
+        "弹药",
+        "纹章",
+        "收费；要求支付",
+        "急速前进；狂奔",
+        "飞奔；飞跑",
+        "分派；委派",
+        "指派",
+        "指控",
+        "还款要求",
+        "委托；寄存",
+        "托管",
+        "信用卡支付；赊购",
+        "指控；指责",
+        "控告；控诉",
+        "谴责",
+        "纹章模型",
+        "使骚动；激动",
+        "爆裂药"
+      ],
+      "contextual": false,
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "费用",
+        "充电"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 16.430167
+    },
+    {
+      "id": "charge-negation",
+      "query": "charge",
+      "before": "The report concerns electric",
+      "after": "rather than the fee paid for a service.",
+      "expected": [
+        "电荷"
+      ],
+      "expectedGloss": "electric",
+      "expectAbstain": false,
+      "category": "distractor",
+      "note": "Correct sense is asserted, but conservative abstention is safer than a wrong contextual promotion.",
+      "primary": [
+        "费用",
+        "充电"
+      ],
+      "alternatives": [
+        "指控；费用",
+        "冲锋；电荷",
+        "炸药；主管",
+        "被托管人；命令",
+        "控诉；加罪于",
+        "使充满；使充电",
+        "使承担",
+        "冲锋；要价",
+        "收费",
+        "冲打；冲锋",
+        "指控；起诉",
+        "控告",
+        "费用；收费",
+        "冲",
+        "冲锋；攻击",
+        "电荷",
+        "照顾范围；管理范围",
+        "托付",
+        "负载",
+        "指示",
+        "带球撞人",
+        "弹药",
+        "纹章",
+        "收费；要求支付",
+        "急速前进；狂奔",
+        "飞奔；飞跑",
+        "分派；委派",
+        "指派",
+        "指控",
+        "还款要求",
+        "委托；寄存",
+        "托管",
+        "信用卡支付；赊购",
+        "指控；指责",
+        "控告；控诉",
+        "谴责",
+        "纹章模型",
+        "使骚动；激动",
+        "爆裂药"
+      ],
+      "contextual": false,
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "费用",
+        "充电"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 13.650417
+    },
+    {
+      "id": "culture-lab",
+      "query": "culture",
+      "before": "The laboratory grew a bacterial",
+      "after": "in a nutrient medium.",
+      "expected": [
+        "培养",
+        "培植"
+      ],
+      "expectedGloss": "microorganisms",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "培养；培植"
+      ],
+      "alternatives": [
+        "文化；修养",
+        "耕种",
+        "耕种；培养",
+        "文化",
+        "教化；文明",
+        "培养；栽培",
+        "精致；近乎完美"
+      ],
+      "contextual": true,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "文化；修养"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 9.041375
+    },
+    {
+      "id": "culture-society",
+      "query": "culture",
+      "before": "The exhibition explores the art and",
+      "after": "of the local community.",
+      "expected": [
+        "文化",
+        "文明"
+      ],
+      "expectedGloss": "society",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "文化；修养"
+      ],
+      "alternatives": [
+        "耕种",
+        "耕种；培养",
+        "教化；文明",
+        "培养；培植",
+        "培养；栽培",
+        "精致；近乎完美"
+      ],
+      "contextual": false,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "文化；修养"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 10.003625
+    },
+    {
+      "id": "culture-refinement",
+      "query": "culture",
+      "before": "Her refined manners and",
+      "after": "impressed the guests.",
+      "expected": [
+        "修养",
+        "教养",
+        "精致"
+      ],
+      "expectedGloss": "perfection",
+      "expectAbstain": false,
+      "category": "source-quality",
+      "sourceIssue": "WordNet 14459824-n mixes refinement gloss with 培养\/栽培; keeping 精致 later does not validate wrong leading terms.",
+      "rejectPrimary": [
+        "培养",
+        "栽培"
+      ],
+      "primary": [
+        "文化；修养"
+      ],
+      "alternatives": [
+        "耕种",
+        "耕种；培养",
+        "教化；文明",
+        "培养；培植",
+        "培养；栽培",
+        "精致；近乎完美"
+      ],
+      "contextual": false,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "文化；修养"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 13.653583
+    },
+    {
+      "id": "current-time",
+      "query": "current",
+      "before": "The newspaper reports the",
+      "after": "events and latest developments.",
+      "expected": [
+        "当前",
+        "现在",
+        "最近"
+      ],
+      "expectedGloss": "present time",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "时事"
+      ],
+      "alternatives": [
+        "涌流；趋势",
+        "流",
+        "流通的；现在的",
+        "当前的；流行的",
+        "当前的",
+        "活期；通用",
+        "现在的",
+        "电流",
+        "水流；流",
+        "当前的；最近的"
+      ],
+      "contextual": true,
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "流通的；现在的"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 10.363
+    },
+    {
+      "id": "current-water",
+      "query": "current",
+      "before": "The strong river",
+      "after": "carried the canoe downstream.",
+      "expected": [
+        "水流",
+        "流"
+      ],
+      "expectedGloss": "fluid",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "流通的；现在的"
+      ],
+      "alternatives": [
+        "涌流；趋势",
+        "流",
+        "当前的；流行的",
+        "当前的",
+        "活期；通用",
+        "电流",
+        "水流；流",
+        "当前的；最近的"
+      ],
+      "contextual": false,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "流通的；现在的"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 12.746
+    },
+    {
+      "id": "current-electric",
+      "query": "current",
+      "before": "The wire carries an electric",
+      "after": "of two amperes.",
+      "expected": [
+        "电流"
+      ],
+      "expectedGloss": "electric",
+      "expectAbstain": false,
+      "category": "technology",
+      "primary": [
+        "电流"
+      ],
+      "alternatives": [
+        "涌流；趋势",
+        "流",
+        "流通的；现在的",
+        "当前的；流行的",
+        "当前的",
+        "活期；通用",
+        "现在的",
+        "水流；流",
+        "当前的；最近的"
+      ],
+      "contextual": true,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "流通的；现在的"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 10.401667
+    },
+    {
+      "id": "draft-writing",
+      "query": "draft",
+      "before": "Please revise the first",
+      "after": "of the article before publication.",
+      "expected": [
+        "草稿",
+        "草案"
+      ],
+      "expectedGloss": "written work",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "初稿"
+      ],
+      "alternatives": [
+        "气流；草稿",
+        "汇票；草案",
+        "起草；征兵",
+        "草稿",
+        "一口",
+        "生啤",
+        "草案",
+        "征兵",
+        "选秀",
+        "汇票",
+        "气流",
+        "略图；草图",
+        "设计图",
+        "应征入伍；征兵"
+      ],
+      "contextual": true,
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "一口",
+        "生啤"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 13.206125
+    },
+    {
+      "id": "draft-air",
+      "query": "draft",
+      "before": "A cold",
+      "after": "came through the open window.",
+      "expected": [
+        "气流",
+        "穿堂风"
+      ],
+      "expectedGloss": "air",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "一口",
+        "生啤"
+      ],
+      "alternatives": [
+        "气流；草稿",
+        "汇票；草案",
+        "起草；征兵",
+        "草稿",
+        "草案",
+        "征兵",
+        "选秀",
+        "汇票",
+        "气流",
+        "略图；草图",
+        "设计图",
+        "应征入伍；征兵"
+      ],
+      "contextual": false,
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "一口",
+        "生啤"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 17.49225
+    },
+    {
+      "id": "draft-conscription",
+      "query": "draft",
+      "before": "The army introduced a military",
+      "after": "to recruit soldiers.",
+      "expected": [
+        "征兵"
+      ],
+      "expectedGloss": "military service",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "一口",
+        "生啤"
+      ],
+      "alternatives": [
+        "气流；草稿",
+        "汇票；草案",
+        "起草；征兵",
+        "草稿",
+        "草案",
+        "征兵",
+        "选秀",
+        "汇票",
+        "气流",
+        "略图；草图",
+        "设计图",
+        "应征入伍；征兵"
+      ],
+      "contextual": false,
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "一口",
+        "生啤"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 11.418583
+    },
+    {
+      "id": "draft-short",
+      "query": "draft",
+      "before": "Look at this",
+      "after": "again.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient",
+      "primary": [
+        "一口",
+        "生啤"
+      ],
+      "alternatives": [
+        "气流；草稿",
+        "汇票；草案",
+        "起草；征兵",
+        "草稿",
+        "草案",
+        "征兵",
+        "选秀",
+        "汇票",
+        "气流",
+        "略图；草图",
+        "设计图",
+        "应征入伍；征兵"
+      ],
+      "contextual": false,
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": false,
+      "noContextPrimary": [
+        "一口",
+        "生啤"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 15.603709
+    },
+    {
+      "id": "field-physics",
+      "query": "field",
+      "before": "A magnet creates a magnetic",
+      "after": "around it.",
+      "expected": [
+        "场"
+      ],
+      "expectedGloss": "force",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "磁场"
+      ],
+      "alternatives": [
+        "领域；田地",
+        "场地；战场",
+        "场；域",
+        "使...晒在场上；使上场",
+        "田间的；野生的",
+        "野外的；田赛的",
+        "域；字段",
+        "田间；野外",
+        "野；田",
+        "田；田野",
+        "场",
+        "战场",
+        "领域",
+        "域",
+        "字段；信息组",
+        "野外",
+        "战场；沙场",
+        "主题；学科",
+        "领域；题目",
+        "场；场地",
+        "田地；范围",
+        "运动场",
+        "机场；飞机场"
+      ],
+      "contextual": true,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "田间；野外",
+        "田；田野"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 16.372
+    },
+    {
+      "id": "field-database",
+      "query": "field",
+      "before": "Store the customer identifier in the database",
+      "after": "and index that column.",
+      "expected": [
+        "字段"
+      ],
+      "expectedGloss": "database",
+      "expectAbstain": false,
+      "category": "technology",
+      "primary": [
+        "田间；野外",
+        "田；田野"
+      ],
+      "alternatives": [
+        "领域；田地",
+        "场地；战场",
+        "场；域",
+        "使...晒在场上；使上场",
+        "田间的；野生的",
+        "野外的；田赛的",
+        "域；字段",
+        "野；田",
+        "场",
+        "战场",
+        "领域",
+        "域",
+        "字段；信息组",
+        "战场；沙场",
+        "主题；学科",
+        "领域；题目",
+        "场；场地",
+        "田地；范围",
+        "运动场",
+        "机场；飞机场"
+      ],
+      "contextual": false,
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "田间；野外",
+        "田；田野"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 30.017667
+    },
+    {
+      "id": "field-farm",
+      "query": "field",
+      "before": "The farmer planted wheat in the",
+      "after": "beside the barn.",
+      "expected": [
+        "田",
+        "地"
+      ],
+      "expectedGloss": "land",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "在作战；参加比赛"
+      ],
+      "alternatives": [
+        "领域；田地",
+        "场地；战场",
+        "场；域",
+        "使...晒在场上；使上场",
+        "田间的；野生的",
+        "野外的；田赛的",
+        "域；字段",
+        "田；田野",
+        "野外",
+        "田间；野外",
+        "野；田",
+        "场",
+        "战场",
+        "领域",
+        "域",
+        "字段；信息组",
+        "战场；沙场",
+        "主题；学科",
+        "领域；题目",
+        "场；场地",
+        "田地；范围",
+        "运动场",
+        "机场；飞机场"
+      ],
+      "contextual": true,
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "田间；野外",
+        "田；田野"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 20.065125
+    },
+    {
+      "id": "solution-chemistry",
+      "query": "solution",
+      "before": "Dissolve the salt in water to prepare a",
+      "after": "of the required concentration.",
+      "expected": [
+        "溶液"
+      ],
+      "expectedGloss": "mixture",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "溶液"
+      ],
+      "alternatives": [
+        "解决；解答",
+        "解；解决",
+        "解答；答案",
+        "方法",
+        "溶体；溶液",
+        "解答"
+      ],
+      "contextual": false,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "溶液"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 18.692708
+    },
+    {
+      "id": "solution-math",
+      "query": "solution",
+      "before": "Find the",
+      "after": "of this quadratic equation.",
+      "expected": [
+        "解",
+        "答案"
+      ],
+      "expectedGloss": "mathematical problem",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "溶液"
+      ],
+      "alternatives": [
+        "解决；解答",
+        "解；解决",
+        "解答；答案",
+        "方法",
+        "溶体；溶液",
+        "解答"
+      ],
+      "contextual": false,
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "溶液"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 23.673125
+    },
+    {
+      "id": "interest-loan",
+      "query": "interest",
+      "before": "The borrower pays annual",
+      "after": "on the loan at a fixed percentage.",
+      "expected": [
+        "利息"
+      ],
+      "expectedGloss": "borrowing money",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "借款利息"
+      ],
+      "alternatives": [
+        "兴趣；嗜好",
+        "利息；利益",
+        "爱好；趣味",
+        "势力",
+        "使感兴趣；与...有关系",
+        "利息",
+        "兴趣",
+        "使……感興趣 \/使……感兴趣",
+        "利益",
+        "关心；感兴趣",
+        "挂念",
+        "要紧；重要",
+        "利润；权益",
+        "股份",
+        "娱乐；消遣"
+      ],
+      "contextual": true,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "兴趣；嗜好"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 27.712708
+    },
+    {
+      "id": "interest-curiosity",
+      "query": "interest",
+      "before": "The child showed a keen",
+      "after": "in dinosaurs and asked many questions.",
+      "expected": [
+        "兴趣",
+        "感兴趣"
+      ],
+      "expectedGloss": "attention",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "对…有兴趣"
+      ],
+      "alternatives": [
+        "兴趣；嗜好",
+        "利息；利益",
+        "爱好；趣味",
+        "势力",
+        "使感兴趣；与...有关系",
+        "兴趣",
+        "使……感興趣 \/使……感兴趣",
+        "利息",
+        "利益",
+        "关心；感兴趣",
+        "挂念",
+        "要紧；重要",
+        "利润；权益",
+        "股份",
+        "娱乐；消遣"
+      ],
+      "contextual": true,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "兴趣；嗜好"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 19.86825
+    },
+    {
+      "id": "mean-math",
+      "query": "mean",
+      "before": "Add the observations and divide by their count to obtain the arithmetic",
+      "after": "of the sample.",
+      "expected": [
+        "平均"
+      ],
+      "expectedGloss": "average",
+      "expectAbstain": false,
+      "category": "candidate-gap",
+      "sourceIssue": "Arithmetic noun is absent from current exact Wiki\/WordNet bilingual sense rows; ECDICT has 平均数 without aligned per-sense English gloss.",
+      "primary": [
+        "平均值"
+      ],
+      "alternatives": [
+        "意思是",
+        "低劣的；卑贱的",
+        "简陋的；吝啬的",
+        "惭愧的；平均的",
+        "中间的；普通的",
+        "意谓；想要",
+        "意欲；预定",
+        "用意；有意义",
+        "平均数；中间",
+        "中庸",
+        "卑鄙的",
+        "意味；是……的意思",
+        "……的意思是……",
+        "意味着；意思是",
+        "暗示；蕴涵",
+        "衍推",
+        "意指",
+        "优秀的；出色的",
+        "有效的；灵巧的",
+        "熟练的；绝妙的",
+        "似乞丐的；赤贫如洗的",
+        "非常穷的",
+        "意味；意味着"
+      ],
+      "contextual": true,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "意思是",
+        "平均值"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 28.136458
+    },
+    {
+      "id": "mean-unkind",
+      "query": "mean",
+      "before": "It was",
+      "after": "of him to mock a frightened child.",
+      "expected": [
+        "卑鄙",
+        "刻薄",
+        "恶意"
+      ],
+      "expectedGloss": "unkind",
+      "expectAbstain": false,
+      "category": "daily",
+      "primary": [
+        "意思是",
+        "平均值"
+      ],
+      "alternatives": [
+        "低劣的；卑贱的",
+        "简陋的；吝啬的",
+        "惭愧的；平均的",
+        "中间的；普通的",
+        "意谓；想要",
+        "意欲；预定",
+        "用意；有意义",
+        "平均数；中间",
+        "中庸",
+        "卑鄙的",
+        "意味；是……的意思",
+        "……的意思是……",
+        "意味着；意思是",
+        "暗示；蕴涵",
+        "衍推",
+        "意指",
+        "优秀的；出色的",
+        "有效的；灵巧的",
+        "熟练的；绝妙的",
+        "似乞丐的；赤贫如洗的",
+        "非常穷的",
+        "意味；意味着"
+      ],
+      "contextual": false,
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "意思是",
+        "平均值"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 13.167416
+    },
+    {
+      "id": "significant-statistics",
+      "query": "significant",
+      "before": "The result was statistically",
+      "after": "at the 0.01 level after hypothesis testing.",
+      "expected": [
+        "显著"
+      ],
+      "expectedGloss": "chance",
+      "expectAbstain": false,
+      "category": "source-quality",
+      "sourceIssue": "WordNet 02165655-a has statistical gloss but Chinese only 有意义的; ranking this sense does not produce precise 显著.",
+      "primary": [
+        "重要；有意义"
+      ],
+      "alternatives": [
+        "重要的；有效的",
+        "有含义的；暗示的",
+        "值得注意的",
+        "值得注意的；有意义的",
+        "重大的；重要的",
+        "有意义的"
+      ],
+      "contextual": false,
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": false,
+      "noContextPrimary": [
+        "重要；有意义"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 8.555458
+    },
+    {
+      "id": "significant-important",
+      "query": "significant",
+      "before": "The discovery made a",
+      "after": "contribution to our understanding.",
+      "expected": [
+        "重要",
+        "重大",
+        "有意义"
+      ],
+      "expectedGloss": "important",
+      "expectAbstain": false,
+      "category": "science",
+      "primary": [
+        "重要；有意义"
+      ],
+      "alternatives": [
+        "重要的；有效的",
+        "有含义的；暗示的",
+        "值得注意的",
+        "值得注意的；有意义的",
+        "重大的；重要的",
+        "有意义的"
+      ],
+      "contextual": false,
+      "primaryKeywordHit": true,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "重要；有意义"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 13.785667
+    },
+    {
+      "id": "bank-negated-finance",
+      "query": "bank",
+      "before": "Not the financial institution accepting deposits: the muddy",
+      "after": "where the canoe landed was flooded.",
+      "expected": [
+        "岸",
+        "河边"
+      ],
+      "expectedGloss": "river",
+      "expectAbstain": false,
+      "category": "distractor",
+      "note": "Correct sense is asserted, but conservative abstention is safer than a wrong contextual promotion.",
+      "primary": [
+        "银行"
+      ],
+      "alternatives": [
+        "河岸",
+        "银行；堤",
+        "岸",
+        "库",
+        "存放款金融机构；银行",
+        "岸；河边",
+        "存款；把存入银行",
+        "把钱存入银行",
+        "倾斜飞行；带坡度转弯",
+        "当庄家",
+        "储备金",
+        "经营银行业",
+        "庄家的赌本",
+        "依赖；依靠",
+        "信任；信赖",
+        "银行大厦"
+      ],
+      "contextual": true,
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": true,
+      "noContextPrimary": [
+        "银行",
+        "河岸"
+      ],
+      "noContextKeywordHit": true,
+      "elapsedMs": 22.295
+    },
+    {
+      "id": "current-no-evidence",
+      "query": "current",
+      "before": "The word",
+      "after": "appears in the heading.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient",
+      "primary": [
+        "流通的；现在的"
+      ],
+      "alternatives": [
+        "涌流；趋势",
+        "流",
+        "当前的；流行的",
+        "当前的",
+        "活期；通用",
+        "电流",
+        "水流；流",
+        "当前的；最近的"
+      ],
+      "contextual": false,
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": false,
+      "noContextPrimary": [
+        "流通的；现在的"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 9.912167
+    },
+    {
+      "id": "field-no-evidence",
+      "query": "field",
+      "before": "Choose a",
+      "after": "from the list.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient",
+      "primary": [
+        "田间；野外",
+        "田；田野"
+      ],
+      "alternatives": [
+        "领域；田地",
+        "场地；战场",
+        "场；域",
+        "使...晒在场上；使上场",
+        "田间的；野生的",
+        "野外的；田赛的",
+        "域；字段",
+        "野；田",
+        "场",
+        "战场",
+        "领域",
+        "域",
+        "字段；信息组",
+        "战场；沙场",
+        "主题；学科",
+        "领域；题目",
+        "场；场地",
+        "田地；范围",
+        "运动场",
+        "机场；飞机场"
+      ],
+      "contextual": false,
+      "primaryKeywordHit": false,
+      "candidateKeywordHit": false,
+      "noContextPrimary": [
+        "田间；野外",
+        "田；田野"
+      ],
+      "noContextKeywordHit": false,
+      "elapsedMs": 27.74525
+    }
+  ]
+}

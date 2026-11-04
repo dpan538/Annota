@@ -7,23 +7,23 @@
 Local PDF reading and handwritten annotation, designed around **Xiaomi Pad 9 Pro Max**. No account required. Documents, ink, reading progress and dictionary queries stay on your device.
 
 [![Android](https://img.shields.io/badge/Android-10%2B-3DDC84)](DOWNLOAD.md)
-[![Stable](https://img.shields.io/badge/Stable-1.1.0-16A34A)](https://github.com/dpan538/Annota/releases/tag/v1.1.0)
+[![Stable](https://img.shields.io/badge/Stable-1.1.1-16A34A)](https://github.com/dpan538/Annota/releases/tag/v1.1.1)
 [![License](https://img.shields.io/badge/License-MIT-8B5CF6)](LICENSE)
 ![Offline](https://img.shields.io/badge/Dictionary-Offline-0891B2)
 ![Local](https://img.shields.io/badge/Storage-On_device-DB2777)
 ![No account](https://img.shields.io/badge/Account-Not_required-64748B)
 ![Device](https://img.shields.io/badge/Xiaomi-Pad_9_Pro_Max_only-FF6900)
 
-[**Download 1.1.0 stable APK**](https://github.com/dpan538/Annota/releases/download/v1.1.0/Annota-1.1.0.apk) · [Installation](DOWNLOAD.md) · [Changelog](CHANGELOG.md)
+[**Download 1.1.1 stable APK**](https://github.com/dpan538/Annota/releases/download/v1.1.1/Annota-1.1.1.apk) · [Installation](DOWNLOAD.md) · [Changelog](CHANGELOG.md)
 
 ## Features
 
 - **Focused reading.** Tiled PDF rendering, continuous scrolling, pinch zoom, adjacent pages, document search, outlines, bookmarks and restored reading positions.
 - **Handwritten annotation.** Pen, pencil, fountain pen and highlighter; pressure response, hold-to-straighten, ruler snapping, selection move / scale / rotation and undo / redo. Handwritten signatures and PDF export.
-- **Offline dictionaries.** Around 771,000 English–Chinese and 126,000 Chinese–English records. Bundled WordNet / Chinese Open WordNet sense indices, inflections, phrase lookup and local context help with meaning; unknown phrases can be broken into dictionary segments. All data ships with the APK. No language-pack download or full-sentence translation.
+- **Offline language tools.** English–Chinese / Chinese–English dictionaries, Wiktionary, WordNet and attested word forms support technical terms, compounds and clearly labelled English definitions. On-device MiniLM compares context with candidate senses; OPUS-MT provides reference translations for English phrases and short passages. All assets ship with the APK.
 - **Local library.** Folders, favorites, search and trash; PDF sharing from other apps, `.annota.zip` backup / restore and a continue-reading home widget.
 
-Features describe stable 1.1.0; see the [changelog](CHANGELOG.md) for release differences.
+This page prepares the **1.1.1 stable release**; download assets become available when the Release is published. See the [changelog](CHANGELOG.md) for differences.
 
 ## Get started
 
@@ -45,11 +45,19 @@ Actual app screenshots in the same blue theme. Select an image to view full size
 | --- | --- |
 | [![Dictionary](docs/images/readme-dictionary-blue.png)](docs/images/readme-dictionary-blue.png) | [![Pages](docs/images/readme-pages-blue.png)](docs/images/readme-pages-blue.png) |
 
+## Local dictionary
+
+Lookup finishes contextual sense comparison before showing definitions. Insufficient evidence retains alternative meanings; similarity scores are not certainty. Missing Chinese definitions may fall back to explicitly labelled English definitions. Reference translation supports **English → Simplified Chinese**; technical meanings still need review.
+
+After opening a PDF, background processing prepares context windows from the current page's already extracted text. Context vectors persist on-device and are reused by content hash, model revision and algorithm version. Dictionaries, models and sense vectors all ship with the APK, including for first use.
+
+Under **Settings → About**, **Local dictionary** below App update is enabled by default. It controls semantic reranking and background preparation only; ordinary offline lookup remains available when disabled. See the [local-data policy](docs/PRIVACY.md).
+
 ## Privacy and updates
 
-Reading, writing and dictionary lookup are fully offline. Network access is used only when checking for updates, downloading an APK or submitting feedback. Feedback becomes a public GitHub Issue; do not include private documents. Back up before uninstalling or clearing app data.
+Reading, writing, dictionary lookup and reference translation are fully offline. Network access is used only when checking for updates, downloading an APK or submitting feedback. Feedback becomes a public GitHub Issue; do not include private documents. Back up before uninstalling or clearing app data.
 
-**1.1.0 is a stable release**, offered by the default update check. Download and installation require confirmation. The existing signing certificate is retained for in-place upgrades from earlier stable and Preview builds.
+**1.1.1 is a stable release**, offered by the default update check. Download and installation require confirmation. The existing signing certificate is retained for in-place upgrades from earlier stable and Preview builds.
 
 ## Build
 

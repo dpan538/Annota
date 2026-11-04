@@ -1,0 +1,47 @@
+{
+  "note": "Dedicated ARM64 emulator only; not target-tablet latency. Eight iterations, one fixed sentence, sequential 1\/2\/4 thread configurations.",
+  "cases": [
+    {
+      "threads": 1,
+      "prepareMs": 174.392917,
+      "inferenceMs": [
+        3.685042,
+        3.592584,
+        3.350792,
+        3.538416,
+        3.555167,
+        3.357709,
+        3.341959,
+        3.370792
+      ]
+    },
+    {
+      "threads": 2,
+      "prepareMs": 105.060042,
+      "inferenceMs": [
+        2.767292,
+        2.252666,
+        2.2885,
+        2.150459,
+        2.655458,
+        2.319292,
+        2.227875,
+        2.416041
+      ]
+    },
+    {
+      "threads": 4,
+      "prepareMs": 105.395208,
+      "inferenceMs": [
+        3.050583,
+        2.482334,
+        2.221709,
+        2.727291,
+        2.60875,
+        2.33425,
+        3.651375,
+        3.978542
+      ]
+    }
+  ]
+}

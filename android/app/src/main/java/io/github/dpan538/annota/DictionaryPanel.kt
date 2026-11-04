@@ -361,6 +361,10 @@ class DictionaryPanel(
             return
         }
         val activeContext = queryContext
+        // Present a new result only after its complete offline ranking pipeline finishes.
+        results.removeAllViews()
+        results.addView(menu.label(ui.tr("查询中…", "Looking up…"), 14f, false))
+        menu.refreshSize()
         lookup.execute {
             // Rapid input can queue several selections. Discard obsolete work before querying.
             if (!open || id != generation) return@execute

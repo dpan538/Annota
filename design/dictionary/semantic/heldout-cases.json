@@ -1,0 +1,290 @@
+{
+  "schema": 1,
+  "date": "2026-11-04",
+  "purpose": "Held-out author-created semantic diagnostics: 16 contexts for eight polysemous words plus four low-evidence controls. Authored without running the model or checking candidate availability; targets do not occur in the preceding 36-case diagnostic set. Do not tune thresholds on these cases. English meanings are semantic descriptions, not literal gloss substring assertions. Missing candidate, source mistranslation, abstention and wrong confident promotion must be reported separately. Not an independently annotated benchmark or a general accuracy estimate.",
+  "cases": [
+    {
+      "id": "seal-animal",
+      "query": "seal",
+      "target": "seal",
+      "before": "The marine biologist watched a",
+      "after": "dive underwater to catch fish.",
+      "context": "The marine biologist watched a [seal] dive underwater to catch fish.",
+      "expected": [
+        "海豹"
+      ],
+      "expectedGloss": "a marine mammal with flippers",
+      "expectAbstain": false,
+      "category": "science"
+    },
+    {
+      "id": "seal-closure",
+      "query": "seal",
+      "target": "seal",
+      "before": "Check the airtight",
+      "after": "around the jar lid before storing the food.",
+      "context": "Check the airtight [seal] around the jar lid before storing the food.",
+      "expected": [
+        "密封",
+        "封条"
+      ],
+      "expectedGloss": "a closure or device that prevents leakage",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "spring-season",
+      "query": "spring",
+      "target": "spring",
+      "before": "The flowers bloom in",
+      "after": "as the weather warms after winter.",
+      "context": "The flowers bloom in [spring] as the weather warms after winter.",
+      "expected": [
+        "春",
+        "春季"
+      ],
+      "expectedGloss": "the season between winter and summer",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "spring-coil",
+      "query": "spring",
+      "target": "spring",
+      "before": "The mechanic replaced the compressed metal",
+      "after": "inside the suspension.",
+      "context": "The mechanic replaced the compressed metal [spring] inside the suspension.",
+      "expected": [
+        "弹簧"
+      ],
+      "expectedGloss": "an elastic coil that stores mechanical energy",
+      "expectAbstain": false,
+      "category": "technology"
+    },
+    {
+      "id": "volume-sound",
+      "query": "volume",
+      "target": "volume",
+      "before": "Turn down the",
+      "after": "of the loudspeaker because the music is too loud.",
+      "context": "Turn down the [volume] of the loudspeaker because the music is too loud.",
+      "expected": [
+        "音量"
+      ],
+      "expectedGloss": "the loudness of a sound",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "volume-space",
+      "query": "volume",
+      "target": "volume",
+      "before": "The cylinder has a",
+      "after": "of twenty cubic centimetres.",
+      "context": "The cylinder has a [volume] of twenty cubic centimetres.",
+      "expected": [
+        "体积",
+        "容积"
+      ],
+      "expectedGloss": "the amount of three-dimensional space occupied",
+      "expectAbstain": false,
+      "category": "science"
+    },
+    {
+      "id": "organ-body",
+      "query": "organ",
+      "target": "organ",
+      "before": "The liver is an",
+      "after": "that processes nutrients and removes toxins.",
+      "context": "The liver is an [organ] that processes nutrients and removes toxins.",
+      "expected": [
+        "器官"
+      ],
+      "expectedGloss": "a differentiated part of an animal body with a specific function",
+      "expectAbstain": false,
+      "category": "science"
+    },
+    {
+      "id": "organ-music",
+      "query": "organ",
+      "target": "organ",
+      "before": "The musician played the pipe",
+      "after": "during the cathedral concert.",
+      "context": "The musician played the pipe [organ] during the cathedral concert.",
+      "expected": [
+        "管风琴",
+        "风琴"
+      ],
+      "expectedGloss": "a keyboard musical instrument with pipes",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "pupil-eye",
+      "query": "pupil",
+      "target": "pupil",
+      "before": "Bright light causes the",
+      "after": "in the centre of the eye to become smaller.",
+      "context": "Bright light causes the [pupil] in the centre of the eye to become smaller.",
+      "expected": [
+        "瞳孔"
+      ],
+      "expectedGloss": "the opening in the iris through which light enters the eye",
+      "expectAbstain": false,
+      "category": "science"
+    },
+    {
+      "id": "pupil-student",
+      "query": "pupil",
+      "target": "pupil",
+      "before": "The teacher asked each",
+      "after": "to complete the classroom assignment.",
+      "context": "The teacher asked each [pupil] to complete the classroom assignment.",
+      "expected": [
+        "学生",
+        "学童"
+      ],
+      "expectedGloss": "a learner attending school",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "bond-chemical",
+      "query": "bond",
+      "target": "bond",
+      "before": "The two atoms share electrons in a covalent",
+      "after": "within the molecule.",
+      "context": "The two atoms share electrons in a covalent [bond] within the molecule.",
+      "expected": [
+        "化学键",
+        "键"
+      ],
+      "expectedGloss": "an electrical or chemical attraction holding atoms together",
+      "expectAbstain": false,
+      "category": "science"
+    },
+    {
+      "id": "bond-financial",
+      "query": "bond",
+      "target": "bond",
+      "before": "The investor bought a government",
+      "after": "that pays annual interest until maturity.",
+      "context": "The investor bought a government [bond] that pays annual interest until maturity.",
+      "expected": [
+        "债券",
+        "公债"
+      ],
+      "expectedGloss": "a debt security that promises payment of principal and interest",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "root-plant",
+      "query": "root",
+      "target": "root",
+      "before": "The plant absorbs water through its",
+      "after": "below the soil surface.",
+      "context": "The plant absorbs water through its [root] below the soil surface.",
+      "expected": [
+        "根",
+        "植物根"
+      ],
+      "expectedGloss": "the part of a plant normally below ground that absorbs water",
+      "expectAbstain": false,
+      "category": "science"
+    },
+    {
+      "id": "root-math",
+      "query": "root",
+      "target": "root",
+      "before": "Three is the positive square",
+      "after": "of nine because three multiplied by itself equals nine.",
+      "context": "Three is the positive square [root] of nine because three multiplied by itself equals nine.",
+      "expected": [
+        "平方根",
+        "根"
+      ],
+      "expectedGloss": "a number whose specified power gives another number",
+      "expectAbstain": false,
+      "category": "science"
+    },
+    {
+      "id": "tissue-biology",
+      "query": "tissue",
+      "target": "tissue",
+      "before": "The biopsy contained damaged muscle",
+      "after": "which the pathologist examined under a microscope.",
+      "context": "The biopsy contained damaged muscle [tissue] which the pathologist examined under a microscope.",
+      "expected": [
+        "组织"
+      ],
+      "expectedGloss": "a group of biological cells performing a function",
+      "expectAbstain": false,
+      "category": "science"
+    },
+    {
+      "id": "tissue-paper",
+      "query": "tissue",
+      "target": "tissue",
+      "before": "She used a disposable paper",
+      "after": "to wipe her nose and then threw it away.",
+      "context": "She used a disposable paper [tissue] to wipe her nose and then threw it away.",
+      "expected": [
+        "纸巾",
+        "薄纸",
+        "面巾"
+      ],
+      "expectedGloss": "a soft piece of absorbent paper",
+      "expectAbstain": false,
+      "category": "daily"
+    },
+    {
+      "id": "seal-low-evidence",
+      "query": "seal",
+      "target": "seal",
+      "before": "The word",
+      "after": "appears on the next page.",
+      "context": "The word [seal] appears on the next page.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient"
+    },
+    {
+      "id": "spring-low-evidence",
+      "query": "spring",
+      "target": "spring",
+      "before": "They mentioned",
+      "after": "again yesterday.",
+      "context": "They mentioned [spring] again yesterday.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient"
+    },
+    {
+      "id": "organ-low-evidence",
+      "query": "organ",
+      "target": "organ",
+      "before": "Please explain",
+      "after": "to me.",
+      "context": "Please explain [organ] to me.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient"
+    },
+    {
+      "id": "bond-low-evidence",
+      "query": "bond",
+      "target": "bond",
+      "before": "We are discussing",
+      "after": "today.",
+      "context": "We are discussing [bond] today.",
+      "expected": [],
+      "expectedGloss": "",
+      "expectAbstain": true,
+      "category": "insufficient"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "stage": "pre-semantic lexical stage; superseded by semantic-111",
+  "tests": 61,
+  "passed": true,
+  "semanticFieldsEqualReviewedSnapshot": true,
+  "apk": "apk-check.json",
+  "publishedArtifact": false
+}

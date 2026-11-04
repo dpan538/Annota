@@ -1,0 +1,106 @@
+{
+  "all_asset_hashes_verified": true,
+  "official_model_lfs_hash_verified": true,
+  "all_glosses_indexed": 92869,
+  "missing_keys": 0,
+  "sample_batch1_index_min_cosine": 0.9999523162841797,
+  "sampled_comparisons": [
+    {
+      "gloss": "\"I accept your challenge\"",
+      "cosine_batch1_vs_index": 0.9999675750732422
+    },
+    {
+      "gloss": "Jesus, symbolized as a sacrifice",
+      "cosine_batch1_vs_index": 0.9999691247940063
+    },
+    {
+      "gloss": "a decorative loop of braid or cord",
+      "cosine_batch1_vs_index": 0.9999729990959167
+    },
+    {
+      "gloss": "a naval officer with a rank between commander and commodore or rear admiral",
+      "cosine_batch1_vs_index": 0.9999660849571228
+    },
+    {
+      "gloss": "a succulent plant",
+      "cosine_batch1_vs_index": 0.9999737739562988
+    },
+    {
+      "gloss": "an acid of fluorine and boron",
+      "cosine_batch1_vs_index": 0.9999641180038452
+    },
+    {
+      "gloss": "anything made of iron",
+      "cosine_batch1_vs_index": 0.9999697208404541
+    },
+    {
+      "gloss": "building or area where bathing occurs",
+      "cosine_batch1_vs_index": 0.9999745488166809
+    },
+    {
+      "gloss": "concerning religion",
+      "cosine_batch1_vs_index": 0.9999593496322632
+    },
+    {
+      "gloss": "drink made with water and leaves",
+      "cosine_batch1_vs_index": 0.9999793767929077
+    },
+    {
+      "gloss": "foot soldier",
+      "cosine_batch1_vs_index": 0.999971866607666
+    },
+    {
+      "gloss": "having partial rights and privileges or subordinate status; \"an associate member\"; \"an associate professor\"",
+      "cosine_batch1_vs_index": 0.9999580383300781
+    },
+    {
+      "gloss": "inventory of courses and grades",
+      "cosine_batch1_vs_index": 0.9999691247940063
+    },
+    {
+      "gloss": "marine crab with some legs flattened and fringed for swimming",
+      "cosine_batch1_vs_index": 0.9999723434448242
+    },
+    {
+      "gloss": "numerical sign",
+      "cosine_batch1_vs_index": 0.9999738931655884
+    },
+    {
+      "gloss": "one species; formerly included in genus Libocedrus",
+      "cosine_batch1_vs_index": 0.9999659061431885
+    },
+    {
+      "gloss": "plants of the division Bryophyta",
+      "cosine_batch1_vs_index": 0.9999774694442749
+    },
+    {
+      "gloss": "relating to the mathematical study of control",
+      "cosine_batch1_vs_index": 0.9999523162841797
+    },
+    {
+      "gloss": "small ferret-like badger of southeast Asia",
+      "cosine_batch1_vs_index": 0.9999832510948181
+    },
+    {
+      "gloss": "surgical removal of a limb",
+      "cosine_batch1_vs_index": 0.999971866607666
+    },
+    {
+      "gloss": "the most common kind of stroke; caused by an interruption in the flow of blood to the brain (as from a clot blocking a blood vessel)",
+      "cosine_batch1_vs_index": 0.999964714050293
+    },
+    {
+      "gloss": "to eat to one's satisfaction, until full",
+      "cosine_batch1_vs_index": 0.9999735355377197
+    },
+    {
+      "gloss": "type genus of the Verbenaceae; genus of herbaceous perennials and subshrubs",
+      "cosine_batch1_vs_index": 0.9999793767929077
+    },
+    {
+      "gloss": "†Titanoboa sp.",
+      "cosine_batch1_vs_index": 0.9999785423278809
+    }
+  ],
+  "scope": "Asset integrity and encoder parity sanity checks; not sense-disambiguation accuracy."
+}
