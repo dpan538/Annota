@@ -1,0 +1,41 @@
+{
+  "published": true,
+  "release": "https://github.com/dpan538/Annota/releases/tag/v1.1.1",
+  "publishedAt": "2026-11-04T00:23:37Z",
+  "sourceCommit": "5bb65931a27cd068b3e9519a2b8771470bd01fd7",
+  "tag": "v1.1.1",
+  "productChannel": "Stable",
+  "latestForDefaultUpdate": true,
+  "githubPrereleaseMetadata": false,
+  "metadataReason": "Stable 1.1.1 offered by /releases/latest, with matching app identity.",
+  "versionCode": 21,
+  "versionName": "1.1.1",
+  "manifest": {
+    "schemaVersion": 1,
+    "packageName": "io.github.dpan538.annota",
+    "versionCode": 21,
+    "versionName": "1.1.1",
+    "apk": "Annota-1.1.1.apk",
+    "sha256": "0e20a706d903da1bbccdea59fde4a0a01520c202a0bb0cbe3cdf6db1fa74ce9b",
+    "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18"
+  },
+  "anonymousManifestAndChecksumVerified": true,
+  "anonymousApkCheck": "public-apk.json",
+  "assets": [
+    {
+      "name": "Annota-1.1.1.apk",
+      "url": "https://github.com/dpan538/Annota/releases/download/v1.1.1/Annota-1.1.1.apk",
+      "bytes": 488423888
+    },
+    {
+      "name": "annota-update.json",
+      "url": "https://github.com/dpan538/Annota/releases/download/v1.1.1/annota-update.json",
+      "bytes": 317
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "url": "https://github.com/dpan538/Annota/releases/download/v1.1.1/SHA256SUMS.txt",
+      "bytes": 83
+    }
+  ]
+}

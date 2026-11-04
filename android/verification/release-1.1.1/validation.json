@@ -57,5 +57,9 @@
     "Upstream Chinese mapping errors and absent senses cannot be repaired by cosine similarity.",
     "Reviewed development examples are not an independent benchmark."
   ],
-  "publicDownloadVerified": false
+  "publicDownloadVerified": true,
+  "release": "https://github.com/dpan538/Annota/releases/tag/v1.1.1",
+  "sourceCommit": "5bb65931a27cd068b3e9519a2b8771470bd01fd7",
+  "latestForDefaultUpdate": true,
+  "publicEvidence": "public-apk.json"
 }

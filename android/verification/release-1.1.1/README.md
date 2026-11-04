@@ -4,6 +4,6 @@
 
 - [原始回归](regression.txt) · [校验汇总](validation.json) · [APK归档/资产/证书校验](apk-archive.json)
 - [向量、缓存和语义诊断](../semantic-111/) · [完整更新与真机复核](../../../docs/1.1.1-RELEASE-NOTES.md)
-- 公开 Release/APK 下载校验在发布后记录至 release.json 与 public-apk.json；不把回环下载冒充公开分发。
+- [公开 Release 与默认更新核验](release.json) · [匿名下载 APK、签名、覆盖安装和冷启动](public-apk.json)。公开附件 SHA-256 与本次候选一致，保留原安装证书。
 
 测试仅操作 emulator-5584，保留其应用数据覆盖安装；未操作维护者实体平板。语义诊断保留未正确排序的例子，不宣称整体消歧准确率。
