@@ -73,7 +73,7 @@ cd Annota/android
 ./gradlew :app:assembleDebug
 ```
 
-[Android 工程与签名](android/README.md) · [测试与验收](docs/testing.md) · [离线词库构建](design/dictionary/README.md) · [设计原型](design/README.md) · [反馈问题](https://github.com/dpan538/Annota/issues)
+[Android 工程与签名](android/README.md) · [空间与归档](docs/PROJECT-STORAGE.md) · [测试与验收](docs/testing.md) · [离线词库构建](design/dictionary/README.md) · [设计原型](design/README.md) · [反馈问题](https://github.com/dpan538/Annota/issues)
 
 ## 许可
 
