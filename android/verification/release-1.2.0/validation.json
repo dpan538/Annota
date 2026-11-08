@@ -70,15 +70,16 @@
     "signatureV2": true,
     "signatureV3": false,
     "assetsAndArchiveVerified": true,
-    "transport": "temporary loopback HTTP; public GitHub download not tested",
+    "transport": "public GitHub HTTPS, no credentials",
     "passed": true
   },
-  "publicDownloadVerified": false,
+  "publicDownloadVerified": true,
   "knownLimitations": [
     "CWN and OMW Wiktionary Chinese meanings are not individually proofread.",
     "Merged dictionary totals overlap with the main dictionary and cannot be added.",
     "Open English WordNet synsets without a usable CILI alignment (3,184) are excluded.",
     "Character-level traditional/simplified expansion only; no phrase-level variant conversion.",
     "Emulator latency and correctness do not replace Xiaomi Pad 9 Pro Max device acceptance."
-  ]
+  ],
+  "publicUrl": "https://github.com/dpan538/Annota/releases/download/v1.2.0/Annota-1.2.0.apk"
 }
