@@ -1,0 +1,262 @@
+# Annota professional terminology seed, author-reviewed, MIT (English terms/Chinese equivalents).
+control plane	控制平面	cloud			Annota	curated
+worker node	工作节点	cloud			Annota	curated
+master node	主节点	cloud			Annota	curated
+load balancer	负载均衡器	cloud			Annota	curated
+api server	API 服务器	cloud			Annota	curated
+scheduler	调度器	cloud			Annota	curated
+controller manager	控制器管理器	cloud			Annota	curated
+etcd	etcd 键值存储	cloud			Annota	curated
+kubelet	kubelet 节点代理	cloud			Annota	curated
+kube-proxy	kube-proxy 网络代理	cloud			Annota	curated
+container runtime	容器运行时	cloud			Annota	curated
+pod	Pod 容器组	cloud			Annota	curated
+service	服务	cloud			Annota	curated
+ingress	入口网关	cloud			Annota	curated
+namespace	命名空间	cloud			Annota	curated
+deployment	部署	cloud			Annota	curated
+statefulset	有状态副本集	cloud			Annota	curated
+daemonset	守护进程集	cloud			Annota	curated
+configmap	配置映射	cloud			Annota	curated
+secret	密钥配置	cloud			Annota	curated
+persistent volume	持久卷	cloud			Annota	curated
+persistent volume claim	持久卷声明	cloud			Annota	curated
+storage class	存储类	cloud			Annota	curated
+cluster	集群	cloud			Annota	curated
+node	节点	cloud			Annota	curated
+high availability	高可用性	cloud			Annota	curated
+fault tolerance	容错	cloud			Annota	curated
+horizontal scaling	水平扩展	cloud			Annota	curated
+vertical scaling	垂直扩展	cloud			Annota	curated
+service mesh	服务网格	cloud			Annota	curated
+sidecar	边车容器	cloud			Annota	curated
+replica set	副本集	cloud			Annota	curated
+rolling update	滚动更新	cloud			Annota	curated
+resource quota	资源配额	cloud			Annota	curated
+network policy	网络策略	cloud			Annota	curated
+cluster autoscaler	集群自动扩缩容	cloud			Annota	curated
+cloud provider	云服务商	cloud			Annota	curated
+virtual machine	虚拟机	cloud			Annota	curated
+container image	容器镜像	cloud			Annota	curated
+container registry	容器镜像仓库	cloud			Annota	curated
+helm chart	Helm 图表	cloud			Annota	curated
+operator	Operator 控制器	cloud			Annota	curated
+custom resource	自定义资源	cloud			Annota	curated
+control loop	控制循环	cloud			Annota	curated
+reconciliation	调和	cloud			Annota	curated
+leader election	领导者选举	cloud			Annota	curated
+distributed consensus	分布式共识	cloud			Annota	curated
+raft	Raft 共识算法	cloud			Annota	curated
+etcd cluster	etcd 集群	cloud			Annota	curated
+api gateway	API 网关	cloud			Annota	curated
+load balancing	负载均衡	cloud			Annota	curated
+availability zone	可用区	cloud			Annota	curated
+region	区域	cloud			Annota	curated
+latency	延迟	cloud			Annota	curated
+throughput	吞吐量	cloud			Annota	curated
+scalability	可扩展性	cloud			Annota	curated
+elasticity	弹性	cloud			Annota	curated
+observability	可观测性	cloud			Annota	curated
+tracing	链路追踪	cloud			Annota	curated
+metric	指标	cloud			Annota	curated
+log aggregation	日志聚合	cloud			Annota	curated
+prometheus	Prometheus 监控系统	cloud			Annota	curated
+grafana	Grafana 可视化平台	cloud			Annota	curated
+kubernetes	Kubernetes 容器编排平台	cloud			Annota	curated
+kubectl	kubectl 命令行工具	cloud			Annota	curated
+kubeadm	kubeadm 集群引导工具	cloud			Annota	curated
+kubeconfig	kubeconfig 配置文件	cloud			Annota	curated
+cni	容器网络接口	cloud			Annota	curated
+csi	容器存储接口	cloud			Annota	curated
+pvc	持久卷声明	cloud			Annota	curated
+pv	持久卷	cloud			Annota	curated
+namespace isolation	命名空间隔离	cloud			Annota	curated
+operating system	操作系统	cs			Annota	curated
+process	进程	cs			Annota	curated
+thread	线程	cs			Annota	curated
+deadlock	死锁	cs			Annota	curated
+mutex	互斥锁	cs			Annota	curated
+semaphore	信号量	cs			Annota	curated
+virtual memory	虚拟内存	cs			Annota	curated
+page table	页表	cs			Annota	curated
+cache coherence	缓存一致性	cs			Annota	curated
+instruction set	指令集	cs			Annota	curated
+compiler	编译器	cs			Annota	curated
+interpreter	解释器	cs			Annota	curated
+garbage collection	垃圾回收	cs			Annota	curated
+heap	堆	cs			Annota	curated
+stack	栈	cs			Annota	curated
+binary tree	二叉树	cs			Annota	curated
+hash table	哈希表	cs			Annota	curated
+graph	图	cs			Annota	curated
+dynamic programming	动态规划	cs			Annota	curated
+greedy algorithm	贪心算法	cs			Annota	curated
+time complexity	时间复杂度	cs			Annota	curated
+space complexity	空间复杂度	cs			Annota	curated
+concurrency	并发	cs			Annota	curated
+parallelism	并行	cs			Annota	curated
+distributed system	分布式系统	cs			Annota	curated
+consistency	一致性	cs			Annota	curated
+eventual consistency	最终一致性	cs			Annota	curated
+partition tolerance	分区容错性	cs			Annota	curated
+cap theorem	CAP 定理	cs			Annota	curated
+consensus algorithm	共识算法	cs			Annota	curated
+serialization	序列化	cs			Annota	curated
+deserialization	反序列化	cs			Annota	curated
+software development kit	软件开发工具包	cs			Annota	curated
+database	数据库	cs			Annota	curated
+transaction	事务	cs			Annota	curated
+index	索引	cs			Annota	curated
+query optimization	查询优化	cs			Annota	curated
+schema	模式	cs			Annota	curated
+foreign key	外键	cs			Annota	curated
+primary key	主键	cs			Annota	curated
+normalization	规范化	cs			Annota	curated
+denormalization	反规范化	cs			Annota	curated
+replication	复制	cs			Annota	curated
+sharding	分片	cs			Annota	curated
+backup	备份	cs			Annota	curated
+restore	恢复	cs			Annota	curated
+encryption	加密	cs			Annota	curated
+authentication	认证	cs			Annota	curated
+authorization	授权	cs			Annota	curated
+token	令牌	cs			Annota	curated
+certificate	证书	cs			Annota	curated
+firewall	防火墙	cs			Annota	curated
+proxy	代理	cs			Annota	curated
+reverse proxy	反向代理	cs			Annota	curated
+domain name system	域名系统	cs			Annota	curated
+transmission control protocol	传输控制协议	cs			Annota	curated
+user datagram protocol	用户数据报协议	cs			Annota	curated
+http	超文本传输协议	cs			Annota	curated
+https	安全超文本传输协议	cs			Annota	curated
+representational state transfer	表述性状态转移	cs			Annota	curated
+grpc	gRPC 远程过程调用	cs			Annota	curated
+json	JSON 数据格式	cs			Annota	curated
+xml	XML 标记语言	cs			Annota	curated
+yaml	YAML 配置语言	cs			Annota	curated
+unicode	Unicode 字符集	cs			Annota	curated
+utf-8	UTF-8 编码	cs			Annota	curated
+regular expression	正则表达式	cs			Annota	curated
+refactoring	重构	cs			Annota	curated
+unit test	单元测试	cs			Annota	curated
+integration test	集成测试	cs			Annota	curated
+regression	回归	cs			Annota	curated
+debugging	调试	cs			Annota	curated
+profiling	性能分析	cs			Annota	curated
+benchmark	基准测试	cs			Annota	curated
+machine learning	机器学习	ml			Annota	curated
+deep learning	深度学习	ml			Annota	curated
+neural network	神经网络	ml			Annota	curated
+transformer	Transformer 模型	ml			Annota	curated
+attention mechanism	注意力机制	ml			Annota	curated
+self-attention	自注意力	ml			Annota	curated
+embedding	嵌入向量	ml			Annota	curated
+token	词元	ml			Annota	curated
+tokenizer	分词器	ml			Annota	curated
+training	训练	ml			Annota	curated
+inference	推理	ml			Annota	curated
+fine tuning	微调	ml			Annota	curated
+pre training	预训练	ml			Annota	curated
+gradient descent	梯度下降	ml			Annota	curated
+backpropagation	反向传播	ml			Annota	curated
+loss function	损失函数	ml			Annota	curated
+optimizer	优化器	ml			Annota	curated
+learning rate	学习率	ml			Annota	curated
+regularization	正则化	ml			Annota	curated
+dropout	丢弃法	ml			Annota	curated
+batch normalization	批归一化	ml			Annota	curated
+overfitting	过拟合	ml			Annota	curated
+underfitting	欠拟合	ml			Annota	curated
+bias variance tradeoff	偏差-方差权衡	ml			Annota	curated
+precision	精确率	ml			Annota	curated
+recall	召回率	ml			Annota	curated
+f1 score	F1 分数	ml			Annota	curated
+accuracy	准确率	ml			Annota	curated
+confusion matrix	混淆矩阵	ml			Annota	curated
+cross validation	交叉验证	ml			Annota	curated
+supervised learning	监督学习	ml			Annota	curated
+unsupervised learning	无监督学习	ml			Annota	curated
+reinforcement learning	强化学习	ml			Annota	curated
+clustering	聚类	ml			Annota	curated
+classification	分类	ml			Annota	curated
+regression analysis	回归分析	ml			Annota	curated
+feature engineering	特征工程	ml			Annota	curated
+data augmentation	数据增强	ml			Annota	curated
+language model	语言模型	ml			Annota	curated
+large language model	大语言模型	ml			Annota	curated
+retrieval augmented generation	检索增强生成	ml			Annota	curated
+vector database	向量数据库	ml			Annota	curated
+semantic search	语义检索	ml			Annota	curated
+prompt engineering	提示工程	ml			Annota	curated
+hallucination	幻觉	ml			Annota	curated
+model quantization	模型量化	ml			Annota	curated
+knowledge distillation	知识蒸馏	ml			Annota	curated
+inference latency	推理延迟	ml			Annota	curated
+model checkpoint	模型检查点	ml			Annota	curated
+dataset	数据集	ml			Annota	curated
+annotation	标注	ml			Annota	curated
+embedding space	嵌入空间	ml			Annota	curated
+cosine similarity	余弦相似度	ml			Annota	curated
+softmax	Softmax 函数	ml			Annota	curated
+convolution	卷积	ml			Annota	curated
+recurrent neural network	循环神经网络	ml			Annota	curated
+lstm	长短期记忆网络	ml			Annota	curated
+gru	门控循环单元	ml			Annota	curated
+autoencoder	自编码器	ml			Annota	curated
+generative adversarial network	生成对抗网络	ml			Annota	curated
+diffusion model	扩散模型	ml			Annota	curated
+informed consent	知情同意	other			Annota	curated
+due process	正当程序	other			Annota	curated
+negligence	过失	other			Annota	curated
+liability	责任	other			Annota	curated
+statute	法规	other			Annota	curated
+jurisdiction	管辖权	other			Annota	curated
+plaintiff	原告	other			Annota	curated
+defendant	被告	other			Annota	curated
+breach of contract	违约	other			Annota	curated
+intellectual property	知识产权	other			Annota	curated
+patent	专利	other			Annota	curated
+trademark	商标	other			Annota	curated
+copyright	著作权	other			Annota	curated
+damages	损害赔偿	other			Annota	curated
+injunction	禁令	other			Annota	curated
+appeal	上诉	other			Annota	curated
+evidence	证据	other			Annota	curated
+testimony	证言	other			Annota	curated
+diagnosis	诊断	other			Annota	curated
+prognosis	预后	other			Annota	curated
+symptom	症状	other			Annota	curated
+treatment	治疗	other			Annota	curated
+therapy	疗法	other			Annota	curated
+vaccine	疫苗	other			Annota	curated
+antibody	抗体	other			Annota	curated
+inflammation	炎症	other			Annota	curated
+infection	感染	other			Annota	curated
+chronic disease	慢性病	other			Annota	curated
+clinical trial	临床试验	other			Annota	curated
+dose	剂量	other			Annota	curated
+adverse effect	不良反应	other			Annota	curated
+revenue	收入	other			Annota	curated
+profit	利润	other			Annota	curated
+cash flow	现金流	other			Annota	curated
+balance sheet	资产负债表	other			Annota	curated
+asset	资产	other			Annota	curated
+equity	权益	other			Annota	curated
+interest rate	利率	other			Annota	curated
+inflation	通货膨胀	other			Annota	curated
+depreciation	折旧	other			Annota	curated
+amortization	摊销	other			Annota	curated
+capital expenditure	资本支出	other			Annota	curated
+working capital	营运资本	other			Annota	curated
+supply chain	供应链	other			Annota	curated
+inventory	库存	other			Annota	curated
+stakeholder	利益相关者	other			Annota	curated
+hypothesis	假设	other			Annota	curated
+methodology	方法论	other			Annota	curated
+empirical	实证的	other			Annota	curated
+statistical significance	统计显著性	other			Annota	curated
+peer review	同行评审	other			Annota	curated
+citation	引用	other			Annota	curated
+abstract	摘要	other			Annota	curated
+manuscript	稿件	other			Annota	curated

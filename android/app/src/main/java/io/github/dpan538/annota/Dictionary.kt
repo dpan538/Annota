@@ -101,11 +101,23 @@ class Dictionary(private val context: Context) {
         val context: LookupContext? = null,
     )
 
+    /** A curated professional term/definition record from the terminology layer. */
+    data class Term(
+        val word: String,
+        val zh: String,
+        val domain: String,
+        val pos: String,
+        val definition: String,
+        val source: String,
+        val confidence: String,
+    )
+
     data class Result(
         val entries: List<Entry>,
         val suggestions: List<String>,
         val reading: DictionaryReading? = null,
         val parts: List<Part> = emptyList(),
+        val terms: List<Term> = emptyList(),
     )
 
     private val dir = File(context.filesDir, "dictionary").apply { mkdirs() }
@@ -791,7 +803,8 @@ class Dictionary(private val context: Context) {
             else base
         if (resolved.entries.isNotEmpty())
             return resolved.copy(
-                reading = readings.present(text, resolved, active, phrase, lexical)
+                reading = readings.present(text, resolved, active, phrase, lexical),
+                terms = queryTerms(text),
             )
         val english = wiktionary().connection()?.let { englishEntries(text, it) }.orEmpty()
         if (english.isNotEmpty()) {
@@ -1316,7 +1329,10 @@ class Dictionary(private val context: Context) {
         queryCache.get(cacheKey)?.let {
             return it
         }
-        val result = queryUncached(text, withSuggestions)
+        val result = queryUncached(text, withSuggestions).let { base ->
+            val terms = queryTerms(text)
+            if (terms.isEmpty()) base else base.copy(terms = terms)
+        }
         queryCache.put(cacheKey, result)
         return result
     }
@@ -1333,6 +1349,94 @@ class Dictionary(private val context: Context) {
                     .thenBy { it.word }
             )
             .map { it.word }
+
+    private val termCache = LruCache<String, List<Term>>(256)
+
+    /**
+     * Exact curated terminology lookup. The table does not exist in older bundled assets, so a
+     * missing table degrades to the ordinary dictionary path.
+     */
+    private fun queryTerms(text: String): List<Term> {
+        val key = normalize(text)
+        if (key.isBlank() || ' ' !in key && key.length > 80) return emptyList()
+        termCache.get(key)?.let { return it }
+        val db = enZh() ?: return emptyList()
+        val rows =
+            runCatching {
+                    db.rawQuery(
+                            "SELECT word,zh,domain,pos,definition,source,confidence FROM terms " +
+                                "WHERE key=? LIMIT 4",
+                            arrayOf(key),
+                        )
+                        .use { c ->
+                            buildList {
+                                while (c.moveToNext()) {
+                                    add(
+                                        Term(
+                                            c.getString(0) ?: "",
+                                            c.getString(1) ?: "",
+                                            c.getString(2) ?: "",
+                                            c.getString(3) ?: "",
+                                            c.getString(4) ?: "",
+                                            c.getString(5) ?: "",
+                                            c.getString(6) ?: "",
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                }
+                .getOrDefault(emptyList())
+        termCache.put(key, rows)
+        return rows
+    }
+
+    private val termMatchCache = LruCache<String, List<Term>>(64)
+
+    /** Terms that occur verbatim in a selected passage, longest first. */
+    fun matchTerms(text: String): List<Term> {
+        if (text.length > 1024) return emptyList()
+        termMatchCache.get(text)?.let { return it }
+        val db = enZh() ?: return emptyList()
+        val key = text.lowercase(java.util.Locale.ROOT)
+        val rows =
+            runCatching {
+                    db.rawQuery(
+                            "SELECT word,zh,domain,pos,definition,source,confidence FROM terms ORDER BY length(key) DESC",
+                            null,
+                        )
+                        .use { c ->
+                            buildList {
+                                while (c.moveToNext()) {
+                                    val word = c.getString(0) ?: ""
+                                    if (word.isBlank()) continue
+                                    val pattern =
+                                        Regex(
+                                            "(?<![A-Za-z0-9])" +
+                                                Regex.escape(word) +
+                                                "(?![A-Za-z0-9])",
+                                            RegexOption.IGNORE_CASE,
+                                        )
+                                    if (pattern.containsMatchIn(key))
+                                        add(
+                                            Term(
+                                                word,
+                                                c.getString(1) ?: "",
+                                                c.getString(2) ?: "",
+                                                c.getString(3) ?: "",
+                                                c.getString(4) ?: "",
+                                                c.getString(5) ?: "",
+                                                c.getString(6) ?: "",
+                                            )
+                                        )
+                                }
+                            }
+                        }
+                }
+                .getOrDefault(emptyList())
+        termMatchCache.put(text, rows)
+        return rows
+    }
 
     private fun queryUncached(text: String, withSuggestions: Boolean): Result {
         val keys = queryKeys(text)

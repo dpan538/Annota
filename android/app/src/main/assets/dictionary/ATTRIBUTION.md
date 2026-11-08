@@ -130,3 +130,10 @@ OPUS-MT / University of Helsinki，Xenova ONNX 量化转换，Microsoft ONNX Run
 重复词条与边界规则，并生成检索用 Bloom 位图。运行时检索使用只读 SQLite 连接、内容缓存与位图预筛，
 不联网、不下载。仓库保留上述来源的压缩文件；Android 打包后 APK 中对应材料去掉 .gz 扩展名，
 解压后的内容相同。`sources-build/` 只用于构建，不随 APK 分发。
+
+## Annota professional terminology seed
+
+- File: `design/dictionary/sources/annota-terms.tsv`
+- License: MIT (original English terms + Chinese equivalents, author-reviewed)
+- Scope: cloud-native, computer science, machine learning, science, academic, legal, medical, finance; concise definitions, no example sentences.
+- The layer is bundled into `en-zh.sqlite` schema 7 (`terms` table).

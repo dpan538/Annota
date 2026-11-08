@@ -1,0 +1,46 @@
+{
+  "version": "1.2.1.3",
+  "versionCode": 27,
+  "channel": "preview (normal GitHub release, Latest)",
+  "releaseDate": "2026-11-08",
+  "stableVersion": "1.2.0",
+  "stableVersionCode": 22,
+  "device": "API 36 ARM64 emulator (ranchu), synthetic stylus/touch; not Xiaomi Pad 9 Pro Max",
+  "instrumentation": {
+    "tests": 280,
+    "passed": 280,
+    "failed": 0,
+    "raw": "regression.txt"
+  },
+  "apk": {
+    "artifact": "Annota-1.2.1.3.apk",
+    "bytes": 412470944,
+    "sha256": "92d66bcdef29de4ace1b20d8fdc2ac9d52776df48703ab10a8fec3d9459111f9",
+    "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18",
+    "verified": true,
+    "coldStartMs": 1528
+  },
+  "fixes": {
+    "textEditor": {
+      "rootCause": "focusable PopupWindow was shown synchronously inside ACTION_UP, so the same gesture could dismiss it; corner handles also intercepted a same-point tap",
+      "fix": "post editor opening after the touch sequence, ignore outside touch for 250ms, test taps inside away from handles; real-window test confirms focus/stays open"
+    },
+    "longPress": {
+      "rootCause": "no object/page context menu",
+      "fix": "long-press text box: copy/delete; long-press blank page: paste at press point; text icon second tap: size/color"
+    },
+    "translation": {
+      "rootCause": "cased SentencePiece tokenizes all-caps prose as fragments; no glossary protection",
+      "fix": "deterministic case normalization with acronym allowlist; term glossary substitution; no retry/examples"
+    },
+    "terms": {
+      "rootCause": "general dictionary merged professional senses without domain/provenance",
+      "fix": "schema 7 terms table, 1,157 curated entries across 7 domains, exact lookup before entries, term cards; +4.0MB packed"
+    }
+  },
+  "evidence": [
+    "regression.txt",
+    "apk.json"
+  ],
+  "limit": "Emulator evidence only; real-device IME insets, long-press, real stylus and crash soak pending."
+}

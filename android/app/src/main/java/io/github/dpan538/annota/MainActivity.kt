@@ -962,10 +962,13 @@ class MainActivity : Activity() {
             reader?.tool = "select"
         }
         add(center, "text", tr("文字", "Text")) {
-            readerPopup?.dismiss()
-            reader?.let {
-                it.textTool()
-                it.invalidate()
+            reader?.let { r ->
+                if (r.tool != "text") {
+                    readerPopup?.dismiss()
+                    r.textTool()
+                } else if (readerPopup?.isShowing == true && readerPanelKey == "text")
+                    readerPopup?.dismiss()
+                else textOptions()
             }
         }
         add(center, "hand", tr("手形", "Hand")) {
@@ -1489,6 +1492,39 @@ class MainActivity : Activity() {
         }
         menu.item("highlight", tr("仅荧光笔", "Highlighter only") + if (r.onlyHighlight) " ✓" else "") {
             r.onlyHighlight = !r.onlyHighlight
+        }
+        showPanel(menu)
+    }
+
+    private fun textOptions() {
+        val r = reader ?: return
+        if (r.readOnly) return
+        r.tool = "text"
+        val menu = readerPanel("text", 420f)
+        menu.header(tr("文字", "Text"))
+        listOf(14f to tr("小", "Small"), 20f to tr("中", "Medium"), 28f to tr("大", "Large"), 40f to tr("特大", "Extra large"))
+            .forEach { (size, label) ->
+                menu.item(
+                    "text-size-$size",
+                    tr("字号", "Size") + " · $label" + if (abs(r.textSize - size) < .1f) " ✓" else "",
+                ) {
+                    r.textSize = size
+                    r.applyTextStyle()
+                }
+            }
+        val colors =
+            listOf(
+                0xff262a2d.toInt() to tr("墨色", "Ink"),
+                0xffc2410c.toInt() to tr("强调色", "Accent"),
+                0xff1d4ed8.toInt() to tr("蓝色", "Blue"),
+                0xff2f7d5c.toInt() to tr("绿色", "Green"),
+                0xff7c3aed.toInt() to tr("紫色", "Purple"),
+            )
+        colors.forEach { (color, label) ->
+            menu.item("text-color-$color", tr("颜色", "Color") + " · $label" + if (r.textColor == color) " ✓" else "") {
+                r.textColor = color
+                r.applyTextStyle()
+            }
         }
         showPanel(menu)
     }

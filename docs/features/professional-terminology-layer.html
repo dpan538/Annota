@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Professional Terminology Layer (专业术语层) — Annota</title><meta name="description" content="A curated, domain-tagged terminology table prioritised ahead of general dictionary entries, with source/confidence metadata and translation protection.">
+<link rel="canonical" href="https://dpan538.github.io/Annota/features/professional-terminology-layer.html">
+<meta property="og:title" content="Professional Terminology Layer (专业术语层) — Annota"><meta property="og:description" content="A curated, domain-tagged terminology table prioritised ahead of general dictionary entries, with source/confidence metadata and translation protection.">
+<meta property="og:type" content="article"><meta property="og:url" content="https://dpan538.github.io/Annota/features/professional-terminology-layer.html">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "SoftwareApplication", "name": "Annota", "applicationCategory": "BookReaderApplication", "operatingSystem": "Android", "softwareVersion": "1.2.1.3", "downloadUrl": "https://github.com/dpan538/Annota/releases/tag/v1.2.1.3", "featureList": ["Contact-Intent Edge Guard", "Ink Transaction Ledger", "Stroke Continuity Reconstruction", "Ink-Flow Dynamics (inkVersion 6)", "Predict–Reconcile Ink Compositor", "Page-Picture Ink Cache", "Offline Context Dictionary", "Editable Text Annotation Box", "Sized Partial/Whole Eraser", "Professional Terminology Layer"], "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "TechArticle", "headline": "Professional Terminology Layer", "description": "A curated, domain-tagged terminology table prioritised ahead of general dictionary entries, with source/confidence metadata and translation protection.", "about": "General bilingual dictionaries merge everyday senses with professional terms; cloud/CS/ML terms (control plane, etcd, transformer) can be literal, missing or translated inconsistently.", "datePublished": "2026-11-08", "dateModified": "2026-11-08", "author": {"@type": "Organization", "name": "Annota"}, "isPartOf": {"@type": "SoftwareApplication", "name": "Annota"}, "citation": "https://dpan538.github.io/Annota/features/professional-terminology-layer.html", "keywords": "dictionary, terminology, professional, cloud, machine-learning"}]}</script>
+<style>
+:root{--ink:#24345e;--muted:#666;--line:#dfe3eb;--accent:#c2410c;--bg:#fbfbfd}
+*{box-sizing:border-box}body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;color:#1f2430;background:var(--bg)}
+main{max-width:940px;margin:0 auto;padding:28px 22px 70px}
+a{color:#1d4ed8;text-decoration:none}a:hover{text-decoration:underline}
+h1{font-size:2rem;line-height:1.25;margin:.4rem 0}h2{margin-top:2rem;border-top:1px solid var(--line);padding-top:1rem}
+.meta{color:var(--muted);font-size:.92rem}.tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 6px 6px 0;font-size:.82rem;color:var(--muted)}
+.card{border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0;background:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.notice{border-left:4px solid var(--accent);background:#fff7f2;padding:12px 16px;border-radius:8px}
+table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+code{background:#f1f3f7;padding:1px 5px;border-radius:5px;font-size:.9em}
+footer{max-width:940px;margin:0 auto;padding:0 22px 40px;color:var(--muted);font-size:.88rem}
+</style></head><body><main>
+<p class="meta"><a href="https://dpan538.github.io/Annota/">Annota</a> / <a href="https://dpan538.github.io/Annota/#features">features</a> / Professional Terminology Layer</p>
+<h1>Professional Terminology Layer <span class="meta">· 专业术语层</span></h1>
+<p class="meta">Status: <strong>preview</strong> · version 1.2.1.3 · updated 2026-11-08 <span class="tag">dictionary</span><span class="tag">terminology</span><span class="tag">professional</span><span class="tag">cloud</span><span class="tag">machine-learning</span></p>
+<div class="notice"><strong>What it is.</strong> A curated, domain-tagged terminology table prioritised ahead of general dictionary entries, with source/confidence metadata and translation protection.</div>
+<h2 id="problem">Problem it solves</h2><p>General bilingual dictionaries merge everyday senses with professional terms; cloud/CS/ML terms (control plane, etcd, transformer) can be literal, missing or translated inconsistently.</p>
+<h2 id="mechanism">How it works</h2><p>Schema 7 adds a terms table (word, key, zh, domain, pos, definition, source, confidence). 1,157 entries are loaded from the authored Annota seed and existing curated phrases, covering cloud-native, computer science, ML, science, academic, legal, medical and finance domains. Exact term lookup runs before ordinary entries and renders a technical-term card; the same matches protect sentence translation by replacing residual source terms.</p>
+<h2 id="difference">Difference from existing approaches</h2><p>Terms are an explicit layer with domain and provenance, not a side effect of merging general dictionaries; professional lookup can be reviewed and expanded without touching general vocabulary.</p>
+<h2 id="evidence">Evidence (measurable)</h2><table><thead><tr><th>Measurement</th><th>Result</th></tr></thead><tbody><tr><td>term rows</td><td>1,157 across 7 domains</td></tr><tr><td>schema</td><td>en-zh user_version 7</td></tr><tr><td>term lookup/display</td><td>instrumented test passes</td></tr><tr><td>payload</td><td>+4.0 MB packed dictionary</td></tr></tbody></table>
+<h2 id="verified">Verified on / Not yet verified on</h2><p><strong>Verified:</strong> API 36 ARM64 emulator (ranchu), bundled dictionary only</p><p><strong>Not yet verified:</strong> Xiaomi Pad 9 Pro Max; full professional gold-set precision still to be expanded</p>
+<h2 id="limitations">Limitations</h2><ul><li>Seed is author-reviewed but not yet a full 300-term gold evaluation</li><li>Definitions are concise; no examples by design</li><li>Reverse Chinese→English term lookup is not part of this layer yet</li></ul>
+<h2 id="code">Code</h2><ul><li><code>design/dictionary/build.py</code></li><li><code>design/dictionary/sources/annota-terms.tsv</code></li><li><code>android/app/src/main/java/io/github/dpan538/annota/Dictionary.kt</code></li><li><code>android/app/src/main/java/io/github/dpan538/annota/DictionaryPanel.kt</code></li></ul>
+<h2 id="canonical">Canonical sources</h2><p>This page is the canonical description of this feature. Machine-readable data:
+<a href="https://dpan538.github.io/Annota/features.json">features.json</a> · <a href="https://dpan538.github.io/Annota/llms.txt">llms.txt</a> · <a href="https://github.com/dpan538/Annota">source repository</a>.</p>
+</main><footer><p>Annota · <a href="https://github.com/dpan538/Annota">source</a> · <a href="https://dpan538.github.io/Annota/llms.txt">llms.txt</a> ·
+<a href="https://dpan538.github.io/Annota/features.json">features.json</a> · updated 2026-11-08</p></footer></body></html>

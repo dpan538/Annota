@@ -5,6 +5,34 @@ import java.util.Locale
 
 /** Bound work without silently truncating a selection or cutting a dependent clause in half. */
 object TranslationInput {
+    /**
+     * Acronyms that must keep their case when the source is normalised for the model. Everything
+     * else in ALL CAPS is ordinary prose that the cased SentencePiece model tokenises badly
+     * (THREE -> TH+REE), so it is folded to lower case before encoding.
+     */
+    private val ACRONYMS =
+        setOf(
+            "AI", "API", "CPU", "GPU", "TPU", "RAM", "ROM", "SQL", "JSON", "XML", "HTML",
+            "HTTP", "HTTPS", "TCP", "UDP", "DNS", "URL", "URI", "PDF", "OCR", "SDK", "IDE",
+            "CLI", "GUI", "OS", "VM", "VPS", "SSD", "HDD", "USB", "GPU", "ML", "LLM", "RAG",
+            "NLP", "CV", "RL", "CNN", "RNN", "LSTM", "GAN", "GRU", "K8S", "K8S", "ETCD",
+            "HA", "HDFS", "YAML", "TOML", "CSV", "TSV", "JWT", "OAuth", "SSO", "RBAC", "CDN",
+            "SLA", "QPS", "TPS", "RPC", "REST", "GRPC", "CRD", "CNI", "CSI", "PVC", "PV",
+            "DNS", "VPC", "IAM", "EC2", "S3", "GCP", "AWS", "Azure", "K8s",
+        )
+    private val allCaps = Regex("\\b[A-Z][A-Z0-9]{1,7}\\b")
+
+    fun normalizeForModel(text: String): String {
+        val input = text.trim()
+        if (input.isEmpty()) return input
+        return allCaps.replace(input) { match ->
+            val token = match.value
+            if (token in ACRONYMS || token.lowercase(Locale.ROOT) in ACRONYMS.map { it.lowercase(Locale.ROOT) })
+                token
+            else token.lowercase(Locale.ROOT)
+        }
+    }
+
     class LimitExceeded : IllegalArgumentException("Select a shorter complete English sentence")
 
     const val MAX_CHARACTERS = 1024

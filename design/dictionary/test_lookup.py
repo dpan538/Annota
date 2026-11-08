@@ -111,7 +111,7 @@ class OfflineDictionaryTests(unittest.TestCase):
 
     def test_aliases_point_to_existing_entries(self):
         with closing(sqlite3.connect(f'file:{ROOT / "bundle/en-zh.sqlite"}?mode=ro', uri=True)) as db:
-            self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 6)
+            self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 7)
             self.assertEqual(db.execute('SELECT count(*) FROM aliases a LEFT JOIN entries e ON e.id=a.entry_id WHERE e.id IS NULL').fetchone()[0], 0)
             columns = {row[1] for row in db.execute('PRAGMA table_info(entries)')}
             self.assertIn('freq', columns)

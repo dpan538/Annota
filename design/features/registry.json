@@ -15,13 +15,13 @@
       "sha256": "745a560875c6bb6b213504d697fa390f96396320cc69a4b77cb08261cfebbb4b"
     },
     "preview": {
-      "version": "1.2.1.2",
-      "versionCode": 26,
+      "version": "1.2.1.3",
+      "versionCode": 27,
       "status": "preview",
-      "tag": "v1.2.1.2",
-      "apk": "Annota-1.2.1.2.apk",
-      "bytes": 412302980,
-      "sha256": "0deaeaa387eca42f75371003e4349ee5ed02da2f1b036b87ce528dc3799bbed8"
+      "tag": "v1.2.1.3",
+      "apk": "Annota-1.2.1.3.apk",
+      "bytes": 412470944,
+      "sha256": "92d66bcdef29de4ace1b20d8fdc2ac9d52776df48703ab10a8fec3d9459111f9"
     }
   },
   "features": [
@@ -448,6 +448,55 @@
         "stylus",
         "annotation",
         "UI"
+      ]
+    },
+    {
+      "id": "professional-terminology-layer",
+      "name": "Professional Terminology Layer",
+      "nameZh": "专业术语层",
+      "version": "1.2.1.3",
+      "status": "preview",
+      "summary": "A curated, domain-tagged terminology table prioritised ahead of general dictionary entries, with source/confidence metadata and translation protection.",
+      "problem": "General bilingual dictionaries merge everyday senses with professional terms; cloud/CS/ML terms (control plane, etcd, transformer) can be literal, missing or translated inconsistently.",
+      "mechanism": "Schema 7 adds a terms table (word, key, zh, domain, pos, definition, source, confidence). 1,157 entries are loaded from the authored Annota seed and existing curated phrases, covering cloud-native, computer science, ML, science, academic, legal, medical and finance domains. Exact term lookup runs before ordinary entries and renders a technical-term card; the same matches protect sentence translation by replacing residual source terms.",
+      "difference": "Terms are an explicit layer with domain and provenance, not a side effect of merging general dictionaries; professional lookup can be reviewed and expanded without touching general vocabulary.",
+      "evidence": [
+        {
+          "label": "term rows",
+          "value": "1,157 across 7 domains"
+        },
+        {
+          "label": "schema",
+          "value": "en-zh user_version 7"
+        },
+        {
+          "label": "term lookup/display",
+          "value": "instrumented test passes"
+        },
+        {
+          "label": "payload",
+          "value": "+4.0 MB packed dictionary"
+        }
+      ],
+      "verifiedOn": "API 36 ARM64 emulator (ranchu), bundled dictionary only",
+      "notVerifiedOn": "Xiaomi Pad 9 Pro Max; full professional gold-set precision still to be expanded",
+      "limitations": [
+        "Seed is author-reviewed but not yet a full 300-term gold evaluation",
+        "Definitions are concise; no examples by design",
+        "Reverse Chinese→English term lookup is not part of this layer yet"
+      ],
+      "code": [
+        "design/dictionary/build.py",
+        "design/dictionary/sources/annota-terms.tsv",
+        "android/app/src/main/java/io/github/dpan538/annota/Dictionary.kt",
+        "android/app/src/main/java/io/github/dpan538/annota/DictionaryPanel.kt"
+      ],
+      "tags": [
+        "dictionary",
+        "terminology",
+        "professional",
+        "cloud",
+        "machine-learning"
       ]
     }
   ]

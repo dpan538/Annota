@@ -109,6 +109,55 @@ def frequency_rank(row):
     return min(ranks) if ranks else 0
 
 
+TERM_DOMAINS = {
+    "software_and_systems": "cloud",
+    "machine_learning": "ml",
+    "attention_and_language": "ml",
+    "vision_and_models": "ml",
+    "mathematics_and_statistics": "science",
+    "science_and_engineering": "science",
+    "academic_connectors": "academic",
+    "academic_reading": "academic",
+    "common_phrases": "general",
+}
+
+
+def authored_terms():
+    """Curated professional terms plus the existing authored phrase table as a terminology layer."""
+    rows, seen = [], set()
+    path = ROOT / "sources/annota-terms.tsv"
+    for number, line in enumerate(path.read_text().splitlines(), 1):
+        if not line.strip() or line.startswith("#"):
+            continue
+        fields = line.split("\t")
+        if len(fields) < 3:
+            raise ValueError(f"Invalid term line {number}")
+        word, zh, domain = fields[0].strip(), fields[1].strip(), fields[2].strip()
+        pos = fields[3].strip() if len(fields) > 3 else ""
+        definition = fields[4].strip() if len(fields) > 4 else ""
+        source = fields[5].strip() if len(fields) > 5 and fields[5].strip() else "Annota"
+        confidence = fields[6].strip() if len(fields) > 6 and fields[6].strip() else "curated"
+        key = normalize(word)
+        if not key or key in seen or not zh:
+            continue
+        if not re.fullmatch(r"[a-z0-9' -]+", key):
+            continue
+        seen.add(key)
+        rows.append({"word": word, "key": key, "zh": zh, "domain": domain,
+                     "pos": pos, "definition": definition,
+                     "source": source, "confidence": confidence})
+    for phrase in authored_phrases():
+        key = phrase["key"]
+        if key in seen:
+            continue
+        seen.add(key)
+        rows.append({"word": phrase["word"], "key": key, "zh": phrase["meaning"],
+                     "domain": TERM_DOMAINS.get(phrase["category"], "general"),
+                     "pos": "", "definition": "", "source": "Annota phrases",
+                     "confidence": "curated"})
+    return rows
+
+
 def build_lookup_filter(db, wiki_path):
     """Build a deterministic Bloom filter over every key the app may query.
 
@@ -120,6 +169,7 @@ def build_lookup_filter(db, wiki_path):
         ("entries", ("key", "boundary_key")),
         ("aliases", ("key", "boundary_key")),
         ("forms", ("key",)),
+        ("terms", ("key",)),
     ):
         for column in columns:
             keys.update(row[0] for row in db.execute(f"SELECT DISTINCT {column} FROM {table}"))
@@ -176,7 +226,7 @@ def build(ecdict_path):
 
     phrases = authored_phrases()
     en, temp = database(out / "en-zh.sqlite", """
-        PRAGMA user_version=6;
+        PRAGMA user_version=7;
         CREATE TABLE entries(id INTEGER PRIMARY KEY, word TEXT NOT NULL, key TEXT NOT NULL,
             compact TEXT NOT NULL, reverse_key TEXT NOT NULL, boundary_key TEXT NOT NULL,
             initials TEXT NOT NULL DEFAULT '',
@@ -199,6 +249,12 @@ def build(ecdict_path):
             cues TEXT NOT NULL DEFAULT '', source TEXT NOT NULL DEFAULT 'annota',
             PRIMARY KEY(abbr, expansion));
         CREATE INDEX abbr_key ON abbreviations(abbr);
+        CREATE TABLE terms(id INTEGER PRIMARY KEY, word TEXT NOT NULL, key TEXT NOT NULL,
+            zh TEXT NOT NULL, domain TEXT NOT NULL DEFAULT '', pos TEXT NOT NULL DEFAULT '',
+            definition TEXT NOT NULL DEFAULT '', source TEXT NOT NULL DEFAULT 'Annota',
+            confidence TEXT NOT NULL DEFAULT 'curated');
+        CREATE INDEX term_key ON terms(key);
+        CREATE INDEX term_domain ON terms(domain);
     """)
     with gzip.open(ROOT / "sources/ecdict-core.csv.gz", "rt", encoding="utf-8", newline="") as src:
         for row in csv.DictReader(src):
@@ -257,6 +313,13 @@ def build(ecdict_path):
         [(row["abbr"], row["expansion"], row["meaning"], row["domain"], row["cues"],
           row["source"]) for row in abbreviations],
     )
+    terms = authored_terms()
+    en.executemany(
+        "INSERT INTO terms(word,key,zh,domain,pos,definition,source,confidence) VALUES(?,?,?,?,?,?,?,?)",
+        [(row["word"], row["key"], row["zh"], row["domain"], row["pos"],
+          row["definition"], row["source"], row["confidence"]) for row in terms],
+    )
+    terms_count = en.execute("SELECT count(*) FROM terms").fetchone()[0]
     initials_count = en.execute("SELECT count(*) FROM entries WHERE initials<>''").fetchone()[0]
     en_count = en.execute("SELECT count(*) FROM entries").fetchone()[0]
     finish(en, temp, out / "en-zh.sqlite")
@@ -375,7 +438,7 @@ def build(ecdict_path):
         "wordnet": wordnet,
         "wiktionary": wiktionary,
         "lookupFilter": filter_report,
-        "schemaVersion": 3, "networkRequired": False,
+        "schemaVersion": 7, "networkRequired": False,
         "en-zh": {"entries": en_count, "baseEntries": base_en_count,
                   "initialsIndexed": initials_count,
                   "abbreviations": len(abbreviations),
@@ -394,6 +457,13 @@ def build(ecdict_path):
             "entries": len(abbreviations),
             "license": "MIT",
             "source": "Original Annota abbreviation expansions with context cues, 2026-11-08",
+        },
+        "annota-terms": {
+            "entries": terms_count,
+            "domains": {d: sum(r["domain"] == d for r in terms)
+                        for d in sorted({r["domain"] for r in terms})},
+            "license": "MIT (curated terms; phrase equivalents from annota-phrases)",
+            "source": "Original Annota professional terminology seed, 2026-11-08",
         },
         "annota-phrases": {"entries": len(phrases), "aliases": sum(len(r["aliases"]) for r in phrases),
                            "license": "MIT", "source": "Original Annota phrase equivalents, 2026-11-01",

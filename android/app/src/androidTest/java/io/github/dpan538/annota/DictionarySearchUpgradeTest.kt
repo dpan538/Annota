@@ -464,6 +464,21 @@ class DictionarySearchUpgradeTest {
     }
 
     @Test
+    fun professionalTermLookupReturnsCuratedTermCard() {
+        val dictionary = dictionary()
+        try {
+            val result = dictionary.query("control plane")
+            assertTrue(
+                "control plane must resolve through the terminology layer",
+                result.terms.any { it.zh == "控制平面" && it.domain == "cloud" },
+            )
+            assertEquals("控制平面", result.terms.first().zh)
+        } finally {
+            dictionary.close()
+        }
+    }
+
+    @Test
     fun slimEnZhSchemaDropsRedundantAliases() {
         Assume.assumeTrue(
             "en-zh schema 5 with entries.boundary_key required",
@@ -472,7 +487,12 @@ class DictionarySearchUpgradeTest {
         val dictionary = dictionary()
         try {
             openReadOnly("en-zh.sqlite").use { db ->
-                assertEquals(6, userVersion("en-zh.sqlite"))
+                assertEquals(7, userVersion("en-zh.sqlite"))
+                val termCount =
+                    db.rawQuery("SELECT count(*) FROM terms", null).use { c ->
+                        c.moveToFirst(); c.getInt(0)
+                    }
+                assertTrue("professional terminology layer must be present", termCount > 1000)
                 val entries = count(db, "SELECT count(*) FROM entries")
                 val aliases = count(db, "SELECT count(*) FROM aliases")
                 assertTrue("entries.boundary_key missing", "boundary_key" in columns(db, "entries"))

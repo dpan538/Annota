@@ -352,6 +352,35 @@ class DictionaryPanel(
         return card
     }
 
+    private fun termCard(term: Dictionary.Term): View {
+        val card =
+            LinearLayout(activity).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(ui.px(12f), ui.px(10f), ui.px(12f), ui.px(12f))
+                background = ui.background(palette.color("paper"), 12f, palette.color("rule"))
+                tag = "dictionary-term"
+            }
+        val head = LinearLayout(activity).apply { orientation = LinearLayout.HORIZONTAL }
+        head.addView(
+            menu.label(term.word, 18f).apply { typeface = UiFonts.get(activity, 500) },
+            LinearLayout.LayoutParams(0, -2, 1f),
+        )
+        if (term.domain.isNotBlank())
+            head.addView(
+                badge(term.domain).apply {
+                    setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, 11f * ui.unit)
+                    setPadding(ui.px(6f), ui.px(2f), ui.px(6f), ui.px(2f))
+                }
+            )
+        card.addView(head)
+        card.addView(menu.label(term.zh, 17f).apply { setTextColor(palette.accent) })
+        if (term.definition.isNotBlank())
+            card.addView(menu.label(term.definition, 13f, true).apply { setLineSpacing(ui.px(2f).toFloat(), 1f) })
+        if (term.pos.isNotBlank())
+            card.addView(menu.label(term.pos, 12f, true))
+        return card
+    }
+
     private fun query() {
         pending?.let(handler::removeCallbacks)
         val id = ++generation
@@ -415,7 +444,12 @@ class DictionaryPanel(
         block.addView(value)
         results.addView(block, 0)
         menu.refreshSize()
-        OfflineTranslator.get(activity).request(text, { open && generation == id }) { outcome ->
+        val glossary =
+            runCatching {
+                    dictionary.matchTerms(text).associate { it.word.lowercase(java.util.Locale.ROOT) to it.zh }
+                }
+                .getOrDefault(emptyMap())
+        OfflineTranslator.get(activity).request(text, glossary, { open && generation == id }) { outcome ->
             handler.post {
                 if (!open || generation != id) return@post
                 value.text =
@@ -441,6 +475,15 @@ class DictionaryPanel(
         footer.text = ui.tr("Annota 离线词库", "Annota · offline dictionaries")
         results.removeAllViews()
         scroll.scrollTo(0, 0)
+        if (result.terms.isNotEmpty()) {
+            results.addView(menu.label(ui.tr("专业术语", "Technical term"), 13f, true))
+            result.terms.forEach { term ->
+                results.addView(
+                    termCard(term),
+                    LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = ui.px(8f) },
+                )
+            }
+        }
         result.reading?.let { entry ->
             results.addView(
                 entryCard(entry),
@@ -511,6 +554,7 @@ class DictionaryPanel(
         }
         if (
             result.entries.isEmpty() &&
+                result.terms.isEmpty() &&
                 result.suggestions.isEmpty() &&
                 result.parts.isEmpty() &&
                 (empty || !OfflineTranslator.eligible(edit.text.toString()))

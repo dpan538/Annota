@@ -23,11 +23,11 @@
     "url": "https://kaikki.org/dictionary/English/"
   },
   "lookupFilter": {
-    "keys": 1316131,
-    "bits": 13161310,
+    "keys": 1316186,
+    "bits": 13161860,
     "hashes": 7
   },
-  "schemaVersion": 3,
+  "schemaVersion": 7,
   "networkRequired": false,
   "en-zh": {
     "entries": 771180,
@@ -57,6 +57,20 @@
     "license": "MIT",
     "source": "Original Annota abbreviation expansions with context cues, 2026-11-08"
   },
+  "annota-terms": {
+    "entries": 1157,
+    "domains": {
+      "academic": 167,
+      "cloud": 164,
+      "cs": 74,
+      "general": 135,
+      "ml": 322,
+      "other": 54,
+      "science": 241
+    },
+    "license": "MIT (curated terms; phrase equivalents from annota-phrases)",
+    "source": "Original Annota professional terminology seed, 2026-11-08"
+  },
   "annota-phrases": {
     "entries": 942,
     "aliases": 682,
@@ -77,8 +91,8 @@
   "files": {
     "en-zh.sqlite": {
       "asset": "en-zh.sqlite.pack",
-      "bytes": 194371584,
-      "sha256": "baeeed15a01fae5c4155bded8a80c2e3ecab1c2168e89160d0f874c75d01c17e"
+      "bytes": 194523136,
+      "sha256": "4a230f2a9215082ce7782e328b2cc6fb3cac186f431ea70e7cc4554e0e4c016f"
     },
     "wiktionary.sqlite": {
       "asset": "wiktionary.sqlite.pack",
@@ -99,6 +113,7 @@
   "sources": {
     "annota-abbreviations.tsv": "131a796bc257428715436a96abc63ab15a9ae7b0f2f93f8b612f30fff2887211",
     "annota-phrases.tsv": "47fad91cc431ba663ab3320298e8e94312d8574fcd936dd372241ebfd0333582",
+    "annota-terms.tsv": "dcce4d14c6efd12a84b062c4c359d8bb3fa0e3fca7fa80f2020bb2b62b305cfd",
     "cedict.txt.gz": "2d42d41f75df8708d9d9b236d8ae15ecf1cef525aef8ebb8499a74cb09e1b096",
     "ecdict-core.csv.gz": "48b24e7ce69ae9483d37eb532420651767946a1f273cbbcc0842cf28eda3d9cb",
     "kaikki-en-definitions-provenance.json": "ed15a3d775be8ccb568b854c0d958407176a47132928f070f49ba635f32bc86a",

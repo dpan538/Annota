@@ -27,7 +27,12 @@ class OfflineTranslator private constructor(private val context: Context) {
             ): Boolean = size > 8
         }
 
-    fun request(text: String, active: () -> Boolean, done: (Result<String>) -> Unit) {
+    fun request(
+        text: String,
+        glossary: Map<String, String> = emptyMap(),
+        active: () -> Boolean,
+        done: (Result<String>) -> Unit,
+    ) {
         worker.execute {
             if (!active()) return@execute
             release?.cancel(false)
@@ -37,7 +42,16 @@ class OfflineTranslator private constructor(private val context: Context) {
                     return@runCatching it
                 }
                 val model = runtime ?: Runtime(context).also { runtime = it }
-                model.translate(text, active).also { if (active()) recent[text] = it }
+                val normalized = TranslationInput.normalizeForModel(text)
+                val translated = model.translate(normalized, active)
+                val corrected =
+                    if (glossary.isEmpty()) translated
+                    else
+                        glossary.entries.sortedByDescending { it.key.length }.fold(translated) { out, (en, zh) ->
+                            Regex("(?<![A-Za-z0-9])" + Regex.escape(en) + "(?![A-Za-z0-9])", RegexOption.IGNORE_CASE)
+                                .replace(out, zh)
+                        }
+                corrected.also { if (active()) recent[text] = it }
             }
             if (active()) done(result)
             release =

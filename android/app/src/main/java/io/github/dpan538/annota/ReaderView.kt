@@ -96,6 +96,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
      * must not be mixed into the committed ink until real-device validation is complete.
      */
     var predictiveInk = displaySaved?.optBoolean("predictiveInk", false) ?: false
+    var textSize = displaySaved?.optDouble("textSize", 18.0)?.toFloat() ?: 18f
+    var textColor = displaySaved?.optInt("textColor", 0xff262a2d.toInt()) ?: 0xff262a2d.toInt()
     var onlyHighlight = displaySaved?.optBoolean("onlyHighlight", false) ?: false
     var spread = restored?.optBoolean("spread", false) ?: false
         set(value) {
@@ -419,6 +421,27 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private var textEditing: Mark? = null
     private var textEditingPage: Sheet? = null
     private var textMoved = false
+    private var textPendingNew = false
+    private var textLongPressFired = false
+    private var textLongMark: Mark? = null
+    private var textLongPage: Sheet? = null
+    private var textLongPlace: Placement? = null
+    private var textLongPoint = Point(0f, 0f)
+    private val textHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private val textLongPress =
+        Runnable {
+            if (tool != "text") return@Runnable
+            textLongPressFired = true
+            textMode = 0
+            val mark = textLongMark
+            val page = textLongPage
+            val place = textLongPlace ?: return@Runnable
+            if (mark != null && page != null) {
+                showTextMenu(mark, page, place, e = null)
+            } else if (textPendingNew) {
+                showPasteMenu(place, textLongPoint)
+            }
+        }
     private val holdHandler = android.os.Handler(android.os.Looper.getMainLooper())
     private var strokeHeld = false
     private var holdPending = false
@@ -660,6 +683,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 .put("filled", filled)
                 .put("eraserLocal", eraserLocal)
                 .put("eraserWidth", eraserWidth.toDouble())
+                .put("textSize", textSize.toDouble())
+                .put("textColor", textColor)
                 .put("onlyHighlight", onlyHighlight)
         displayPrefs.edit().putString(book.id, value.toString()).apply()
     }
@@ -1829,6 +1854,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                     page.marks.lastOrNull {
                         it.tool == "text" && it.points.size >= 2 && textContains(it, p)
                     }
+                textPendingNew = false
                 if (hit != null) {
                     textSelected = hit
                     textOriginalA = hit.points.first()
@@ -1838,33 +1864,34 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                     textMode = if (handle >= 0) 2 else 1
                     textHandle = handle
                 } else {
-                    val width = min(260f, page.w * .55f).coerceAtLeast(80f)
-                    val height = min(90f, page.h * .22f).coerceAtLeast(44f)
-                    val left = p.x.coerceIn(0f, (page.w - width).coerceAtLeast(0f))
-                    val top = p.y.coerceIn(0f, (page.h - height).coerceAtLeast(0f))
-                    val mark =
-                        Mark(
-                            "text",
-                            color,
-                            max(16f, penWidth * 5),
-                            mutableListOf(Point(left, top), Point(left + width, top + height)),
-                            text = "",
-                        )
-                    page.marks.add(mark)
-                    textSelected = mark
-                    textOriginalA = mark.points.first()
-                    textOriginalB = mark.points.last()
+                    textSelected = null
+                    textOriginalA = Point(0f, 0f)
+                    textOriginalB = Point(0f, 0f)
                     textDown = p
                     textMode = 3
                     textHandle = -1
                     textMoved = false
-                    bumpInk(page)
+                    textPendingNew = true
                 }
+                textLongPressFired = false
+                textLongMark = hit
+                textLongPage = page
+                textLongPlace = place
+                textLongPoint = p
+                textHandler.removeCallbacks(textLongPress)
+                textHandler.postDelayed(textLongPress, 550L)
                 invalidate()
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
-                val mark = textSelected ?: return true
+                textHandler.removeCallbacks(textLongPress)
+                if (textLongPressFired) return true
+                val mark = textSelected
+                if (mark == null && textPendingNew) {
+                    if (hypot(p.x - textDown.x, p.y - textDown.y) > 4f) textMoved = true
+                    return true
+                }
+                if (mark == null) return true
                 textMoved = true
                 if (textMode == 1) {
                     val dx = p.x - textDown.x
@@ -1903,26 +1930,146 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 return true
             }
             MotionEvent.ACTION_UP -> {
+                textHandler.removeCallbacks(textLongPress)
                 val mark = textSelected
                 val wasTap = textMode == 1 && !textMoved
+                val createNew = textPendingNew && !textMoved && !textLongPressFired
                 textMode = 0
                 textHandle = -1
-                if (mark != null && mark.text.isEmpty() && mark.points.size >= 2) {
-                    // Keep the new empty box visible until the writer taps it to type; only remove
-                    // an empty box that was explicitly left/closed.
-                }
+                textPendingNew = false
                 invalidate()
-                if (wasTap && mark != null) openTextEditor(mark, page, place)
-                else if (mark != null) commitTextBox(page, mark)
+                if (textLongPressFired) {
+                    textLongPressFired = false
+                    return true
+                }
+                if (createNew) {
+                    createTextBox(page, place, p)
+                } else if (wasTap && mark != null) {
+                    // Open after this touch sequence; creating a focusable popup synchronously
+                    // makes the same ACTION_UP dismiss it as an outside touch.
+                    post { if (tool == "text" && textSelected === mark) openTextEditor(mark, page, place) }
+                } else if (mark != null) commitTextBox(page, mark)
                 return true
             }
             MotionEvent.ACTION_CANCEL -> {
+                textHandler.removeCallbacks(textLongPress)
                 textMode = 0
                 textHandle = -1
+                textPendingNew = false
                 return true
             }
         }
         return true
+    }
+
+    private fun createTextBox(page: Sheet, place: Placement, at: Point) {
+        val width = min(260f, page.w * .55f).coerceAtLeast(80f)
+        val height = min(90f, page.h * .22f).coerceAtLeast(44f)
+        val left = at.x.coerceIn(0f, (page.w - width).coerceAtLeast(0f))
+        val top = at.y.coerceIn(0f, (page.h - height).coerceAtLeast(0f))
+        val mark =
+            Mark(
+                "text",
+                textColor,
+                textSize.coerceIn(8f, 96f),
+                mutableListOf(Point(left, top), Point(left + width, top + height)),
+                text = "",
+            )
+        page.marks.add(mark)
+        textSelected = mark
+        bumpInk(page)
+        invalidate()
+    }
+
+    private fun showTextMenu(mark: Mark, page: Sheet, place: Placement, e: MotionEvent?) {
+        val rows = ArrayList<Pair<String, () -> Unit>>()
+        rows += tr("复制", "Copy") to {
+            val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE)
+                as android.content.ClipboardManager
+            clipboard.setPrimaryClip(android.content.ClipData.newPlainText("Annota", mark.text))
+        }
+        rows += tr("删除", "Delete") to {
+            page.marks.removeAll { it === mark }
+            textSelected = null
+            bumpInk(page)
+            val index = book.pages.indexOf(page)
+            val seq = runCatching { store.inkLedger.replacePage(book.id, index, page.marks.toList()) }
+                .getOrNull()
+            saveChange(seq)
+            invalidate()
+        }
+        showSimpleMenu(rows, mark)
+    }
+
+    private fun showPasteMenu(place: Placement, at: Point) {
+        val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE)
+            as android.content.ClipboardManager
+        val text = clipboard.primaryClip?.getItemAt(0)?.coerceToText(context)?.toString().orEmpty()
+        if (text.isEmpty()) return
+        showSimpleMenu(
+            listOf(tr("粘贴", "Paste") to { pasteAt(place, at, text) }),
+            null,
+        )
+    }
+
+    private fun pasteAt(place: Placement, p: Point, text: String) {
+        val page = book.pages.getOrNull(place.index) ?: return
+        val width = min(300f, page.w * .65f).coerceAtLeast(100f)
+        val height = min(140f, page.h * .3f).coerceAtLeast(52f)
+        val left = p.x.coerceIn(0f, (page.w - width).coerceAtLeast(0f))
+        val top = p.y.coerceIn(0f, (page.h - height).coerceAtLeast(0f))
+        val mark =
+            Mark(
+                "text",
+                textColor,
+                textSize.coerceIn(8f, 96f),
+                mutableListOf(Point(left, top), Point(left + width, top + height)),
+                text = text,
+            )
+        page.marks.add(mark)
+        textSelected = mark
+        bumpInk(page)
+        val index = book.pages.indexOf(page)
+        val seq = runCatching { store.inkLedger.replacePage(book.id, index, page.marks.toList()) }
+            .getOrNull()
+        saveChange(seq)
+        invalidate()
+    }
+
+    private fun showSimpleMenu(rows: List<Pair<String, () -> Unit>>, anchor: Mark?) {
+        lateinit var popup: android.widget.PopupWindow
+        val content =
+            android.widget.LinearLayout(context).apply {
+                orientation = android.widget.LinearLayout.VERTICAL
+                setBackgroundColor(0xfffdfdff.toInt())
+                setPadding(8, 8, 8, 8)
+                rows.forEach { (label, action) ->
+                    addView(
+                        android.widget.TextView(context).apply {
+                            text = label
+                            setPadding(24, 18, 24, 18)
+                            setTextColor(0xff1f2430.toInt())
+                            setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 16f)
+                            setOnClickListener {
+                                action()
+                                popup.dismiss()
+                            }
+                        },
+                        android.widget.LinearLayout.LayoutParams(-1, -2),
+                    )
+                }
+            }
+        popup = android.widget.PopupWindow(content, 220, -2, true)
+        popup.isOutsideTouchable = true
+        popup.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(0x00000000))
+        val location = IntArray(2)
+        getLocationOnScreen(location)
+        popup.showAtLocation(
+            this,
+            android.view.Gravity.NO_GRAVITY,
+            location[0] + width / 2 - 110,
+            location[1] + height / 3,
+        )
     }
 
     private fun commitTextBox(page: Sheet, mark: Mark) {
@@ -1976,7 +2123,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             }
         val popup =
             android.widget.PopupWindow(editor, width, height, true).apply {
-                isOutsideTouchable = true
+                isOutsideTouchable = false
                 isFocusable = true
                 setBackgroundDrawable(android.graphics.drawable.ColorDrawable(0x00000000))
                 setSoftInputMode(
@@ -2004,6 +2151,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             location[1] + top.toInt(),
         )
         editor.requestFocus()
+        editor.postDelayed({ popup.isOutsideTouchable = true }, 250L)
         editor.post {
             val imm =
                 context.getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
@@ -2375,6 +2523,23 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     /** Select the text-box tool. A page tap creates a box; a tap inside opens the keyboard. */
+    fun applyTextStyle() {
+        val old = textSelected ?: return
+        val page = book.pages.firstOrNull { p -> p.marks.any { it === old } } ?: return
+        val index = page.marks.indexOfFirst { it === old }
+        if (index < 0) return
+        val updated = old.copy(width = textSize.coerceIn(8f, 96f), color = textColor)
+        page.marks[index] = updated
+        textSelected = updated
+        bumpInk(page)
+        val seq = runCatching {
+                store.inkLedger.replacePage(book.id, book.pages.indexOf(page), page.marks.toList())
+            }
+            .getOrNull()
+        saveChange(seq)
+        invalidate()
+    }
+
     fun textTool() {
         cancelStroke()
         tool = "text"
