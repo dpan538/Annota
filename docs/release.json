@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "project": "Annota",
+  "updated": "2026-11-08",
+  "stable": {
+    "version": "1.2.0",
+    "versionCode": 22,
+    "status": "stable",
+    "tag": "v1.2.0",
+    "apk": "Annota-1.2.0.apk",
+    "bytes": 500449037,
+    "sha256": "745a560875c6bb6b213504d697fa390f96396320cc69a4b77cb08261cfebbb4b",
+    "download": "https://github.com/dpan538/Annota/releases/download/v1.2.0/Annota-1.2.0.apk"
+  },
+  "preview": {
+    "version": "1.2.1-preview.1",
+    "versionCode": 24,
+    "status": "preview",
+    "tag": "v1.2.1-preview.1",
+    "apk": "Annota-1.2.1-preview.1.apk",
+    "bytes": 412286612,
+    "sha256": "96ea10fbf34038e18faf0ba9056a9f125119bdcb069234bf714af07e05bce69c",
+    "download": "https://github.com/dpan538/Annota/releases/download/v1.2.1-preview.1/Annota-1.2.1-preview.1.apk"
+  },
+  "note": "Preview is published as a normal GitHub release while real-device acceptance is in progress; stable is 1.2.0."
+}

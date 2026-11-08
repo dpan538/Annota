@@ -1,0 +1,369 @@
+{
+  "schemaVersion": 1,
+  "project": "Annota",
+  "site": "https://dpan538.github.io/Annota",
+  "repository": "https://github.com/dpan538/Annota",
+  "updated": "2026-11-08",
+  "releases": {
+    "stable": {
+      "version": "1.2.0",
+      "versionCode": 22,
+      "status": "stable",
+      "tag": "v1.2.0",
+      "apk": "Annota-1.2.0.apk",
+      "bytes": 500449037,
+      "sha256": "745a560875c6bb6b213504d697fa390f96396320cc69a4b77cb08261cfebbb4b"
+    },
+    "preview": {
+      "version": "1.2.1-preview.1",
+      "versionCode": 24,
+      "status": "preview",
+      "tag": "v1.2.1-preview.1",
+      "apk": "Annota-1.2.1-preview.1.apk",
+      "bytes": 412286612,
+      "sha256": "96ea10fbf34038e18faf0ba9056a9f125119bdcb069234bf714af07e05bce69c"
+    }
+  },
+  "features": [
+    {
+      "id": "contact-intent-edge-guard",
+      "name": "Contact-Intent Edge Guard",
+      "nameZh": "接触意图边缘防误退出",
+      "version": "1.2.1-preview.1",
+      "status": "preview",
+      "summary": "A forearm resting on the screen edge no longer exits the reader: contacts are classified, edge gestures are excluded only while the pen or limb is active, and the first accidental back is deferred.",
+      "problem": "On tablets the forearm often touches the left or right screen edge. Android turns that edge contact into the system back gesture before the app sees it, so the reader closes while writing.",
+      "mechanism": "ContactIntent classifies stylus / finger / limb from tool type, touch major/minor and edge distance. A limb contact is consumed instead of drawing, panning or tapping chrome. While the pen or a limb is active, narrow left/right strips are excluded from the system back gesture; the first back within 1.8 s of a limb contact is deferred once and a second deliberate back still leaves.",
+      "difference": "Most note apps only reject palms. This separates resting-limb intent from deliberate finger navigation, and uses temporary system-gesture exclusion as an actuator of that intent state rather than a static setting.",
+      "evidence": [
+        {
+          "label": "synthetic forearm at edge + immediate back",
+          "value": "baseline exits to LibraryScreen; candidate keeps the reader"
+        },
+        {
+          "label": "classifier unit tests",
+          "value": "4/4 (fingertip, forearm, stylus, edge band)"
+        }
+      ],
+      "verifiedOn": "API 36 ARM64 emulator (ranchu), synthetic stylus/touch input",
+      "notVerifiedOn": "Xiaomi Pad 9 Pro Max real forearm contacts",
+      "limitations": [
+        "12 mm / 48 dp / 1.8 s thresholds need real-device calibration",
+        "During the guard window a deliberate first edge swipe is deferred once"
+      ],
+      "code": [
+        "android/app/src/main/java/io/github/dpan538/annota/ContactIntent.kt",
+        "android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt"
+      ],
+      "tags": [
+        "stylus",
+        "palm rejection",
+        "system gesture",
+        "tablet"
+      ]
+    },
+    {
+      "id": "ink-transaction-ledger",
+      "name": "Ink Transaction Ledger",
+      "nameZh": "笔迹事务账本",
+      "version": "1.2.1-preview.1",
+      "status": "preview",
+      "summary": "Pen-up no longer serializes the whole book on the UI thread: a per-book append-only binary ledger records each stroke, and a single whole-book snapshot is written asynchronously.",
+      "problem": "Every pen-up synchronously serialized the whole book twice, gzipped and hashed it and committed SQLite on the UI thread. Fast handwriting lost the next stroke's early events (perceived as broken contact).",
+      "mechanism": "Each book has an append-only ledger with CRC frames, page append/replace ops and a custom point codec (zigzag fixed-point with bit-exact float fallback). The UI snapshots page lists, reserves a cursor version and queues a background commit. Serialization, gzip, SHA-256 and SQLite run off-thread; undo/export/close flush first; a read after pen-up waits for the queued snapshot.",
+      "difference": "A general database or WAL does not solve ink-specific point encoding, page/version replay and screen/PDF determinism. The ledger is tailored to Annota's Book/Sheet/Mark model and keeps crash recovery and per-stroke undo.",
+      "evidence": [
+        {
+          "label": "pen-up dispatch, 501 points",
+          "value": "11.41 ms -> 7.14 ms"
+        },
+        {
+          "label": "UI submit, 2000 marks / 20k points",
+          "value": "p50 0.024 ms, max 0.124 ms"
+        },
+        {
+          "label": "snapshot",
+          "value": "p50 0.005 ms"
+        },
+        {
+          "label": "whole-book serializations per commit",
+          "value": "1 (was 2)"
+        },
+        {
+          "label": "10k-point codec",
+          "value": "encode 48.8 ms / decode 31.0 ms, bit-exact"
+        },
+        {
+          "label": "system CANCEL",
+          "value": "0 -> 1 stroke / 122 points kept"
+        }
+      ],
+      "verifiedOn": "API 36 ARM64 emulator (ranchu), synthetic stylus input",
+      "notVerifiedOn": "Xiaomi Pad 9 Pro Max crash/soak testing",
+      "limitations": [
+        "A crash between snapshot write and ledger trim can duplicate the last snapshot-covered stroke",
+        "Undo/export/close must flush pending commits"
+      ],
+      "code": [
+        "android/app/src/main/java/io/github/dpan538/annota/InkLedger.kt",
+        "android/app/src/main/java/io/github/dpan538/annota/Store.kt"
+      ],
+      "tags": [
+        "persistence",
+        "latency",
+        "stylus",
+        "crash recovery"
+      ]
+    },
+    {
+      "id": "stroke-continuity",
+      "name": "Stroke Continuity Reconstruction",
+      "nameZh": "笔画连续性重建",
+      "version": "1.2.1-preview.1",
+      "status": "preview",
+      "summary": "Short input gaps inside one stroke are bridged with a curvature-constrained cubic Hermite, never across a pen lift and never into the future.",
+      "problem": "Stylus packets are occasionally swallowed (palm/forearm interference, scheduler stalls), which appears as a broken line in fast cursive writing.",
+      "mechanism": "The current packet cadence is compared with a running median to detect a suspicious gap. If bridgeable, a cubic Hermite between the two real endpoints uses tangents from a local three-point osculating-circle/quadratic fit and rejects turns over 70 degrees, curvature over the observed bound or low confidence. Output timestamps stay strictly between the real endpoints.",
+      "difference": "Predictors guess the future; this reconstructs only the interior of an observed gap and refuses when the evidence is ambiguous, so it does not invent ink.",
+      "evidence": [
+        {
+          "label": "circle, 1/3/5 deleted samples",
+          "value": "max deviation 0.000 / 0.000 / 0.001 pt"
+        },
+        {
+          "label": "cursive, 5 deleted samples",
+          "value": "max deviation 0.315 pt"
+        },
+        {
+          "label": "benchmark",
+          "value": "10k points / 100 gaps 190 ms"
+        },
+        {
+          "label": "unit tests",
+          "value": "7/7"
+        }
+      ],
+      "verifiedOn": "API 36 ARM64 emulator (ranchu), synthetic and authored trajectories",
+      "notVerifiedOn": "real 240 Hz pen noise on Xiaomi Pad 9 Pro Max",
+      "limitations": [
+        "Gaps over 64 ms are refused",
+        "Never bridges a pen lift or a 121-degree corner",
+        "Assumes mostly uniform sampling"
+      ],
+      "code": [
+        "android/app/src/main/java/io/github/dpan538/annota/StrokeContinuity.kt"
+      ],
+      "tags": [
+        "cursive",
+        "input loss",
+        "interpolation",
+        "stylus"
+      ]
+    },
+    {
+      "id": "ink-dynamics-v6",
+      "name": "Ink-Flow Dynamics (inkVersion 6)",
+      "nameZh": "墨流动力学（inkVersion 6）",
+      "version": "1.2.1-preview.1",
+      "status": "preview",
+      "summary": "A fixed-step continuous-time model of ink reservoir, flow, paper absorption and nib friction drives the width of new fountain-pen strokes, keeping connected strokes joined and giving slow writing more weight.",
+      "problem": "Fixed entry/release tapers and a position-only low-pass filter make connected writing look thin at joins and give little sense of pen-to-paper damping.",
+      "mechanism": "InkDynamics integrates at 1/240 s: pressure drives flow, speed consumes the pressure head, the reservoir refills and drains, absorption and friction respond, and the resulting factors scale width/darkness. A new stroke can start from the previous stroke's state, so a joined-up hand keeps a wet seam. Only new fountain marks use v6; v4 and v5 geometry remain bit-identical.",
+      "difference": "Most ink engines change taper parameters or smooth positions. This is a stateful ink-flow model whose damping comes from flow inertia rather than added positional lag, shared by the canvas and PDF exporter.",
+      "evidence": [
+        {
+          "label": "connected-stroke seam continuity",
+          "value": "100.1% (4.950 / 4.948 width)"
+        },
+        {
+          "label": "3 pt loop area",
+          "value": "98.6% of v5"
+        },
+        {
+          "label": "1000-point outline",
+          "value": "4.51 ms (v4 3.17 ms)"
+        },
+        {
+          "label": "canvas vs PDF",
+          "value": "mean channel difference 0.107"
+        },
+        {
+          "label": "v4/v5 geometry",
+          "value": "bit-identical"
+        },
+        {
+          "label": "unit tests",
+          "value": "12/12"
+        }
+      ],
+      "verifiedOn": "API 36 ARM64 emulator (ranchu), software canvas",
+      "notVerifiedOn": "Xiaomi Pad 9 Pro Max hardware layer and subjective damping",
+      "limitations": [
+        "Constants are synthetic/emulator-tuned",
+        "Darkness/edge are exposed but the single-fill renderer currently consumes width only",
+        "v6 marks are not readable by pre-v6 app versions"
+      ],
+      "code": [
+        "android/app/src/main/java/io/github/dpan538/annota/InkDynamics.kt",
+        "android/app/src/main/java/io/github/dpan538/annota/InkGeometry.kt"
+      ],
+      "tags": [
+        "fountain pen",
+        "ink",
+        "damping",
+        "deterministic",
+        "PDF"
+      ]
+    },
+    {
+      "id": "predict-reconcile",
+      "name": "Predict–Reconcile Ink Compositor",
+      "nameZh": "预测-校正墨迹合成器",
+      "version": "1.2.1-preview.1",
+      "status": "preview",
+      "summary": "A self-written short-horizon predictor draws a confidence-weighted tail for the active stroke, then reconciles it when the real sample arrives; predictions never enter saved ink or PDF export.",
+      "problem": "Reducing perceived pen-to-ink latency usually improves responsiveness but naive prediction overshoots on fast reversals and can corrupt the stroke.",
+      "mechanism": "A recency-weighted least-squares velocity and a quadratic curvature estimate extrapolate along an arc. Confidence combines a one-step backtest residual, turn quality, gap quality and look-ahead decay. Fast reversals fall back to one short low-confidence frame. When the real point arrives, the error is compared with a lead-scaled tolerance; large errors retract the prediction, otherwise the displayed point blends toward the truth. Only the active-stroke layer is drawn; Mark/Store/PDF are untouched.",
+      "difference": "The predictor is paired with an explicit reconciliation policy and confidence, rather than drawing predicted points as if they were real. This bounds overshoot and keeps the persisted stroke exact.",
+      "evidence": [
+        {
+          "label": "1-frame error, straight line",
+          "value": "6.4e-6 px"
+        },
+        {
+          "label": "1-frame error, arc",
+          "value": "0.571 px"
+        },
+        {
+          "label": "fast reversal",
+          "value": "one low-confidence frame, no old-direction overshoot"
+        },
+        {
+          "label": "10k predictions",
+          "value": "mean 135 us, p50 54.6 us"
+        },
+        {
+          "label": "unit tests",
+          "value": "8/8"
+        }
+      ],
+      "verifiedOn": "API 36 ARM64 emulator (ranchu), synthetic trajectories",
+      "notVerifiedOn": "real hand noise at 240 Hz on Xiaomi Pad 9 Pro Max",
+      "limitations": [
+        "Prediction is display-only and fades with confidence",
+        "A high-speed stop without a reversal sample can still show up to 64 px of one-frame tail"
+      ],
+      "code": [
+        "android/app/src/main/java/io/github/dpan538/annota/InkPredictor.kt",
+        "android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt"
+      ],
+      "tags": [
+        "latency",
+        "prediction",
+        "stylus",
+        "confidence"
+      ]
+    },
+    {
+      "id": "page-picture-cache",
+      "name": "Page-Picture Ink Cache",
+      "nameZh": "按页笔迹 Picture 缓存",
+      "version": "1.2.1-preview.1",
+      "status": "preview",
+      "summary": "Completed page ink is recorded once as a page-space Picture and replayed as one canvas op per frame; steady-state writing frames are 2.0–2.9× cheaper with zero changed pixels.",
+      "problem": "Replaying every completed mark as a drawPath on every frame made long annotated pages expensive while writing or scrolling.",
+      "mechanism": "Each page records a page-space display list, keyed by page id and ink version, and invalidated precisely when a stroke/erase/undo/selection change touches that page. The frame that records the list paints the marks directly; later frames replay one drawPicture op. Frame plans, placements and matrices are cached and updated in place for pure pans.",
+      "difference": "The cache is page-space and vector, so it replays correctly at any zoom and keeps screen/PDF geometry identical. Invalidations are driven by explicit page ink versions rather than heuristic dirty rectangles.",
+      "evidence": [
+        {
+          "label": "50 marks / 20k points",
+          "value": "hot frame 173.7 -> 60.0 ms (2.89×)"
+        },
+        {
+          "label": "300 marks",
+          "value": "135.2 -> 67.4 ms (2.01×)"
+        },
+        {
+          "label": "1000 marks",
+          "value": "173.7 -> 67.9 ms (2.56×)"
+        },
+        {
+          "label": "pixel comparison",
+          "value": "0 changed pixels, maxChannelDelta 0"
+        },
+        {
+          "label": "tests",
+          "value": "4/4"
+        }
+      ],
+      "verifiedOn": "API 36 ARM64 emulator (ranchu), software canvas",
+      "notVerifiedOn": "hardware-layer frame cost on Xiaomi Pad 9 Pro Max",
+      "limitations": [
+        "First frame after a page change pays display-list recording (25–90% slower on software canvas)",
+        "Pictures use native memory outside the LRU page budget"
+      ],
+      "code": [
+        "android/app/src/main/java/io/github/dpan538/annota/InkRenderer.kt",
+        "android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt"
+      ],
+      "tags": [
+        "rendering",
+        "performance",
+        "cache",
+        "ink"
+      ]
+    },
+    {
+      "id": "offline-context-dictionary",
+      "name": "Offline Context Dictionary",
+      "nameZh": "离线上下文词典",
+      "version": "1.2.1-preview.1",
+      "status": "preview",
+      "summary": "A fully offline English–Chinese dictionary with an author abbreviation layer, initialism index, numeric-short-form recognition and a conservative OEWN domain prior for context sense selection.",
+      "problem": "Offline dictionaries usually behave as a static word list: abbreviations such as CAP, RAM, k8s or i18n and context-dependent senses are missing or guessed without evidence.",
+      "mechanism": "A 128-entry authored abbreviation table, a 401,909-entry initialism index and numeric contraction rules share context-cue ranking. WordNet senses carry OEWN lexfile domain labels and a nine-domain prior runs only after weighted Lesk abstains, requiring at least two independent leading cues. Unknown acronyms expand only when the context matches a candidate.",
+      "difference": "The layer combines authored abbreviations, initialisms and a conservative domain prior while keeping abstention: no context means no forced acronym expansion and no arbitrary sense promotion.",
+      "evidence": [
+        {
+          "label": "abbreviation tests",
+          "value": "7/7"
+        },
+        {
+          "label": "domain ranking tests",
+          "value": "7/7"
+        },
+        {
+          "label": "authored context probes",
+          "value": "9 improved / 0 regressed / 7 neutral (not accuracy)"
+        },
+        {
+          "label": "search latency 40 rounds, steady state",
+          "value": "median 10.17 -> 4.92 ms; p95 137.8 -> 17.9 ms"
+        },
+        {
+          "label": "dictionary data",
+          "value": "zh-en 129,801 -> 238,664 entries; en-zh pack 95.45 -> 73.08 MiB"
+        }
+      ],
+      "verifiedOn": "API 36 ARM64 emulator (ranchu), fixed probe set",
+      "notVerifiedOn": "real user reading material and Xiaomi Pad 9 Pro Max",
+      "limitations": [
+        "Domain labels are coarse lexfiles",
+        "Authored probes are not an accuracy benchmark",
+        "Reverse zh-en entries are machine-merged and not individually proofread"
+      ],
+      "code": [
+        "android/app/src/main/java/io/github/dpan538/annota/Dictionary.kt",
+        "android/app/src/main/java/io/github/dpan538/annota/DictionaryReading.kt",
+        "android/app/src/main/java/io/github/dpan538/annota/SenseRanker.kt"
+      ],
+      "tags": [
+        "offline",
+        "dictionary",
+        "abbreviation",
+        "context",
+        "OEWN"
+      ]
+    }
+  ]
+}

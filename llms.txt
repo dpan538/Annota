@@ -1,0 +1,24 @@
+# Annota
+> Offline Android PDF reader, handwriting and dictionary. Original systems are documented with problem, mechanism, measurable evidence and limitations.
+
+## Releases
+- Stable 1.2.0: https://github.com/dpan538/Annota/releases/tag/v1.2.0 (APK SHA-256 745a560875c6bb6b213504d697fa390f96396320cc69a4b77cb08261cfebbb4b)
+- Preview 1.2.1-preview.1: https://github.com/dpan538/Annota/releases/tag/v1.2.1-preview.1 (APK SHA-256 96ea10fbf34038e18faf0ba9056a9f125119bdcb069234bf714af07e05bce69c; real-device acceptance pending)
+
+## Original features
+- [Contact-Intent Edge Guard](https://dpan538.github.io/Annota/features/contact-intent-edge-guard.html): A forearm resting on the screen edge no longer exits the reader: contacts are classified, edge gestures are excluded only while the pen or limb is active, and the first accidental back is deferred.
+- [Ink Transaction Ledger](https://dpan538.github.io/Annota/features/ink-transaction-ledger.html): Pen-up no longer serializes the whole book on the UI thread: a per-book append-only binary ledger records each stroke, and a single whole-book snapshot is written asynchronously.
+- [Stroke Continuity Reconstruction](https://dpan538.github.io/Annota/features/stroke-continuity.html): Short input gaps inside one stroke are bridged with a curvature-constrained cubic Hermite, never across a pen lift and never into the future.
+- [Ink-Flow Dynamics (inkVersion 6)](https://dpan538.github.io/Annota/features/ink-dynamics-v6.html): A fixed-step continuous-time model of ink reservoir, flow, paper absorption and nib friction drives the width of new fountain-pen strokes, keeping connected strokes joined and giving slow writing more weight.
+- [Predict–Reconcile Ink Compositor](https://dpan538.github.io/Annota/features/predict-reconcile.html): A self-written short-horizon predictor draws a confidence-weighted tail for the active stroke, then reconciles it when the real sample arrives; predictions never enter saved ink or PDF export.
+- [Page-Picture Ink Cache](https://dpan538.github.io/Annota/features/page-picture-cache.html): Completed page ink is recorded once as a page-space Picture and replayed as one canvas op per frame; steady-state writing frames are 2.0–2.9× cheaper with zero changed pixels.
+- [Offline Context Dictionary](https://dpan538.github.io/Annota/features/offline-context-dictionary.html): A fully offline English–Chinese dictionary with an author abbreviation layer, initialism index, numeric-short-form recognition and a conservative OEWN domain prior for context sense selection.
+
+## Machine-readable
+- Features: https://dpan538.github.io/Annota/features.json
+- Release metadata: https://dpan538.github.io/Annota/release.json
+- Full site: https://dpan538.github.io/Annota/
+- Source: https://github.com/dpan538/Annota
+
+## Verification scope
+Most handwriting evidence was measured on an API 36 ARM64 emulator with synthetic stylus input. Real-device tests on Xiaomi Pad 9 Pro Max are pending; each feature page states this explicitly.

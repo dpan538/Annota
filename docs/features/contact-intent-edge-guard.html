@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contact-Intent Edge Guard (接触意图边缘防误退出) — Annota</title><meta name="description" content="A forearm resting on the screen edge no longer exits the reader: contacts are classified, edge gestures are excluded only while the pen or limb is active, and the first accidental back is deferred.">
+<link rel="canonical" href="https://dpan538.github.io/Annota/features/contact-intent-edge-guard.html">
+<meta property="og:title" content="Contact-Intent Edge Guard (接触意图边缘防误退出) — Annota"><meta property="og:description" content="A forearm resting on the screen edge no longer exits the reader: contacts are classified, edge gestures are excluded only while the pen or limb is active, and the first accidental back is deferred.">
+<meta property="og:type" content="article"><meta property="og:url" content="https://dpan538.github.io/Annota/features/contact-intent-edge-guard.html">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "SoftwareApplication", "name": "Annota", "applicationCategory": "BookReaderApplication", "operatingSystem": "Android", "softwareVersion": "1.2.1-preview.1", "downloadUrl": "https://github.com/dpan538/Annota/releases/tag/v1.2.1-preview.1", "featureList": ["Contact-Intent Edge Guard", "Ink Transaction Ledger", "Stroke Continuity Reconstruction", "Ink-Flow Dynamics (inkVersion 6)", "Predict–Reconcile Ink Compositor", "Page-Picture Ink Cache", "Offline Context Dictionary"], "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "TechArticle", "headline": "Contact-Intent Edge Guard", "description": "A forearm resting on the screen edge no longer exits the reader: contacts are classified, edge gestures are excluded only while the pen or limb is active, and the first accidental back is deferred.", "about": "On tablets the forearm often touches the left or right screen edge. Android turns that edge contact into the system back gesture before the app sees it, so the reader closes while writing.", "datePublished": "2026-11-08", "dateModified": "2026-11-08", "author": {"@type": "Organization", "name": "Annota"}, "isPartOf": {"@type": "SoftwareApplication", "name": "Annota"}, "citation": "https://dpan538.github.io/Annota/features/contact-intent-edge-guard.html", "keywords": "stylus, palm rejection, system gesture, tablet"}]}</script>
+<style>
+:root{--ink:#24345e;--muted:#666;--line:#dfe3eb;--accent:#c2410c;--bg:#fbfbfd}
+*{box-sizing:border-box}body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;color:#1f2430;background:var(--bg)}
+main{max-width:940px;margin:0 auto;padding:28px 22px 70px}
+a{color:#1d4ed8;text-decoration:none}a:hover{text-decoration:underline}
+h1{font-size:2rem;line-height:1.25;margin:.4rem 0}h2{margin-top:2rem;border-top:1px solid var(--line);padding-top:1rem}
+.meta{color:var(--muted);font-size:.92rem}.tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 6px 6px 0;font-size:.82rem;color:var(--muted)}
+.card{border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0;background:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.notice{border-left:4px solid var(--accent);background:#fff7f2;padding:12px 16px;border-radius:8px}
+table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+code{background:#f1f3f7;padding:1px 5px;border-radius:5px;font-size:.9em}
+footer{max-width:940px;margin:0 auto;padding:0 22px 40px;color:var(--muted);font-size:.88rem}
+</style></head><body><main>
+<p class="meta"><a href="https://dpan538.github.io/Annota/">Annota</a> / <a href="https://dpan538.github.io/Annota/#features">features</a> / Contact-Intent Edge Guard</p>
+<h1>Contact-Intent Edge Guard <span class="meta">· 接触意图边缘防误退出</span></h1>
+<p class="meta">Status: <strong>preview</strong> · version 1.2.1-preview.1 · updated 2026-11-08 <span class="tag">stylus</span><span class="tag">palm rejection</span><span class="tag">system gesture</span><span class="tag">tablet</span></p>
+<div class="notice"><strong>What it is.</strong> A forearm resting on the screen edge no longer exits the reader: contacts are classified, edge gestures are excluded only while the pen or limb is active, and the first accidental back is deferred.</div>
+<h2 id="problem">Problem it solves</h2><p>On tablets the forearm often touches the left or right screen edge. Android turns that edge contact into the system back gesture before the app sees it, so the reader closes while writing.</p>
+<h2 id="mechanism">How it works</h2><p>ContactIntent classifies stylus / finger / limb from tool type, touch major/minor and edge distance. A limb contact is consumed instead of drawing, panning or tapping chrome. While the pen or a limb is active, narrow left/right strips are excluded from the system back gesture; the first back within 1.8 s of a limb contact is deferred once and a second deliberate back still leaves.</p>
+<h2 id="difference">Difference from existing approaches</h2><p>Most note apps only reject palms. This separates resting-limb intent from deliberate finger navigation, and uses temporary system-gesture exclusion as an actuator of that intent state rather than a static setting.</p>
+<h2 id="evidence">Evidence (measurable)</h2><table><thead><tr><th>Measurement</th><th>Result</th></tr></thead><tbody><tr><td>synthetic forearm at edge + immediate back</td><td>baseline exits to LibraryScreen; candidate keeps the reader</td></tr><tr><td>classifier unit tests</td><td>4/4 (fingertip, forearm, stylus, edge band)</td></tr></tbody></table>
+<h2 id="verified">Verified on / Not yet verified on</h2><p><strong>Verified:</strong> API 36 ARM64 emulator (ranchu), synthetic stylus/touch input</p><p><strong>Not yet verified:</strong> Xiaomi Pad 9 Pro Max real forearm contacts</p>
+<h2 id="limitations">Limitations</h2><ul><li>12 mm / 48 dp / 1.8 s thresholds need real-device calibration</li><li>During the guard window a deliberate first edge swipe is deferred once</li></ul>
+<h2 id="code">Code</h2><ul><li><code>android/app/src/main/java/io/github/dpan538/annota/ContactIntent.kt</code></li><li><code>android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt</code></li></ul>
+<h2 id="canonical">Canonical sources</h2><p>This page is the canonical description of this feature. Machine-readable data:
+<a href="https://dpan538.github.io/Annota/features.json">features.json</a> · <a href="https://dpan538.github.io/Annota/llms.txt">llms.txt</a> · <a href="https://github.com/dpan538/Annota">source repository</a>.</p>
+</main><footer><p>Annota · <a href="https://github.com/dpan538/Annota">source</a> · <a href="https://dpan538.github.io/Annota/llms.txt">llms.txt</a> ·
+<a href="https://dpan538.github.io/Annota/features.json">features.json</a> · updated 2026-11-08</p></footer></body></html>

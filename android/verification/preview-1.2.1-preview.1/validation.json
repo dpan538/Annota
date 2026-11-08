@@ -1,0 +1,38 @@
+{
+  "version": "1.2.1-preview.1",
+  "versionCode": 24,
+  "channel": "preview (normal GitHub release)",
+  "releaseDate": "2026-11-08",
+  "stableVersion": "1.2.0",
+  "stableVersionCode": 22,
+  "device": "API 36 ARM64 emulator (ranchu), synthetic stylus input; not Xiaomi Pad 9 Pro Max acceptance",
+  "instrumentation": {
+    "tests": 271,
+    "passed": 271,
+    "failed": 0,
+    "raw": "regression.txt"
+  },
+  "apk": {
+    "artifact": "Annota-1.2.1-preview.1.apk",
+    "bytes": 412286612,
+    "sha256": "96ea10fbf34038e18faf0ba9056a9f125119bdcb069234bf714af07e05bce69c",
+    "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18",
+    "verified": true,
+    "coldStartMs": 1311
+  },
+  "features": [
+    "Contact-Intent Edge Guard",
+    "Ink Transaction Ledger",
+    "Stroke Continuity Reconstruction",
+    "Ink-Flow Dynamics v6",
+    "Predict–Reconcile Ink",
+    "Page-Picture Ink Cache",
+    "Offline Context Dictionary"
+  ],
+  "knowledgeBase": {
+    "site": "https://dpan538.github.io/Annota/",
+    "features": "https://dpan538.github.io/Annota/features.json",
+    "llms": "https://dpan538.github.io/Annota/llms.txt"
+  },
+  "limit": "Emulator evidence only; real-device pen latency, forearm contacts, thermal and crash soak are still pending. Preview is published as a normal release but is not a claim of stable real-device acceptance."
+}

@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stroke Continuity Reconstruction (笔画连续性重建) — Annota</title><meta name="description" content="Short input gaps inside one stroke are bridged with a curvature-constrained cubic Hermite, never across a pen lift and never into the future.">
+<link rel="canonical" href="https://dpan538.github.io/Annota/features/stroke-continuity.html">
+<meta property="og:title" content="Stroke Continuity Reconstruction (笔画连续性重建) — Annota"><meta property="og:description" content="Short input gaps inside one stroke are bridged with a curvature-constrained cubic Hermite, never across a pen lift and never into the future.">
+<meta property="og:type" content="article"><meta property="og:url" content="https://dpan538.github.io/Annota/features/stroke-continuity.html">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "SoftwareApplication", "name": "Annota", "applicationCategory": "BookReaderApplication", "operatingSystem": "Android", "softwareVersion": "1.2.1-preview.1", "downloadUrl": "https://github.com/dpan538/Annota/releases/tag/v1.2.1-preview.1", "featureList": ["Contact-Intent Edge Guard", "Ink Transaction Ledger", "Stroke Continuity Reconstruction", "Ink-Flow Dynamics (inkVersion 6)", "Predict–Reconcile Ink Compositor", "Page-Picture Ink Cache", "Offline Context Dictionary"], "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "TechArticle", "headline": "Stroke Continuity Reconstruction", "description": "Short input gaps inside one stroke are bridged with a curvature-constrained cubic Hermite, never across a pen lift and never into the future.", "about": "Stylus packets are occasionally swallowed (palm/forearm interference, scheduler stalls), which appears as a broken line in fast cursive writing.", "datePublished": "2026-11-08", "dateModified": "2026-11-08", "author": {"@type": "Organization", "name": "Annota"}, "isPartOf": {"@type": "SoftwareApplication", "name": "Annota"}, "citation": "https://dpan538.github.io/Annota/features/stroke-continuity.html", "keywords": "cursive, input loss, interpolation, stylus"}]}</script>
+<style>
+:root{--ink:#24345e;--muted:#666;--line:#dfe3eb;--accent:#c2410c;--bg:#fbfbfd}
+*{box-sizing:border-box}body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;color:#1f2430;background:var(--bg)}
+main{max-width:940px;margin:0 auto;padding:28px 22px 70px}
+a{color:#1d4ed8;text-decoration:none}a:hover{text-decoration:underline}
+h1{font-size:2rem;line-height:1.25;margin:.4rem 0}h2{margin-top:2rem;border-top:1px solid var(--line);padding-top:1rem}
+.meta{color:var(--muted);font-size:.92rem}.tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 6px 6px 0;font-size:.82rem;color:var(--muted)}
+.card{border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0;background:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.notice{border-left:4px solid var(--accent);background:#fff7f2;padding:12px 16px;border-radius:8px}
+table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+code{background:#f1f3f7;padding:1px 5px;border-radius:5px;font-size:.9em}
+footer{max-width:940px;margin:0 auto;padding:0 22px 40px;color:var(--muted);font-size:.88rem}
+</style></head><body><main>
+<p class="meta"><a href="https://dpan538.github.io/Annota/">Annota</a> / <a href="https://dpan538.github.io/Annota/#features">features</a> / Stroke Continuity Reconstruction</p>
+<h1>Stroke Continuity Reconstruction <span class="meta">· 笔画连续性重建</span></h1>
+<p class="meta">Status: <strong>preview</strong> · version 1.2.1-preview.1 · updated 2026-11-08 <span class="tag">cursive</span><span class="tag">input loss</span><span class="tag">interpolation</span><span class="tag">stylus</span></p>
+<div class="notice"><strong>What it is.</strong> Short input gaps inside one stroke are bridged with a curvature-constrained cubic Hermite, never across a pen lift and never into the future.</div>
+<h2 id="problem">Problem it solves</h2><p>Stylus packets are occasionally swallowed (palm/forearm interference, scheduler stalls), which appears as a broken line in fast cursive writing.</p>
+<h2 id="mechanism">How it works</h2><p>The current packet cadence is compared with a running median to detect a suspicious gap. If bridgeable, a cubic Hermite between the two real endpoints uses tangents from a local three-point osculating-circle/quadratic fit and rejects turns over 70 degrees, curvature over the observed bound or low confidence. Output timestamps stay strictly between the real endpoints.</p>
+<h2 id="difference">Difference from existing approaches</h2><p>Predictors guess the future; this reconstructs only the interior of an observed gap and refuses when the evidence is ambiguous, so it does not invent ink.</p>
+<h2 id="evidence">Evidence (measurable)</h2><table><thead><tr><th>Measurement</th><th>Result</th></tr></thead><tbody><tr><td>circle, 1/3/5 deleted samples</td><td>max deviation 0.000 / 0.000 / 0.001 pt</td></tr><tr><td>cursive, 5 deleted samples</td><td>max deviation 0.315 pt</td></tr><tr><td>benchmark</td><td>10k points / 100 gaps 190 ms</td></tr><tr><td>unit tests</td><td>7/7</td></tr></tbody></table>
+<h2 id="verified">Verified on / Not yet verified on</h2><p><strong>Verified:</strong> API 36 ARM64 emulator (ranchu), synthetic and authored trajectories</p><p><strong>Not yet verified:</strong> real 240 Hz pen noise on Xiaomi Pad 9 Pro Max</p>
+<h2 id="limitations">Limitations</h2><ul><li>Gaps over 64 ms are refused</li><li>Never bridges a pen lift or a 121-degree corner</li><li>Assumes mostly uniform sampling</li></ul>
+<h2 id="code">Code</h2><ul><li><code>android/app/src/main/java/io/github/dpan538/annota/StrokeContinuity.kt</code></li></ul>
+<h2 id="canonical">Canonical sources</h2><p>This page is the canonical description of this feature. Machine-readable data:
+<a href="https://dpan538.github.io/Annota/features.json">features.json</a> · <a href="https://dpan538.github.io/Annota/llms.txt">llms.txt</a> · <a href="https://github.com/dpan538/Annota">source repository</a>.</p>
+</main><footer><p>Annota · <a href="https://github.com/dpan538/Annota">source</a> · <a href="https://dpan538.github.io/Annota/llms.txt">llms.txt</a> ·
+<a href="https://dpan538.github.io/Annota/features.json">features.json</a> · updated 2026-11-08</p></footer></body></html>

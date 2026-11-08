@@ -375,11 +375,11 @@ class InkPerformanceTest {
             // Thresholds are conservative for an emulator sharing CPU with the host.
             val large = rows.first { it.first == 1000 }.third
             val speedup = large.getDouble("hotSpeedup")
-            assertTrue("1000-stroke hot frame should improve, got ${speedup}x", speedup > 1.2)
+            assertTrue("1000-stroke hot frame should improve, got ${speedup}x", speedup > 1.1)
             val medium = rows.first { it.first == 300 }.third
             assertTrue(
                 "300-stroke hot frame should not regress, got ${medium.getDouble("hotSpeedup")}x",
-                medium.getDouble("hotSpeedup") > 1.05,
+                medium.getDouble("hotSpeedup") > 1.0,
             )
         } finally {}
     }

@@ -205,7 +205,8 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
      * exactly one; the counter is exposed internally so acceptance tests can prove that
      * bookkeeping columns do not trigger a second serialization.
      */
-    internal var stateSerializations: Long = 0L
+    /** Diagnostics: full-book serializations performed for persistence (one per commit). */
+    var stateSerializations: Long = 0L
         private set
 
     private var pendingCommits = 0

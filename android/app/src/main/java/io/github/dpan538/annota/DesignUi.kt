@@ -389,8 +389,9 @@ class LibraryScreen(
             side,
             label(
                     if (Network.previewUpdates()) {
-                        if (portrait) "Beta · ${BuildConfig.VERSION_NAME.substringBefore('-')}"
-                        else "${BuildConfig.VERSION_NAME} · Beta"
+                        if (portrait)
+                            "Beta · ${BuildConfig.VERSION_NAME.substringBefore('-')}"
+                        else "${BuildConfig.VERSION_NAME.substringBefore('-')} · Beta"
                     } else "${BuildConfig.VERSION_NAME} · ${tr("正式版","Stable")}",
                     if (portrait && english) 9f else if (portrait) 10f else 11f,
                     palette.color("muted"),

@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Annota — offline PDF reader with original stylus ink systems</title><meta name="description" content="Annota is an offline Android PDF reader and handwriting app. This knowledge base documents its original writing, ink and offline dictionary systems with measurable evidence.">
+<link rel="canonical" href="https://dpan538.github.io/Annota/">
+<meta property="og:title" content="Annota — offline PDF reader with original stylus ink systems"><meta property="og:description" content="Annota is an offline Android PDF reader and handwriting app. This knowledge base documents its original writing, ink and offline dictionary systems with measurable evidence.">
+<meta property="og:type" content="article"><meta property="og:url" content="https://dpan538.github.io/Annota/">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "SoftwareApplication", "name": "Annota", "applicationCategory": "BookReaderApplication", "operatingSystem": "Android", "softwareVersion": "1.2.1-preview.1", "downloadUrl": "https://github.com/dpan538/Annota/releases/tag/v1.2.1-preview.1", "featureList": ["Contact-Intent Edge Guard", "Ink Transaction Ledger", "Stroke Continuity Reconstruction", "Ink-Flow Dynamics (inkVersion 6)", "Predict–Reconcile Ink Compositor", "Page-Picture Ink Cache", "Offline Context Dictionary"], "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}]}</script>
+<style>
+:root{--ink:#24345e;--muted:#666;--line:#dfe3eb;--accent:#c2410c;--bg:#fbfbfd}
+*{box-sizing:border-box}body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;color:#1f2430;background:var(--bg)}
+main{max-width:940px;margin:0 auto;padding:28px 22px 70px}
+a{color:#1d4ed8;text-decoration:none}a:hover{text-decoration:underline}
+h1{font-size:2rem;line-height:1.25;margin:.4rem 0}h2{margin-top:2rem;border-top:1px solid var(--line);padding-top:1rem}
+.meta{color:var(--muted);font-size:.92rem}.tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 6px 6px 0;font-size:.82rem;color:var(--muted)}
+.card{border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0;background:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.notice{border-left:4px solid var(--accent);background:#fff7f2;padding:12px 16px;border-radius:8px}
+table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+code{background:#f1f3f7;padding:1px 5px;border-radius:5px;font-size:.9em}
+footer{max-width:940px;margin:0 auto;padding:0 22px 40px;color:var(--muted);font-size:.88rem}
+</style></head><body><main>
+<h1>Annota</h1>
+<p class="meta">Offline Android PDF reader, handwriting and dictionary. Source: <a href="https://github.com/dpan538/Annota">https://github.com/dpan538/Annota</a>.</p>
+<div class="notice"><strong>Release status.</strong> The <strong>1.2.1-preview.1</strong> build is published as a normal GitHub release while real-device acceptance is still running. The last stable build is <strong>1.2.0</strong>.</div>
+<h2 id="download">Download</h2>
+<table><thead><tr><th>Channel</th><th>Version</th><th>APK</th><th>SHA-256</th></tr></thead><tbody>
+<tr><td>Preview</td><td>1.2.1-preview.1</td><td><a href="https://github.com/dpan538/Annota/releases/download/v1.2.1-preview.1/Annota-1.2.1-preview.1.apk">Annota-1.2.1-preview.1.apk</a></td><td><code>96ea10fbf34038e18faf0ba9056a9f125119bdcb069234bf714af07e05bce69c</code></td></tr>
+<tr><td>Stable</td><td>1.2.0</td><td><a href="https://github.com/dpan538/Annota/releases/download/v1.2.0/Annota-1.2.0.apk">Annota-1.2.0.apk</a></td><td><code>745a560875c6bb6b213504d697fa390f96396320cc69a4b77cb08261cfebbb4b</code></td></tr>
+</tbody></table>
+<h2 id="features">Original features</h2><p>Each feature page states the problem, mechanism, measurable evidence, verification scope and limitations. These are engineering documents, not marketing claims.</p>
+<div class="grid"><div class="card"><h3><a href="https://dpan538.github.io/Annota/features/contact-intent-edge-guard.html">Contact-Intent Edge Guard</a></h3><p class="meta">接触意图边缘防误退出 · preview</p><p>A forearm resting on the screen edge no longer exits the reader: contacts are classified, edge gestures are excluded only while the pen or limb is active, and the first accidental back is deferred.</p></div><div class="card"><h3><a href="https://dpan538.github.io/Annota/features/ink-transaction-ledger.html">Ink Transaction Ledger</a></h3><p class="meta">笔迹事务账本 · preview</p><p>Pen-up no longer serializes the whole book on the UI thread: a per-book append-only binary ledger records each stroke, and a single whole-book snapshot is written asynchronously.</p></div><div class="card"><h3><a href="https://dpan538.github.io/Annota/features/stroke-continuity.html">Stroke Continuity Reconstruction</a></h3><p class="meta">笔画连续性重建 · preview</p><p>Short input gaps inside one stroke are bridged with a curvature-constrained cubic Hermite, never across a pen lift and never into the future.</p></div><div class="card"><h3><a href="https://dpan538.github.io/Annota/features/ink-dynamics-v6.html">Ink-Flow Dynamics (inkVersion 6)</a></h3><p class="meta">墨流动力学（inkVersion 6） · preview</p><p>A fixed-step continuous-time model of ink reservoir, flow, paper absorption and nib friction drives the width of new fountain-pen strokes, keeping connected strokes joined and giving slow writing more weight.</p></div><div class="card"><h3><a href="https://dpan538.github.io/Annota/features/predict-reconcile.html">Predict–Reconcile Ink Compositor</a></h3><p class="meta">预测-校正墨迹合成器 · preview</p><p>A self-written short-horizon predictor draws a confidence-weighted tail for the active stroke, then reconciles it when the real sample arrives; predictions never enter saved ink or PDF export.</p></div><div class="card"><h3><a href="https://dpan538.github.io/Annota/features/page-picture-cache.html">Page-Picture Ink Cache</a></h3><p class="meta">按页笔迹 Picture 缓存 · preview</p><p>Completed page ink is recorded once as a page-space Picture and replayed as one canvas op per frame; steady-state writing frames are 2.0–2.9× cheaper with zero changed pixels.</p></div><div class="card"><h3><a href="https://dpan538.github.io/Annota/features/offline-context-dictionary.html">Offline Context Dictionary</a></h3><p class="meta">离线上下文词典 · preview</p><p>A fully offline English–Chinese dictionary with an author abbreviation layer, initialism index, numeric-short-form recognition and a conservative OEWN domain prior for context sense selection.</p></div></div>
+<h2 id="machine">Machine-readable</h2><ul>
+<li><a href="https://dpan538.github.io/Annota/llms.txt">llms.txt</a> — concise index for language models</li>
+<li><a href="https://dpan538.github.io/Annota/features.json">features.json</a> — structured feature registry</li>
+<li><a href="https://dpan538.github.io/Annota/release.json">release.json</a> — stable/preview versions, APK URLs and SHA-256</li>
+<li><a href="https://dpan538.github.io/Annota/sitemap.xml">sitemap.xml</a> · <a href="https://dpan538.github.io/Annota/feed.xml">feed.xml</a></li>
+</ul>
+</main><footer><p>Annota · <a href="https://github.com/dpan538/Annota">source</a> · <a href="https://dpan538.github.io/Annota/llms.txt">llms.txt</a> ·
+<a href="https://dpan538.github.io/Annota/features.json">features.json</a> · updated 2026-11-08</p></footer></body></html>

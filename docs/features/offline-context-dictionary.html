@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Offline Context Dictionary (离线上下文词典) — Annota</title><meta name="description" content="A fully offline English–Chinese dictionary with an author abbreviation layer, initialism index, numeric-short-form recognition and a conservative OEWN domain prior for context sense selection.">
+<link rel="canonical" href="https://dpan538.github.io/Annota/features/offline-context-dictionary.html">
+<meta property="og:title" content="Offline Context Dictionary (离线上下文词典) — Annota"><meta property="og:description" content="A fully offline English–Chinese dictionary with an author abbreviation layer, initialism index, numeric-short-form recognition and a conservative OEWN domain prior for context sense selection.">
+<meta property="og:type" content="article"><meta property="og:url" content="https://dpan538.github.io/Annota/features/offline-context-dictionary.html">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "SoftwareApplication", "name": "Annota", "applicationCategory": "BookReaderApplication", "operatingSystem": "Android", "softwareVersion": "1.2.1-preview.1", "downloadUrl": "https://github.com/dpan538/Annota/releases/tag/v1.2.1-preview.1", "featureList": ["Contact-Intent Edge Guard", "Ink Transaction Ledger", "Stroke Continuity Reconstruction", "Ink-Flow Dynamics (inkVersion 6)", "Predict–Reconcile Ink Compositor", "Page-Picture Ink Cache", "Offline Context Dictionary"], "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "TechArticle", "headline": "Offline Context Dictionary", "description": "A fully offline English–Chinese dictionary with an author abbreviation layer, initialism index, numeric-short-form recognition and a conservative OEWN domain prior for context sense selection.", "about": "Offline dictionaries usually behave as a static word list: abbreviations such as CAP, RAM, k8s or i18n and context-dependent senses are missing or guessed without evidence.", "datePublished": "2026-11-08", "dateModified": "2026-11-08", "author": {"@type": "Organization", "name": "Annota"}, "isPartOf": {"@type": "SoftwareApplication", "name": "Annota"}, "citation": "https://dpan538.github.io/Annota/features/offline-context-dictionary.html", "keywords": "offline, dictionary, abbreviation, context, OEWN"}]}</script>
+<style>
+:root{--ink:#24345e;--muted:#666;--line:#dfe3eb;--accent:#c2410c;--bg:#fbfbfd}
+*{box-sizing:border-box}body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;color:#1f2430;background:var(--bg)}
+main{max-width:940px;margin:0 auto;padding:28px 22px 70px}
+a{color:#1d4ed8;text-decoration:none}a:hover{text-decoration:underline}
+h1{font-size:2rem;line-height:1.25;margin:.4rem 0}h2{margin-top:2rem;border-top:1px solid var(--line);padding-top:1rem}
+.meta{color:var(--muted);font-size:.92rem}.tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 6px 6px 0;font-size:.82rem;color:var(--muted)}
+.card{border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0;background:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.notice{border-left:4px solid var(--accent);background:#fff7f2;padding:12px 16px;border-radius:8px}
+table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+code{background:#f1f3f7;padding:1px 5px;border-radius:5px;font-size:.9em}
+footer{max-width:940px;margin:0 auto;padding:0 22px 40px;color:var(--muted);font-size:.88rem}
+</style></head><body><main>
+<p class="meta"><a href="https://dpan538.github.io/Annota/">Annota</a> / <a href="https://dpan538.github.io/Annota/#features">features</a> / Offline Context Dictionary</p>
+<h1>Offline Context Dictionary <span class="meta">· 离线上下文词典</span></h1>
+<p class="meta">Status: <strong>preview</strong> · version 1.2.1-preview.1 · updated 2026-11-08 <span class="tag">offline</span><span class="tag">dictionary</span><span class="tag">abbreviation</span><span class="tag">context</span><span class="tag">OEWN</span></p>
+<div class="notice"><strong>What it is.</strong> A fully offline English–Chinese dictionary with an author abbreviation layer, initialism index, numeric-short-form recognition and a conservative OEWN domain prior for context sense selection.</div>
+<h2 id="problem">Problem it solves</h2><p>Offline dictionaries usually behave as a static word list: abbreviations such as CAP, RAM, k8s or i18n and context-dependent senses are missing or guessed without evidence.</p>
+<h2 id="mechanism">How it works</h2><p>A 128-entry authored abbreviation table, a 401,909-entry initialism index and numeric contraction rules share context-cue ranking. WordNet senses carry OEWN lexfile domain labels and a nine-domain prior runs only after weighted Lesk abstains, requiring at least two independent leading cues. Unknown acronyms expand only when the context matches a candidate.</p>
+<h2 id="difference">Difference from existing approaches</h2><p>The layer combines authored abbreviations, initialisms and a conservative domain prior while keeping abstention: no context means no forced acronym expansion and no arbitrary sense promotion.</p>
+<h2 id="evidence">Evidence (measurable)</h2><table><thead><tr><th>Measurement</th><th>Result</th></tr></thead><tbody><tr><td>abbreviation tests</td><td>7/7</td></tr><tr><td>domain ranking tests</td><td>7/7</td></tr><tr><td>authored context probes</td><td>9 improved / 0 regressed / 7 neutral (not accuracy)</td></tr><tr><td>search latency 40 rounds, steady state</td><td>median 10.17 -&gt; 4.92 ms; p95 137.8 -&gt; 17.9 ms</td></tr><tr><td>dictionary data</td><td>zh-en 129,801 -&gt; 238,664 entries; en-zh pack 95.45 -&gt; 73.08 MiB</td></tr></tbody></table>
+<h2 id="verified">Verified on / Not yet verified on</h2><p><strong>Verified:</strong> API 36 ARM64 emulator (ranchu), fixed probe set</p><p><strong>Not yet verified:</strong> real user reading material and Xiaomi Pad 9 Pro Max</p>
+<h2 id="limitations">Limitations</h2><ul><li>Domain labels are coarse lexfiles</li><li>Authored probes are not an accuracy benchmark</li><li>Reverse zh-en entries are machine-merged and not individually proofread</li></ul>
+<h2 id="code">Code</h2><ul><li><code>android/app/src/main/java/io/github/dpan538/annota/Dictionary.kt</code></li><li><code>android/app/src/main/java/io/github/dpan538/annota/DictionaryReading.kt</code></li><li><code>android/app/src/main/java/io/github/dpan538/annota/SenseRanker.kt</code></li></ul>
+<h2 id="canonical">Canonical sources</h2><p>This page is the canonical description of this feature. Machine-readable data:
+<a href="https://dpan538.github.io/Annota/features.json">features.json</a> · <a href="https://dpan538.github.io/Annota/llms.txt">llms.txt</a> · <a href="https://github.com/dpan538/Annota">source repository</a>.</p>
+</main><footer><p>Annota · <a href="https://github.com/dpan538/Annota">source</a> · <a href="https://dpan538.github.io/Annota/llms.txt">llms.txt</a> ·
+<a href="https://dpan538.github.io/Annota/features.json">features.json</a> · updated 2026-11-08</p></footer></body></html>
