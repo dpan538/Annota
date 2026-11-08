@@ -20,8 +20,8 @@ class VersionIdentityTest {
     @Test
     fun installedVersionAndVisibleLibraryAboutAndUpdateIdentityAgree() {
         val installed = context.packageManager.getPackageInfo(context.packageName, 0)
-        assertEquals("1.1.1", installed.versionName)
-        assertEquals(21L, installed.longVersionCode)
+        assertEquals("1.2.0", installed.versionName)
+        assertEquals(22L, installed.longVersionCode)
         assertEquals(installed.versionName, BuildConfig.VERSION_NAME)
         assertEquals(BuildConfig.DEBUG, Network.previewUpdates())
         // Preview identity must work in the signed non-debuggable APK too.
@@ -78,8 +78,8 @@ class VersionIdentityTest {
                             val labels = all(screen).filterIsInstance<TextView>()
                             val footerText =
                                 if (BuildConfig.DEBUG) {
-                                    if (portrait) "Beta · 1.1.1" else "1.1.1 · Beta"
-                                } else "1.1.1 · ${if (english) "Stable" else "正式版"}"
+                                    if (portrait) "Beta · 1.2.0" else "1.2.0 · Beta"
+                                } else "1.2.0 · ${if (english) "Stable" else "正式版"}"
                             val footer = labels.first { it.text.toString() == footerText }
                             assertEquals(View.VISIBLE, footer.visibility)
                             assertTrue(footer.width > 0 && footer.height > 0)
@@ -103,11 +103,11 @@ class VersionIdentityTest {
                                     if (BuildConfig.DEBUG) {
                                         if (english) "Beta build" else "Beta 测试版"
                                     } else if (english) "Stable release" else "正式版"
-                                assertTrue(labels.any { it.text.toString() == "1.1.1 · $identity" })
+                                assertTrue(labels.any { it.text.toString() == "1.2.0 · $identity" })
                                 val current = if (english) "Current version" else "当前版本"
                                 assertTrue(
                                     labels.any {
-                                        it.text.toString() == "$current · 1.1.1 · $identity"
+                                        it.text.toString() == "$current · 1.2.0 · $identity"
                                     }
                                 )
                             }

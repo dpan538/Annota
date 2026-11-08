@@ -1,0 +1,24 @@
+{
+  "artifact": "Annota-1.2.0.apk",
+  "sha256": "745a560875c6bb6b213504d697fa390f96396320cc69a4b77cb08261cfebbb4b",
+  "bytes": 500449037,
+  "transport": "temporary loopback HTTP; public GitHub download not tested",
+  "contentType": "application/vnd.android.package-archive",
+  "contentLength": 500449037,
+  "offlineTranslation": "046f55aec303cdee3e0318604406d4df20f1e8ea",
+  "offlineSemanticModel": "all-MiniLM-L6-v2",
+  "zipEntries": 277,
+  "nativeAbis": [
+    "arm64-v8a"
+  ],
+  "packageName": "io.github.dpan538.annota",
+  "versionCode": 22,
+  "versionName": "1.2.0",
+  "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18",
+  "signatureV2": true,
+  "signatureV3": false,
+  "assetsAndArchiveVerified": true,
+  "downloadedCopyInstalledAndColdLaunched": true,
+  "coldStartAmTotalTimeMs": 1414,
+  "passed": true
+}

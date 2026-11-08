@@ -7,7 +7,11 @@
 | 方向 | 数据 | 条目数 |
 | --- | --- | ---: |
 | 英 → 中 | ECDICT 全部中文释义记录 + Annota 原创词组与术语 | 771,180 |
-| 中 → 英 | CC-CEDICT + 原创短释义的反向索引 | 126,272 |
+| 中 → 英 | CC-CEDICT + 原创短释义的反向索引 + OMW 中文词网新增词 | 129,801 |
+| 英中词义 | WordNet 3.0 + COW + CWN + OMW Wiktionary 中文 + OEWN 英文释义 | 50,639 synset / 95,221 词义 / 72,948 词头 |
+| 检索扩展 | OpenCC 繁→简单字映射 | 4,148 |
+
+ECDICT 的 BNC/COCA 词频秩（`bnc`/`frq`）只用于候选与建议排序，不用于筛除词条。
 
 新增 **942 条**独立编写的简短词组 / 术语，另有 **682 个**显式记录的词形和拼写别名。别名不计为新增词条；未通过组合模板制造数据量。九个主题覆盖：
 
@@ -17,7 +21,12 @@
 
 例如 `set up`、`take into account`、`in terms of`、`recurrent neural network`、`scaled dot-product attention`、`confidence interval`、`palm rejection`。释义以完整的短等价表达为主，不堆长解释。词库并非穷尽所有领域；条目数也不是去重后的单词数。
 
-1.1.0 另内置 WordNet / Chinese Open WordNet 独立语义索引，覆盖 61,340 个英文词头、77,708 条英中词义关联。与主词库存在重叠；来源、筛选与算法边界见 [开放词库调研](OPEN-LEXICON-RESEARCH.md)。
+1.2.0 起，独立语义索引在 WordNet 3.0 / Chinese Open WordNet（COW）之上合并：
+Chinese WordNet（CWN，Academia Sinica）与 OMW Wiktionary 中文词网，按 PWN30 synset 对齐；
+可经 CILI 映射的英文释义与同义词采用 Open English WordNet 2025。合并后为 50,639 个 synset、
+95,221 条英中词义关联、72,948 个英文词头。Chinese WordNet 与 Wiktionary 中文词网的词条许可
+保留在独立措辞与许可文件下；来源、筛选与算法边界见 [开放词库调研](OPEN-LEXICON-RESEARCH.md)。
+1.1.1 的历史数字（61,340 / 77,708）与本次合并结果不能直接相加。
 
 ## 匹配规则
 
@@ -26,7 +35,10 @@
 3. 支持已记录的词形，例如 `neural networks`、`carried out`、`taken into account`。不随意截词尾猜词根。
 4. 全半角、大小写、Unicode 连字符、软连字符统一；`self-\nattention` 保留词边界，`neural net-\nwork` 在未命中时尝试修复断行词。
 5. 阅读中选中单词时，可以结合本地同栏、同句的相邻词匹配最长短语；同长度结果冲突时不强行选义。整个词组默认只显示一条简洁释义。
-6. 中文同时查简繁体。新增原创反向等价表达写入同一个汉英库；已有 CC-CEDICT 数据保持原样。
+6. 中文同时查简繁体；未命中时按 OpenCC `TSCharacters` 表逐字转换为简体再查，合并去重结果。
+   新增原创反向等价表达写入同一个汉英库；已有 CC-CEDICT 数据保持原样。
+7. 英文建议词按（编辑距离、ECDICT 词频秩、词形）排序；查询前用随包 Bloom 位图短路不存在的候选，
+   位图由构建期按所有可检索 key 生成，哈希与 Android 侧共享约定，不允许假阴性。
 
 词典接收最多 160 字符，超过时返回空结果，不静默截成另一个查询。未整体收录的英文选区（2–40 个词）按最大覆盖、最少分段查询，保留标点边界，并用来源明确记录的词形还原词组中的单词。结果明确标为“分段释义”，未知片段保留并标注未收录，不冒充整句翻译。
 
@@ -37,21 +49,33 @@
 ```sh
 python3 design/dictionary/build.py
 python3 design/dictionary/test_lookup.py
+python3 design/dictionary/test_lexicons.py
 python3 design/dictionary/lookup.py 'multi-head attention'
+python3 design/dictionary/semantic/build.py   # 需要 onnxruntime、tokenizers
 python3 android/scripts/sync-assets.py
 ```
 
 以上过程无需网络。`sources/annota-phrases.tsv` 是原创词组源文件，分组注释与逐条释义均可审阅；第三列为 `|` 分隔的显式别名。构建检查重复词条、长度和短释义，测试逐一查询所有新增词条与别名，并检查词边界、断行和反向查询。
 
-`sources/` 包含重建所需数据；`bundle/manifest.json` 记录 SQLite schema 3、原始 / 扩展数量、分类、许可和 SHA-256。数据库包含匹配与拼写建议索引，准确大小和哈希以 manifest 为准。首次准备 ECDICT 数据可用 `build.py --ecdict /path/to/ecdict.csv`；没有参数时使用已保存的本机源文件。
+`sources/` 包含重建所需的随包数据；`sources-build/` 包含只用于构建、不进入 APK 的新词库源文件
+（OEWN 2025 XML、CILI 映射、WordNet 3.0 派生表、OMW 中文字表、OpenCC 字表）。
+`bundle/manifest.json` 记录 SQLite schema、原始 / 扩展数量、分类、许可、构建源与 SHA-256。数据库包含匹配与拼写建议索引，准确大小和哈希以 manifest 为准。首次准备 ECDICT 数据可用 `build.py --ecdict /path/to/ecdict.csv`；没有参数时使用已保存的本机源文件。
 
-大型数据库以 gzip 随 APK 提供，安装时按 manifest 解压、原子写入并校验；无需运行时下载。查询在后台线程使用参数绑定、只读连接；旧版词库在更新后按哈希更换，不修改用户文档。全部词组随应用更新提供，无额外下载。
+大型数据库以 gzip 随 APK 提供，首次使用时按 manifest 解压、原子写入并校验；无需运行时下载。
+查询在后台线程使用持久只读连接、参数绑定与内容缓存；旧版词库在更新后按哈希更换，不修改用户文档。
+全部词组随应用更新提供，无额外下载。
 
 ## 来源与许可
 
 - **Annota 原创词组** — 2026 Dai Pan and Annota contributors，MIT。短释义与别名为项目原创编辑，没有复制外部词典解释。完整逐条源文件与许可随 APK 提供；来源、范围和转换说明见 `sources/provenance.json`。中文反向索引只使用完整等价表达，含“……”的句式不反向生成。
 - **ECDICT** — Linwei / skywind3000，MIT。来源：[项目](https://github.com/skywind3000/ECDICT)，许可在 `licenses/ECDICT-MIT.txt`。保留全部有中文释义的 770,238 条记录，不再按词频或考试标签筛选；原始数据见 `sources/ecdict-core.csv.gz`。上游说明数据来自多种资料，其来源链说明保留于应用署名。
 - **CC-CEDICT** — 社区维护、MDBG 发布，2026-10-19 版本，CC BY-SA 4.0。[下载与许可](https://www.mdbg.net/chinese/dictionary?page=cc-cedict)。125,301 条原始记录保留；头部署名见 `licenses/CC-CEDICT-header.txt`，包括 Paul Andrew Denisowski 的贡献。`zh-en.sqlite` 作为转换和组合数据按 CC BY-SA 4.0 分发；原创 TSV 可独立按 MIT 使用。源数据为 `sources/cedict.txt.gz`。
+- **Chinese WordNet（CWN）** — CWN group, Academia Sinica，许可原文见 `licenses/cwn-Academia-Sinica-license.txt`；经 OMW 分发。[来源](https://github.com/omwn/omw-data/tree/main/wns/cwn)。
+- **OMW Wiktionary Mandarin** — English Wiktionary contributors，CC BY-SA 3.0（上游另含 GFDL），经 [OMW](https://github.com/omwn/omw-data/tree/main/wns/wikt) 分发；声明见 `licenses/omw-wikt-CC-BY-SA-3.0-NOTICE.md`。
+- **Open English WordNet 2025** — Open English WordNet contributors，CC BY 4.0，[来源](https://github.com/globalwordnet/english-wordnet)；只取可经 CILI 对齐的 synset 英文释义与同义词，许可与来源见 `licenses/oewn-CC-BY-4.0.txt`。
+- **CILI** — Collaborative Interlingual Index，Francis Bond，CC BY 4.0；PWN30 ↔ ILI 映射见 `licenses/cili-CC-BY-4.0.txt`。
+- **Princeton WordNet 3.0** — Princeton University；词形、释义与义项频率序，许可见 `licenses/wordnet-3.0-license.txt`。
+- **OpenCC** — BYVoid 与贡献者，Apache 2.0；只使用 `TSCharacters.txt` 繁简字表，见 `licenses/opencc-NOTICE.md`。
 
 应用“关于 → 开源与词库许可”离线展示署名和许可。词典没有在线发音，也没有自动遥测、登录或云同步；系统输入法有独立网络行为，需在目标设备飞行模式下单独验收。
 
@@ -63,4 +87,18 @@ python3 android/scripts/sync-assets.py
 - **离线参考译文**：未命中完整词条的英文长词组和短句可用内置 OPUS-MT 量化模型翻译为简体中文。模型、分词数据和 CPU 推理库全部随 APK；首次打开也不需要联网。支持 2–64 个英文词、最多 512 字符，编码上限 128 token。汉英仍为词典查询，不支持中文整句翻译。
 - 译文与词典释义分开呈现；选词优先查询词典。复杂句、专名和术语仍可能错译，不能把分段释义或模型输出视为已校验的译文。
 
-实现、来源比较、许可证和已知失败样例见 [1.1.1 调研与实现](OFFLINE-LANGUAGE-111.md)。当前公开稳定版本仍为 1.1.0；本节描述未发布代码。
+实现、来源比较、许可证和已知失败样例见 [1.1.1 调研与实现](OFFLINE-LANGUAGE-111.md)。
+1.1.1 已作为正式版发布；以上数字保留其发布时的口径。
+
+## 1.2.0：检索升级
+
+- **数据修正**：Wiktionary 的 “Translations” 等章节标题不再被当作词义（移除 1,786 条伪义项）；
+  `cut`、`bra` 等词的默认首义恢复为真实释义；义项顺序改为构建期固定的 `sense_order`。
+- **新词库**：CWN、OMW Wiktionary 中文词网与 WordNet 3.0/OEWN 的合并索引；CC-CEDICT 未收录的
+  3,529 个中文词条补充进汉英库；OpenCC 繁简字表用于检索扩展。
+- **检索技术**：持久只读连接、查询/负结果缓存、Bloom 位图预筛、Myers 位并行编辑距离、
+  词频建议排序、繁简查询扩展与长选区分段优化。
+- **重建流程**：`sources-build/` 保存 7 个仅构建期使用的源文件（共约 18 MB），`bundle/manifest.json`
+  记录其 SHA-256、上游 URL、版本与许可；生成的数据库仍可完全离线重建。
+- 已知边界：OEWN 2025 有 3,184 个 synset 的 `ili` 为字面量 `"in"`，无法对齐，不进入索引；
+  合并词库与主词库存在重叠，条目数不能相加；CWN/OMW 新增中文释义未经人工逐条校对。

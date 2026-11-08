@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.0 正式版 — 本地词典检索升级
+
+- 修正 Wiktionary 的“Translations”等章节标题被当作词义的问题（移除 1,786 条伪义项）；`cut`、`bra` 等词恢复真实首义，义项顺序改为构建期固定的 `sense_order`。
+- 合并新的开源中文词库：Chinese WordNet（CWN）与 OMW Wiktionary 中文词网，按 PWN30 synset 与 CILI 对齐并入 WordNet 索引；英文释义采用可对齐的 Open English WordNet 2025。合并后 50,639 synset / 95,221 条英中词义关联 / 72,948 词头。
+- 汉英库新增 3,529 个 CC-CEDICT 未收录的中文词条、4,148 条 OpenCC 繁→简单字映射；繁体查询自动扩展为简体检索。
+- 检索性能：持久只读 SQLite 连接、查询/负结果缓存、Bloom 位图预筛（1,316,131 key，假阳性约 0.8%）、Myers 位并行编辑距离、ECDICT 词频建议排序；105 词长选区在模拟器由约 1.1–1.6 秒降到首次约 160–240 毫秒、重复约 50–70 毫秒。
+- 修正混合语境下词义排序过于自信的问题：当人工规则提示两个主题冲突时，不再由词面重叠单独选出确定首义。
+- 新增来源与许可：Chinese WordNet、OMW Wiktionary（CC BY-SA 3.0）、Open English WordNet（CC BY 4.0）、CILI（CC BY 4.0）、OpenCC（Apache 2.0）、Princeton WordNet 3.0 词形与义项频率序；`sources-build/` 保存仅构建期使用的源文件，APK 与离线性不变。
+- 详见[1.2.0 发布说明](docs/1.2.0-RELEASE-NOTES.md)与[检索升级记录](design/dictionary/SEARCH-UPGRADE.md)。
+
 ## 1.1.1 正式版 — 离线语言与沉浸阅读
 
 - 内置 Wiktionary 普通话译义、LemmInflect 词形与离线英汉短句参考翻译；增强词组分段和多义项排序，所有数据随 APK 分发。详见 [发布说明](docs/1.1.1-RELEASE-NOTES.md)。

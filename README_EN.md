@@ -7,23 +7,23 @@
 Local PDF reading and handwritten annotation, designed around **Xiaomi Pad 9 Pro Max**. No account required. Documents, ink, reading progress and dictionary queries stay on your device.
 
 [![Android](https://img.shields.io/badge/Android-10%2B-3DDC84)](DOWNLOAD.md)
-[![Stable](https://img.shields.io/badge/Stable-1.1.1-16A34A)](https://github.com/dpan538/Annota/releases/tag/v1.1.1)
+[![Stable](https://img.shields.io/badge/Stable-1.2.0-16A34A)](https://github.com/dpan538/Annota/releases/tag/v1.2.0)
 [![License](https://img.shields.io/badge/License-MIT-8B5CF6)](LICENSE)
 ![Offline](https://img.shields.io/badge/Dictionary-Offline-0891B2)
 ![Local](https://img.shields.io/badge/Storage-On_device-DB2777)
 ![No account](https://img.shields.io/badge/Account-Not_required-64748B)
 ![Device](https://img.shields.io/badge/Xiaomi-Pad_9_Pro_Max_only-FF6900)
 
-[**Download 1.1.1 stable APK**](https://github.com/dpan538/Annota/releases/download/v1.1.1/Annota-1.1.1.apk) · [Installation](DOWNLOAD.md) · [Changelog](CHANGELOG.md)
+[**Download 1.2.0 stable APK**](https://github.com/dpan538/Annota/releases/download/v1.2.0/Annota-1.2.0.apk) · [Installation](DOWNLOAD.md) · [Changelog](CHANGELOG.md)
 
 ## Features
 
 - **Focused reading.** Tiled PDF rendering, continuous scrolling, pinch zoom, adjacent pages, document search, outlines, bookmarks and restored reading positions.
 - **Handwritten annotation.** Pen, pencil, fountain pen and highlighter; pressure response, hold-to-straighten, ruler snapping, selection move / scale / rotation and undo / redo. Handwritten signatures and PDF export.
-- **Offline language tools.** English–Chinese / Chinese–English dictionaries, Wiktionary, WordNet and attested word forms support technical terms, compounds and clearly labelled English definitions. On-device MiniLM compares context with candidate senses; OPUS-MT provides reference translations for English phrases and short passages. All assets ship with the APK.
+- **Offline language tools.** English–Chinese / Chinese–English dictionaries combine ECDICT, Wiktionary, WordNet, Chinese WordNet and Open English WordNet, with technical terms, compounds, traditional/simplified lookup and clearly labelled English definitions. On-device MiniLM compares context with candidate senses; OPUS-MT provides reference translations for English phrases and short passages. All assets ship with the APK.
 - **Local library.** Folders, favorites, search and trash; PDF sharing from other apps, `.annota.zip` backup / restore and a continue-reading home widget.
 
-This page prepares the **1.1.1 stable release**; download assets become available when the Release is published. See the [changelog](CHANGELOG.md) for differences.
+This page describes the **1.2.0 stable release**. See the [changelog](CHANGELOG.md) for differences.
 
 ## Get started
 
@@ -57,7 +57,7 @@ Under **Settings → About**, **Local dictionary** below App update is enabled b
 
 Reading, writing, dictionary lookup and reference translation are fully offline. Network access is used only when checking for updates, downloading an APK or submitting feedback. Feedback becomes a public GitHub Issue; do not include private documents. Back up before uninstalling or clearing app data.
 
-**1.1.1 is a stable release**, offered by the default update check. Download and installation require confirmation. The existing signing certificate is retained for in-place upgrades from earlier stable and Preview builds.
+**1.2.0 is a stable release**, offered by the default update check. Download and installation require confirmation. The existing signing certificate is retained for in-place upgrades from earlier stable and Preview builds.
 
 ## Build
 

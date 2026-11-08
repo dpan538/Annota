@@ -4,13 +4,13 @@
 
 ## 当前版本
 
-- [1.1.1 正式版与复核清单](1.1.1-RELEASE-NOTES.md)
-- [本次发布验证](../android/verification/release-1.1.1/) · [离线语义专项](../android/verification/semantic-111/)
+- [1.2.0 正式版（本地词典检索升级）](1.2.0-RELEASE-NOTES.md)
+- [本次发布验证](../android/verification/release-1.2.0/) · [检索升级记录](../design/dictionary/SEARCH-UPGRADE.md)
 
 ## 前一正式版
 
-- [1.1.0 正式版记录与真机复核](1.1.0-RELEASE-NOTES.md)
-- [1.1.0 自动化记录](../android/verification/stable-1.1.0/)
+- [1.1.1 正式版与复核清单](1.1.1-RELEASE-NOTES.md)
+- [1.1.1 发布验证](../android/verification/release-1.1.1/) · [离线语义专项](../android/verification/semantic-111/)
 
 ## 上一轮预览版
 
@@ -27,6 +27,9 @@ cd android
 cd ..
 python3 design/dictionary/build.py
 python3 design/dictionary/test_lookup.py
+python3 design/dictionary/test_lexicons.py
+python3 design/dictionary/semantic/build.py
+python3 design/dictionary/semantic/finalize.py
 ```
 
 仪器测试包含会重置书库的夹具，仅在专用模拟器执行。更新测试需要提前准备更高版本、同签名的安装包。私有 PDF 回归不上传文档或其截图；公开展示使用随包示例论文。

@@ -1,3 +1,4 @@
+import hashlib
 import sqlite3
 import unittest
 from contextlib import closing
@@ -13,13 +14,13 @@ class OfflineDictionaryTests(unittest.TestCase):
 
     def test_wordnet_senses_use_indexed_local_queries(self):
         with closing(sqlite3.connect(f'file:{ROOT / "bundle/wordnet.sqlite"}?mode=ro', uri=True)) as db:
-            self.assertEqual(db.execute('SELECT count(*) FROM senses').fetchone()[0], 77708)
+            self.assertEqual(db.execute('SELECT count(*) FROM senses').fetchone()[0], 95221)
             for word in ['photosynthesis', 'democracy', 'orchestra', 'enzyme', 'planet', 'mortgage']:
                 self.assertTrue(db.execute('SELECT meaning FROM senses WHERE word=?', (word,)).fetchall(), word)
             plan = db.execute('EXPLAIN QUERY PLAN SELECT * FROM senses WHERE word=?', ('planet',)).fetchall()
             self.assertIn('sense_word', str(plan))
-            self.assertFalse(db.execute('SELECT meaning FROM senses WHERE word=?', ('symphony',)).fetchall())
-            self.assertTrue(lookup('symphony')['entries'])
+            self.assertFalse(db.execute('SELECT meaning FROM senses WHERE word=?', ('defenestration',)).fetchall())
+            self.assertTrue(lookup('defenestration')['entries'])
             self.assertIn('光合作用', db.execute('SELECT meaning FROM senses WHERE word=?', ('photosynthesis',)).fetchone()[0])
 
     def test_english_and_forms(self):
@@ -106,8 +107,52 @@ class OfflineDictionaryTests(unittest.TestCase):
 
     def test_aliases_point_to_existing_entries(self):
         with closing(sqlite3.connect(f'file:{ROOT / "bundle/en-zh.sqlite"}?mode=ro', uri=True)) as db:
-            self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 3)
+            self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 4)
             self.assertEqual(db.execute('SELECT count(*) FROM aliases a LEFT JOIN entries e ON e.id=a.entry_id WHERE e.id IS NULL').fetchone()[0], 0)
+            columns = {row[1] for row in db.execute('PRAGMA table_info(entries)')}
+            self.assertIn('freq', columns)
+            self.assertGreater(db.execute('SELECT count(*) FROM entries WHERE freq>0').fetchone()[0], 50000)
+            # Bloom filter must never hide a real key; the client uses the same layout.
+            row = db.execute('SELECT bits, nbits, hashes FROM lookup_filter').fetchall()
+            self.assertEqual(len(row), 1)
+            bits, nbits, hashes = row[0]
+            self.assertEqual(len(bits), (nbits + 7) // 8)
+            self.assertEqual(hashes, 7)
+
+            def contains(key):
+                digest = hashlib.sha256(key.encode()).digest()
+                first = int.from_bytes(digest[0:4], 'big')
+                second = int.from_bytes(digest[4:8], 'big')
+                return all(
+                    bits[((first + index * second) % nbits) >> 3]
+                    & (1 << (((first + index * second) % nbits) & 7))
+                    for index in range(hashes))
+
+            for key, in db.execute('SELECT key FROM entries ORDER BY id LIMIT 500'):
+                self.assertTrue(contains(key), key)
+            for key, in db.execute('SELECT boundary_key FROM aliases ORDER BY rowid LIMIT 500'):
+                self.assertTrue(contains(key), key)
+            absent = [f'zzz{index:06d}' for index in range(1000)]
+            self.assertLess(sum(contains(key) for key in absent) / len(absent), 0.02)
+
+    def test_new_chinese_variants_and_omw_entries(self):
+        with closing(sqlite3.connect(f'file:{ROOT / "bundle/zh-en.sqlite"}?mode=ro', uri=True)) as db:
+            self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 4)
+            self.assertEqual(db.execute("SELECT simplified FROM variants WHERE traditional='學'").fetchone()[0], '学')
+            self.assertGreater(db.execute('SELECT count(*) FROM variants').fetchone()[0], 4000)
+            self.assertGreater(db.execute("SELECT count(*) FROM entries WHERE source LIKE 'omw-%'").fetchone()[0], 3000)
+
+    def test_wordnet_sources_and_pseudo_senses_removed(self):
+        with closing(sqlite3.connect(f'file:{ROOT / "bundle/wordnet.sqlite"}?mode=ro', uri=True)) as db:
+            self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 2)
+            self.assertEqual(db.execute('SELECT count(*) FROM senses WHERE gloss=\'Translations\'').fetchone()[0], 0)
+            first = db.execute("SELECT word,pos,gloss FROM senses WHERE word='cut' ORDER BY sense_order LIMIT 1").fetchone()
+            self.assertEqual(first[1], 'n')
+            self.assertIn('profits', first[2])
+        with closing(sqlite3.connect(f'file:{ROOT / "bundle/wiktionary.sqlite"}?mode=ro', uri=True)) as db:
+            self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 3)
+            self.assertEqual(db.execute("SELECT count(*) FROM senses WHERE gloss='Translations'").fetchone()[0], 0)
+            self.assertEqual(db.execute('SELECT count(*) FROM senses WHERE sense_order IS NULL').fetchone()[0], 0)
 
 
 if __name__ == "__main__":

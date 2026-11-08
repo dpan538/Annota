@@ -1,0 +1,84 @@
+{
+  "version": "1.2.0",
+  "versionCode": 22,
+  "channel": "stable",
+  "date": "2026-11-08",
+  "device": "dedicated Android16 API36 ARM64 emulator-5584; not target tablet",
+  "networkDuringInstrumentation": "wifi and mobile data disabled",
+  "build": "assembleDebug, assembleDebugAndroidTest, lintDebug, assembleRelease passed",
+  "instrumentation": {
+    "tests": 194,
+    "passed": 194,
+    "failed": 0,
+    "seconds": 288.826,
+    "raw": "regression.txt",
+    "note": "an earlier full run had one timing-sensitive InteractionMotionTest failure; that test passed 3/3 isolated reruns and the final full rerun passed 194/194. Both runs are retained in the history."
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 100
+  },
+  "pyTests": {
+    "test_lookup": 16,
+    "test_lexicons": 20
+  },
+  "dictionary": {
+    "enZhEntries": 771180,
+    "zhEnEntries": 129801,
+    "zhEnOmwEntries": 3529,
+    "variants": 4148,
+    "wordnetSenses": 95221,
+    "wordnetHeadwords": 72948,
+    "wordnetSynsets": 50639,
+    "wiktionarySenses": 59290,
+    "wiktionaryHeadwords": 46333,
+    "semanticGlosses": 101085,
+    "bloom": {
+      "keys": 1316131,
+      "bits": 13161310,
+      "hashes": 7,
+      "falsePositiveSample": "8/1000",
+      "falseNegativeSample": "0/500"
+    }
+  },
+  "latency": {
+    "longSelection": {
+      "words": 105,
+      "chars": 704,
+      "firstMs": 243,
+      "repeatMs": 48,
+      "parts": 105
+    },
+    "previousVersionSameCase": {
+      "firstMs": "1070-1584"
+    },
+    "caveat": "single emulator run after warm-up; not target-tablet latency or p95"
+  },
+  "buildReproducible": "two build.py runs produced identical sqlite sha256 values",
+  "apk": {
+    "artifact": "Annota-1.2.0.apk",
+    "sha256": "745a560875c6bb6b213504d697fa390f96396320cc69a4b77cb08261cfebbb4b",
+    "bytes": 500449037,
+    "zipEntries": 277,
+    "nativeAbis": [
+      "arm64-v8a"
+    ],
+    "packageName": "io.github.dpan538.annota",
+    "versionCode": 22,
+    "versionName": "1.2.0",
+    "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18",
+    "signatureV2": true,
+    "signatureV3": false,
+    "assetsAndArchiveVerified": true,
+    "transport": "temporary loopback HTTP; public GitHub download not tested",
+    "passed": true
+  },
+  "publicDownloadVerified": false,
+  "knownLimitations": [
+    "CWN and OMW Wiktionary Chinese meanings are not individually proofread.",
+    "Merged dictionary totals overlap with the main dictionary and cannot be added.",
+    "Open English WordNet synsets without a usable CILI alignment (3,184) are excluded.",
+    "Character-level traditional/simplified expansion only; no phrase-level variant conversion.",
+    "Emulator latency and correctness do not replace Xiaomi Pad 9 Pro Max device acceptance."
+  ]
+}

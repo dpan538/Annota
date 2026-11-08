@@ -12,8 +12,13 @@
 | AndroidX / Android apksig | Apache 2.0；原生系统集成、APK 密码学签名校验。版本由 Gradle 固定。 |
 | Gunicorn | 反馈服务运行器，MIT；仅服务端依赖，不随 APK 运行。依赖版本固定在 `feedback-service/requirements.txt`。 |
 | Lucide / Feather | Lucide contributors 的 ISC，以及其保留的 Feather MIT 声明。使用于界面功能图标；原文见 `licenses/Lucide-LICENSE`。不是 Annota 原创 Logo 的来源。 |
-| ECDICT 英汉数据 | 上游 skywind3000/ECDICT 标注 MIT；保留原许可、源数据哈希及筛选方法。公开 APK 发布前复核上游外部数据来源范围，不承诺全部专业词汇。 |
+| ECDICT 英汉数据 | 上游 skywind3000/ECDICT 标注 MIT；保留原许可、源数据哈希及筛选方法。1.2.0 起在构建期保留上游 `bnc`/`frq` 词频秩用于候选排序，不用于筛除词条。公开 APK 发布前复核上游外部数据来源范围，不承诺全部专业词汇。 |
 | Princeton WordNet 3.0 / Chinese Open WordNet | Princeton University、Francis Bond 与 Shan Wang；各自宽松许可完整保存在 `design/dictionary/licenses/` 并随 APK 提供。词义关联、固定来源与转换方法见 [开放词库说明](design/dictionary/OPEN-LEXICON-RESEARCH.md)。 |
+| Chinese WordNet（CWN） | Academia Sinica CWN group；自定义使用许可原文见 `design/dictionary/licenses/cwn-Academia-Sinica-license.txt`，经 Open Multilingual WordNet 分发，仅用于中文词义关联。 |
+| OMW Wiktionary Mandarin | English Wiktionary contributors，CC BY-SA 3.0（上游另含 GFDL）；经 OMW 分发，声明见 `design/dictionary/licenses/omw-wikt-CC-BY-SA-3.0-NOTICE.md`，仅用于中文词义关联。 |
+| Open English WordNet 2025 | Open English WordNet contributors，CC BY 4.0；只使用可经 CILI 对齐到 PWN30 的英文释义与同义词，许可见 `design/dictionary/licenses/oewn-CC-BY-4.0.txt`。 |
+| Collaborative Interlingual Index（CILI） | Francis Bond，CC BY 4.0；提供 PWN30 ↔ ILI 对齐映射，见 `design/dictionary/licenses/cili-CC-BY-4.0.txt`。 |
+| OpenCC | BYVoid 与贡献者，Apache 2.0；仅取用 `TSCharacters.txt` 繁简字表生成离线检索表，未链接运行时库，见 `design/dictionary/licenses/opencc-NOTICE.md`。 |
 | CC-CEDICT | 社区维护、MDBG 发布；当前随来源保存的头部标注 CC BY-SA 4.0。汉英源数据与 SQLite 转换结果沿用该许可，保留署名、版本、转换方法及可重建源。此数据的 SA 条件不把无关代码自动改为同一许可。 |
 | Attention Is All You Need | Ashish Vaswani 等，NIPS 2017。按项目所有者明确要求，将其提供的原始 11 页 PDF 作为初始化示例。文件及哈希见 `android/app/src/main/assets/seed.json`；原权利人保留权利，不适用本项目 MIT / CC BY-NC。随包来源声明见 `SAMPLE-PAPER-NOTICE.md`；正式广泛分发前仍须复核再分发权利。 |
 
@@ -24,6 +29,7 @@
 - 字标字体来自 [Google Fonts 官方源文件](https://github.com/google/fonts)，固定提交与每个文件的 SHA-256 见 `branding/fonts/sources.json`。字标已转轮廓，无需安装字体即可渲染，原 OFL 许可保持独立。
 - [Lucide 许可](https://lucide.dev/license)。依赖包随其完整许可安装。
 - [ECDICT](https://github.com/skywind3000/ECDICT)，原许可 `design/dictionary/licenses/ECDICT-MIT.txt`。
+- [Chinese WordNet](http://lope.linguistics.ntu.edu.tw/cwn/)、[Open Multilingual WordNet](https://github.com/omwn/omw-data)、[Open English WordNet](https://github.com/globalwordnet/english-wordnet)、[CILI](https://github.com/globalwordnet/cili)、[OpenCC](https://github.com/BYVoid/OpenCC)，许可与署名见 `design/dictionary/licenses/`。
 - [CC-CEDICT](https://www.mdbg.net/chinese/dictionary?page=cc-cedict)，[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)，原始头部与来源见 `design/dictionary/`。
 - 论文 [NeurIPS 出版页面](https://proceedings.neurips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html)、[Google Research 页面](https://research.google/pubs/attention-is-all-you-need/)。公开访问不等于获准作为本产品的预装资源分发。
 

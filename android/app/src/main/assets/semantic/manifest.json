@@ -24,21 +24,21 @@
     "key": "sha256(raw exact gloss UTF-8), lowercase hex",
     "encoding": "signed-int8-symmetric-per-vector",
     "decode": "signed byte * scale; L2 normalize before cosine",
-    "count": 92869,
+    "count": 101085,
     "truncated_glosses": 0,
     "truncation": "Offline glossary only: first127tokens+SEP; context encoder never silently truncates",
     "sources": [
       {
         "path": "design/dictionary/bundle/wordnet.sqlite",
-        "sha256": "b54c4ba933937200cf077a8d94637dad04d6f1e049fc70963f34fe846873e92e",
-        "rows": 77708,
-        "distinct_glosses": 42119
+        "sha256": "c75d662199d7ab4abe45a16c7540665b14079a00a27e1ef1658799a67754fc22",
+        "rows": 95221,
+        "distinct_glosses": 50488
       },
       {
         "path": "design/dictionary/bundle/wiktionary.sqlite",
-        "sha256": "ce7198a57990d39d797cf7df74460fee4668689dbc12116d6faabc7189128622",
-        "rows": 61076,
-        "distinct_glosses": 50820
+        "sha256": "2df7d57187db62c59fd3f879f0f19010ccba53cd124a58a0bed8ba8efc91e7d5",
+        "rows": 59290,
+        "distinct_glosses": 50819
       }
     ]
   },
@@ -77,8 +77,8 @@
       "bytes": 612
     },
     "glosses.sqlite": {
-      "sha256": "9e9fc196a85748749d7de4a9f6877007795a6128a31aa2dd70494afa358197b2",
-      "bytes": 55091200
+      "sha256": "2b08ec922faf8c63f9d65dc076ed2bc952325bbd959265b0980f8025fd535c6a",
+      "bytes": 60071936
     },
     "model.onnx": {
       "sha256": "4278337fd0ff3c68bfb6291042cad8ab363e1d9fbc43dcb499fe91c871902474",

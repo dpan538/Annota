@@ -293,7 +293,10 @@ class DictionaryReadings(context: Context) {
                 contextual = true
             }
         }
-        if (active != null && !contextual) {
+        // A conflicting curated rule means the local context names two competing topics.
+        // Lexical overlap can then look confident by chance (especially with the expanded
+        // CWN/Wiktionary candidates), so do not turn it into a single contextual answer.
+        if (active != null && !contextual && !conflictingRuleEvidence) {
             lexical
                 .firstOrNull { it.contextual }
                 ?.let { sense ->

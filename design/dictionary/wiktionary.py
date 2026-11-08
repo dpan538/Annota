@@ -7,14 +7,27 @@ import gzip, json, sqlite3, re, unicodedata
 from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 
+# Kaikki sometimes groups translations under a section heading instead of a sense gloss.
+# Those headings are not meanings: treating them as senses made e.g. cut 的 intj 「卡」
+# sort as the first sense. Keep only rows that name a real gloss.
+GENERIC_HEADINGS = {
+    'Translations', 'Synonyms', 'Antonyms', 'Related terms', 'Derived terms',
+    'Descendants', 'Hyponyms', 'Hypernyms', 'Meronyms', 'Holonyms',
+    'Coordinate terms', 'See also', 'Alternative forms', 'Proverbs', 'Quotations',
+    'References', 'Further reading', 'Etymology', 'Pronunciation', 'Usage notes',
+    'Anagrams', 'Compounds', 'Idioms', 'Phrases',
+}
+
 def build_wiktionary():
     path = ROOT / 'bundle/wiktionary.sqlite'
     temp = path.with_suffix('.building')
     temp.unlink(missing_ok=True)
     db = sqlite3.connect(temp)
-    db.executescript('''PRAGMA user_version=2;
-        CREATE TABLE senses(word TEXT, pos TEXT, rank INTEGER, synset TEXT, meaning TEXT, gloss TEXT);
+    db.executescript('''PRAGMA user_version=3;
+        CREATE TABLE senses(word TEXT, pos TEXT, rank INTEGER, sense_order INTEGER,
+            synset TEXT, meaning TEXT, gloss TEXT);
         CREATE INDEX sense_word ON senses(word);
+        CREATE INDEX sense_order ON senses(sense_order);
         CREATE TABLE aliases(key TEXT, word TEXT, UNIQUE(key,word));
         CREATE INDEX wiki_alias ON aliases(key);
         CREATE TABLE forms(form TEXT, lemma TEXT, pos TEXT, UNIQUE(form,lemma,pos));
@@ -27,6 +40,7 @@ def build_wiktionary():
         CREATE INDEX english_alias_key ON english_aliases(key);''')
     normalize = lambda s: ' '.join(unicodedata.normalize('NFKC', s).lower().split())
     posmap = {'noun':'n','verb':'v','adj':'a','adv':'r','name':'n','phrase':'n','prep':'prep','conj':'conj','pron':'pron','intj':'intj','num':'num'}
+    sense_order = 0
     with gzip.open(ROOT / 'sources/kaikki-en-mandarin.jsonl.gz', 'rt') as f:
         for line in f:
             row = json.loads(line)
@@ -45,12 +59,14 @@ def build_wiktionary():
                     meaning = variants[-1]
                 if not meaning or len(meaning)>40: continue
                 gloss = t.get('sense','').strip()
-                if not gloss: continue
+                # A section heading is not a sense. Drop it instead of letting it rank first.
+                if not gloss or gloss in GENERIC_HEADINGS: continue
                 groups.setdefault(gloss,[])
                 if meaning not in groups[gloss]: groups[gloss].append(meaning)
             for rank,(gloss,meanings) in enumerate(groups.items()):
-                db.execute('INSERT INTO senses VALUES(?,?,?,?,?,?)',
-                    (word,pos,rank,'wiktionary:'+row['word'], '；'.join(meanings),gloss))
+                db.execute('INSERT INTO senses VALUES(?,?,?,?,?,?,?)',
+                    (word,pos,rank,sense_order,'wiktionary:'+row['word'], '；'.join(meanings),gloss))
+                sense_order += 1
             if groups:
                 boundary = re.sub(r'[ -]+', ' ', word)
                 db.execute('INSERT OR IGNORE INTO aliases VALUES(?,?)', (boundary,word))
