@@ -11,7 +11,11 @@ internal class Graphite(private val version: Int = InkGeometry.VERSION) {
     private var tint = 0
     private val shader =
         BitmapShader(
-                if (version >= 4) densePaper else paper,
+                when {
+                    version >= 6 -> densePaper6
+                    version >= 4 -> densePaper
+                    else -> paper
+                },
                 Shader.TileMode.REPEAT,
                 Shader.TileMode.REPEAT,
             )
@@ -51,9 +55,12 @@ internal class Graphite(private val version: Int = InkGeometry.VERSION) {
         // Fixed document-space grain size: making a broad pencil must not enlarge the pores.
         // Deterministic multi-scale paper relief, shared by live drawing, reopen and PDF export.
         private val paper: Bitmap by lazy { makePaper(false) }
-        private val densePaper: Bitmap by lazy { makePaper(true) }
+        private val densePaper: Bitmap by lazy { makePaper(true, 125) }
+        // New v6 pencil marks are a little darker than the older frozen graphite, without
+        // touching existing v4/v5 pencil appearance.
+        private val densePaper6: Bitmap by lazy { makePaper(true, 158) }
 
-        private fun makePaper(dense: Boolean): Bitmap {
+        private fun makePaper(dense: Boolean, coverageAlpha: Int = 125): Bitmap {
             val size = 512
             fun noise(x: Int, y: Int): Float {
                 var h = x * 374761393 + y * 668265263
@@ -81,7 +88,7 @@ internal class Graphite(private val version: Int = InkGeometry.VERSION) {
                     val coverage =
                         if (dense) ((relief - .22f) / .48f).coerceIn(0f, 1f).pow(.85f)
                         else ((relief - .27f) / .60f).coerceIn(0f, 1f).pow(1.6f)
-                    ((coverage * if (dense) 125 else 135).toInt() shl 24) or 0xffffff
+                    ((coverage * (if (dense) coverageAlpha else 135)).toInt() shl 24) or 0xffffff
                 }
             return Bitmap.createBitmap(pixels, size, size, Bitmap.Config.ARGB_8888)
         }

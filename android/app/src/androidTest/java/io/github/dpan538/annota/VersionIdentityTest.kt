@@ -24,9 +24,11 @@ class VersionIdentityTest {
         assertEquals(BuildConfig.VERSION_CODE.toLong(), installed.longVersionCode)
         assertEquals(installed.versionName, BuildConfig.VERSION_NAME)
         // Preview identity must work in the signed non-debuggable APK too.
+        val version = installed.versionName!!
         assertEquals(
-            Network.previewUpdates(installed.versionName!!, debug = false),
-            installed.versionName!!.contains("preview", ignoreCase = true),
+            Network.previewUpdates(version, debug = false),
+            version.contains("preview", ignoreCase = true) ||
+                Regex("^\\d+\\.\\d+\\.\\d+\\.\\d+$").matches(version),
         )
 
         val store = Store(context)

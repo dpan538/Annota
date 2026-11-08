@@ -4,6 +4,9 @@ import android.content.Context
 import android.graphics.*
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
+import android.text.Layout
+import android.text.StaticLayout
+import android.text.TextPaint
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import com.tom_roush.pdfbox.io.MemoryUsageSetting
 import com.tom_roush.pdfbox.pdmodel.*
@@ -348,6 +351,11 @@ class PdfEngine(val context: Context, val store: Store) {
                                 )
                                 cs.setLineCapStyle(1)
                                 cs.setLineJoinStyle(1)
+                                if (m.tool == "text") {
+                                    exportText(out, cs, m)
+                                    cs.restoreGraphicsState()
+                                    return@forEach
+                                }
                                 val a = m.points.first()
                                 val b = m.points.last()
                                 if (InkGeometry.supports(m)) {
@@ -509,6 +517,78 @@ class PdfEngine(val context: Context, val store: Store) {
     }
 
     /**
+     * Rasterise a text annotation with the Android text stack at 4 pixels per page unit.
+     *
+     * [Mark.text] is laid out by [Mark.width] (the font size in page units) inside the width of
+     * the box defined by `points[0]` (top-left) and `points[1]` (bottom-right). The box height is
+     * the minimum raster height; the bitmap grows when the laid-out lines need more room, so the
+     * final line is never clipped. Colour and alpha are baked into the bitmap (transparent
+     * background); the caller has already applied the annotation rotation around the box centre.
+     * The `drawImage` flip mirrors the image tool, keeping page coordinates top-left based.
+     */
+    private fun exportText(document: PDDocument, cs: PDPageContentStream, mark: Mark) {
+        if (mark.text.isEmpty() || mark.points.size < 2) return
+        val topLeft = mark.points[0]
+        val bottomRight = mark.points[1]
+        val left = min(topLeft.x, bottomRight.x)
+        val top = min(topLeft.y, bottomRight.y)
+        val boxWidth = max(1f, abs(bottomRight.x - topLeft.x))
+        val boxHeight = max(1f, abs(bottomRight.y - topLeft.y))
+        // Probe at one pixel per page unit to learn the natural line count without allocating a
+        // 4x bitmap for a page-sized box; breaks in page units are identical at every scale.
+        val probe = textLayout(mark.text, textPaint(mark, 1f), max(1, boxWidth.roundToInt()))
+        val naturalHeight = max(boxHeight, probe.height.toFloat())
+        var scale = TEXT_RASTER_SCALE
+        while (scale > .125f) {
+            val w = boxWidth * scale + 2f
+            val h = naturalHeight * scale + 2f
+            if (w <= MAX_TEXT_BITMAP_SIDE && h <= MAX_TEXT_BITMAP_SIDE &&
+                w * h <= MAX_TEXT_BITMAP_PIXELS
+            )
+                break
+            scale /= 2f
+        }
+        val layoutWidth = max(1, (boxWidth * scale).roundToInt())
+        val layout = textLayout(mark.text, textPaint(mark, scale), layoutWidth)
+        val bitmapWidth = layoutWidth + 2
+        val bitmapHeight = max(max(1, (boxHeight * scale).roundToInt()), layout.height) + 2
+        val bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
+        try {
+            layout.draw(Canvas(bitmap))
+            val image = LosslessFactory.createFromImage(document, bitmap)
+            val drawWidth = bitmapWidth / scale
+            val drawHeight = bitmapHeight / scale
+            cs.saveGraphicsState()
+            cs.transform(Matrix(1f, 0f, 0f, -1f, left, top + drawHeight))
+            cs.drawImage(image, 0f, 0f, drawWidth, drawHeight)
+            cs.restoreGraphicsState()
+        } finally {
+            bitmap.recycle()
+        }
+    }
+
+    private fun textPaint(mark: Mark, scale: Float): TextPaint =
+        TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = mark.color
+            textSize = mark.width.coerceAtLeast(.1f) * scale
+            typeface = Typeface.create("sans-serif", Typeface.NORMAL)
+            isSubpixelText = true
+        }
+
+    /**
+     * One layout rule for screen and PDF: natural alignment, no extra leading, no padding, simple
+     * greedy breaks, and no hyphenation. Both paths must keep these values in sync.
+     */
+    private fun textLayout(text: String, paint: TextPaint, width: Int): StaticLayout =
+        StaticLayout.Builder.obtain(text, 0, text.length, paint, width.coerceAtLeast(1))
+            .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+            .setLineSpacing(0f, 1f)
+            .setIncludePad(false)
+            .setBreakStrategy(Layout.BREAK_STRATEGY_SIMPLE)
+            .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE)
+            .build()
+
+    /**
      * One nonzero-winding fill, exactly like [InkRenderer]: both ends of every segment and every
      * joint circle are appended from the shared sample widths, so canvas and PDF antialias the
      * same outline. Both v5's frozen envelope and v6's dynamics model arrive here through the
@@ -577,6 +657,11 @@ class PdfEngine(val context: Context, val store: Store) {
         }
 
     companion object {
+        /** Text annotations rasterise at four pixels per page unit before PDF lossless embedding. */
+        private const val TEXT_RASTER_SCALE = 4f
+        private const val MAX_TEXT_BITMAP_SIDE = 16_384f
+        private const val MAX_TEXT_BITMAP_PIXELS = 32_000_000f
+
         fun strokeWidth(m: Mark, p: Float): Float =
             m.width *
                 when (m.tool) {

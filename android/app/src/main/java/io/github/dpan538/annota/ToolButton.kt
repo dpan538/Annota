@@ -70,6 +70,7 @@ class ToolButton(context: Context, val name: String) : View(context) {
                 "select" -> "Selection"
                 "image" -> "Image"
                 "ruler" -> "Ruler"
+                "text" -> "Type"
                 "undo" -> "Undo2"
                 "redo" -> "Redo2"
                 "book" -> "BookOpenText"

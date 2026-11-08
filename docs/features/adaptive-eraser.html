@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sized Partial/Whole Eraser (独立档位橡皮（局部/整笔）) — Annota</title><meta name="description" content="The eraser has its own four sizes, independent from the pen, and explicit partial or whole-stroke modes; whole mode removes only the nearest hit instead of wiping neighbouring glyphs.">
+<link rel="canonical" href="https://dpan538.github.io/Annota/features/adaptive-eraser.html">
+<meta property="og:title" content="Sized Partial/Whole Eraser (独立档位橡皮（局部/整笔）) — Annota"><meta property="og:description" content="The eraser has its own four sizes, independent from the pen, and explicit partial or whole-stroke modes; whole mode removes only the nearest hit instead of wiping neighbouring glyphs.">
+<meta property="og:type" content="article"><meta property="og:url" content="https://dpan538.github.io/Annota/features/adaptive-eraser.html">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "SoftwareApplication", "name": "Annota", "applicationCategory": "BookReaderApplication", "operatingSystem": "Android", "softwareVersion": "1.2.1.2", "downloadUrl": "https://github.com/dpan538/Annota/releases/tag/v1.2.1.2", "featureList": ["Contact-Intent Edge Guard", "Ink Transaction Ledger", "Stroke Continuity Reconstruction", "Ink-Flow Dynamics (inkVersion 6)", "Predict–Reconcile Ink Compositor", "Page-Picture Ink Cache", "Offline Context Dictionary", "Editable Text Annotation Box", "Sized Partial/Whole Eraser"], "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "TechArticle", "headline": "Sized Partial/Whole Eraser", "description": "The eraser has its own four sizes, independent from the pen, and explicit partial or whole-stroke modes; whole mode removes only the nearest hit instead of wiping neighbouring glyphs.", "about": "The old eraser radius was derived from the pen width and the default whole-stroke mode deleted any hit mark, so adjacent letters or one continuous multi-letter stroke disappeared together.", "datePublished": "2026-11-08", "dateModified": "2026-11-08", "author": {"@type": "Organization", "name": "Annota"}, "isPartOf": {"@type": "SoftwareApplication", "name": "Annota"}, "citation": "https://dpan538.github.io/Annota/features/adaptive-eraser.html", "keywords": "eraser, stylus, annotation, UI"}]}</script>
+<style>
+:root{--ink:#24345e;--muted:#666;--line:#dfe3eb;--accent:#c2410c;--bg:#fbfbfd}
+*{box-sizing:border-box}body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;color:#1f2430;background:var(--bg)}
+main{max-width:940px;margin:0 auto;padding:28px 22px 70px}
+a{color:#1d4ed8;text-decoration:none}a:hover{text-decoration:underline}
+h1{font-size:2rem;line-height:1.25;margin:.4rem 0}h2{margin-top:2rem;border-top:1px solid var(--line);padding-top:1rem}
+.meta{color:var(--muted);font-size:.92rem}.tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 6px 6px 0;font-size:.82rem;color:var(--muted)}
+.card{border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0;background:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.notice{border-left:4px solid var(--accent);background:#fff7f2;padding:12px 16px;border-radius:8px}
+table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+code{background:#f1f3f7;padding:1px 5px;border-radius:5px;font-size:.9em}
+footer{max-width:940px;margin:0 auto;padding:0 22px 40px;color:var(--muted);font-size:.88rem}
+</style></head><body><main>
+<p class="meta"><a href="https://dpan538.github.io/Annota/">Annota</a> / <a href="https://dpan538.github.io/Annota/#features">features</a> / Sized Partial/Whole Eraser</p>
+<h1>Sized Partial/Whole Eraser <span class="meta">· 独立档位橡皮（局部/整笔）</span></h1>
+<p class="meta">Status: <strong>preview</strong> · version 1.2.1.2 · updated 2026-11-08 <span class="tag">eraser</span><span class="tag">stylus</span><span class="tag">annotation</span><span class="tag">UI</span></p>
+<div class="notice"><strong>What it is.</strong> The eraser has its own four sizes, independent from the pen, and explicit partial or whole-stroke modes; whole mode removes only the nearest hit instead of wiping neighbouring glyphs.</div>
+<h2 id="problem">Problem it solves</h2><p>The old eraser radius was derived from the pen width and the default whole-stroke mode deleted any hit mark, so adjacent letters or one continuous multi-letter stroke disappeared together.</p>
+<h2 id="mechanism">How it works</h2><p>An eraserWidth preference is independent from penWidth and exposed as four size levels in the eraser popover. Partial mode splits only the intersected mark; whole mode ranks hit marks by actual centreline/box distance and removes only the nearest one. Text and shapes are atomic and are never split into fragments.</p>
+<h2 id="difference">Difference from existing approaches</h2><p>The visible eraser size is the actual hit radius, and whole-stroke deletion is scoped to the nearest object rather than every object inside a large radius.</p>
+<h2 id="evidence">Evidence (measurable)</h2><table><thead><tr><th>Measurement</th><th>Result</th></tr></thead><tbody><tr><td>neighbours survive, middle removed</td><td>partial and whole tests pass</td></tr><tr><td>size levels</td><td>4 dedicated page-unit sizes</td></tr><tr><td>regression</td><td>WritingRegressionTest 3/3</td></tr></tbody></table>
+<h2 id="verified">Verified on / Not yet verified on</h2><p><strong>Verified:</strong> API 36 ARM64 emulator (ranchu), synthetic stylus</p><p><strong>Not yet verified:</strong> Xiaomi Pad 9 Pro Max finger/stylus eraser feel</p>
+<h2 id="limitations">Limitations</h2><ul><li>Partial v6 fragments lose the previous-stroke seam state</li><li>Whole mode still removes an entire multi-letter mark by design</li></ul>
+<h2 id="code">Code</h2><ul><li><code>android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt</code></li><li><code>android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt</code></li></ul>
+<h2 id="canonical">Canonical sources</h2><p>This page is the canonical description of this feature. Machine-readable data:
+<a href="https://dpan538.github.io/Annota/features.json">features.json</a> · <a href="https://dpan538.github.io/Annota/llms.txt">llms.txt</a> · <a href="https://github.com/dpan538/Annota">source repository</a>.</p>
+</main><footer><p>Annota · <a href="https://github.com/dpan538/Annota">source</a> · <a href="https://dpan538.github.io/Annota/llms.txt">llms.txt</a> ·
+<a href="https://dpan538.github.io/Annota/features.json">features.json</a> · updated 2026-11-08</p></footer></body></html>

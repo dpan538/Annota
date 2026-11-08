@@ -961,6 +961,13 @@ class MainActivity : Activity() {
             readerPopup?.dismiss()
             reader?.tool = "select"
         }
+        add(center, "text", tr("文字", "Text")) {
+            readerPopup?.dismiss()
+            reader?.let {
+                it.textTool()
+                it.invalidate()
+            }
+        }
         add(center, "hand", tr("手形", "Hand")) {
             readerPopup?.dismiss()
             reader?.tool = "hand"
@@ -1459,6 +1466,21 @@ class MainActivity : Activity() {
         r.tool = "eraser"
         val menu = readerPanel("eraser", 220f)
         menu.header(tr("橡皮", "Eraser"))
+        val sizes =
+            listOf(
+                6f to tr("小", "Small"),
+                10f to tr("中", "Medium"),
+                16f to tr("大", "Large"),
+                24f to tr("特大", "Extra large"),
+            )
+        sizes.forEach { (width, label) ->
+            menu.item(
+                "eraser-size-$width",
+                "$label" + if (abs(r.eraserWidth - width) < .1f) " ✓" else "",
+            ) {
+                r.eraserWidth = width
+            }
+        }
         menu.item("eraser", tr("整笔", "Whole stroke") + if (!r.eraserLocal) " ✓" else "") {
             r.eraserLocal = false
         }

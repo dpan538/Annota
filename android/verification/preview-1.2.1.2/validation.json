@@ -1,0 +1,53 @@
+{
+  "version": "1.2.1.2",
+  "versionCode": 26,
+  "channel": "preview (normal GitHub release, Latest)",
+  "releaseDate": "2026-11-08",
+  "stableVersion": "1.2.0",
+  "stableVersionCode": 22,
+  "device": "API 36 ARM64 emulator (ranchu), synthetic stylus/touch; not Xiaomi Pad 9 Pro Max",
+  "instrumentation": {
+    "tests": 277,
+    "passed": 277,
+    "failed": 0,
+    "raw": "regression.txt"
+  },
+  "apk": {
+    "artifact": "Annota-1.2.1.2.apk",
+    "bytes": 412302980,
+    "sha256": "0deaeaa387eca42f75371003e4349ee5ed02da2f1b036b87ce528dc3799bbed8",
+    "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18",
+    "verified": true,
+    "coldStartMs": 2891
+  },
+  "fixes": {
+    "ghosting": {
+      "rootCause": "PRC prediction overlay was drawn for every tool with alpha up to 150 after the real stroke; pencil bypassed Graphite",
+      "fix": "predictive ink default off; pencil/low-confidence skipped; alpha<=45; drawn under the real stroke"
+    },
+    "pencil": {
+      "rootCause": "prediction outline over textured pencil; plus frozen low graphite tone for new marks",
+      "fix": "prediction gate; v6 graphite coverage 125->158 for new pencil only"
+    },
+    "eraser": {
+      "rootCause": "radius derived from penWidth*5+5; whole-stroke default; any hit deleted entire mark",
+      "fix": "independent eraserWidth four sizes; partial/whole selectable; whole removes only nearest hit; text/shapes atomic"
+    },
+    "lazyTiles": {
+      "rootCause": "pure pan reused the previous tile plan; newly exposed viewport had no high-resolution tiles so the base bitmap stayed blurry on half the page",
+      "fix": "ensureTileCoverage compares current visible page rect with plan union in page units; recomputes tile plans without rebuilding placements"
+    },
+    "textTool": {
+      "rootCause": "no page-anchored text annotation",
+      "fix": "Type toolbar icon; page box; drag/resize; IME popup; text field in JSON/ledger/PDF; screen and PDF share sans-serif simple-break layout"
+    }
+  },
+  "evidence": [
+    "regression.txt",
+    "apk.json",
+    "evidence/text-box.png",
+    "evidence/prediction-off-pencil.png",
+    "evidence/prediction-off-pen.png"
+  ],
+  "limit": "Emulator evidence only; real-device ink latency, IME insets, forearm contacts and crash soak pending. Preview is not a claim of stable real-device acceptance."
+}

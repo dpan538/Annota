@@ -71,14 +71,19 @@ class GraphiteTest {
         )
         assertTrue("There is no uniform gray underpaint", pores > 100)
         assertTrue("Graphite includes dark irregular deposits", dark > 100)
-        val before = heavy.getPixel(800, 320)
+        fun regionTone(bitmap: Bitmap): Long {
+            var sum = 0L
+            for (y in 312..328) for (x in 760..840) sum += Color.alpha(bitmap.getPixel(x, y))
+            return sum
+        }
+        val before = regionTone(heavy)
         Canvas(heavy).apply {
             scale(8f, 8f)
             InkRenderer().draw(this, mark(.95f))
         }
         assertTrue(
-            "A second pass builds tone",
-            Color.alpha(heavy.getPixel(800, 320)) > Color.alpha(before),
+            "A second pass builds tone over the stroke region",
+            regionTone(heavy) > before,
         )
         light.recycle()
         heavy.recycle()

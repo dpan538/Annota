@@ -563,9 +563,11 @@ class InkLedger(
         if (mark.refined) flags = flags or 2
         if (mark.image.isNotEmpty()) flags = flags or 4
         if (mark.rotation.toRawBits() != 0) flags = flags or 8
+        if (mark.text.isNotEmpty()) flags = flags or 16
         out.writeByte(flags)
         if (mark.image.isNotEmpty()) writeString(out, mark.image)
         if (mark.rotation.toRawBits() != 0) out.writeInt(mark.rotation.toRawBits())
+        if (mark.text.isNotEmpty()) writeString(out, mark.text)
         require(mark.points.size <= MAX_POINTS) { "too many points in one stroke" }
         writeVarLong(out, mark.points.size.toLong())
         val xState = AxisState()
@@ -620,6 +622,7 @@ class InkLedger(
         val flags = input.readUnsignedByte()
         val image = if (flags and 4 != 0) readString(input) else ""
         val rotation = if (flags and 8 != 0) Float.fromBits(input.readInt()) else 0f
+        val text = if (flags and 16 != 0) readString(input) else ""
         val count = readCount(input, MAX_POINTS, "point count")
         val points = ArrayList<Point>(count)
         val xState = AxisState()
@@ -664,6 +667,7 @@ class InkLedger(
             inkVersion,
             flags and 2 != 0,
             rotation,
+            text,
         )
     }
 

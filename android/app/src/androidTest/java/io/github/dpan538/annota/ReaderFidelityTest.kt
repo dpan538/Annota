@@ -428,6 +428,7 @@ class ReaderFidelityTest {
             "All points stay on the same ruler edge",
             points.maxOf { it.y } - points.minOf { it.y } < .01f,
         )
+        ui { v.eraserLocal = false }
         pointer(
             v,
             MotionEvent.ACTION_DOWN,
@@ -447,6 +448,7 @@ class ReaderFidelityTest {
             buttons = MotionEvent.BUTTON_STYLUS_PRIMARY,
         )
         assertEquals("pen", v.tool)
+        // This legacy scenario exercises the whole-stroke barrel eraser.
         assertTrue(store.book(b.id).pages[0].marks.isEmpty())
     }
 

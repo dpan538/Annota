@@ -120,7 +120,8 @@ class Network(val context: Context) {
         ): Boolean =
             debug ||
                 Regex("(?i).*(?:-dev|-alpha|-beta|-test|-rc|preview|snapshot).*")
-                    .matches(versionName)
+                    .matches(versionName) ||
+                    Regex("^\\d+\\.\\d+\\.\\d+\\.\\d+$").matches(versionName)
     }
 
     fun releaseCandidates(releases: JSONArray, includePreview: Boolean): List<JSONObject> =

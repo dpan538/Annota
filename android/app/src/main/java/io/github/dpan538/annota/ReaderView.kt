@@ -87,7 +87,15 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
 
     var penWidth = displaySaved?.optDouble("width", 2.4)?.toFloat() ?: 2.4f
     var filled = displaySaved?.optBoolean("filled", false) ?: false
-    var eraserLocal = displaySaved?.optBoolean("eraserLocal", false) ?: false
+    var eraserLocal = displaySaved?.optBoolean("eraserLocal", true) ?: true
+    /** Eraser radius in page units; deliberately independent from the pen width. */
+    var eraserWidth = displaySaved?.optDouble("eraserWidth", 10.0)?.toFloat() ?: 10f
+
+    /**
+     * Experimental low-latency prediction. Default off: it is drawn as a translucent overlay and
+     * must not be mixed into the committed ink until real-device validation is complete.
+     */
+    var predictiveInk = displaySaved?.optBoolean("predictiveInk", false) ?: false
     var onlyHighlight = displaySaved?.optBoolean("onlyHighlight", false) ?: false
     var spread = restored?.optBoolean("spread", false) ?: false
         set(value) {
@@ -401,6 +409,16 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private val predictionPath = Path()
     private var activeInkStart: InkDynamics.State? = null
     private var reconstructedSamples = 0
+    private var textSelected: Mark? = null
+    private var textMode = 0 // 0 none, 1 move, 2 resize, 3 new
+    private var textHandle = -1
+    private var textDown = io.github.dpan538.annota.Point(0f, 0f)
+    private var textOriginalA = io.github.dpan538.annota.Point(0f, 0f)
+    private var textOriginalB = io.github.dpan538.annota.Point(0f, 0f)
+    private var textEditor: android.widget.PopupWindow? = null
+    private var textEditing: Mark? = null
+    private var textEditingPage: Sheet? = null
+    private var textMoved = false
     private val holdHandler = android.os.Handler(android.os.Looper.getMainLooper())
     private var strokeHeld = false
     private var holdPending = false
@@ -498,6 +516,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     fun dispose() {
+        textEditor?.dismiss()
+        textEditor = null
         inkRenderer.invalidate()
         inkPictures.clear()
         finishSignature(false)
@@ -639,6 +659,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 .put("ruler", ruler)
                 .put("filled", filled)
                 .put("eraserLocal", eraserLocal)
+                .put("eraserWidth", eraserWidth.toDouble())
                 .put("onlyHighlight", onlyHighlight)
         displayPrefs.edit().putString(book.id, value.toString()).apply()
     }
@@ -1281,8 +1302,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 }
             if (active?.index == i)
                 stroke?.let {
-                    drawMark(canvas, it, activeInkStart)
                     drawPrediction(canvas, it)
+                    drawMark(canvas, it, activeInkStart)
                 }
             searchHits.forEachIndexed { hitIndex, hit ->
                 if (hit.pageId == p.id) {
@@ -1391,6 +1412,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 }
             key.panX = panX
             key.panY = panY
+            ensureTileCoverage()
             return
         }
         key.layout = layout
@@ -1449,34 +1471,12 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             framePreloadWidths[n] = baseWidth(page)
             framePreloadKeys[n] = "${pageKey(page)}:${framePreloadWidths[n]}"
         }
-        val tileBudget = (tiles.maxSize() * .88f).toLong()
-        val plans: Map<Int, List<Tile>>
-        if (movingLayout) {
-            plans = settledTilePlans
+        if (movingLayout && settledTilePlans.isNotEmpty()) {
+            framePlans = settledTilePlans
+            wantedTiles = settledTilePlans.values.flatMap { plan -> plan.map { it.key } }.toSet()
         } else {
-            val fresh = HashMap<Int, List<Tile>>(frames.size)
-            var quality = 1f
-            while (true) {
-                fresh.clear()
-                var bytes = 0L
-                for (n in frames.indices) {
-                    val place = placements[n]
-                    val page = book.pages.getOrNull(place.index) ?: continue
-                    if (page.source < 0) continue
-                    val plan = tilePlan(page, place.matrix, place.inverse, quality)
-                    fresh[frameIndices[n]] = plan
-                    bytes += plan.sumOf { it.area.width().toLong() * it.area.height() * 4 }
-                }
-                if (bytes <= tileBudget) break
-                quality *= min(.85f, sqrt(tileBudget.toFloat() / bytes) * .95f)
-            }
-            settledTilePlans = fresh
-            plans = fresh
+            recomputeTilePlans()
         }
-        framePlans = plans
-        val wanted = HashSet<String>(plans.values.sumOf { it.size })
-        plans.values.forEach { plan -> plan.forEach { wanted.add(it.key) } }
-        wantedTiles = wanted
         val wantedPageIds = HashSet<String>(frames.size + preload.size)
         frames.forEach {
             book.pages.getOrNull(it.index)?.let { page -> wantedPageIds.add(page.id) }
@@ -1485,6 +1485,71 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             book.pages.getOrNull(it.index)?.let { page -> wantedPageIds.add(page.id) }
         }
         wantedPages = wantedPageIds
+    }
+
+    /**
+     * Rebuild the tile plan for the current placements without touching the placements themselves.
+     * A pure pan or a lazy zoom can move a page so that the old plan no longer covers what is on
+     * screen; replaying that old plan leaves half of the page on the low-resolution base bitmap.
+     */
+    private fun recomputeTilePlans() {
+        if (placements.isEmpty()) {
+            framePlans = emptyMap()
+            settledTilePlans = emptyMap()
+            wantedTiles = emptySet()
+            return
+        }
+        val tileBudget = (tiles.maxSize() * .88f).toLong()
+        val fresh = HashMap<Int, List<Tile>>(placements.size)
+        var quality = 1f
+        while (true) {
+            fresh.clear()
+            var bytes = 0L
+            for (place in placements) {
+                val page = book.pages.getOrNull(place.index) ?: continue
+                if (page.source < 0) continue
+                val plan = tilePlan(page, place.matrix, place.inverse, quality)
+                fresh[place.index] = plan
+                bytes += plan.sumOf { it.area.width().toLong() * it.area.height() * 4 }
+            }
+            if (bytes <= tileBudget || fresh.isEmpty()) break
+            quality *= min(.85f, sqrt(tileBudget.toFloat() / bytes) * .95f)
+        }
+        settledTilePlans = fresh
+        framePlans = fresh
+        wantedTiles = fresh.values.flatMap { plan -> plan.map { it.key } }.toSet()
+    }
+
+    private fun ensureTileCoverage() {
+        val screen = RectF(0f, 0f, width.toFloat(), height.toFloat())
+        var needs = false
+        for (place in placements) {
+            val page = book.pages.getOrNull(place.index) ?: continue
+            if (page.source < 0) continue
+            val visible = RectF(screen)
+            place.inverse.mapRect(visible)
+            if (!visible.intersect(0f, 0f, page.w, page.h)) continue
+            val plan = framePlans[place.index]
+            if (plan == null || plan.isEmpty()) {
+                needs = true
+                break
+            }
+            val union = RectF()
+            val density = plan.firstOrNull()?.scale ?: 1f
+            plan.forEach { tile ->
+                union.union(
+                    tile.area.left / density,
+                    tile.area.top / density,
+                    tile.area.right / density,
+                    tile.area.bottom / density,
+                )
+            }
+            if (!union.contains(visible)) {
+                needs = true
+                break
+            }
+        }
+        if (needs) recomputeTilePlans()
     }
 
     /** Allocation-free equivalent of pageMatrix() for the per-frame placement rebuild. */
@@ -1586,6 +1651,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         val b = m.points.last()
         markRect.set(min(a.x, b.x), min(a.y, b.y), max(a.x, b.x), max(a.y, b.y))
         when (m.tool) {
+            "text" -> drawTextMark(c, m)
             "image" -> {
                 var bm = imageCache.get(m.image)
                 if (bm == null) {
@@ -1668,6 +1734,284 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         paint.style = Paint.Style.FILL
     }
 
+    private fun textBox(m: Mark): RectF {
+        val a = m.points.firstOrNull() ?: io.github.dpan538.annota.Point(0f, 0f)
+        val b = m.points.lastOrNull() ?: a
+        return RectF(min(a.x, b.x), min(a.y, b.y), max(a.x, b.x), max(a.y, b.y))
+    }
+
+    private fun localPointFor(m: Mark, p: Point): Point =
+        AnnotationSelection.localPoint(m, p)
+
+    private fun textContains(m: Mark, p: Point): Boolean {
+        val local = localPointFor(m, p)
+        return textBox(m).let { local.x in it.left..it.right && local.y in it.top..it.bottom }
+    }
+
+    private fun textHandleAt(m: Mark, p: Point, tolerance: Float): Int {
+        val r = textBox(m)
+        val local = localPointFor(m, p)
+        val corners =
+            arrayOf(
+                io.github.dpan538.annota.Point(r.left, r.top),
+                io.github.dpan538.annota.Point(r.right, r.top),
+                io.github.dpan538.annota.Point(r.right, r.bottom),
+                io.github.dpan538.annota.Point(r.left, r.bottom),
+            )
+        return corners.indexOfFirst { hypot(it.x - local.x, it.y - local.y) <= tolerance }
+    }
+
+    private fun drawTextMark(c: Canvas, m: Mark) {
+        val box = textBox(m)
+        if (box.width() < 1f || box.height() < 1f) return
+        val paint =
+            android.text.TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = m.color
+                textSize = m.width.coerceIn(4f, 300f)
+                typeface = android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.NORMAL)
+                isSubpixelText = true
+            }
+        val layout =
+            android.text.StaticLayout.Builder.obtain(
+                    m.text,
+                    0,
+                    m.text.length,
+                    paint,
+                    box.width().toInt().coerceAtLeast(1),
+                )
+                .setAlignment(android.text.Layout.Alignment.ALIGN_NORMAL)
+                .setIncludePad(false)
+                .setLineSpacing(0f, 1f)
+                .setBreakStrategy(android.text.Layout.BREAK_STRATEGY_SIMPLE)
+                .setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE)
+                .build()
+        c.save()
+        c.translate(box.left, box.top)
+        layout.draw(c)
+        c.restore()
+        if (textSelected === m) {
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = 1.2f
+            paint.color = 0xff435dc2.toInt()
+            val path = Path()
+            path.addRect(box, Path.Direction.CW)
+            c.drawPath(path, paint)
+            paint.style = Paint.Style.FILL
+            for (p in arrayOf(
+                io.github.dpan538.annota.Point(box.left, box.top),
+                io.github.dpan538.annota.Point(box.right, box.top),
+                io.github.dpan538.annota.Point(box.right, box.bottom),
+                io.github.dpan538.annota.Point(box.left, box.bottom),
+            )) {
+                c.drawCircle(p.x, p.y, 5f, paint)
+            }
+        }
+    }
+
+    private fun textPagePoint(place: Placement, x: Float, y: Float): Point {
+        val p = floatArrayOf(x, y)
+        place.inverse.mapPoints(p)
+        val page = book.pages[place.index]
+        return Point(p[0].coerceIn(0f, page.w), p[1].coerceIn(0f, page.h))
+    }
+
+    private fun handleTextTouch(e: MotionEvent): Boolean {
+        val place =
+            placements.firstOrNull { it.bounds.contains(e.x, e.y) }
+                ?: placements.firstOrNull { it.index == book.current }
+                ?: return false
+        val page = book.pages[place.index]
+        val p = textPagePoint(place, e.x, e.y)
+        when (e.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                cancelStroke()
+                val hit =
+                    page.marks.lastOrNull {
+                        it.tool == "text" && it.points.size >= 2 && textContains(it, p)
+                    }
+                if (hit != null) {
+                    textSelected = hit
+                    textOriginalA = hit.points.first()
+                    textOriginalB = hit.points.last()
+                    textDown = p
+                    val handle = textHandleAt(hit, p, 28f)
+                    textMode = if (handle >= 0) 2 else 1
+                    textHandle = handle
+                } else {
+                    val width = min(260f, page.w * .55f).coerceAtLeast(80f)
+                    val height = min(90f, page.h * .22f).coerceAtLeast(44f)
+                    val left = p.x.coerceIn(0f, (page.w - width).coerceAtLeast(0f))
+                    val top = p.y.coerceIn(0f, (page.h - height).coerceAtLeast(0f))
+                    val mark =
+                        Mark(
+                            "text",
+                            color,
+                            max(16f, penWidth * 5),
+                            mutableListOf(Point(left, top), Point(left + width, top + height)),
+                            text = "",
+                        )
+                    page.marks.add(mark)
+                    textSelected = mark
+                    textOriginalA = mark.points.first()
+                    textOriginalB = mark.points.last()
+                    textDown = p
+                    textMode = 3
+                    textHandle = -1
+                    textMoved = false
+                    bumpInk(page)
+                }
+                invalidate()
+                return true
+            }
+            MotionEvent.ACTION_MOVE -> {
+                val mark = textSelected ?: return true
+                textMoved = true
+                if (textMode == 1) {
+                    val dx = p.x - textDown.x
+                    val dy = p.y - textDown.y
+                    val a = Point((textOriginalA.x + dx).coerceIn(0f, page.w), (textOriginalA.y + dy).coerceIn(0f, page.h))
+                    val b = Point((textOriginalB.x + dx).coerceIn(0f, page.w), (textOriginalB.y + dy).coerceIn(0f, page.h))
+                    mark.points[0] = a
+                    mark.points[1] = b
+                } else if (textMode == 2) {
+                    val r = RectF(textOriginalA.x, textOriginalA.y, textOriginalB.x, textOriginalB.y)
+                    val left = min(r.left, r.right)
+                    val top = min(r.top, r.bottom)
+                    val right = max(r.left, r.right)
+                    val bottom = max(r.top, r.bottom)
+                    var nl = left
+                    var nt = top
+                    var nr = right
+                    var nb = bottom
+                    when (textHandle) {
+                        0 -> { nl = p.x; nt = p.y }
+                        1 -> { nr = p.x; nt = p.y }
+                        2 -> { nr = p.x; nb = p.y }
+                        3 -> { nl = p.x; nb = p.y }
+                    }
+                    if (nr - nl < 60f) {
+                        if (textHandle == 0 || textHandle == 3) nl = nr - 60f else nr = nl + 60f
+                    }
+                    if (nb - nt < 36f) {
+                        if (textHandle == 0 || textHandle == 1) nt = nb - 36f else nb = nt + 36f
+                    }
+                    mark.points[0] = Point(nl.coerceIn(0f, page.w), nt.coerceIn(0f, page.h))
+                    mark.points[1] = Point(nr.coerceIn(0f, page.w), nb.coerceIn(0f, page.h))
+                }
+                bumpInk(page)
+                invalidate()
+                return true
+            }
+            MotionEvent.ACTION_UP -> {
+                val mark = textSelected
+                val wasTap = textMode == 1 && !textMoved
+                textMode = 0
+                textHandle = -1
+                if (mark != null && mark.text.isEmpty() && mark.points.size >= 2) {
+                    // Keep the new empty box visible until the writer taps it to type; only remove
+                    // an empty box that was explicitly left/closed.
+                }
+                invalidate()
+                if (wasTap && mark != null) openTextEditor(mark, page, place)
+                else if (mark != null) commitTextBox(page, mark)
+                return true
+            }
+            MotionEvent.ACTION_CANCEL -> {
+                textMode = 0
+                textHandle = -1
+                return true
+            }
+        }
+        return true
+    }
+
+    private fun commitTextBox(page: Sheet, mark: Mark) {
+        val index = book.pages.indexOf(page)
+        val seq = runCatching { store.inkLedger.replacePage(book.id, index, page.marks.toList()) }.getOrNull()
+        saveChange(seq)
+    }
+
+    private fun openTextEditor(mark: Mark, page: Sheet, place: Placement) {
+        textEditor?.dismiss()
+        textEditing = mark
+        textEditingPage = page
+        val box = textBox(mark)
+        val corners = floatArrayOf(box.left, box.top, box.right, box.bottom)
+        place.matrix.mapPoints(corners)
+        val left = corners[0]
+        val top = corners[1]
+        val width = max(80, (corners[2] - corners[0]).toInt())
+        val height = max(48, (corners[3] - corners[1]).toInt())
+        val editor =
+            android.widget.EditText(context).apply {
+                setText(mark.text)
+                setSelection(text.length)
+                setTextColor(mark.color)
+                setTextSize(
+                    android.util.TypedValue.COMPLEX_UNIT_PX,
+                    mark.width * place.matrix.mapRadius(1f),
+                )
+                setPadding(10, 8, 10, 8)
+                background =
+                    android.graphics.drawable.GradientDrawable().apply {
+                        setColor(0xffffffff.toInt())
+                        setStroke(2, 0xff435dc2.toInt())
+                        cornerRadius = 4f
+                    }
+                inputType =
+                    android.text.InputType.TYPE_CLASS_TEXT or
+                        android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                gravity = android.view.Gravity.TOP or android.view.Gravity.START
+                addTextChangedListener(
+                    object : android.text.TextWatcher {
+                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                            mark.text = s?.toString().orEmpty()
+                            bumpInk(page)
+                            invalidate()
+                        }
+                        override fun afterTextChanged(s: android.text.Editable?) {}
+                    }
+                )
+            }
+        val popup =
+            android.widget.PopupWindow(editor, width, height, true).apply {
+                isOutsideTouchable = true
+                isFocusable = true
+                setBackgroundDrawable(android.graphics.drawable.ColorDrawable(0x00000000))
+                setSoftInputMode(
+                    android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+                )
+                setOnDismissListener {
+                    val wasEditing = textEditing
+                    textEditor = null
+                    textEditing = null
+                    textEditingPage = null
+                    if (wasEditing != null) {
+                        commitTextBox(page, wasEditing)
+                        textSelected = wasEditing
+                        invalidate()
+                    }
+                }
+            }
+        textEditor = popup
+        val location = IntArray(2)
+        getLocationOnScreen(location)
+        popup.showAtLocation(
+            this,
+            android.view.Gravity.NO_GRAVITY,
+            location[0] + left.toInt(),
+            location[1] + top.toInt(),
+        )
+        editor.requestFocus()
+        editor.post {
+            val imm =
+                context.getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
+                    as android.view.inputmethod.InputMethodManager
+            imm.showSoftInput(editor, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
+        }
+    }
+
     private fun drawRuler(c: Canvas) {
         if (rulerX == 0f) {
             rulerX = width / 2f
@@ -1745,14 +2089,17 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         val page = book.pages[active!!.index]
         val from = previousErase ?: p
         previousErase = p
-        val radius = penWidth * 5 + 5
+        val radius = eraserWidth.coerceIn(1.5f, 96f)
         val result = mutableListOf<Mark>()
+        // Whole-stroke mode must not wipe every neighbouring glyph that happens to be inside the
+        // eraser radius: keep the hit list and remove only the nearest mark.
+        val wholeHits = mutableListOf<Pair<Float, Mark>>()
         page.marks.forEach { m ->
             if (m.points.isEmpty() || (onlyHighlight && m.tool != "highlight")) {
                 result.add(m)
                 return@forEach
             }
-            if (m.tool in setOf("image", "rectangle", "ellipse", "triangle")) {
+            if (m.tool in setOf("image", "rectangle", "ellipse", "triangle", "text")) {
                 val a = m.points.first()
                 val b = m.points.last()
                 val localFrom = AnnotationSelection.localPoint(m, from)
@@ -1782,21 +2129,78 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                             )
                             .let { pieces -> pieces.size != 1 || pieces[0].points != listOf(u, v) }
                     }
-                if (
-                    !box.contains(localTo.x, localTo.y) &&
-                        !box.contains(localFrom.x, localFrom.y) &&
-                        !crossed
-                )
+                val hit =
+                    box.contains(localTo.x, localTo.y) ||
+                        box.contains(localFrom.x, localFrom.y) ||
+                        crossed
+                if (!hit) result.add(m)
+                else if (eraserLocal) {
+                    // Text and shape objects are atomic: a partial eraser removes the object
+                    // rather than inventing fragments.
+                } else {
                     result.add(m)
+                    wholeHits.add(distanceToBox(m, localTo) to m)
+                }
             } else {
                 val pieces = InkEditing.erase(m, from, p, radius)
-                if (eraserLocal) result.addAll(pieces)
-                else if (pieces.size == 1 && pieces[0] === m) result.add(m)
+                val hit = pieces.size != 1 || pieces[0] !== m
+                if (!hit) result.add(m)
+                else if (eraserLocal) result.addAll(pieces)
+                else {
+                    result.add(m)
+                    wholeHits.add(distanceToStroke(m, p).let { it * it } to m)
+                }
             }
+        }
+        if (!eraserLocal && wholeHits.isNotEmpty()) {
+            // Remove exactly one mark: the closest centreline/object to this eraser sample.
+            val victim = wholeHits.minByOrNull { it.first }!!.second
+            result.removeAll { it === victim }
         }
         page.marks.clear()
         page.marks.addAll(result)
         bumpInk(page)
+    }
+
+    private fun distanceToBox(m: Mark, local: Point): Float {
+        val a = m.points.first()
+        val b = m.points.last()
+        val left = min(a.x, b.x)
+        val top = min(a.y, b.y)
+        val right = max(a.x, b.x)
+        val bottom = max(a.y, b.y)
+        val dx = when {
+            local.x < left -> left - local.x
+            local.x > right -> local.x - right
+            else -> 0f
+        }
+        val dy = when {
+            local.y < top -> top - local.y
+            local.y > bottom -> local.y - bottom
+            else -> 0f
+        }
+        return hypot(dx, dy)
+    }
+
+    private fun distanceToStroke(m: Mark, p: Point): Float {
+        val local = AnnotationSelection.localPoint(m, p)
+        var best = Float.MAX_VALUE
+        val points = m.points
+        if (points.size == 1) return hypot(local.x - points[0].x, local.y - points[0].y)
+        for (i in 1 until points.size) {
+            val a = points[i - 1]
+            val b = points[i]
+            val dx = b.x - a.x
+            val dy = b.y - a.y
+            val length = dx * dx + dy * dy
+            val t =
+                if (length <= .0001f) 0f
+                else (((local.x - a.x) * dx + (local.y - a.y) * dy) / length)
+                    .coerceIn(0f, 1f)
+            val d = hypot(local.x - (a.x + t * dx), local.y - (a.y + t * dy))
+            if (d < best) best = d
+        }
+        return best
     }
 
     /**
@@ -1927,10 +2331,15 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
 
     /** One-frame prediction tail: display only, never saved, never exported. */
     private fun drawPrediction(c: Canvas, m: Mark) {
+        if (!predictiveInk) return
+        // Pencil is a textured Graphite renderer; a plain outline prediction would look like a
+        // pale halo/outline around the real stroke.
+        if (m.tool == "pencil" || m.inkVersion < InkGeometry.FOUNTAIN_VERSION) return
         if (m.points.size < 3) return
         val frame = android.os.SystemClock.uptimeMillis()
         val prediction = predictor.predictPoints(m.points, frame + 16L)
         if (prediction.isEmpty) return
+        if (prediction.first!!.confidence < .5f) return
         val predicted =
             prediction.points.take(2).map {
                 Point(it.x, it.y, it.p, it.t, tilt = it.tilt)
@@ -1960,9 +2369,17 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         InkGeometry.outline(samples, sink)
         paint.style = Paint.Style.FILL
         paint.color = m.color
-        paint.alpha = (150f * prediction.first!!.confidence).toInt().coerceIn(0, 150)
+        paint.alpha = (45f * prediction.first!!.confidence).toInt().coerceIn(0, 45)
         c.drawPath(predictionPath, paint)
         paint.alpha = 255
+    }
+
+    /** Select the text-box tool. A page tap creates a box; a tap inside opens the keyboard. */
+    fun textTool() {
+        cancelStroke()
+        tool = "text"
+        textSelected = null
+        invalidate()
     }
 
     internal fun cancelInput() = cancelStroke()
@@ -2073,6 +2490,10 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     private fun handleTouchEvent(e: MotionEvent): Boolean {
+        if (tool != "text") {
+            textSelected = null
+            textEditor?.dismiss()
+        }
         signature?.let { pending ->
             val place =
                 placements.firstOrNull { book.pages[it.index].id == pending.pageId } ?: return true
@@ -2121,6 +2542,9 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 MotionEvent.ACTION_UP -> signatureStart = null
             }
             return true
+        }
+        if (!readOnly && tool == "text" && e.pointerCount == 1) {
+            return handleTextTouch(e)
         }
         val stylus =
             e.getToolType(e.actionIndex) in

@@ -74,6 +74,7 @@ data class Mark(
     val inkVersion: Int = 0,
     val refined: Boolean = true,
     val rotation: Float = 0f,
+    var text: String = "",
 ) {
     fun json() =
         JSONObject()
@@ -85,6 +86,7 @@ data class Mark(
             .put("filled", filled)
             .also { if (rotation != 0f) it.put("rotation", rotation.toDouble()) }
             .also { if (inkVersion > 0) it.put("inkVersion", inkVersion).put("refined", refined) }
+            .also { if (text.isNotEmpty()) it.put("text", text) }
 
     companion object {
         fun from(j: JSONObject): Mark {
@@ -112,6 +114,7 @@ data class Mark(
                 j.optInt("inkVersion", 0),
                 j.optBoolean("refined", true),
                 j.optDouble("rotation", 0.0).toFloat().let { if (it.isFinite()) it % 360f else 0f },
+                j.optString("text", ""),
             )
         }
     }

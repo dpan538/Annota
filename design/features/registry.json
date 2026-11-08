@@ -15,13 +15,13 @@
       "sha256": "745a560875c6bb6b213504d697fa390f96396320cc69a4b77cb08261cfebbb4b"
     },
     "preview": {
-      "version": "1.2.1-preview.1",
-      "versionCode": 24,
+      "version": "1.2.1.2",
+      "versionCode": 26,
       "status": "preview",
-      "tag": "v1.2.1",
-      "apk": "Annota-1.2.1.apk",
-      "bytes": 412286612,
-      "sha256": "96ea10fbf34038e18faf0ba9056a9f125119bdcb069234bf714af07e05bce69c"
+      "tag": "v1.2.1.2",
+      "apk": "Annota-1.2.1.2.apk",
+      "bytes": 412302980,
+      "sha256": "0deaeaa387eca42f75371003e4349ee5ed02da2f1b036b87ce528dc3799bbed8"
     }
   },
   "features": [
@@ -29,7 +29,7 @@
       "id": "contact-intent-edge-guard",
       "name": "Contact-Intent Edge Guard",
       "nameZh": "接触意图边缘防误退出",
-      "version": "1.2.1-preview.1",
+      "version": "1.2.1.2",
       "status": "preview",
       "summary": "A forearm resting on the screen edge no longer exits the reader: contacts are classified, edge gestures are excluded only while the pen or limb is active, and the first accidental back is deferred.",
       "problem": "On tablets the forearm often touches the left or right screen edge. Android turns that edge contact into the system back gesture before the app sees it, so the reader closes while writing.",
@@ -66,7 +66,7 @@
       "id": "ink-transaction-ledger",
       "name": "Ink Transaction Ledger",
       "nameZh": "笔迹事务账本",
-      "version": "1.2.1-preview.1",
+      "version": "1.2.1.2",
       "status": "preview",
       "summary": "Pen-up no longer serializes the whole book on the UI thread: a per-book append-only binary ledger records each stroke, and a single whole-book snapshot is written asynchronously.",
       "problem": "Every pen-up synchronously serialized the whole book twice, gzipped and hashed it and committed SQLite on the UI thread. Fast handwriting lost the next stroke's early events (perceived as broken contact).",
@@ -119,7 +119,7 @@
       "id": "stroke-continuity",
       "name": "Stroke Continuity Reconstruction",
       "nameZh": "笔画连续性重建",
-      "version": "1.2.1-preview.1",
+      "version": "1.2.1.2",
       "status": "preview",
       "summary": "Short input gaps inside one stroke are bridged with a curvature-constrained cubic Hermite, never across a pen lift and never into the future.",
       "problem": "Stylus packets are occasionally swallowed (palm/forearm interference, scheduler stalls), which appears as a broken line in fast cursive writing.",
@@ -164,7 +164,7 @@
       "id": "ink-dynamics-v6",
       "name": "Ink-Flow Dynamics (inkVersion 6)",
       "nameZh": "墨流动力学（inkVersion 6）",
-      "version": "1.2.1-preview.1",
+      "version": "1.2.1.2",
       "status": "preview",
       "summary": "A fixed-step continuous-time model of ink reservoir, flow, paper absorption and nib friction drives the width of new fountain-pen strokes, keeping connected strokes joined and giving slow writing more weight.",
       "problem": "Fixed entry/release tapers and a position-only low-pass filter make connected writing look thin at joins and give little sense of pen-to-paper damping.",
@@ -219,7 +219,7 @@
       "id": "predict-reconcile",
       "name": "Predict–Reconcile Ink Compositor",
       "nameZh": "预测-校正墨迹合成器",
-      "version": "1.2.1-preview.1",
+      "version": "1.2.1.2",
       "status": "preview",
       "summary": "A self-written short-horizon predictor draws a confidence-weighted tail for the active stroke, then reconciles it when the real sample arrives; predictions never enter saved ink or PDF export.",
       "problem": "Reducing perceived pen-to-ink latency usually improves responsiveness but naive prediction overshoots on fast reversals and can corrupt the stroke.",
@@ -268,7 +268,7 @@
       "id": "page-picture-cache",
       "name": "Page-Picture Ink Cache",
       "nameZh": "按页笔迹 Picture 缓存",
-      "version": "1.2.1-preview.1",
+      "version": "1.2.1.2",
       "status": "preview",
       "summary": "Completed page ink is recorded once as a page-space Picture and replayed as one canvas op per frame; steady-state writing frames are 2.0–2.9× cheaper with zero changed pixels.",
       "problem": "Replaying every completed mark as a drawPath on every frame made long annotated pages expensive while writing or scrolling.",
@@ -317,7 +317,7 @@
       "id": "offline-context-dictionary",
       "name": "Offline Context Dictionary",
       "nameZh": "离线上下文词典",
-      "version": "1.2.1-preview.1",
+      "version": "1.2.1.2",
       "status": "preview",
       "summary": "A fully offline English–Chinese dictionary with an author abbreviation layer, initialism index, numeric-short-form recognition and a conservative OEWN domain prior for context sense selection.",
       "problem": "Offline dictionaries usually behave as a static word list: abbreviations such as CAP, RAM, k8s or i18n and context-dependent senses are missing or guessed without evidence.",
@@ -363,6 +363,91 @@
         "abbreviation",
         "context",
         "OEWN"
+      ]
+    },
+    {
+      "id": "text-annotation-box",
+      "name": "Editable Text Annotation Box",
+      "nameZh": "可拖动/缩放文字输入框",
+      "version": "1.2.1.2",
+      "status": "preview",
+      "summary": "A page-anchored text box can be created from the toolbar, moved and resized, opened with the system keyboard, persisted with undo, and exported to PDF with the same layout.",
+      "problem": "Notes often need typed text next to handwriting, but a PDF annotation canvas usually only offers ink and images; typing requires leaving the page.",
+      "mechanism": "A Mark of tool text stores a box in page coordinates and its text. A toolbar Type icon creates a default box; tapping inside opens an EditText popup over the page, the IME edits live, and drag or corner handles move/resize the box. The same StaticLayout rule is used on screen and in a 4x lossless PDF raster so Chinese, wrapping and line breaks match. Text boxes participate in undo, ledger recovery, selection and the eraser as atomic objects.",
+      "difference": "The editor is anchored to the page-space box (not a separate dialog), so the writer sees the final typography in context; a single layout rule drives both screen and PDF instead of two approximations.",
+      "evidence": [
+        {
+          "label": "creation/move/resize/persistence tests",
+          "value": "3/3"
+        },
+        {
+          "label": "text data/PDF/ledger tests",
+          "value": "3/3 + ledger 6/6"
+        },
+        {
+          "label": "PDF raster parity",
+          "value": "same sans-serif / 1.0 line spacing / simple breaks"
+        }
+      ],
+      "verifiedOn": "API 36 ARM64 emulator (ranchu), synthetic touch and keyboard popup",
+      "notVerifiedOn": "Xiaomi Pad 9 Pro Max IME/window insets and real PDF reader",
+      "limitations": [
+        "Text PDF is rasterized (not selectable)",
+        "Text taller than the box is not clipped; the box can be enlarged",
+        "Old app versions do not understand the text field"
+      ],
+      "code": [
+        "android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt",
+        "android/app/src/main/java/io/github/dpan538/annota/PdfEngine.kt",
+        "android/app/src/main/java/io/github/dpan538/annota/InkLedger.kt"
+      ],
+      "tags": [
+        "text",
+        "annotation",
+        "IME",
+        "PDF",
+        "undo"
+      ]
+    },
+    {
+      "id": "adaptive-eraser",
+      "name": "Sized Partial/Whole Eraser",
+      "nameZh": "独立档位橡皮（局部/整笔）",
+      "version": "1.2.1.2",
+      "status": "preview",
+      "summary": "The eraser has its own four sizes, independent from the pen, and explicit partial or whole-stroke modes; whole mode removes only the nearest hit instead of wiping neighbouring glyphs.",
+      "problem": "The old eraser radius was derived from the pen width and the default whole-stroke mode deleted any hit mark, so adjacent letters or one continuous multi-letter stroke disappeared together.",
+      "mechanism": "An eraserWidth preference is independent from penWidth and exposed as four size levels in the eraser popover. Partial mode splits only the intersected mark; whole mode ranks hit marks by actual centreline/box distance and removes only the nearest one. Text and shapes are atomic and are never split into fragments.",
+      "difference": "The visible eraser size is the actual hit radius, and whole-stroke deletion is scoped to the nearest object rather than every object inside a large radius.",
+      "evidence": [
+        {
+          "label": "neighbours survive, middle removed",
+          "value": "partial and whole tests pass"
+        },
+        {
+          "label": "size levels",
+          "value": "4 dedicated page-unit sizes"
+        },
+        {
+          "label": "regression",
+          "value": "WritingRegressionTest 3/3"
+        }
+      ],
+      "verifiedOn": "API 36 ARM64 emulator (ranchu), synthetic stylus",
+      "notVerifiedOn": "Xiaomi Pad 9 Pro Max finger/stylus eraser feel",
+      "limitations": [
+        "Partial v6 fragments lose the previous-stroke seam state",
+        "Whole mode still removes an entire multi-letter mark by design"
+      ],
+      "code": [
+        "android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt",
+        "android/app/src/main/java/io/github/dpan538/annota/MainActivity.kt"
+      ],
+      "tags": [
+        "eraser",
+        "stylus",
+        "annotation",
+        "UI"
       ]
     }
   ]
