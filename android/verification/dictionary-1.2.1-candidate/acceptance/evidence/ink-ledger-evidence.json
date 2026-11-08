@@ -1,0 +1,64 @@
+{
+  "device": "Google sdk_gphone64_arm64",
+  "hardware": "ranchu",
+  "sdk": 36,
+  "timestamp": 1794126821558,
+  "snapshotAndCommit": {
+    "marks": 2000,
+    "points": 20000,
+    "snapshotSamples": 30,
+    "snapshotMedianMs": 0.005,
+    "snapshotP95Ms": 0.012,
+    "snapshotMaxMs": 0.269,
+    "snapshotBudgetMs": 5,
+    "asyncCommits": 4,
+    "commitWarmupMs": 105.532,
+    "asyncTotalMs": 411.155,
+    "uiSubmitMedianMs": 0.024,
+    "uiSubmitMaxMs": 0.124,
+    "stateSerializationsDelta": 4,
+    "marksAfterCommit": 2006,
+    "cursorAfterCommit": 7,
+    "undoCursor": 6,
+    "marksAfterUndo": 2005,
+    "undoSerializations": 0
+  },
+  "tenThousandPoints": {
+    "points": 10000,
+    "encodeMs": 48.792,
+    "decodeMs": 30.958,
+    "bytes": 141088,
+    "intact": true
+  },
+  "roundTrip": {
+    "points": 257,
+    "bytes": 3742,
+    "coordinateRoundTrip": "bit-exact",
+    "pressure": "16-bit quantised + exact residual",
+    "tilt": "16-bit quantised + exact residual",
+    "unknownTool": "generic-string"
+  },
+  "recovery": {
+    "snapshotMarks": 1,
+    "tailMarks": 1,
+    "recoveredMarks": 2,
+    "ledgerBytes": 220,
+    "commitSerializations": 1,
+    "tailTrimmed": true
+  },
+  "compaction": {
+    "beforeOps": 62,
+    "beforeBytes": 10417,
+    "afterOps": 5,
+    "afterBytes": 6952,
+    "autoCompactedOps": 1,
+    "autoRecoveredMarks": 40
+  },
+  "tornTail": {
+    "framesBefore": 3,
+    "recoveredAfterTruncation": 2,
+    "bytesAfterTruncation": 817,
+    "intactAfterRepair": true,
+    "allCorruptReturnsNull": true
+  }
+}

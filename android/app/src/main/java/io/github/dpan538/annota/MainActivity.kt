@@ -44,6 +44,16 @@ class MainActivity : Activity() {
     private val readerTools = mutableMapOf<String, ToolButton>()
     private var readerHost: FrameLayout? = null
     private var readerChrome: ReaderChrome? = null
+    private var lastLimbContactAt = 0L
+    private var armGuardUntil = 0L
+    private var edgeExclusionUntil = 0L
+    private var lastBackDeferredAt = 0L
+    private val guardHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private val clearEdgeExclusion =
+        Runnable {
+            if (android.os.SystemClock.uptimeMillis() >= edgeExclusionUntil)
+                applyEdgeExclusion(false)
+        }
     private var pageSidebar: View? = null
     private var navigationPanel: ReaderNavigator? = null
     private var activePage = 0
@@ -1164,7 +1174,8 @@ class MainActivity : Activity() {
         if (reader?.readOnly == true) return
         reader?.cancelInput()
         book?.let {
-            if (!store.undo(it, redo)) toast(tr("没有更多历史", "No more history"))
+            if (store.undo(it, redo)) store.inkLedger.clear(it.id)
+            else toast(tr("没有更多历史", "No more history"))
             reader?.refresh()
         }
     }
@@ -2348,6 +2359,21 @@ class MainActivity : Activity() {
     }
 
     override fun dispatchTouchEvent(e: MotionEvent): Boolean {
+        if (reader != null && e.pointerCount > 0) {
+            val now = android.os.SystemClock.uptimeMillis()
+            val width = (if (root.width > 0) root.width else window.decorView.width).toFloat()
+            val verdict =
+                ContactIntent.from(e, resources.displayMetrics.density, width.coerceAtLeast(1f))
+            if (verdict.stylus) armEdgeExclusion(now)
+            if (verdict.kind == ContactIntent.ContactKind.LIMB) {
+                // A resting forearm is not a finger: never draw, pan, tap chrome or feed a gesture.
+                lastLimbContactAt = now
+                armGuardUntil = now + 1_800
+                armEdgeExclusion(now)
+                return true
+            }
+            if (now > edgeExclusionUntil) applyEdgeExclusion(false)
+        }
         readerChrome?.touch(e.actionMasked)
         if (e.pointerCount > 0 && e.getToolType(e.actionIndex) == MotionEvent.TOOL_TYPE_STYLUS) {
             val d = e.device
@@ -2357,10 +2383,43 @@ class MainActivity : Activity() {
         return super.dispatchTouchEvent(e)
     }
 
+    /**
+     * While the pen or a forearm is near the glass, temporarily exclude a narrow strip at both
+     * vertical edges from the system back gesture. The strips are removed as soon as the guard
+     * expires, so a deliberate edge swipe still works.
+     */
+    private fun armEdgeExclusion(now: Long) {
+        edgeExclusionUntil = now + 1_800
+        applyEdgeExclusion(true)
+        guardHandler.removeCallbacks(clearEdgeExclusion)
+        guardHandler.postDelayed(clearEdgeExclusion, 1_850)
+    }
+
+    private fun applyEdgeExclusion(active: Boolean) {
+        if (android.os.Build.VERSION.SDK_INT < 29) return
+        val view = window?.decorView ?: return
+        val w = view.width
+        val h = view.height
+        if (w <= 0 || h <= 0) return
+        val band = (ContactIntent.EDGE_BAND_DP * resources.displayMetrics.density).toInt()
+        val rects =
+            if (!active) emptyList()
+            else
+                listOf(
+                    android.graphics.Rect(0, 0, band, h),
+                    android.graphics.Rect(w - band, 0, w, h),
+                )
+        if (view.systemGestureExclusionRects != rects)
+            view.systemGestureExclusionRects = rects
+    }
+
     override fun onGenericMotionEvent(e: MotionEvent): Boolean {
-        if (e.isFromSource(InputDevice.SOURCE_STYLUS))
+        if (e.isFromSource(InputDevice.SOURCE_STYLUS)) {
             inputInfo =
                 "${e.device?.name}\nhover action=${e.actionMasked}, buttons=${e.buttonState}"
+            if (reader != null && e.pointerCount > 0)
+                armEdgeExclusion(android.os.SystemClock.uptimeMillis())
+        }
         return super.onGenericMotionEvent(e)
     }
 
@@ -2386,6 +2445,22 @@ class MainActivity : Activity() {
     override fun onBackPressed() = back()
 
     private fun back() {
+        val now = android.os.SystemClock.uptimeMillis()
+        if (
+            reader != null &&
+                ContactIntent.shouldDeferBack(now, lastLimbContactAt, lastBackDeferredAt)
+        ) {
+            // The first back right after a forearm contact is almost always accidental. Defer it
+            // once and tell the writer; a second deliberate swipe still leaves immediately.
+            lastBackDeferredAt = now
+            android.widget.Toast.makeText(
+                    this,
+                    tr("再滑一次退出", "Swipe again to leave"),
+                    android.widget.Toast.LENGTH_SHORT,
+                )
+                .show()
+            return
+        }
         val insets = ViewCompat.getRootWindowInsets(root)
         if (insets?.isVisible(WindowInsetsCompat.Type.ime()) == true) {
             WindowInsetsControllerCompat(window, root).hide(WindowInsetsCompat.Type.ime())

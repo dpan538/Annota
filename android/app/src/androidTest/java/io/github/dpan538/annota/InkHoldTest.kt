@@ -213,12 +213,18 @@ class InkHoldTest {
             SystemClock.sleep(StrokeHold.DELAY_MS + 100)
             input(MotionEvent.ACTION_CANCEL, 600f, 400f)
             SystemClock.sleep(50)
-            assertEquals(1, store.book(book.id).pages[0].marks.size)
+            // A system CANCEL keeps the already written held line (2 points) instead of
+            // discarding it; the previous committed line is still there.
+            assertEquals(2, store.book(book.id).pages[0].marks.size)
             inst.runOnMainSync {
-                assertTrue("One undo removes the complete held line", store.undo(book, false))
+                assertTrue("First undo removes the cancelled held line", store.undo(book, false))
+                assertEquals(saved, book.pages[0].marks.single())
+                assertTrue("Second undo removes the first line", store.undo(book, false))
                 assertTrue(book.pages[0].marks.isEmpty())
                 assertTrue(store.undo(book, true))
                 assertEquals(saved, book.pages[0].marks.single())
+                assertTrue(store.undo(book, true))
+                assertEquals(2, book.pages[0].marks.size)
             }
             input(MotionEvent.ACTION_DOWN, 300f, 500f)
             input(MotionEvent.ACTION_MOVE, 600f, 500f)
@@ -227,7 +233,7 @@ class InkHoldTest {
             input(MotionEvent.ACTION_UP, 600f, 500f)
             assertEquals(
                 "Changing tools cancels pending ink and hold",
-                1,
+                2,
                 store.book(book.id).pages[0].marks.size,
             )
             inst.runOnMainSync { reader.tool = "pencil" }
@@ -244,7 +250,7 @@ class InkHoldTest {
             val afterNavigation = store.book(book.id)
             assertEquals(
                 "Navigation cancels held ink on its original page",
-                1,
+                2,
                 afterNavigation.pages[0].marks.size,
             )
             assertTrue(

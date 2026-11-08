@@ -12,12 +12,12 @@
     "warnings": 100
   },
   "instrumentation": {
-    "tests": 223,
-    "passed": 223,
+    "tests": 271,
+    "passed": 271,
     "failed": 0,
-    "seconds": 279.368,
+    "seconds": 302.146,
     "raw": "regression.txt",
-    "note": "Full candidate gate on the release-critical classes. DocumentNavigationTest's two long-press popup cases are excluded because they reproduce identically on the 1.2.0 baseline APK in this emulator state; both raw failures are retained in the session log and are not attributed to 1.2.1. New suites included: AbbreviationLookupTest 7, SenseDomainRankingTest 7, InkFountainPenTest 11, InkPerformanceTest 4, InkAcceptanceComparisonTest 1, DictionarySearchUpgradeTest 13."
+    "note": "Full candidate gate on the release-critical classes. DocumentNavigationTest's two long-press popup cases are excluded because they reproduce identically on the 1.2.0 baseline APK in this emulator state; both raw failures are retained in the session log and are not attributed to 1.2.1. New suites included: AbbreviationLookupTest 7, SenseDomainRankingTest 7, InkFountainPenTest 11, InkPerformanceTest 4, InkAcceptanceComparisonTest 1, DictionarySearchUpgradeTest 13, ContactIntentTest 4, ArmGuardTest 1, WritingExperienceAcceptanceTest 3, InkLedgerTest 6, StrokeContinuityTest 7, InkPredictorTest 8, InkDynamicsTest 12."
   },
   "pythonTests": {
     "test_lookup": 18,
@@ -99,13 +99,13 @@
   "packing": {
     "allBundledDbsAreGzipPacks": true,
     "assetsBytes": 408529301,
-    "firstColdLaunchMs": 1208,
+    "firstColdLaunchMs": 1040,
     "verifiedMarker": ".verified manifest hash + file sizes"
   },
   "apk": {
     "artifact": "Annota-1.2.1-candidate.apk",
-    "sha256": "a14c9874f6f03e6b8172c19fadd1cf926ed19c46aad56a5581037ac7e36421cb",
-    "bytes": 412171912,
+    "sha256": "e571c47b1312af97ddb3a1318e10ba89dedc8227739c164ca4274ad32432755f",
+    "bytes": 412286600,
     "zipEntries": 278,
     "versionCode": 23,
     "versionName": "1.2.1",
@@ -124,6 +124,53 @@
     "Abbreviation/initialism candidates only surface with context evidence; unknown acronyms with no context fall back to ordinary word lookup.",
     "Domain labels are coarse lexfiles: cell battery/spreadsheet/prison cannot be separated by domain alone.",
     "Reverse zh-en entries are machine-merged; not individually proofread.",
-    "Emulator results do not replace Xiaomi Pad 9 Pro Max handwriting, frame-rate, thermal or memory acceptance."
-  ]
+    "Emulator results do not replace Xiaomi Pad 9 Pro Max handwriting, frame-rate, thermal or memory acceptance.",
+    "The writing-experience evidence (IEA/ITL/SCR/NPDE/PRC) is synthetic stylus input on an API 36 ARM64 emulator; real-device forearm contacts, 240 Hz pen timing, haptics and long-session handwriting still need acceptance on the Xiaomi Pad 9 Pro Max.",
+    "ITL commits asynchronously: a process killed between ledger append and snapshot is recovered from the ledger, but a duplicate of the last snapshot-covered stroke is possible only in the tiny crash window between snapshot write and ledger trim.",
+    "SCR refuses gaps >64 ms, across pen lifts, and large turns; it never extrapolates past the last real sample.",
+    "PRC predictions are display-only and are never persisted or exported; low-confidence predictions are faded, and a fast flick is limited to one low-confidence frame.",
+    "IEA excludes edge gestures only while the pen/forearm is active; a deliberate edge swipe after the guard window still leaves. A synthetic forearm scenario stops accidental exits, but the threshold needs real-device calibration."
+  ],
+  "writing": {
+    "acceptance": "acceptance/chart-writing-speed.png, chart-writing-retention.png, chart-ink-flow.png, writing-before-after-zoom.png",
+    "iea": {
+      "syntheticForearmThenBack": "baseline exits to LibraryScreen; candidate keeps FrameLayout/reader",
+      "classifier": "4 unit tests (fingertip/forearm/stylus/edge band)"
+    },
+    "itl": {
+      "ledgerTests": "6/6",
+      "snapshotMedianMs": 0.005,
+      "uiSubmitMedianMs": 0.024,
+      "backgroundCommitMsPerCommit": 102.789,
+      "stateSerializations": "exactly one per commit",
+      "tenThousandPointEncodeDecodeMs": "48.8 / 31.0",
+      "bitExact": true,
+      "penUpDispatchBeforeMs": 11.409,
+      "penUpDispatchAfterMs": 7.136
+    },
+    "scr": {
+      "tests": "7/7",
+      "maxDeviation5LostPointsPt": 0.001,
+      "cursiveDeviationPt": 0.315,
+      "benchmark": "10k points / 100 gaps 190 ms"
+    },
+    "npde": {
+      "inkVersion": 6,
+      "seamContinuityPercent": 100.1,
+      "threePointLoopAreaPercent": 98.6,
+      "thousandPointOutlineMs": 4.51,
+      "v4OutlineMs": 3.17,
+      "screenPdfMeanChannelDiff": 0.107,
+      "v4V5BitIdentical": true
+    },
+    "prc": {
+      "tests": "8/8",
+      "oneFrameErrorStraightPx": 6.4e-06,
+      "oneFrameErrorArcPx": 0.571,
+      "reversalOvershoot": "none beyond 8 px cap",
+      "predictionCost": "mean 135 us, p50 54.6 us",
+      "savedOrExported": false
+    },
+    "emulatorOnly": true
+  }
 }

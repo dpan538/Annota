@@ -17,7 +17,8 @@
 - **上下文词义**：WordNet 词义新增 OEWN 领域标签（86,060 条），SenseRanker 增加保守领域先验；无上下文/弱证据顺序不变，16 条作者探针 9 改善 / 0 回归 / 7 中性（非准确率）。
 - **手写 P1**：笔迹按页 Picture 缓存、帧计划缓存、零分配绘制；软件画布稳态帧耗时降 2.0–2.9×，像素对拍 0 差异。
 - **手写 P3**：新增钢笔 v5 笔感（压感+速度/时间、起收笔 taper、慢写池墨、tilt 笔锋）；旧 v4 渲染位级不变，屏幕/PDF 共用几何。
-- **验收可视化**：40 轮字典延迟、体积、笔迹前后对比、宽度剖面与帧耗时图表见[1.2.1 验收可视化](android/verification/dictionary-1.2.1-candidate/acceptance/README.md)。
+- **书写体验（本轮新增）**：IEA 手臂/边缘防误退出（动态手势排除 + 首次返回抑制）；ITL append-only 笔迹账本 + 异步快照（UI submit 0.024 ms，抬笔 11.41→7.14 ms）；SCR 曲率受限连续性重建；NPDE 墨流动力学 v6（连笔接缝 100.1%、小环 98.6%）；PRC 预测-校正（仅显示层，1 帧误差 0.57 px，折返不过冲）。系统 CANCEL 不再丢已写笔迹。
+- **验收可视化**：40 轮字典延迟、体积、笔迹前后对比、宽度剖面、帧耗时与书写体验图表见[1.2.1 验收可视化](android/verification/dictionary-1.2.1-candidate/acceptance/README.md)。
 - 详细记录见[1.2.1 候选说明](docs/1.2.1-CANDIDATE-NOTES.md)、[翻译变体报告](design/translation/evaluation/variant-report.json)。
 
 ## 1.2.0 正式版 — 本地词典检索升级

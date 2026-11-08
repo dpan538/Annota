@@ -186,7 +186,16 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private var frameInvalidationPending = false
     private val inkVersions = HashMap<String, Long>()
     private val recordPageMarks: (Canvas, List<Mark>) -> Unit = { c, marks ->
-        marks.forEach { drawMark(c, it) }
+        drawPageMarks(c, marks)
+    }
+
+    /** v6 fountain strokes inherit ink-flow state from the previous stroke on the same page. */
+    private fun drawPageMarks(c: Canvas, marks: List<Mark>) {
+        var seam: InkDynamics.State? = null
+        marks.forEach { m ->
+            drawMark(c, m, seam)
+            seam = InkGeometry.endState(m, seam) ?: seam
+        }
     }
     private var previousErase: Point? = null
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
@@ -387,6 +396,11 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private val placements = mutableListOf<Placement>()
     private var active: Placement? = null
     private var stroke: Mark? = null
+    private val saveExecutor = java.util.concurrent.Executors.newSingleThreadExecutor()
+    private val predictor = InkPredictor()
+    private val predictionPath = Path()
+    private var activeInkStart: InkDynamics.State? = null
+    private var reconstructedSamples = 0
     private val holdHandler = android.os.Handler(android.os.Looper.getMainLooper())
     private var strokeHeld = false
     private var holdPending = false
@@ -494,6 +508,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         velocity?.recycle()
         velocity = null
         cancelStroke()
+        runCatching { store.flush() }
+        saveExecutor.shutdown()
         closed = true
         semanticWarmup.close()
         executor.shutdownNow()
@@ -1263,7 +1279,11 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                         paint,
                     )
                 }
-            if (active?.index == i) stroke?.let { drawMark(canvas, it) }
+            if (active?.index == i)
+                stroke?.let {
+                    drawMark(canvas, it, activeInkStart)
+                    drawPrediction(canvas, it)
+                }
             searchHits.forEachIndexed { hitIndex, hit ->
                 if (hit.pageId == p.id) {
                     paint.color =
@@ -1300,7 +1320,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private fun drawStaticInk(c: Canvas, p: Sheet, m: Matrix) {
         if (p.marks.isEmpty()) return
         if (!inkPicturesEnabled) {
-            p.marks.forEach { drawMark(c, it) }
+            drawPageMarks(c, p.marks)
             return
         }
         val zoomBucket = (m.mapRadius(1f) * 4f).roundToInt()
@@ -1308,7 +1328,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             inkPictures.draw(c, p.id, inkVersion(p), zoomBucket, p.w, p.h, p.marks, recordPageMarks)
         // On the frame that records the page, paint the marks directly: one raster pass instead of
         // recording the display list and immediately replaying it for the same frame.
-        if (recorded) p.marks.forEach { drawMark(c, it) }
+        if (recorded) drawPageMarks(c, p.marks)
     }
 
     private fun inkVersion(page: Sheet): Long = inkVersions[page.id] ?: 0L
@@ -1533,24 +1553,24 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         }
     }
 
-    private fun drawMark(c: Canvas, m: Mark) {
+    private fun drawMark(c: Canvas, m: Mark, startFrom: InkDynamics.State? = null) {
         if (m.rotation == 0f || m.points.isEmpty()) {
-            drawUnrotatedMark(c, m)
+            drawUnrotatedMark(c, m, startFrom)
             return
         }
         val center = AnnotationSelection.center(m)
         c.save()
         try {
             c.rotate(m.rotation, center.x, center.y)
-            drawUnrotatedMark(c, m)
+            drawUnrotatedMark(c, m, startFrom)
         } finally {
             c.restore()
         }
     }
 
-    private fun drawUnrotatedMark(c: Canvas, m: Mark) {
+    private fun drawUnrotatedMark(c: Canvas, m: Mark, startFrom: InkDynamics.State? = null) {
         if (m.points.isEmpty()) return
-        if (inkRenderer.draw(c, m)) return
+        if (inkRenderer.draw(c, m, startFrom)) return
         paint.color = m.color
         paint.alpha =
             when (m.tool) {
@@ -1779,23 +1799,170 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         bumpInk(page)
     }
 
-    private fun saveChange() {
-        try {
-            store.commit(book)
-        } catch (t: Throwable) {
-            val saved = store.book(book.id)
-            book.pages.clear()
-            book.pages.addAll(saved.pages)
-            book.cursor = saved.cursor
-            book.revision = saved.revision
-            bookChanged()
-            onError(
-                java.io.IOException(
-                    "${tr("本次笔迹未保存", "Stroke could not be saved")}: ${t.message}",
-                    t,
-                )
-            )
+    /**
+     * A system CANCEL (forearm takeover, system gesture, window focus loss) must not erase ink the
+     * writer already produced. Append the final/history packets, commit the real stroke and keep
+     * any erase result. App-initiated cancelStroke() still discards deliberately.
+     */
+    private fun finishInterruptedStroke(e: MotionEvent, stylus: Boolean): Boolean {
+        val place = active ?: return false
+        if (stroke == null && beforeErase == null) return false
+        val page = book.pages.getOrNull(place.index) ?: return false
+        val pageIndex = place.index
+        stroke?.let { mark ->
+            val last = mark.points.lastOrNull()
+            for (i in 0..e.historySize) {
+                val p =
+                    if (i == e.historySize)
+                        point(
+                            place,
+                            e.x,
+                            e.y,
+                            e.pressure,
+                            e.eventTime,
+                            if (stylus) e.getAxisValue(MotionEvent.AXIS_TILT) else 0f,
+                        )
+                    else
+                        point(
+                            place,
+                            e.getHistoricalX(i),
+                            e.getHistoricalY(i),
+                            e.getHistoricalPressure(i),
+                            e.getHistoricalEventTime(i),
+                            if (stylus) e.getHistoricalAxisValue(MotionEvent.AXIS_TILT, i) else 0f,
+                        )
+                if (last == null || hypot(p.x - last.x, p.y - last.y) > .01f) {
+                    mark.points.add(p)
+                }
+            }
+            page.marks.add(mark)
+            val sequence = runCatching { store.inkLedger.append(book.id, pageIndex, mark) }.getOrNull()
+            bumpInk(page)
+            stroke = null
+            clearStrokeHold()
+            saveChange(sequence)
+            onChanged()
+            return true
         }
+        beforeErase?.let { snapshot ->
+            // A cancelled erase is most likely a palm/forearm takeover: restore the page rather
+            // than committing a partial accidental erasure. The pen stroke above is kept.
+            val a = org.json.JSONArray(snapshot)
+            book.pages.clear()
+            repeat(a.length()) { book.pages.add(Sheet.from(a.getJSONObject(it))) }
+            beforeErase = null
+            previousErase = null
+            bookChanged()
+            return true
+        }
+        return false
+    }
+
+    private fun saveChange(ledgerThrough: Long? = null) {
+        store.commitAsync(book, saveExecutor) { failure ->
+            if (failure == null) {
+                ledgerThrough?.let { store.inkLedger.trimThrough(book.id, it) }
+            } else {
+                post {
+                    if (closed) return@post
+                    val saved = runCatching { store.book(book.id) }.getOrNull() ?: return@post
+                    book.pages.clear()
+                    book.pages.addAll(saved.pages)
+                    book.cursor = saved.cursor
+                    book.revision = saved.revision
+                    bookChanged()
+                    onError(
+                        java.io.IOException(
+                            "${tr("本次笔迹未保存", "Stroke could not be saved")}: " +
+                                "${failure.message}",
+                            failure,
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    private fun medianStep(points: List<Point>): Float {
+        if (points.size < 2) return 0f
+        val deltas = ArrayList<Float>(8)
+        var i = points.size - 1
+        while (i > 0 && deltas.size < 8) {
+            val d = (points[i].t - points[i - 1].t).toFloat()
+            if (d > 0f) deltas.add(d)
+            i--
+        }
+        if (deltas.size < 3) return 0f
+        deltas.sort()
+        return deltas[deltas.size / 2]
+    }
+
+    /**
+     * Appends one real packet. A short input gap is bridged with the curvature-constrained
+     * reconstruction (SCR), whose provenance is kept only in this counter: saved geometry remains
+     * derived from observed stroke samples.
+     */
+    private fun appendInkPoint(mark: Mark, p: Point) {
+        val points = mark.points
+        if (points.size >= 2) {
+            val step = medianStep(points)
+            val gap =
+                if (step > 0f)
+                    StrokeContinuity.gap(points.last().t, p.t, step, hasFollowing = true)
+                else null
+            if (gap != null && gap.bridgeable) {
+                val bridge =
+                    StrokeContinuity.reconstruct(
+                        listOf(points[points.size - 2], points.last(), p),
+                        gap,
+                    )
+                bridge.forEach {
+                    points.add(it.point)
+                    reconstructedSamples++
+                }
+            }
+        }
+        points.add(p)
+    }
+
+    /** One-frame prediction tail: display only, never saved, never exported. */
+    private fun drawPrediction(c: Canvas, m: Mark) {
+        if (m.points.size < 3) return
+        val frame = android.os.SystemClock.uptimeMillis()
+        val prediction = predictor.predictPoints(m.points, frame + 16L)
+        if (prediction.isEmpty) return
+        val predicted =
+            prediction.points.take(2).map {
+                Point(it.x, it.y, it.p, it.t, tilt = it.tilt)
+            }
+        if (predicted.isEmpty()) return
+        val tail = ArrayList<Point>(predicted.size + 1)
+        tail.add(m.points.last())
+        tail.addAll(predicted)
+        val mark = m.copy(points = tail)
+        val samples = InkGeometry.samples(mark)
+        if (samples.isEmpty()) return
+        predictionPath.rewind()
+        val sink =
+            object : InkGeometry.PathSink {
+                override fun move(x: Float, y: Float) = predictionPath.moveTo(x, y)
+                override fun line(x: Float, y: Float) = predictionPath.lineTo(x, y)
+                override fun cubic(
+                    x1: Float,
+                    y1: Float,
+                    x2: Float,
+                    y2: Float,
+                    x: Float,
+                    y: Float,
+                ) = predictionPath.cubicTo(x1, y1, x2, y2, x, y)
+                override fun close() = predictionPath.close()
+            }
+        InkGeometry.outline(samples, sink)
+        paint.style = Paint.Style.FILL
+        paint.color = m.color
+        paint.alpha = (150f * prediction.first!!.confidence).toInt().coerceIn(0, 150)
+        c.drawPath(predictionPath, paint)
+        paint.alpha = 255
     }
 
     internal fun cancelInput() = cancelStroke()
@@ -1843,9 +2010,9 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             requestUnbufferedDispatch(e)
         }
         if (index != null && e.pointerCount > 1) {
-            // A palm may be pointer zero or change index. Keep the pen ID and all history.
-            if (e.actionMasked == MotionEvent.ACTION_POINTER_UP && e.actionIndex != index)
-                return true
+            // A palm may be pointer zero or change index. A non-pen POINTER_UP used to drop the
+            // whole packet (including the pen's batched history); feed it back as a pen MOVE and
+            // only mark the palm-up when the pen itself leaves.
             if (e.actionMasked == MotionEvent.ACTION_POINTER_UP && e.actionIndex == index)
                 awaitingPalmUp = true
             val pen = penEvent(e, index)
@@ -1971,7 +2138,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             dragHandle = -1
             magnifier?.dismiss()
             magnifier = null
-            cancelStroke()
+            if (!finishInterruptedStroke(e, stylus)) cancelStroke()
             return true
         }
         if (!readOnly && tool == "select" && e.pointerCount == 1) {
@@ -2090,7 +2257,12 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                         beforeErase = book.state()
                         previousErase = null
                         erase(p)
-                    } else
+                    } else {
+                        var seam: InkDynamics.State? = null
+                        book.pages[active!!.index].marks.forEach { previous ->
+                            seam = InkGeometry.endState(previous, seam) ?: seam
+                        }
+                        activeInkStart = seam
                         stroke =
                             Mark(
                                 tool,
@@ -2106,6 +2278,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                         InkGeometry.VERSION
                                     else 0,
                             )
+                    }
                 }
                 if (browsing && (!stylus || readOnly))
                     postDelayed(longPress, ViewConfiguration.getLongPressTimeout().toLong())
@@ -2210,7 +2383,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                         setOf("rectangle", "ellipse", "triangle", "line", "arrow")
                                 ) {
                                     if (m.points.size == 1) m.points.add(p) else m.points[1] = p
-                                } else m.points.add(p)
+                                } else appendInkPoint(m, p)
                             }
                     }
                     updateStrokeHold(e.x, e.y)
@@ -2320,16 +2493,22 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                     ) {
                                         if (mark.points.size == 1) mark.points.add(p)
                                         else mark.points[1] = p
-                                    } else mark.points.add(p)
+                                    } else appendInkPoint(mark, p)
                                 }
                             }
                         }
                         val page = book.pages[active!!.index]
+                        val pageIndex = book.pages.indexOf(page)
                         page.marks.add(stroke!!)
+                        val ledgerSequence =
+                            runCatching {
+                                    store.inkLedger.append(book.id, pageIndex, stroke!!)
+                                }
+                                .getOrNull()
                         bumpInk(page)
                         stroke = null
                         clearStrokeHold()
-                        saveChange()
+                        saveChange(ledgerSequence)
                         onChanged()
                     } else if (beforeErase != null) {
                         if (active != null)
@@ -2360,7 +2539,19 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                             }
                         beforeErase = null
                         previousErase = null
-                        saveChange()
+                        val erasePage = active?.index
+                        val eraseSequence =
+                            if (erasePage != null)
+                                runCatching {
+                                        store.inkLedger.replacePage(
+                                            book.id,
+                                            erasePage,
+                                            book.pages[erasePage].marks.toList(),
+                                        )
+                                    }
+                                    .getOrNull()
+                            else null
+                        saveChange(eraseSequence)
                         onChanged()
                     } else if (
                         !draggingRuler &&
@@ -2375,8 +2566,16 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                 if (maxPointers == 2) "undo" else "redo",
                             )
                         when (action) {
-                            "undo" -> if (!readOnly && store.undo(book, false)) bookChanged()
-                            "redo" -> if (!readOnly && store.undo(book, true)) bookChanged()
+                            "undo" ->
+                                if (!readOnly && store.undo(book, false)) {
+                                    store.inkLedger.clear(book.id)
+                                    bookChanged()
+                                }
+                            "redo" ->
+                                if (!readOnly && store.undo(book, true)) {
+                                    store.inkLedger.clear(book.id)
+                                    bookChanged()
+                                }
                             "toolbar" -> onToolbarToggle()
                         }
                         if (!readOnly) onChanged()

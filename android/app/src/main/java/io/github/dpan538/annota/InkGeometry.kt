@@ -4,14 +4,31 @@ import kotlin.math.*
 
 /** Versioned, deterministic ink geometry shared by the canvas and PDF exporter. */
 object InkGeometry {
-    const val VERSION = 5
+    const val VERSION = 6
 
-    /** First version of the liquid-ink fountain pen model. Only fountain marks use it. */
-    const val FOUNTAIN_VERSION = 5
+    /**
+     * First version of the current dynamics-driven fountain model. v5 is still liquid ink, but it
+     * keeps its fixed envelope below so every already-captured mark stays bit-identical.
+     */
+    const val FOUNTAIN_VERSION = 6
+
+    /** First version that used liquid ink at all; v5 remains on the frozen envelope. */
+    private const val LIQUID_VERSION = 5
 
     private val tools = setOf("pen", "fountain", "pencil", "highlight")
 
     data class Sample(val x: Float, val y: Float, val p: Float, val width: Float, val t: Long)
+
+    /**
+     * One emitted v6 sample together with the dynamics factors and state that produced it. The
+     * renderer/PDF only need [Sample]; this exists for diagnostics and for the deterministic
+     * width/darkness profile test.
+     */
+    data class DynamicsSample(
+        val sample: Sample,
+        val factors: InkDynamics.Factors,
+        val state: InkDynamics.State,
+    )
 
     data class Grain(
         val x: Float,
@@ -24,10 +41,17 @@ object InkGeometry {
     fun supports(mark: Mark) = mark.inkVersion in 1..VERSION && mark.tool in tools
 
     /**
-     * v5 liquid-ink model. Deliberately keyed on tool *and* version: pen/pencil/highlighter, and
-     * every fountain stroke captured before v5, keep the geometry they were written with.
+     * Liquid-ink fountain path (v5's frozen envelope and v6's dynamics). Deliberately keyed on
+     * tool *and* version: pen/pencil/highlighter, and every fountain stroke captured before v5,
+     * keep the geometry they were written with.
+     *
+     * v6 keeps using the same shared outline pipeline; only the width source changes, so the PDF
+     * exporter and the canvas cannot drift apart.
      */
-    fun fountainPen(mark: Mark) = mark.tool == "fountain" && mark.inkVersion >= FOUNTAIN_VERSION
+    fun fountainPen(mark: Mark) = mark.tool == "fountain" && mark.inkVersion >= LIQUID_VERSION
+
+    /** True for the dynamics-driven fountain model (v6 and newer). */
+    fun dynamicInk(mark: Mark) = mark.tool == "fountain" && mark.inkVersion >= FOUNTAIN_VERSION
 
     fun opacity(mark: Mark): Float =
         when (mark.tool) {
@@ -39,17 +63,43 @@ object InkGeometry {
     /**
      * Causal processing: adding a sample never changes the geometry of earlier samples. There is no
      * lift-only spline pass or predicted point in the saved stroke.
+     *
+     * [startFrom] carries the previous stroke's [InkDynamics.State] into a joined-up stroke. Pass
+     * `null` for a fresh nib. ReaderView owns the decision of when two strokes are joined.
      */
-    fun samples(mark: Mark): List<Sample> {
-        val stream = Stream(mark)
+    fun samples(mark: Mark, startFrom: InkDynamics.State? = null): List<Sample> {
+        val stream = Stream(mark, startFrom)
         return mark.points.mapNotNull { stream.add(it) }
     }
 
+    /** Convenience for the ReaderView seam hand-off: the state after this mark's last packet. */
+    fun endState(mark: Mark, startFrom: InkDynamics.State? = null): InkDynamics.State? {
+        if (!dynamicInk(mark)) return null
+        val stream = Stream(mark, startFrom)
+        mark.points.forEach { stream.add(it) }
+        return stream.endState
+    }
+
+    /**
+     * Exact v6 diagnostics: the emitted samples plus the factors/state at each packet. This runs
+     * the same code as [samples], so it cannot drift from the rendered geometry.
+     */
+    fun dynamicsSamples(mark: Mark, startFrom: InkDynamics.State? = null): List<DynamicsSample> {
+        val stream = Stream(mark, startFrom)
+        mark.points.forEach { stream.add(it) }
+        return stream.dynamicsSamples
+    }
+
     /** Incremental counterpart of samples(); retained only for cached, append-only strokes. */
-    class Stream(private val mark: Mark) {
+    class Stream(private val mark: Mark, startFrom: InkDynamics.State? = null) {
         private val base = mark.width.takeIf { it.isFinite() }?.coerceIn(.1f, 200f) ?: 1f
-        // v5 liquid ink is fountain-only; every other tool and every older mark keeps its model.
+        // v5 frozen liquid ink and v6 dynamics ink are fountain-only; every other tool and every
+        // older mark keeps its original model.
         private val liquidInk = fountainPen(mark)
+        private val dynamics =
+            if (dynamicInk(mark))
+                startFrom?.let { InkDynamics.startFrom(it) } ?: InkDynamics.coldStart()
+            else null
         private var previousRaw: Point? = null
         private var earlierRaw: Point? = null
         private var fx = 0f
@@ -59,8 +109,19 @@ object InkGeometry {
         private var travelled = 0f
         private var lingering = 0f
         private var tilt = 0f
+        private var direction = 0f
         var last: Sample? = null
             private set
+
+        /** The v6 model state after every packet added so far (null for v5 and legacy ink). */
+        val endState: InkDynamics.State?
+            get() = dynamics?.state()
+
+        // v6 only: keeping this null for every other stroke avoids an allocation per mark.
+        private val _dynamicsSamples =
+            if (dynamics != null) ArrayList<DynamicsSample>() else null
+        val dynamicsSamples: List<DynamicsSample>
+            get() = _dynamicsSamples ?: emptyList()
 
         fun add(point: Point): Sample? {
             if (!point.x.isFinite() || !point.y.isFinite()) return null
@@ -90,6 +151,7 @@ object InkGeometry {
                 val dx = point.x - before.x
                 val dy = point.y - before.y
                 val distance = hypot(dx, dy)
+                if (dynamics != null && distance >= .001f) direction = atan2(dy, dx)
                 // Stationary pressure packets must not stamp a larger pencil dot at a pause.
                 if (
                     mark.inkVersion >= 2 && mark.tool == "pencil" && distance < .03f && last != null
@@ -135,29 +197,38 @@ object InkGeometry {
             earlierRaw = before
             previousRaw = point
             val pointTilt = if (point.tilt.isFinite()) point.tilt.coerceIn(0f, 1.4f) else 0f
-            if (liquidInk) {
-                // All envelopes are causal and time-smoothed, so no width can jump between
-                // packets and the same packet sequence always produces the same outline.
+            if (liquidInk && dynamics == null) {
+                // v5's frozen envelope. All terms are causal and time-smoothed, so no width can
+                // jump between packets and the same packet sequence always produces the same
+                // outline. v6 replaces this fixed envelope with InkDynamics below.
                 last?.let { travelled += hypot(fx - it.x, fy - it.y) }
                 val motion = speed / (speed + 420f)
                 lingering += ((1f - motion) - lingering) * (step / (step + .07f))
                 tilt += (sin(pointTilt) - tilt) * (step / (step + .03f))
             }
+            // v6: advance the continuous-time nib model on its fixed time grid. The returned
+            // width is already bounded; darkness/edge are available for future per-sample shading
+            // without changing the single-fill outline used by canvas and PDF.
+            val dynFactors = dynamics?.advance(pressure, speed, direction, pointTilt, step)
             val shading =
                 if (mark.tool == "pencil" && mark.inkVersion >= 3) 1f + 2.2f * sin(pointTilt).pow(3f)
                 else 1f
             val w =
-                if (liquidInk)
-                    fountainWidth(
-                        base,
-                        pressure,
-                        speed,
-                        travelled,
-                        lingering,
-                        tilt,
-                        pressureDrop(before, raw),
-                    )
-                else width(mark.tool, base, pressure, speed) * shading
+                when {
+                    dynFactors != null ->
+                        (base * dynFactors.width).coerceIn(base * .26f, base * 1.95f)
+                    liquidInk ->
+                        fountainWidth(
+                            base,
+                            pressure,
+                            speed,
+                            travelled,
+                            lingering,
+                            tilt,
+                            pressureDrop(before, raw),
+                        )
+                    else -> width(mark.tool, base, pressure, speed) * shading
+                }
             val previous = last
             if (
                 previous != null &&
@@ -165,7 +236,11 @@ object InkGeometry {
                     abs(w - previous.width) <= .015f
             )
                 return null
-            return Sample(fx, fy, pressure, w, point.t).also { last = it }
+            val sample = Sample(fx, fy, pressure, w, point.t)
+            if (dynFactors != null && _dynamicsSamples != null) {
+                _dynamicsSamples.add(DynamicsSample(sample, dynFactors, dynamics!!.state()))
+            }
+            return sample.also { last = it }
         }
     }
 

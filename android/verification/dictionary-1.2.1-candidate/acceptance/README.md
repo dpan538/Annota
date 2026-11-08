@@ -78,7 +78,51 @@
 
 ![翻译变体 chrF 与耗时](chart-translation.png)
 
-## 6. 缩写与上下文新能力（功能验证）
+
+## 6. 手写书写体验（IEA / ITL / SCR / NPDE / PRC，本轮新增）
+
+同一台模拟器、同一组合成 stylus 事件，对比 pre-change（848f9b8）与候选。
+**模拟器结果，不是 Xiaomi Pad 真机验收。**
+
+![书写延迟：UI 只做快照，序列化在后台](chart-writing-speed.png)
+
+| 指标 | pre-change | 候选 | 说明 |
+| --- | ---: | ---: | --- |
+| 抬笔 501 点 dispatch（UI） | 11.41 ms | **7.14 ms** | 含 ledger 同步 append；UI 不再整本序列化 |
+| ledger UI submit（2000 marks/20k 点） | — | **0.024 ms** | snapshot + cursor 预留 |
+| snapshot（2000 marks） | — | **0.005 ms** | 中位数 |
+| 后台 commit | — | 102.8 ms/次 | 不在 UI 线程 |
+| 每次提交整书序列化次数 | 2 | **1** | `stateSerializations` 增量 == 提交次数 |
+| 系统 CANCEL 保留已写笔迹 | **0 笔 / 0 点** | **1 笔 / 122 点** | 手臂/手势抢占不再丢笔 |
+| 抬笔后首帧仍读到旧快照 | 是（异步前） | 否 | `book()` 等待 pending snapshot |
+| 连笔注入保存点数 | 501/501 | 501/501 | 输入路径无丢点 |
+
+![保留率与防误退出](chart-writing-retention.png)
+
+- **IEA 手臂/边缘防误退出**：1 次合成“边缘大面积接触 + 立即返回”场景，pre-change 进入
+  `LibraryScreen`（reader=null），候选保持 `FrameLayout`（reader 存活）；分类器对 fingertip /
+  forearm / stylus / edge band 单测通过。
+- **ITL 笔迹账本**：每书 append-only 二进制日志（帧头 CRC、页 op、zigzag/定点/位级可回退坐标编码、
+  压力/倾角量化）；2000 marks/20k 点快照 median 0.005 ms；10k 点 encode 48.8 ms / decode 31.0 ms，
+  整笔 bit-exact；截断只丢最后一帧并自动修复；compaction 62 ops/10,417 B → 5 ops/6,952 B。
+- **SCR 连续性重建**：7 项测试；圆弧删 1/3/5 点最大偏差 0.000/0.000/0.001 pt；连笔删 5 点
+  0.315 pt；72 ms 以上/抬笔/121° 折角拒绝；10k 点/100 缺口 190 ms。
+- **NPDE 墨流动力学 v6**：VERSION=6；v4/v5 位级不变。宽度由压力/速度/墨腔/吸收/摩擦共同驱动；
+  连笔接缝 first/mid=4.950/4.948（100.1% 连续），3pt 小环面积保持 98.6%，1000 点轮廓 4.51 ms
+  （v4 3.17 ms），屏幕/PDF 平均通道差 0.107。
+- **PRC 预测-校正**：1 帧误差：匀速 6.4e-6 px、圆弧 0.571 px；快速折返不产生旧方向过冲；
+  10k 次预测 mean 135 µs / p50 54.6 µs；预测点只画不保存、不导出。
+
+![墨流动力学与 v6 内部状态](chart-ink-flow.png)
+
+![笔迹前后对比（放大）](writing-before-after-zoom.png)
+
+- 首行：同一条 501 点连笔；候选 v6 的笔宽/接缝更连续。
+- 第二行：120 点后系统 CANCEL；pre-change 整笔消失，候选保留完整笔迹。
+- 第三行：两笔相连的连笔圆环；候选在接缝处共享墨流状态，环内更平滑。
+- v4 旧笔迹在候选上像素级不变；v5 旧笔迹仍走 v5 包络；只有新抬笔的 fountain 使用 v6。
+
+## 7. 缩写与上下文新能力（功能验证）
 
 - 缩写/数字缩合：`AbbreviationLookupTest` 7/7 通过；`CAP` 在 theorem 语境给 CAP 定理、在
   farm/subsidy 语境给共同农业政策；`k8s`/`i18n`/`a11y`/`l10n` 可识别；`CAPs`、`CAP's` 支持；
@@ -86,12 +130,12 @@
 - 领域上下文：`SenseDomainRankingTest` 7/7 通过；16 条开发探针 9 改善 / 0 回归 / 7 中性
   （作者探针，非准确率）；无上下文与弱证据顺序不变。
 
-## 7. 构建与回归
+## 8. 构建与回归
 
-- 候选 APK：`Annota-1.2.1-candidate.apk`，**412,171,912 B（约 393.1 MiB）**，SHA-256
-  `a14c9874f6f03e6b8172c19fadd1cf926ed19c46aad56a5581037ac7e36421cb`，证书沿用
-  `90e5c38e…be18`；资源/签名/安装/冷启动验证通过（`apk-candidate.json`，冷启动 1,208 ms）。
-- 仪器化回归：**223 / 223 通过**（断网模拟器，覆盖词典、缩写、领域、笔迹 P1/P3、P2 存量回归）。
+- 候选 APK：`Annota-1.2.1-candidate.apk`，**412,286,600 B（约 393.2 MiB）**，SHA-256
+  `e571c47b1312af97ddb3a1318e10ba89dedc8227739c164ca4274ad32432755f`，证书沿用
+  `90e5c38e…be18`；资源/签名/安装/冷启动验证通过（`apk-candidate.json`，冷启动 1,040 ms）。
+- 仪器化回归：**271 / 271 通过**（断网模拟器，覆盖词典、缩写、领域、笔迹 P1/P3、P2 存量回归）。
   `DocumentNavigationTest` 的 2 个长按选词 popup 用例未纳入 gate：它们在 **1.2.0 基线 APK 上
   同样失败**（同一设备/环境），与本轮改动无关，记录保留。
 - Python：`test_lookup.py` 18 项、`test_lexicons.py` 20 项通过。`build.py` 两次运行 SQLite

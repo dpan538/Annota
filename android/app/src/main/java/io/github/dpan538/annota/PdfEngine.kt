@@ -307,6 +307,7 @@ class PdfEngine(val context: Context, val store: Store) {
                                 cs.restoreGraphicsState()
                                 bg.recycle()
                             }
+                            var pdfInkState: InkDynamics.State? = null
                             p.marks.forEach { m ->
                                 if (m.points.isEmpty()) return@forEach
                                 cs.saveGraphicsState()
@@ -350,8 +351,12 @@ class PdfEngine(val context: Context, val store: Store) {
                                 val a = m.points.first()
                                 val b = m.points.last()
                                 if (InkGeometry.supports(m)) {
-                                    exportInk(out, cs, m)
+                                    exportInk(out, cs, m, pdfInkState)
                                     cs.restoreGraphicsState()
+                                    // The end state must be advanced from the same seed used to
+                                    // draw this stroke, otherwise the third joined stroke would
+                                    // silently fall back to a cold nib.
+                                    pdfInkState = InkGeometry.endState(m, pdfInkState) ?: pdfInkState
                                     return@forEach
                                 }
                                 when (m.tool) {
@@ -462,15 +467,22 @@ class PdfEngine(val context: Context, val store: Store) {
         }
     }
 
-    private fun exportInk(document: PDDocument, cs: PDPageContentStream, mark: Mark) {
+    private fun exportInk(
+        document: PDDocument,
+        cs: PDPageContentStream,
+        mark: Mark,
+        startFrom: InkDynamics.State? = null,
+    ) {
         if (mark.tool == "pencil" && mark.inkVersion >= 3) {
             exportGraphite(document, cs, mark)
             return
         }
-        // v5 liquid ink is exported as one vector contour built from the *same* Sample stream the
-        // canvas consumes, so the PDF has the same taper/pressure geometry rather than a bitmap or
-        // a stroked approximation. Older ink versions keep the generic vector path below.
-        val samples = InkGeometry.samples(mark)
+        // v5/v6 liquid ink is exported as one vector contour built from the *same* Sample stream
+        // the canvas consumes, so the PDF has the same taper/pressure/dynamics geometry rather
+        // than a bitmap or a stroked approximation. v6 is not special-cased: InkGeometry.samples
+        // already used the dynamics model when the mark's inkVersion is 6. Older ink versions keep
+        // the generic vector path below.
+        val samples = InkGeometry.samples(mark, startFrom)
         val sink = inkSink(cs)
         cs.setGraphicsStateParameters(
             PDExtendedGraphicsState().apply {
@@ -478,7 +490,7 @@ class PdfEngine(val context: Context, val store: Store) {
                 nonStrokingAlphaConstant = InkGeometry.opacity(mark)
             }
         )
-        if (InkGeometry.fountainPen(mark)) exportFountainV5(cs, samples, sink)
+        if (InkGeometry.fountainPen(mark)) exportLiquidInk(cs, samples, sink)
         else {
             InkGeometry.outline(samples, sink)
             cs.fill()
@@ -499,10 +511,10 @@ class PdfEngine(val context: Context, val store: Store) {
     /**
      * One nonzero-winding fill, exactly like [InkRenderer]: both ends of every segment and every
      * joint circle are appended from the shared sample widths, so canvas and PDF antialias the
-     * same outline. Kept as a separate hook so the v5 model can gain extra contours later without
-     * touching legacy export.
+     * same outline. Both v5's frozen envelope and v6's dynamics model arrive here through the
+     * shared sample stream; a future model only has to keep producing [InkGeometry.Sample]s.
      */
-    private fun exportFountainV5(
+    private fun exportLiquidInk(
         cs: PDPageContentStream,
         samples: List<InkGeometry.Sample>,
         sink: InkGeometry.PathSink,

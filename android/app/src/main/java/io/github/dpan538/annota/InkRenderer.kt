@@ -9,10 +9,11 @@ import kotlin.math.ceil
 
 /** Canvas adapter; PDF uses the same paths through InkGeometry.PathSink. */
 class InkRenderer {
-    private class Key(val mark: Mark) {
-        override fun equals(other: Any?) = other is Key && other.mark === mark
+    private class Key(val mark: Mark, val seam: Int) {
+        override fun equals(other: Any?) =
+            other is Key && other.mark === mark && other.seam == seam
 
-        override fun hashCode() = System.identityHashCode(mark)
+        override fun hashCode() = 31 * System.identityHashCode(mark) + seam
     }
 
     /** Reusable PathSink bridge so drawing a cached mark never allocates an anonymous object. */
@@ -27,8 +28,8 @@ class InkRenderer {
         override fun close() = path.close()
     }
 
-    private class Cached(mark: Mark) {
-        val stream = InkGeometry.Stream(mark)
+    private class Cached(mark: Mark, startFrom: InkDynamics.State?) {
+        val stream = InkGeometry.Stream(mark, startFrom)
         val graphite =
             if (mark.tool == "pencil" && mark.inkVersion >= 3) Graphite(mark.inkVersion) else null
         val grainStream =
@@ -64,9 +65,14 @@ class InkRenderer {
         cacheWeight = 0
     }
 
-    fun draw(canvas: Canvas, mark: Mark): Boolean {
+    fun draw(
+        canvas: Canvas,
+        mark: Mark,
+        startFrom: InkDynamics.State? = null,
+    ): Boolean {
         if (!InkGeometry.supports(mark)) return false
-        val key = Key(mark)
+        val seam = startFrom?.hashCode() ?: 0
+        val key = Key(mark, seam)
         var cached = cache[key]
         if (
             cached == null ||
@@ -76,7 +82,7 @@ class InkRenderer {
                         cached.last != mark.points.getOrNull(cached.count - 1)))
         ) {
             cached?.let { cacheWeight -= it.weight }
-            cached = Cached(mark)
+            cached = Cached(mark, startFrom)
             cache[key] = cached
             cacheWeight += cached.weight
         }

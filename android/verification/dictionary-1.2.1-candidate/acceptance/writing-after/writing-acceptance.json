@@ -1,0 +1,16 @@
+{
+  "seam": {
+    "savedStrokes": 2
+  },
+  "cancel": {
+    "injectedMoves": 120,
+    "keptStrokes": 1,
+    "keptPoints": 122
+  },
+  "cursive": {
+    "injectedPoints": 501,
+    "savedStrokes": 1,
+    "savedPoints": 501,
+    "penUpDispatchMs": 7.135584
+  }
+}

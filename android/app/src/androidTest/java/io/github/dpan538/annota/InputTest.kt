@@ -159,14 +159,15 @@ class InputTest {
     }
 
     @Test
-    fun cancellationDoesNotCommit() {
+    fun cancellationKeepsAlreadyWrittenInkButInAppCancelDiscards() {
         event(MotionEvent.ACTION_DOWN)
         event(MotionEvent.ACTION_MOVE, x = 500f)
         event(MotionEvent.ACTION_CANCEL)
-        assertTrue(store.book(book.id).pages[0].marks.isEmpty())
+        val first = store.book(book.id).pages[0].marks
+        assertEquals("a system CANCEL must keep the written stroke", 1, first.size)
         event(MotionEvent.ACTION_DOWN)
         event(MotionEvent.ACTION_UP, flags = MotionEvent.FLAG_CANCELED)
-        assertTrue(store.book(book.id).pages[0].marks.isEmpty())
+        assertEquals(2, store.book(book.id).pages[0].marks.size)
     }
 
     @Test

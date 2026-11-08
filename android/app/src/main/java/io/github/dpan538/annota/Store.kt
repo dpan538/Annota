@@ -9,6 +9,10 @@ import android.util.AtomicFile
 import java.io.*
 import java.security.MessageDigest
 import java.util.UUID
+import java.util.concurrent.Callable
+import java.util.concurrent.Executor
+import java.util.concurrent.Future
+import java.util.concurrent.FutureTask
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 import java.util.zip.ZipEntry
@@ -169,11 +173,43 @@ data class Book(
     var pdfInfo: PdfInfo = PdfInfo(),
 ) {
     fun state() = JSONArray().also { a -> pages.forEach { a.put(it.json()) } }.toString()
+
+    /**
+     * UI-side shallow snapshot for an asynchronous commit.
+     *
+     * The pages list and every sheet's marks list are copied, but completed [Mark] objects are
+     * shared: a finished stroke is never mutated again, and the in-progress stroke is not in
+     * [Sheet.marks]. The caller can therefore keep drawing while a background thread serializes
+     * this snapshot.
+     */
+    fun snapshot(): Book {
+        val copied = ArrayList<Sheet>(pages.size)
+        for (sheet in pages) copied.add(sheet.copy(marks = ArrayList(sheet.marks)))
+        return copy(pages = copied)
+    }
 }
 
 class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", null, 2) {
     val assetsDir = File(context.filesDir, "documents").apply { mkdirs() }
     private val statesDir = File(context.filesDir, "states").apply { mkdirs() }
+
+    /**
+     * Crash tail for completed strokes that are not yet covered by a whole-book snapshot. It is
+     * intentionally independent of the JSON state files: the next [commitAsync] makes the tail
+     * durable as a snapshot, after which a caller may [InkLedger.trimThrough] it.
+     */
+    val inkLedger = InkLedger(File(context.filesDir, "ink-ledger"))
+
+    /**
+     * Number of full-book `Book.state()` serializations made for persistence. A commit must add
+     * exactly one; the counter is exposed internally so acceptance tests can prove that
+     * bookkeeping columns do not trigger a second serialization.
+     */
+    internal var stateSerializations: Long = 0L
+        private set
+
+    private var pendingCommits = 0
+    private var commitChain: Future<*>? = null
 
     private fun writeState(json: String): String {
         val hash =
@@ -221,7 +257,13 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
         if (old < 2) db.execSQL("ALTER TABLE books ADD COLUMN pdfInfo TEXT NOT NULL DEFAULT '{}'")
     }
 
-    private fun values(b: Book) =
+    /** Serializes the whole book once and counts it; callers must reuse the returned reference. */
+    private fun persistableState(b: Book): String {
+        stateSerializations++
+        return writeState(b.state())
+    }
+
+    private fun values(b: Book, state: String) =
         ContentValues().apply {
             put("id", b.id)
             put("title", b.title)
@@ -233,7 +275,7 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
             put("current", b.current)
             put("revision", b.revision)
             put("cursor", b.cursor)
-            put("state", writeState(b.state()))
+            put("state", state)
             put("pdfInfo", b.pdfInfo.json().toString())
         }
 
@@ -317,7 +359,17 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
         }
 
     @Synchronized
-    fun book(id: String): Book =
+    /**
+     * Read a book with every acknowledged snapshot visible. Commits are asynchronous now, so a
+     * read immediately after pen-up must wait for the queued snapshot; the old full-serialization
+     * path made this implicit by blocking the UI thread.
+     */
+    fun book(id: String): Book {
+        awaitPending()
+        return readBook(id)
+    }
+
+    private fun readBook(id: String): Book =
         readableDatabase.rawQuery("SELECT * FROM books WHERE id=?", arrayOf(id)).use {
             check(it.moveToFirst())
             decode(it)
@@ -362,23 +414,29 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
 
     @Synchronized
     fun insert(b: Book) {
+        val state = persistableState(b)
         transaction {
-            insertOrThrow("books", null, values(b))
+            insertOrThrow("books", null, values(b, state))
             insertOrThrow(
                 "history",
                 null,
                 ContentValues().apply {
                     put("book", b.id)
                     put("version", 0)
-                    put("state", writeState(b.state()))
+                    put("state", state)
                 },
             )
         }
     }
 
+    /**
+     * Update book metadata. Pass the already-written history reference from undo so undoing does
+     * not serialize the whole book a second time.
+     */
     @Synchronized
-    fun metadata(b: Book) {
-        writableDatabase.update("books", values(b), "id=?", arrayOf(b.id))
+    fun metadata(b: Book, stateReference: String? = null) {
+        val state = stateReference ?: persistableState(b)
+        writableDatabase.update("books", values(b, state), "id=?", arrayOf(b.id))
     }
 
     /** Reading progress must not serialize all ink on every crossed page. */
@@ -392,12 +450,131 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
         )
     }
 
+    /**
+     * Synchronous compatibility commit. It shares the exact persistence path of [commitAsync] and
+     * serializes the book only once.
+     *
+     * The snapshot is the transaction boundary: every ledger frame present when the watermark was
+     * taken must already be reflected in [b] (normally via [recoverInk]). Those frames are trimmed
+     * after the SQLite transaction succeeds; frames appended later survive for the next recovery.
+     */
     @Synchronized
     fun commit(b: Book) {
-        val state = writeState(b.state())
-        val next = b.cursor + 1
+        val ledgerThrough = ledgerWatermark(b)
+        val previousCursor = b.cursor
+        val previousRevision = b.revision
+        val next = previousCursor + 1
+        val state = persistableState(b)
+        b.cursor = next
+        b.revision = next
+        try {
+            persistCommit(b, state, next, previousCursor)
+        } catch (t: Throwable) {
+            b.cursor = previousCursor
+            b.revision = previousRevision
+            throw t
+        }
+        trimLedger(b.id, ledgerThrough)
+        if (next % 20 == 0L) runCatching { cleanupStates() }
+    }
+
+    /**
+     * UI side does only [Book.snapshot] plus cursor/revision reservation. The supplied executor
+     * serializes the snapshot once, writes one content-addressed state file, and commits the
+     * history/books rows in a SQLite transaction.
+     *
+     * Commits are chained in submission order even on a multi-threaded executor. [onDone] runs on
+     * the executor thread after persistence and before [flush] can return, so a caller cannot close
+     * SQLite underneath a live callback. Do not call [flush] from inside [onDone].
+     *
+     * The ledger watermark is captured before [Book.snapshot]. Therefore a frame appended while
+     * the background commit is running is not trimmed and remains recoverable by the next
+     * [recoverInk] call.
+     */
+    fun commitAsync(b: Book, executor: Executor, onDone: (Throwable?) -> Unit = {}) {
+        val rejected =
+            synchronized(this) {
+                // Capture the tail boundary before the snapshot: frames appended while the
+                // background commit runs are newer than the snapshot and must survive the trim.
+                val ledgerThrough = ledgerWatermark(b)
+                val snapshot = b.snapshot()
+                val previousCursor = b.cursor
+                val previousRevision = b.revision
+                val next = previousCursor + 1
+                b.cursor = next
+                b.revision = next
+                snapshot.cursor = next
+                snapshot.revision = next
+                val previous = commitChain
+                val task =
+                    FutureTask<Unit>(
+                        Callable<Unit> {
+                            runCatching { previous?.get() }
+                            var failure: Throwable? = null
+                            try {
+                                persistSnapshot(snapshot, next, previousCursor, ledgerThrough)
+                            } catch (t: Throwable) {
+                                failure = t
+                            }
+                            try {
+                                onDone(failure)
+                            } catch (_: Throwable) {
+                                // A broken callback must not poison the commit chain.
+                            }
+                            synchronized(this@Store) {
+                                pendingCommits--
+                                (this@Store as Object).notifyAll()
+                            }
+                            Unit
+                        }
+                    )
+                commitChain = task
+                pendingCommits++
+                try {
+                    executor.execute(task)
+                    null
+                } catch (t: Throwable) {
+                    commitChain = previous
+                    pendingCommits--
+                    (this as Object).notifyAll()
+                    b.cursor = previousCursor
+                    b.revision = previousRevision
+                    t
+                }
+            }
+        if (rejected != null) runCatching { onDone(rejected) }
+    }
+
+    @Synchronized
+    private fun persistSnapshot(
+        snapshot: Book,
+        next: Long,
+        previousCursor: Long,
+        ledgerThrough: Long,
+    ) {
+        val state = persistableState(snapshot)
+        persistCommit(snapshot, state, next, previousCursor)
+        trimLedger(snapshot.id, ledgerThrough)
+        if (next % 20 == 0L) runCatching { cleanupStates() }
+    }
+
+    /** O(1) ledger lookup: the UI thread must not scan the log while reserving a commit. */
+    private fun ledgerWatermark(b: Book): Long =
+        runCatching { inkLedger.cachedPosition(b.id) - 1 }.getOrDefault(-1L)
+
+    /**
+     * The snapshot now owns every ledger frame through [through]. Frames written after the
+     * snapshot boundary were captured by [ledgerWatermark] and remain for the next recovery.
+     * Trimming is best effort: a snapshot is already durable even if the local rewrite fails.
+     */
+    private fun trimLedger(bookId: String, through: Long) {
+        if (through >= 0) runCatching { inkLedger.trimThrough(bookId, through) }
+    }
+
+    @Synchronized
+    private fun persistCommit(b: Book, state: String, next: Long, previousCursor: Long) {
         transaction {
-            delete("history", "book=? AND version>?", arrayOf(b.id, b.cursor.toString()))
+            delete("history", "book=? AND version>?", arrayOf(b.id, previousCursor.toString()))
             insertOrThrow(
                 "history",
                 null,
@@ -407,17 +584,44 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
                     put("state", state)
                 },
             )
-            b.cursor = next
-            b.revision = next
-            update("books", values(b), "id=?", arrayOf(b.id))
+            update("books", values(b, state), "id=?", arrayOf(b.id))
             // Keep a bounded durable undo history. The latest state remains in books.
             delete("history", "book=? AND version<?", arrayOf(b.id, (next - 50).toString()))
         }
-        if (next % 20 == 0L) cleanupStates()
+    }
+
+    /** Wait for every commit submitted before this call; `timeoutMs == 0` waits indefinitely. */
+    @Synchronized
+    fun awaitPending(timeoutMs: Long = 0L): Boolean {
+        require(timeoutMs >= 0) { "timeout must not be negative" }
+        if (pendingCommits == 0) return true
+        if (timeoutMs == 0L) {
+            while (pendingCommits > 0) (this as Object).wait()
+            return true
+        }
+        val deadline = System.nanoTime() + timeoutMs * 1_000_000
+        while (pendingCommits > 0) {
+            val remaining = deadline - System.nanoTime()
+            if (remaining <= 0) return false
+            (this as Object).wait(remaining / 1_000_000, (remaining % 1_000_000).toInt())
+        }
+        return true
+    }
+
+    /** Required before undo/redo, export/backup, and close. */
+    fun flush() {
+        awaitPending()
+    }
+
+    /** Closing the database must not race a background snapshot. */
+    override fun close() {
+        flush()
+        super.close()
     }
 
     @Synchronized
     fun undo(b: Book, redo: Boolean): Boolean {
+        awaitPending() // never read history while an earlier snapshot is still in flight
         val target = b.cursor + if (redo) 1 else -1
         val state =
             readableDatabase
@@ -431,8 +635,39 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
         repeat(a.length()) { b.pages.add(Sheet.from(a.getJSONObject(it))) }
         b.cursor = target
         b.current = b.current.coerceIn(0, b.pages.lastIndex)
-        metadata(b)
+        metadata(b, state)
+        // Undo intentionally discards the uncommitted tail; otherwise book() would replay it.
+        runCatching { inkLedger.clear(b.id) }
         return true
+    }
+
+    /**
+     * Merge the ledger tail onto [b]. Only pages touched by the log are replaced; pages already
+     * present in the last snapshot keep their objects and marks.
+     *
+     * Call this once per freshly loaded [b], then [commit] or [commitAsync]. A successful commit
+     * trims exactly the applied frames, so the same tail cannot be replayed onto the saved book.
+     * Do not call it twice on the same in-memory book without reloading or committing in between.
+     */
+    @Synchronized
+    fun recoverInk(b: Book): Boolean {
+        val base = HashMap<Int, List<Mark>>(b.pages.size)
+        b.pages.forEachIndexed { index, sheet -> base[index] = sheet.marks.toList() }
+        val merged = inkLedger.replayInto(b.id, base) ?: return false
+        if (merged.isEmpty()) return false
+        var changed = false
+        merged.forEach { (index, marks) ->
+            val sheet = b.pages.getOrNull(index) ?: return@forEach
+            val same =
+                sheet.marks.size == marks.size &&
+                    sheet.marks.indices.all { sheet.marks[it] === marks[it] }
+            if (!same) {
+                sheet.marks.clear()
+                sheet.marks.addAll(marks)
+                changed = true
+            }
+        }
+        return changed
     }
 
     /** Resolve duplicate external shares without retaining the sender's URI. */
@@ -667,14 +902,15 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
                 },
             )
             pending.forEach { (marker, book) ->
-                insertOrThrow("books", null, values(book))
+                val state = persistableState(book)
+                insertOrThrow("books", null, values(book, state))
                 insertOrThrow(
                     "history",
                     null,
                     ContentValues().apply {
                         put("book", book.id)
                         put("version", 0)
-                        put("state", writeState(book.state()))
+                        put("state", state)
                     },
                 )
                 insertOrThrow(
@@ -691,7 +927,10 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
 
     @Synchronized
     fun backup(out: OutputStream, cancelled: () -> Boolean) {
+        awaitPending() // export must include every acknowledged stroke
         val bs = books()
+        // A crash can leave strokes in the ledger that are newer than the newest snapshot.
+        bs.forEach { runCatching { recoverInk(it) } }
         val manifest =
             JSONObject()
                 .put("format", "annota-backup-v1")
@@ -863,14 +1102,15 @@ class Store(val context: Context) : SQLiteOpenHelper(context, "library.sqlite", 
                             .map { pages[it].id }
                             .toSet(),
                     )
-                    insertOrThrow("books", null, values(b))
+                    val state = persistableState(b)
+                    insertOrThrow("books", null, values(b, state))
                     insertOrThrow(
                         "history",
                         null,
                         ContentValues().apply {
                             put("book", b.id)
                             put("version", 0)
-                            put("state", writeState(b.state()))
+                            put("state", state)
                         },
                     )
                 }
