@@ -1,5 +1,20 @@
 # Changelog
 
+## 未发布（1.2.1 候选）— 词典瘦身、扩词与整句翻译后处理
+
+> 本段是开发候选说明，**未发布**，不属于默认更新通道。
+
+- en-zh 索引瘦身：边界等价改由 `entries.boundary_key` + 索引提供，`aliases` 从 771,862 行
+  降到 682 行作者别名；en-zh SQLite 240.9→184.6 MB，`.pack` 95.45→70.1 MiB。
+- 四个数据库统一 gzip `.pack` 随包，词库资产 474→386 MB；安装改为并行解压，并用 `.verified`
+  清单标记避免每次冷启动重算约 310 MB 哈希。
+- 汉英扩词：从 WordNet/Wiktionary 已有中文义项反向生成 108,863 条汉英条目，`zh-en` 129,801→238,664；
+  每词最多 4 个英文等价词，来源逐行标注。
+- 英→中整句：40 条自写开发集上对比 greedy/beam/repetition/no-repeat/EOS guard，未发现稳定收益
+  （beam4 耗时 3.6×、区间含 0），因此保持 greedy；新增零推理开销的后处理（中文标点/空格/句末）
+  与 4 项守门测试（重复、完整性、数字/否定、失败不返回部分译文）。不宣称准确率提升。
+- 详细记录见[1.2.1 候选说明](docs/1.2.1-CANDIDATE-NOTES.md)、[翻译变体报告](design/translation/evaluation/variant-report.json)。
+
 ## 1.2.0 正式版 — 本地词典检索升级
 
 - 修正 Wiktionary 的“Translations”等章节标题被当作词义的问题（移除 1,786 条伪义项）；`cut`、`bra` 等词恢复真实首义，义项顺序改为构建期固定的 `sense_order`。

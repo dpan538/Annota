@@ -1,0 +1,247 @@
+{
+  "description": "Fixed development set for the 1.2.1 offline English→Simplified Chinese sentence-translation work. Each item is a short English sentence authored for this repository together with a human-written Simplified Chinese reference used only to compare decoding variants. This is a DEVELOPMENT set, not an accuracy benchmark and not a held-out test set: the sentences were written while developing the decoding changes and must never be quoted as generalization accuracy. No third-party text and no private user text is included. Nothing from this file may be hard-coded into the application as an output override; the frozen OPUS-MT int8 model remains the only translation engine.",
+  "languagePair": "en->zh-Hans",
+  "referenceNote": "The Chinese 'reference' field is one acceptable human translation, not a unique gold answer. chrF against it measures closeness to that one wording, not correctness in general.",
+  "cases": [
+    {
+      "id": "daily-01",
+      "domain": "daily",
+      "source": "The train has been delayed by twenty minutes.",
+      "reference": "火车已经晚点了二十分钟。"
+    },
+    {
+      "id": "daily-02",
+      "domain": "daily",
+      "source": "You can return the item within thirty days if you keep the receipt.",
+      "reference": "如果保留收据，你可以在三十天内退货。"
+    },
+    {
+      "id": "daily-03",
+      "domain": "daily",
+      "source": "The room is available from Monday, but breakfast is not included.",
+      "reference": "房间从周一开始可用，但不包含早餐。"
+    },
+    {
+      "id": "daily-04",
+      "domain": "daily",
+      "source": "Please turn down the volume before answering the call.",
+      "reference": "接电话前请调低音量。"
+    },
+    {
+      "id": "daily-05",
+      "domain": "daily",
+      "source": "The pharmacy closes at nine, and the delivery arrives before noon.",
+      "reference": "药店九点关门，快递在中午之前送到。"
+    },
+    {
+      "id": "daily-06",
+      "domain": "daily",
+      "source": "Please show your ticket at the entrance.",
+      "reference": "请在入口处出示车票。"
+    },
+    {
+      "id": "computing-01",
+      "domain": "computing",
+      "source": "The database uses an index to avoid scanning every row.",
+      "reference": "数据库使用索引来避免逐行扫描。"
+    },
+    {
+      "id": "computing-02",
+      "domain": "computing",
+      "source": "A cache miss increases the latency of this request.",
+      "reference": "缓存未命中会增加这个请求的延迟。"
+    },
+    {
+      "id": "computing-03",
+      "domain": "computing",
+      "source": "The process was terminated because it exceeded its memory limit.",
+      "reference": "该进程因为超出内存限制而被终止。"
+    },
+    {
+      "id": "computing-04",
+      "domain": "computing",
+      "source": "Enable two-factor authentication before you connect to the internal network.",
+      "reference": "连接内部网络之前请启用双重身份验证。"
+    },
+    {
+      "id": "computing-05",
+      "domain": "computing",
+      "source": "The build failed because a dependency was not available offline.",
+      "reference": "构建失败了，因为有一个依赖在离线状态下不可用。"
+    },
+    {
+      "id": "computing-06",
+      "domain": "computing",
+      "source": "The server retries the request, and the client waits until the server responds.",
+      "reference": "服务器会重试该请求，客户端则等待服务器响应。"
+    },
+    {
+      "id": "academic-01",
+      "domain": "academic",
+      "source": "The experiment did not support the original hypothesis.",
+      "reference": "该实验未能支持最初的假设。"
+    },
+    {
+      "id": "academic-02",
+      "domain": "academic",
+      "source": "Correlation does not imply causation.",
+      "reference": "相关性并不意味着因果关系。"
+    },
+    {
+      "id": "academic-03",
+      "domain": "academic",
+      "source": "The samples were randomly assigned to the treatment and control groups.",
+      "reference": "样本被随机分配到治疗组和对照组。"
+    },
+    {
+      "id": "academic-04",
+      "domain": "academic",
+      "source": "The confidence interval includes zero, so the effect may not be statistically significant.",
+      "reference": "置信区间包含零，因此该效应可能不具有统计显著性。"
+    },
+    {
+      "id": "academic-05",
+      "domain": "academic",
+      "source": "Further research is needed before these findings can be generalized.",
+      "reference": "在推广这些发现之前，还需要进一步研究。"
+    },
+    {
+      "id": "legal-01",
+      "domain": "legal",
+      "source": "The agreement remains valid unless either party gives written notice.",
+      "reference": "除非任何一方发出书面通知，否则协议仍然有效。"
+    },
+    {
+      "id": "legal-02",
+      "domain": "legal",
+      "source": "The court dismissed the claim without prejudice.",
+      "reference": "法院驳回了该诉求，但不影响当事人再次起诉。"
+    },
+    {
+      "id": "legal-03",
+      "domain": "legal",
+      "source": "Either party may terminate this contract with thirty days' written notice.",
+      "reference": "任何一方均可提前三十天发出书面通知终止本合同。"
+    },
+    {
+      "id": "legal-04",
+      "domain": "legal",
+      "source": "The tenant must not sublet the premises without the landlord's consent.",
+      "reference": "未经房东同意，租户不得转租该房屋。"
+    },
+    {
+      "id": "negation-01",
+      "domain": "negation",
+      "source": "The update will not be installed if the battery is below twenty percent.",
+      "reference": "如果电量低于百分之二十，就不会安装更新。"
+    },
+    {
+      "id": "negation-02",
+      "domain": "negation",
+      "source": "Do not unplug the device while the backup is running.",
+      "reference": "备份运行期间请勿拔掉设备电源。"
+    },
+    {
+      "id": "negation-03",
+      "domain": "negation",
+      "source": "The hotel does not allow pets, and smoking is not permitted in any room.",
+      "reference": "该酒店不允许携带宠物，任何房间内也禁止吸烟。"
+    },
+    {
+      "id": "negation-04",
+      "domain": "negation",
+      "source": "The medicine should not be taken with alcohol.",
+      "reference": "该药物不应与酒精一起服用。"
+    },
+    {
+      "id": "negation-05",
+      "domain": "negation",
+      "source": "Neither the manager nor the staff knew about the change.",
+      "reference": "经理和员工都不知道这项变更。"
+    },
+    {
+      "id": "numbers-01",
+      "domain": "numbers",
+      "source": "The package weighs 2.4 kilograms and costs 15 dollars.",
+      "reference": "包裹重2.4公斤，价格为15美元。"
+    },
+    {
+      "id": "numbers-02",
+      "domain": "numbers",
+      "source": "The meeting starts at 9:30 a.m. on March 5, 2026.",
+      "reference": "会议于2026年3月5日上午9:30开始。"
+    },
+    {
+      "id": "numbers-03",
+      "domain": "numbers",
+      "source": "The report shows a 12.5 percent increase in sales from 2024 to 2025.",
+      "reference": "报告显示，从2024年到2025年销售额增长了12.5%。"
+    },
+    {
+      "id": "numbers-04",
+      "domain": "numbers",
+      "source": "Add 250 milliliters of water and heat the mixture to 80 degrees Celsius.",
+      "reference": "加入250毫升水，把混合物加热到80摄氏度。"
+    },
+    {
+      "id": "long-01",
+      "domain": "long-sentence",
+      "source": "If the sensor detects a temperature above the permitted range, the system shuts down automatically and sends a warning to the control room.",
+      "reference": "如果传感器检测到温度超出允许范围，系统会自动关闭，并向控制室发送警告。"
+    },
+    {
+      "id": "long-02",
+      "domain": "long-sentence",
+      "source": "Although the new interface looks simpler, it still requires users to confirm each change before the settings are saved.",
+      "reference": "尽管新界面看起来更简单，但在保存设置之前，它仍然要求用户确认每一项更改。"
+    },
+    {
+      "id": "long-03",
+      "domain": "long-sentence",
+      "source": "The technician checked the cables, replaced the faulty sensor, and documented the maintenance work in the log before leaving the site.",
+      "reference": "技术员检查了电缆，更换了故障传感器，并在离开现场之前把维护工作记录在日志中。"
+    },
+    {
+      "id": "long-04",
+      "domain": "long-sentence",
+      "source": "Because the archive is stored on a remote server, the application cannot open the file while the network is unavailable.",
+      "reference": "由于归档文件存储在远程服务器上，网络不可用时该应用无法打开该文件。"
+    },
+    {
+      "id": "multi-01",
+      "domain": "multi-sentence",
+      "source": "The shop closes at six. Orders placed later will be processed tomorrow.",
+      "reference": "商店六点关门。之后下的订单将在明天处理。"
+    },
+    {
+      "id": "multi-02",
+      "domain": "multi-sentence",
+      "source": "Do not unplug the device. Wait until the update is complete.",
+      "reference": "请勿拔掉设备电源。请等到更新完成。"
+    },
+    {
+      "id": "multi-03",
+      "domain": "multi-sentence",
+      "source": "The file is read-only. Create a copy before making changes.",
+      "reference": "该文件是只读的。修改之前请创建一个副本。"
+    },
+    {
+      "id": "multi-04",
+      "domain": "multi-sentence",
+      "source": "The first train leaves at 6:15. The last one returns after midnight.",
+      "reference": "第一班火车6:15发车。最后一班在午夜之后返回。"
+    },
+    {
+      "id": "long-05",
+      "domain": "long-sentence",
+      "source": "The operations team reviewed the incident report, confirmed that the failed drive had been replaced, verified that the backups were complete, and scheduled a full restore test for the following weekend, because the previous test had been postponed twice and the auditors required evidence that the recovery procedure still worked as documented.",
+      "reference": "业务团队审查了事故报告，确认故障硬盘已经更换，核实备份已经完成，并安排在下周末进行一次完整的恢复测试，因为上次测试已经推迟了两次，而且审计人员要求提供证据，证明恢复流程仍按文档所述正常运行。"
+    },
+    {
+      "id": "long-06",
+      "domain": "long-sentence",
+      "source": "Before the company signs the agreement, the legal department must review every clause, confirm that the payment schedule matches the approved budget, verify that the insurance requirements are acceptable, and check whether the termination provisions allow either party to withdraw without a penalty during the first year, because the board will not approve a contract that could expose the organization to unexpected liabilities or make it impossible to change suppliers if the service quality declines.",
+      "reference": "在公司签署协议之前，法律部门必须审查每一条款，确认付款计划与批准的预算相符，核实保险要求可以接受，并检查终止条款是否允许任何一方在第一年无罚金退出，因为董事会不会批准可能使本组织面临意外负债、或在服务质量下降时无法更换供应商的合同。"
+    }
+  ]
+}

@@ -7,11 +7,13 @@
 | 方向 | 数据 | 条目数 |
 | --- | --- | ---: |
 | 英 → 中 | ECDICT 全部中文释义记录 + Annota 原创词组与术语 | 771,180 |
-| 中 → 英 | CC-CEDICT + 原创短释义的反向索引 + OMW 中文词网新增词 | 129,801 |
+| 中 → 英 | CC-CEDICT + 原创短释义 + OMW 中文词网 + WordNet/Wiktionary 中文义项反向索引 | 238,664 |
 | 英中词义 | WordNet 3.0 + COW + CWN + OMW Wiktionary 中文 + OEWN 英文释义 | 50,639 synset / 95,221 词义 / 72,948 词头 |
 | 检索扩展 | OpenCC 繁→简单字映射 | 4,148 |
 
 ECDICT 的 BNC/COCA 词频秩（`bnc`/`frq`）只用于候选与建议排序，不用于筛除词条。
+汉英的 108,863 条反向条目来自 WordNet/Wiktionary 已有中文义项（每词最多 4 个英文等价词）；
+英汉边界等价改由 `entries.boundary_key` 列与索引提供，`aliases` 只保留作者别名（630 行）。
 
 新增 **942 条**独立编写的简短词组 / 术语，另有 **682 个**显式记录的词形和拼写别名。别名不计为新增词条；未通过组合模板制造数据量。九个主题覆盖：
 
@@ -61,7 +63,8 @@ python3 android/scripts/sync-assets.py
 （OEWN 2025 XML、CILI 映射、WordNet 3.0 派生表、OMW 中文字表、OpenCC 字表）。
 `bundle/manifest.json` 记录 SQLite schema、原始 / 扩展数量、分类、许可、构建源与 SHA-256。数据库包含匹配与拼写建议索引，准确大小和哈希以 manifest 为准。首次准备 ECDICT 数据可用 `build.py --ecdict /path/to/ecdict.csv`；没有参数时使用已保存的本机源文件。
 
-大型数据库以 gzip 随 APK 提供，首次使用时按 manifest 解压、原子写入并校验；无需运行时下载。
+四个数据库均以 gzip `.pack` 随 APK 提供，首次启动按 manifest 解压、原子写入并校验；无需运行时下载。
+较新构建的下载体积因此明显低于未压缩打包；代价是升级后首次启动多一次解压。
 查询在后台线程使用持久只读连接、参数绑定与内容缓存；旧版词库在更新后按哈希更换，不修改用户文档。
 全部词组随应用更新提供，无额外下载。
 
@@ -102,3 +105,21 @@ python3 android/scripts/sync-assets.py
   记录其 SHA-256、上游 URL、版本与许可；生成的数据库仍可完全离线重建。
 - 已知边界：OEWN 2025 有 3,184 个 synset 的 `ili` 为字面量 `"in"`，无法对齐，不进入索引；
   合并词库与主词库存在重叠，条目数不能相加；CWN/OMW 新增中文释义未经人工逐条校对。
+
+## 1.2.1 候选（未发布）：瘦身、扩词与翻译后处理
+
+- **en-zh 瘦身**：边界等价由 `entries.boundary_key` 列 + `en_boundary` 索引提供；逐词复制的
+  771,180 行 `aliases` 删除，`aliases` 只保留 682 条作者别名。en-zh SQLite 240.9→184.6 MB，
+  `.pack` 95.45→70.1 MiB。精确段与边界段两段式查询保持旧顺序（`P.M.`、`set up`、作者别名、
+  词形经 821,177 个候选 key 与旧 schema 对拍无差异）。
+- **统一压缩**：四个数据库全部以 gzip `.pack` 随 APK，词库资产 474→386 MB；首次启动并行解压，
+  并用 `.verified` 清单标记避免每次冷启动重算约 310 MB 哈希。
+- **汉英扩词**：由 `wordnet.sqlite`/`wiktionary.sqlite` 的中文义项反向生成 108,863 条汉英条目
+  （每词最多 4 个英文等价词，来源逐行标注），`zh-en` 129,801→238,664；仍按 CC BY-SA 4.0/3.0
+  与 WordNet 通知分发。
+- **英→中整句**：40 条自写开发集对比 greedy/no-repeat/repetition-penalty/EOS-guard/beam2-4，
+  greedy 已 100% 正常结束；beam4 的 chrF 增益统计不稳定且耗时 3.6×，因此不替换解码。仅新增
+  零推理开销的中文标点/空格/句末后处理与 4 项守门测试；不宣称语义准确率提升。
+- 详细记录与失败样例见 [1.2.1 候选说明](../../docs/1.2.1-CANDIDATE-NOTES.md)、
+  [翻译变体报告](../translation/evaluation/variant-report.json) 与
+  [SEARCH-UPGRADE.md](SEARCH-UPGRADE.md)。

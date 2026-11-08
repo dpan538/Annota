@@ -45,9 +45,9 @@ python3 android/scripts/sync-assets.py
 
 模型固定于 Xenova 提交 `046f55aec303cdee3e0318604406d4df20f1e8ea`。资产 manifest 记录每个模型/分词文件 SHA-256；编码/解码模型在首次使用前从 APK 校验复制。Kotlin Unigram 分词器与独立 SentencePiece 生成的 16 组向量比较，覆盖 Unicode、空白、符号与未知字符。构建导出器在 `design/translation/export_tokenizer.py`；构建主机需要 SentencePiece，应用不需要 Python。
 
-两词以上、未整体命中中文词条的英文输入自动显示“离线参考译文”。词典先返回，推理在单独后台线程运行；改词/关闭面板使旧请求失效，每次解码检查取消。CPU 推理使用贪心解码；研究中 beam=4 没有稳定改善，未增加其耗时。最大 **1024 字符 / 160 个英文词**；128 个源 token 内保留完整上下文，超出时仅按完整句子分成最多 8 段，每段最多 128 个源 token、160 个输出 token，总推理期限 30 秒。先验证所有段落再运行，任何一段超限或失败都不返回不完整译文；不会按逗号切断条件或否定。过长的单句提示缩短选区。最近 8 条成功结果只缓存在内存中，不持久化阅读文本。未知单词不交给模型猜译。汉英仍为词典查询。
+两词以上、未整体命中中文词条的英文输入自动显示“离线参考译文”。词典先返回，推理在单独后台线程运行；改词/关闭面板使旧请求失效，每次解码检查取消。CPU 推理继续使用贪心解码：1.2.1 用 40 条固定开发集比较 no-repeat 4-gram、repetition penalty、提前 EOS 屏蔽与 beam=2/4（长度归一化），chrF 差异不稳定（配对 95% 区间含 0、改善与回退句数相当），40 条探针的重复片段与 EOS 完成率在所有变体上相同，因此没有为了不稳定收益增加 beam 耗时。新增的是解码后的中文标点/空格规范化与句末标点补全；它不改变数字、拉丁词或专名，也不是语义准确率提升。最大 **1024 字符 / 160 个英文词**；128 个源 token 内保留完整上下文，超出时仅按完整句子分成最多 8 段，每段最多 128 个源 token、160 个输出 token，总推理期限 30 秒。先验证所有段落再运行，任何一段超限或失败都不返回不完整译文；不会按逗号切断条件或否定。过长的单句提示缩短选区。最近 8 条成功结果只缓存在内存中，不持久化阅读文本。未知单词不交给模型猜译。汉英仍为词典查询。
 
-分句增加了可处理长度，并不代表模型准确率提高。32 项跨领域探针及原始失败输出见 [翻译研究](../translation/RESEARCH-NEXT.md)；该集合是行为探针，不是准确率评测。检索研究见 [RESEARCH-RETRIEVAL.md](RESEARCH-RETRIEVAL.md)。
+分句增加了可处理长度，并不代表模型准确率提高。32 项跨领域行为探针、1.2.1 的 40 条固定开发集与原始失败输出见 [翻译研究](../translation/RESEARCH-NEXT.md)；这些集合都是开发/行为探针，不是随机留出集或准确率评测。本轮解码变体数据见 [变体报告](../translation/evaluation/variant-report.json)，由 `design/translation/evaluate_variants.py` 离线生成。检索研究见 [RESEARCH-RETRIEVAL.md](RESEARCH-RETRIEVAL.md)。
 
 上游模型卡标注 Apache-2.0，OPUS-MT 项目一般说明另提 CC BY 4.0；本项目保留双方原文、完整 Apache 许可和署名。ONNX Runtime MIT 许可也随包。正式候选仅打包 ARM64 库，符合当前支持的 Xiaomi Pad 9 Pro Max。
 

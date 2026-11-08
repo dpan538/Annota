@@ -8,9 +8,11 @@ import java.security.MessageDigest
  *
  * Build-time contract (must stay byte-for-byte identical to the Kotlin side, otherwise a present
  * key would be reported as absent and the retrieval path would silently lose data):
- * - key bytes: UTF-8 of the key exactly as stored in `en-zh.sqlite` (`aliases.key`,
- *   `aliases.boundary_key`, `forms.key`, `entries.key`) and the wiktionary lookup keys
- *   (`aliases.key`, `forms.form`, `source_forms.form`, `english_aliases.key`).
+ * - key bytes: UTF-8 of the key exactly as stored in `en-zh.sqlite` (`entries.key`,
+ *   `entries.boundary_key`, `aliases.key`, `aliases.boundary_key`, `forms.key`) and the wiktionary
+ *   lookup keys (`aliases.key`, `forms.form`, `source_forms.form`, `english_aliases.key`).
+ *   Schema-5 assets keep entry keys/boundaries on `entries` and only author aliases in `aliases`;
+ *   older assets lack `entries.boundary_key`, so that probe is simply skipped when absent.
  * - digest: `SHA-256(key bytes)`.
  * - `h1`: digest bytes `0..3` read as an unsigned big-endian 32-bit integer.
  * - `h2`: digest bytes `4..7` read as an unsigned big-endian 32-bit integer.
@@ -122,9 +124,13 @@ class LookupFilter private constructor(private val parts: List<Part>) {
         }
 
         private fun LookupFilter.selfCheck(db: SQLiteDatabase): Boolean {
+            // Schema-5 assets cover entries.key/entries.boundary_key/aliases.key/
+            // aliases.boundary_key/forms.key. A probe on a table or column that does not exist
+            // yields no keys, so pre-schema-5 assets degrade instead of rejecting the filter.
             val probes =
                 listOf(
                     "SELECT key FROM entries WHERE key IS NOT NULL AND key<>'' LIMIT 4",
+                    "SELECT boundary_key FROM entries WHERE boundary_key IS NOT NULL AND boundary_key<>'' LIMIT 4",
                     "SELECT key FROM aliases WHERE key IS NOT NULL AND key<>'' LIMIT 4",
                     "SELECT boundary_key FROM aliases WHERE boundary_key IS NOT NULL AND boundary_key<>'' LIMIT 4",
                     "SELECT key FROM forms WHERE key IS NOT NULL AND key<>'' LIMIT 4",

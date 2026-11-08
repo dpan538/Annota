@@ -36,11 +36,16 @@
     "url": "https://github.com/skywind3000/ECDICT"
   },
   "zh-en": {
-    "entries": 129801,
+    "entries": 238664,
     "baseEntries": 125301,
     "omwEntries": 3529,
     "variants": 4148,
-    "source": "CC-CEDICT + Annota authored reverse equivalents + Chinese WordNet / OMW Wiktionary Chinese",
+    "reverseEntries": 108863,
+    "reverseEntriesBySource": {
+      "wordnet": 81473,
+      "wiktionary": 27390
+    },
+    "source": "CC-CEDICT + Annota authored reverse equivalents + Chinese WordNet / OMW Wiktionary Chinese + reverse index from WordNet/Wiktionary Chinese senses",
     "license": "CC-BY-SA-4.0",
     "url": "https://www.mdbg.net/chinese/dictionary?page=cc-cedict"
   },
@@ -64,23 +69,23 @@
   "files": {
     "en-zh.sqlite": {
       "asset": "en-zh.sqlite.pack",
-      "bytes": 240934912,
-      "sha256": "ee3f0511729236257552718f069b84333c2de0bd4a9cef228145b99cb07baa4c"
+      "bytes": 184578048,
+      "sha256": "1b65b9600e68ffaa03dd07925df2f6b1936fd4fce847bcdc72531bca4c0bbb7d"
     },
     "wiktionary.sqlite": {
-      "asset": "wiktionary.sqlite",
+      "asset": "wiktionary.sqlite.pack",
       "bytes": 87711744,
       "sha256": "2df7d57187db62c59fd3f879f0f19010ccba53cd124a58a0bed8ba8efc91e7d5"
     },
     "wordnet.sqlite": {
-      "asset": "wordnet.sqlite",
+      "asset": "wordnet.sqlite.pack",
       "bytes": 18755584,
       "sha256": "c75d662199d7ab4abe45a16c7540665b14079a00a27e1ef1658799a67754fc22"
     },
     "zh-en.sqlite": {
-      "asset": "zh-en.sqlite",
-      "bytes": 16310272,
-      "sha256": "9d87dbc1e93c3d01df70cc500336d6ede5a7d7d3a1e85eec398b53e112197273"
+      "asset": "zh-en.sqlite.pack",
+      "bytes": 27521024,
+      "sha256": "01f98f098d28075b1ca1f8e5a38615ad769bb41c6f9231c43514ab13d82aa1c7"
     }
   },
   "sources": {
@@ -99,6 +104,7 @@
     "wordnet-cow.json.gz": "e3d739bed1c8741e1ae5d1fddfab5ea10ff718a14a65e467990282136b554f0d"
   },
   "buildSources": {
+    "README.md": "d540a060a26ed96f3e33dc39042890c86cc8ea6eb7b28f6526ec569909aa02a4",
     "ili-map-pwn30.tab.gz": "31591f0fd28ea0e53ce4e0e2f41b050ed7bf7f60620f448ed55870c4b3136d7b",
     "oewn-2025.xml.gz": "994615277136d9994f1a5a78917016706b63d725d42ad7d0ce0fd23ca93fc6a9",
     "omw-cwn.tsv.gz": "240aaa09b8598ab258bbcf425b9c1e0711c365b79124ff01aac11d446c6f4890",

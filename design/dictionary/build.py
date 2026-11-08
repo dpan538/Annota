@@ -84,7 +84,7 @@ def build_lookup_filter(db, wiki_path):
     """
     keys = set()
     for table, columns in (
-        ("entries", ("key",)),
+        ("entries", ("key", "boundary_key")),
         ("aliases", ("key", "boundary_key")),
         ("forms", ("key",)),
     ):
@@ -143,13 +143,14 @@ def build(ecdict_path):
 
     phrases = authored_phrases()
     en, temp = database(out / "en-zh.sqlite", """
-        PRAGMA user_version=4;
+        PRAGMA user_version=5;
         CREATE TABLE entries(id INTEGER PRIMARY KEY, word TEXT NOT NULL, key TEXT NOT NULL,
-            compact TEXT NOT NULL, reverse_key TEXT NOT NULL,
+            compact TEXT NOT NULL, reverse_key TEXT NOT NULL, boundary_key TEXT NOT NULL,
             phonetic TEXT, definition TEXT, translation TEXT,
             source TEXT NOT NULL DEFAULT 'ecdict', category TEXT NOT NULL DEFAULT '',
             freq INTEGER NOT NULL DEFAULT 0);
         CREATE INDEX en_key ON entries(key);
+        CREATE INDEX en_boundary ON entries(boundary_key);
         CREATE INDEX en_compact ON entries(compact);
         CREATE INDEX en_reverse ON entries(reverse_key);
         CREATE TABLE forms(key TEXT NOT NULL, entry_id INTEGER NOT NULL);
@@ -163,13 +164,11 @@ def build(ecdict_path):
         for row in csv.DictReader(src):
             key = normalize(row["word"])
             compact = re.sub(r"[^a-z0-9]", "", key)
-            ident = en.execute("INSERT INTO entries(word,key,compact,reverse_key,phonetic,definition,translation,freq) VALUES(?,?,?,?,?,?,?,?)",
-                               (row["word"], key, compact, compact[::-1], row["phonetic"],
+            ident = en.execute("INSERT INTO entries(word,key,compact,reverse_key,boundary_key,phonetic,definition,translation,freq) VALUES(?,?,?,?,?,?,?,?,?)",
+                               (row["word"], key, compact, compact[::-1], boundary_key(key), row["phonetic"],
                                 row["definition"].replace("\\n", "\n"),
                                 row["translation"].replace("\\n", "\n"),
                                 frequency_rank(row))).lastrowid
-            en.execute("INSERT OR IGNORE INTO aliases VALUES(?,?,?)",
-                       (key, boundary_key(key), ident))
             # Explicit source forms only; never guess an arbitrary stem.
             for form in row["exchange"].split("/"):
                 kind, sep, value = form.partition(":")
@@ -199,15 +198,22 @@ def build(ecdict_path):
     for row in phrases:
         compact = re.sub(r"[^a-z0-9]", "", row["key"])
         # Author-owned phrase meanings take priority without removing original source records.
-        ident = en.execute("""INSERT INTO entries(word,key,compact,reverse_key,phonetic,definition,
-                           translation,source,category) VALUES(?,?,?,?,?,?,?,?,?)""",
-                           (row["word"], row["key"], compact, compact[::-1], "", "",
+        ident = en.execute("""INSERT INTO entries(word,key,compact,reverse_key,boundary_key,phonetic,definition,
+                           translation,source,category) VALUES(?,?,?,?,?,?,?,?,?,?)""",
+                           (row["word"], row["key"], compact, compact[::-1], boundary_key(row["key"]), "", "",
                             row["meaning"], "annota", row["category"])).lastrowid
-        for key in [row["key"]] + row["aliases"]:
+        # The phrase key itself is already an entries.key; explicit aliases keep a row even
+        # when the alias equals the boundary form: otherwise an ECDICT exact match could hide
+        # the authored phrase from the exact phase (e.g. "low pass filter" for "low-pass filter").
+        for key in row["aliases"]:
             en.execute("INSERT OR IGNORE INTO aliases VALUES(?,?,?)",
                        (key, boundary_key(key), ident))
+    assert en.execute("SELECT count(*) FROM aliases").fetchone()[0] < 3000, "aliases must stay author-only"
     en_count = en.execute("SELECT count(*) FROM entries").fetchone()[0]
     finish(en, temp, out / "en-zh.sqlite")
+
+    wordnet = build_wordnet()
+    wiktionary = build_wiktionary()
 
     zh, temp = database(out / "zh-en.sqlite", """
         PRAGMA user_version=4;
@@ -265,11 +271,46 @@ def build(ecdict_path):
                 (lemma, lemma, "", definition, source),
             )
             omw_entries += 1
+    # Reverse index: curated Chinese equivalents from the bundled WordNet index and the
+    # Wiktionary Mandarin senses become Chinese->English headwords. Only complete short
+    # equivalents; numeric/English-only forms are skipped, and each Chinese word keeps at
+    # most four English equivalents to avoid noise. CC BY-SA attribution is kept per row.
+    added_pairs = set()
+    reverse_counts = {}
+    numeric = re.compile(r"[0-9]")
+    def add_reverse(db_path, source_name):
+        added = 0
+        with sqlite3.connect(f"file:{db_path}?mode=ro", uri=True) as other:
+            rows = other.execute("SELECT word,pos,meaning FROM senses").fetchall()
+        for word, _pos, meaning in rows:
+            if not word or numeric.search(word) or len(word) > 80:
+                continue
+            for lemma in meaning.split("；"):
+                lemma = lemma.strip()
+                if not (1 <= len(lemma) <= 8):
+                    continue
+                if not re.fullmatch(r"[\u3400-\u9fff]+", lemma):
+                    continue
+                if lemma in existing_zh:
+                    continue
+                if reverse_counts.get(lemma, 0) >= 4:
+                    continue
+                pair = (lemma, word)
+                if pair in added_pairs:
+                    continue
+                added_pairs.add(pair)
+                reverse_counts[lemma] = reverse_counts.get(lemma, 0) + 1
+                zh.execute(
+                    "INSERT INTO entries(traditional,simplified,pinyin,definition,source) VALUES(?,?,?,?,?)",
+                    (lemma, lemma, "", word, source_name),
+                )
+                added += 1
+        return added
+    wordnet_reverse = add_reverse(out / "wordnet.sqlite", "wordnet-reverse")
+    wiktionary_reverse = add_reverse(out / "wiktionary.sqlite", "wiktionary-reverse")
     zh_count = zh.execute("SELECT count(*) FROM entries").fetchone()[0]
     finish(zh, temp, out / "zh-en.sqlite")
     (ROOT / "licenses/CC-CEDICT-header.txt").write_text("".join(header))
-    wordnet = build_wordnet()
-    wiktionary = build_wiktionary()
     # The filter is built after every dictionary key is final, and before manifest hashes.
     with sqlite3.connect(out / "en-zh.sqlite") as en_filter:
         en_filter.execute(
@@ -291,14 +332,21 @@ def build(ecdict_path):
                   "license": "MIT", "url": "https://github.com/skywind3000/ECDICT"},
         "zh-en": {"entries": zh_count, "baseEntries": base_zh_count,
                   "omwEntries": omw_entries, "variants": len(variants),
+                  "reverseEntries": wordnet_reverse + wiktionary_reverse,
+                  "reverseEntriesBySource": {"wordnet": wordnet_reverse,
+                                             "wiktionary": wiktionary_reverse},
                   "source": "CC-CEDICT + Annota authored reverse equivalents + "
-                            "Chinese WordNet / OMW Wiktionary Chinese",
+                            "Chinese WordNet / OMW Wiktionary Chinese + "
+                            "reverse index from WordNet/Wiktionary Chinese senses",
                   "license": "CC-BY-SA-4.0", "url": "https://www.mdbg.net/chinese/dictionary?page=cc-cedict"},
         "annota-phrases": {"entries": len(phrases), "aliases": sum(len(r["aliases"]) for r in phrases),
                            "license": "MIT", "source": "Original Annota phrase equivalents, 2026-11-01",
                            "categories": {c: sum(r["category"] == c for r in phrases)
                                           for c in sorted({r["category"] for r in phrases})}},
-        "files": {p.name: {"asset": p.name + ".pack" if p.stat().st_size > 90_000_000 else p.name,
+        # All bundled SQLite files are shipped gzip-compressed (.pack) and decompressed once on
+        # first launch; this keeps the download well below the in-app 512 MiB update limit and
+        # leaves room for more vocabulary. Small files stay raw.
+        "files": {p.name: {"asset": p.name + ".pack" if p.stat().st_size >= 10_000_000 else p.name,
                           "bytes": p.stat().st_size,
                           "sha256": hashlib.sha256(p.read_bytes()).hexdigest()}
                   for p in sorted(out.glob("*.sqlite"))},

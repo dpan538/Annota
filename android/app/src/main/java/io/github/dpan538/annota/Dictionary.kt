@@ -1,6 +1,7 @@
 package io.github.dpan538.annota
 
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.util.LruCache
 import java.io.File
@@ -105,6 +106,57 @@ class Dictionary(private val context: Context) {
         columnCache[key] = present
         return present
     }
+
+    /**
+     * Schema-5 en-zh assets keep every headword key and boundary key on `entries` and only
+     * author-authored aliases in `aliases`; pre-schema-5 assets keep the full alias table. Both
+     * shapes stay queryable so an asset rebuilt to the slim schema can be installed without
+     * breaking an older database that is still on disk.
+     */
+    private fun slimEnZh(): Boolean =
+        enZh()?.let { hasColumn(it, "entries", "boundary_key") } == true
+
+    private fun readEntry(cursor: Cursor): Entry =
+        Entry(
+            cursor.getString(0),
+            cursor.getString(1).orEmpty(),
+            cursor.getString(2).orEmpty().ifBlank { cursor.getString(3).orEmpty() },
+            cursor.getString(4).orEmpty(),
+        )
+
+    /**
+     * Slim-schema exact-key match: entry keys plus the author alias table. The build keeps every
+     * authored alias (including spellings that equal the phrase boundary), so this UNION is the
+     * exact equivalent of the legacy per-entry alias join while `aliases` no longer duplicates
+     * every headword. The boundary phase (see [slimBoundarySql]) only runs when this is empty, so
+     * case/period distinctions such as "P.M." versus lower-case "p.m" keep the legacy precedence.
+     */
+    private fun slimExactSql(limit: Int): String =
+        "SELECT * FROM (" +
+            "SELECT $ENTRY_FIELDS FROM entries e WHERE e.key=? " +
+            "UNION SELECT $ENTRY_FIELDS FROM entries e JOIN aliases a ON e.id=a.entry_id " +
+            "WHERE a.key=?" +
+            ") ORDER BY CASE source WHEN 'annota' THEN 0 ELSE 1 END,id LIMIT $limit"
+
+    /** Slim-schema boundary match: hyphen/space equivalents from entries plus author aliases. */
+    private fun slimBoundarySql(limit: Int): String =
+        "SELECT * FROM (" +
+            "SELECT $ENTRY_FIELDS FROM entries e WHERE e.boundary_key=? " +
+            "UNION SELECT $ENTRY_FIELDS FROM entries e JOIN aliases a ON e.id=a.entry_id " +
+            "WHERE a.boundary_key=?" +
+            ") ORDER BY CASE source WHEN 'annota' THEN 0 ELSE 1 END,id LIMIT $limit"
+
+    /**
+     * Slim-schema candidate match that intentionally accepts the exact key and its boundary in the
+     * same pass. Used where the previous query already OR'ed both alias columns (explicit source
+     * lemmas, phrase expansion); the ordinary query path keeps the exact-then-boundary fallback.
+     */
+    private fun slimCandidateSql(limit: Int): String =
+        "SELECT * FROM (" +
+            "SELECT $ENTRY_FIELDS FROM entries e WHERE e.key=? OR e.boundary_key=? " +
+            "UNION SELECT $ENTRY_FIELDS FROM entries e JOIN aliases a ON e.id=a.entry_id " +
+            "WHERE a.key=? OR a.boundary_key=?" +
+            ") ORDER BY CASE source WHEN 'annota' THEN 0 ELSE 1 END,id LIMIT $limit"
 
     /**
      * Traditional -> simplified single-character table from `zh-en.sqlite.variants` (OpenCC). Empty
@@ -394,27 +446,31 @@ class Dictionary(private val context: Context) {
         val db = enZh() ?: return emptyList()
         val wiki = wiktionary().connection() ?: return emptyList()
         val wikiOrder = wiktionary().sensesOrderClause("s")
+        val slim = slimEnZh()
         run {
             val cache = mutableMapOf<String, Entry?>()
             fun exact(key: String): Entry? {
                 if (cache.containsKey(key)) return cache[key]
-                fun find(table: String, column: String, candidate: String = key): Entry? {
+                fun entry(candidate: String): Entry? {
                     // Bloom-first: a miss is authoritative for this exact SQL key.
                     if (!containsStoredKey(lookupFilter(), candidate)) return null
                     return db.rawQuery(
-                            "SELECT e.word,e.phonetic,e.translation,e.definition,e.source FROM entries e JOIN $table a ON e.id=a.entry_id WHERE a.$column=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 1",
+                            if (slim) {
+                                slimBoundarySql(1)
+                            } else {
+                                "SELECT $ENTRY_FIELDS FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.boundary_key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 1"
+                            },
+                            if (slim) arrayOf(candidate, candidate) else arrayOf(candidate),
+                        )
+                        .use { c -> if (!c.moveToFirst()) null else readEntry(c) }
+                }
+                fun form(candidate: String): Entry? {
+                    if (!containsStoredKey(lookupFilter(), candidate)) return null
+                    return db.rawQuery(
+                            "SELECT $ENTRY_FIELDS FROM entries e JOIN forms f ON e.id=f.entry_id WHERE f.key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 1",
                             arrayOf(candidate),
                         )
-                        .use { c ->
-                            if (!c.moveToFirst()) null
-                            else
-                                Entry(
-                                    c.getString(0),
-                                    c.getString(1).orEmpty(),
-                                    c.getString(2).orEmpty().ifBlank { c.getString(3).orEmpty() },
-                                    c.getString(4).orEmpty(),
-                                )
-                        }
+                        .use { c -> if (!c.moveToFirst()) null else readEntry(c) }
                 }
                 fun extra(candidate: String): Entry? {
                     val boundary = boundaryKey(candidate)
@@ -435,7 +491,7 @@ class Dictionary(private val context: Context) {
                             else null
                         }
                 }
-                val direct = find("aliases", "boundary_key") ?: find("forms", "key") ?: extra(key)
+                val direct = entry(key) ?: form(key) ?: extra(key)
                 val filter = lookupFilter()
                 val attested =
                     if (direct != null) null
@@ -448,7 +504,7 @@ class Dictionary(private val context: Context) {
                             )
                             .use { c -> buildList { while (c.moveToNext()) add(c.getString(0)) } }
                             .firstNotNullOfOrNull { base ->
-                                find("aliases", "boundary_key", boundaryKey(base)) ?: extra(base)
+                                entry(boundaryKey(base)) ?: extra(base)
                             }
                 return (direct ?: attested ?: englishEntries(key, wiki).firstOrNull()).also {
                     cache[key] = it
@@ -681,6 +737,7 @@ class Dictionary(private val context: Context) {
         val db = enZh() ?: return null
         val wiki = wiktionary().connection() ?: return null
         val wikiOrder = wiktionary().sensesOrderClause("s")
+        val slim = slimEnZh()
         run {
             val matches = mutableListOf<Pair<String, Entry>>()
             candidates.forEach { value ->
@@ -689,21 +746,14 @@ class Dictionary(private val context: Context) {
                 val filter = lookupFilter()
                 if (containsStoredKey(filter, boundary))
                     db.rawQuery(
-                            "SELECT e.word,e.phonetic,e.translation,e.definition,e.source FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.boundary_key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 1",
-                            arrayOf(boundary),
+                            if (slim) {
+                                slimBoundarySql(1)
+                            } else {
+                                "SELECT $ENTRY_FIELDS FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.boundary_key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 1"
+                            },
+                            if (slim) arrayOf(boundary, boundary) else arrayOf(boundary),
                         )
-                        .use { c ->
-                            if (c.moveToFirst())
-                                match =
-                                    Entry(
-                                        c.getString(0),
-                                        c.getString(1).orEmpty(),
-                                        c.getString(2).orEmpty().ifBlank {
-                                            c.getString(3).orEmpty()
-                                        },
-                                        c.getString(4).orEmpty(),
-                                    )
-                        }
+                        .use { c -> if (c.moveToFirst()) match = readEntry(c) }
                 if (match == null && containsStoredKey(filter, boundary)) {
                     wiki
                         .rawQuery(
@@ -798,30 +848,48 @@ class Dictionary(private val context: Context) {
     fun install() {
         // Never keep file handles from the previous asset generation while replacing the files.
         close()
-        val manifest =
-            JSONObject(
-                    context.assets.open("dictionary/manifest.json").bufferedReader().use {
-                        it.readText()
-                    }
-                )
-                .getJSONObject("files")
-        listOf("en-zh.sqlite", "zh-en.sqlite", "wordnet.sqlite", "wiktionary.sqlite").forEach { name
-            ->
-            val f = File(dir, name)
-            val hash = manifest.getJSONObject(name).getString("sha256")
-            if (!f.exists() || sha256(f) != hash) {
-                atomicWrite(f) { out ->
-                    val asset = manifest.getJSONObject(name).optString("asset", name)
-                    context.assets.open("dictionary/$asset").use { input ->
-                        val source =
-                            if (asset.endsWith(".pack")) java.util.zip.GZIPInputStream(input)
-                            else input
-                        source.use { it.copyTo(out) }
+        val manifestBytes =
+            context.assets.open("dictionary/manifest.json").use { it.readBytes() }
+        val manifest = JSONObject(String(manifestBytes, Charsets.UTF_8)).getJSONObject("files")
+        val names = listOf("en-zh.sqlite", "zh-en.sqlite", "wordnet.sqlite", "wiktionary.sqlite")
+        val verified = File(dir, ".verified")
+        // Re-hashing the installed databases (about 310 MB) on every cold start delayed the
+        // library. The marker is written only after atomic writes and per-file SHA-256 checks;
+        // an app update changes the manifest hash and forces one full verification.
+        val marker = java.security.MessageDigest.getInstance("SHA-256").digest(manifestBytes)
+            .joinToString("") { "%02x".format(it) }
+        if (verified.isFile && verified.readText() == marker && names.all { File(dir, it).isFile })
+            return
+        verified.delete()
+        val pool = java.util.concurrent.Executors.newFixedThreadPool(minOf(4, names.size))
+        try {
+            val tasks =
+                names.map { name ->
+                    pool.submit {
+                        val file = File(dir, name)
+                        val hash = manifest.getJSONObject(name).getString("sha256")
+                        if (!file.exists() || sha256(file) != hash) {
+                            atomicWrite(file) { out ->
+                                val asset = manifest.getJSONObject(name).optString("asset", name)
+                                context.assets.open("dictionary/$asset").use { input ->
+                                    val source =
+                                        if (asset.endsWith(".pack"))
+                                            java.util.zip.GZIPInputStream(input)
+                                        else input
+                                    source.use { it.copyTo(out) }
+                                }
+                            }
+                            check(sha256(file) == hash) { "词库校验失败" }
+                        }
+                        true
                     }
                 }
-                check(sha256(f) == hash) { "词库校验失败" }
-            }
+            tasks.forEach { it.get() }
+        } finally {
+            pool.shutdown()
+            pool.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS)
         }
+        atomicWrite(verified) { it.write(marker.toByteArray()) }
     }
 
     fun query(text: String, withSuggestions: Boolean = true): Result {
@@ -856,6 +924,7 @@ class Dictionary(private val context: Context) {
         val zh = key.any { it in '\u3400'..'\u9fff' }
         val db = (if (zh) zhEn() else enZh()) ?: return Result(emptyList(), emptyList())
         val filter = if (zh) null else lookupFilter()
+        val slim = !zh && slimEnZh()
         fun entries(sql: String, args: Array<String>): List<Entry> =
             db.rawQuery(sql, args).use { c ->
                 buildList {
@@ -907,17 +976,23 @@ class Dictionary(private val context: Context) {
                 if (!maybeKey && !maybeBoundary) continue
                 var matched =
                     if (maybeKey)
-                        entries(
-                            "SELECT DISTINCT e.* FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 12",
-                            arrayOf(candidate),
-                        )
+                        if (slim)
+                            entries(slimExactSql(12), arrayOf(candidate, candidate))
+                        else
+                            entries(
+                                "SELECT DISTINCT e.* FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 12",
+                                arrayOf(candidate),
+                            )
                     else emptyList()
                 if (matched.isEmpty() && maybeBoundary)
                     matched =
-                        entries(
-                            "SELECT DISTINCT e.* FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.boundary_key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 12",
-                            arrayOf(boundary),
-                        )
+                        if (slim)
+                            entries(slimBoundarySql(12), arrayOf(boundary, boundary))
+                        else
+                            entries(
+                                "SELECT DISTINCT e.* FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.boundary_key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 12",
+                                arrayOf(boundary),
+                            )
                 val lemmas =
                     if (maybeKey)
                         entries(
@@ -939,8 +1014,13 @@ class Dictionary(private val context: Context) {
                     continue
                 val extra =
                     entries(
-                            "SELECT DISTINCT e.* FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.key=? OR a.boundary_key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 12",
-                            arrayOf(base, boundary),
+                            if (slim) {
+                                slimCandidateSql(12)
+                            } else {
+                                "SELECT DISTINCT e.* FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.key=? OR a.boundary_key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT 12"
+                            },
+                            if (slim) arrayOf(base, boundary, base, boundary)
+                            else arrayOf(base, boundary),
                         )
                         .filter { candidate -> rows.none { it.word == candidate.word } }
                 rows = rows + extra.map { it.copy(lemma = true) }
@@ -1027,6 +1107,13 @@ class Dictionary(private val context: Context) {
         const val MAX_QUERY_LENGTH = 160
         const val MAX_SELECTION_LENGTH = 1024
         const val MAX_SELECTION_WORDS = 160
+
+        /**
+         * Projection shared by every en-zh entry read. `id` is carried so the annota-first
+         * ordering works in both the legacy alias joins and the slim schema-5 UNION queries.
+         */
+        private const val ENTRY_FIELDS =
+            "e.word,e.phonetic,e.translation,e.definition,e.source,e.id"
 
         /** Only explicit dictionary lemmas, at most two changed positions and 32 probes. */
         fun phraseVariants(words: List<String>, lemmas: (String) -> List<String>): List<String> {

@@ -186,8 +186,12 @@ class OfflineDictionaryTest {
         }
         val apk = java.util.zip.ZipFile(context.applicationInfo.sourceDir)
         apk.use {
-            assertNotNull(it.getEntry("assets/dictionary/en-zh.sqlite.pack"))
-            assertNotNull(it.getEntry("assets/dictionary/zh-en.sqlite"))
+            // All bundled SQLite files are gzip-compressed .pack assets in the candidate.
+            for (name in
+                listOf("en-zh", "zh-en", "wordnet", "wiktionary")) {
+                assertNotNull("$name.pack missing", it.getEntry("assets/dictionary/$name.sqlite.pack"))
+                assertNull("raw $name.sqlite must not ship", it.getEntry("assets/dictionary/$name.sqlite"))
+            }
             assertFalse(
                 it.entries().asSequence().any { entry ->
                     entry.name.contains("google_translate", ignoreCase = true) ||

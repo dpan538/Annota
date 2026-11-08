@@ -1,8 +1,10 @@
 # Annota 离线词库
 
-英汉：771,180 条记录，其中 942 条为 Annota 原创短语与学术术语；682 个显式词形 / 拼写别名另计。
-汉英：129,801 条记录；125,301 条来自 CC-CEDICT，971 条为原创短释义的反向等价表达，3,529 条来自
-开放中文词网（见下文）。另有 4,148 个繁→简单字映射用于检索扩展。
+英汉：771,180 条记录，其中 942 条为 Annota 原创短语与学术术语；作者显式别名单独保留（630 条检索别名，
+不再是按词条复制的索引行）。汉英：238,664 条记录；125,301 条来自 CC-CEDICT，971 条为原创短释义的反向
+等价表达，3,529 条来自开放中文词网，108,863 条为下方英文词义索引的中文等价表达反向生成的汉英条目
+（wordnet-reverse / wiktionary-reverse，单条最多保留 4 个英文等价词）。另有 4,148 个繁→简单字映射
+用于检索扩展。
 英中词义：72,948 个英文词头、95,221 条词义关联、50,639 个同义词集，由 WordNet 3.0、Chinese Open
 WordNet、Chinese WordNet 与 OMW Wiktionary 中文词网合并；英文释义经 CILI 对齐采用 Open English WordNet 2025。
 数据、来源和许可随安装包提供。查词只读本机，不上传输入、手写轨迹或文档。
@@ -41,6 +43,12 @@ CC-CEDICT 社区维护，MDBG 发布；来源版本 2026-10-19。
 ## 字体与输入法
 
 界面和指南所用字体许可另附。系统手写使用设备已安装的输入法，其网络行为由输入法管理。
+
+## 索引精简
+
+英汉检索的边界等价（连字符/空格）由 `entries.boundary_key` 列与索引提供，不再为每个词条复制
+`aliases` 行；`aliases` 只保存作者短语的显式别名。该调整不删除任何词条，词条数仍为 771,180，
+用于首个 1.2.x 候选构建；数据库文件以 gzip `.pack` 随 APK 提供，首次启动解压一次。
 
 ## Princeton WordNet 3.0
 
@@ -81,8 +89,9 @@ English Wiktionary contributors，CC BY-SA 4.0。提取自 https://kaikki.org/di
 本版在构建时排除（1,786 条），不再作为义项参与排序。
 来源哈希及转换说明：sources/kaikki-provenance.json；详细署名：licenses/Wiktionary-NOTICE.md。
 另提取完整英文数据中的明确词形关系，以及无汉译词头的实质英文释义；运行时优先中文，英文补充明确标注，
-不冒充中文翻译。两份新增源数据与转换哈希：sources/kaikki-forms-provenance.json、
-sources/kaikki-en-definitions-provenance.json；独立派生表继续按 CC BY-SA 4.0 分发。
+不冒充中文翻译。中文等价表达还用于生成汉英反向条目（`wiktionary-reverse`，与 WordNet 中文义项合并、
+每词最多 4 个英文等价词），这些派生行同样按 CC BY-SA 4.0 分发。两份新增源数据与转换哈希：
+sources/kaikki-forms-provenance.json、sources/kaikki-en-definitions-provenance.json。
 CC BY-SA 4.0 许可文本已随包提供。词条作者与历史可通过 Wiktionary 同名英文条目查阅。
 
 ## OpenCC 繁简映射

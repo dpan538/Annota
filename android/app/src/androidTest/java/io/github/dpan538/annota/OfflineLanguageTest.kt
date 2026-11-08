@@ -60,7 +60,7 @@ class OfflineLanguageTest {
                 )
             }
             assertTrue(
-                runCatching { model.translate("Please close this window.") { false } }.isFailure
+                runCatching { model.translate("Please close this window.", active = { false }) }.isFailure
             )
             assertTrue(runCatching { model.translate("word ".repeat(200)) }.isFailure)
         }
@@ -160,4 +160,117 @@ class OfflineLanguageTest {
         File(context.filesDir, "offline-translation-passages-111.json")
             .writeText(evidence.toString(2))
     }
+
+    /**
+     * Quality gates for 1.2.1. These fix output properties, not sentence translations:
+     * no stuck repeat loop, complete EOS termination, digits and negation kept.
+     */
+    @Test
+    fun translationGatesSuppressRepeatedFragmentsAndEndComplete() {
+        val sentences =
+            listOf(
+                "Please turn down the volume before answering the call.",
+                "The database uses an index to avoid scanning every row.",
+                "The update will not be installed if the battery is below twenty percent.",
+                "The hotel does not allow pets, and smoking is not permitted in any room.",
+                "The technician checked the cables, replaced the faulty sensor, and documented the maintenance work in the log before leaving the site.",
+            )
+        OfflineTranslator.Runtime(context).use { model ->
+            for (source in sentences) {
+                val result = model.translate(source)
+                assertFalse("$source => $result", result.contains("<unk>"))
+                assertTrue("$source => $result", result.any { it in '\u3400'..'\u9fff' })
+                assertTrue("$source => $result", result.last() in "。！？；")
+                assertFalse("$source => $result", hasRepeatedFragment(result))
+                assertFalse("$source => $result", result.contains("  "))
+                assertTrue("$source => $result", result.lines().all { it.isNotBlank() })
+            }
+        }
+    }
+
+    @Test
+    fun translationGatesPreserveNumbersAndNegation() {
+        val numeric =
+            listOf(
+                "The package weighs 2.4 kilograms and costs 15 dollars." to listOf("2.4", "15"),
+                "The report shows a 12.5 percent increase in sales from 2024 to 2025." to
+                    listOf("12.5", "2024", "2025"),
+                "Add 250 milliliters of water and heat the mixture to 80 degrees Celsius." to
+                    listOf("250", "80"),
+            )
+        val negated =
+            listOf(
+                "Do not unplug the device while the backup is running.",
+                "The medicine should not be taken with alcohol.",
+                "The hotel does not allow pets, and smoking is not permitted in any room.",
+            )
+        OfflineTranslator.Runtime(context).use { model ->
+            for ((source, digits) in numeric) {
+                val result = model.translate(source)
+                for (digit in digits) {
+                    assertTrue("$source => $result must keep $digit", result.contains(digit))
+                }
+            }
+            for (source in negated) {
+                val result = model.translate(source)
+                assertTrue(
+                    "$source => $result must keep a negation",
+                    result.any { it in "不未无没勿非否" },
+                )
+            }
+        }
+    }
+
+    @Test
+    fun translationGatesFailCleanlyInsteadOfReturningPartialText() {
+        OfflineTranslator.Runtime(context).use { model ->
+            // Over the 128-source-token budget: reject the whole request, never truncate.
+            assertTrue(runCatching { model.translate("word ".repeat(200)) }.isFailure)
+            // A deadline that already expired must abort, not return the decoded prefix.
+            assertTrue(
+                runCatching {
+                        model.translate(
+                            "The device can operate without an internet connection.",
+                            active = { true },
+                            deadlineMillis = 1L,
+                        )
+                    }
+                    .isFailure
+            )
+            assertTrue(
+                runCatching {
+                        model.translate(
+                            "Please save your work before closing this window.",
+                            active = { false },
+                        )
+                    }
+                    .isFailure
+            )
+        }
+    }
+
+    @Test
+    fun translationOutputNormalizationKeepsDigitsAndFixesPunctuation() {
+        assertEquals(
+            "数据库使用索引，避免逐行扫描。",
+            TranslationOutput.normalize("数据库使用索引 , 避免逐行扫描 ."),
+        )
+        assertEquals("版本2.4发布于2026年。", TranslationOutput.normalize("版本 2.4 发布于 2026 年."))
+        val kept = TranslationOutput.normalize("Dr. Lee 在 9:30 到达，日期为 2026-03-05。")
+        assertTrue(kept, kept.contains("Dr. Lee"))
+        assertTrue(kept, kept.contains("9:30"))
+        assertTrue(kept, kept.contains("2026-03-05"))
+        assertEquals("", TranslationOutput.normalize("   "))
+    }
+
+    /** Adjacent identical blocks of at least four characters indicate a stuck decode loop. */
+    private fun hasRepeatedFragment(text: String): Boolean {
+        for (size in 4..(text.length / 2)) {
+            for (start in 0..text.length - 2 * size) {
+                if (text.regionMatches(start, text, start + size, size)) return true
+            }
+        }
+        return false
+    }
+
 }

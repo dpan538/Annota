@@ -60,11 +60,30 @@ def lookup(query, limit=12):
             compact = re.sub(r"[^a-z0-9]", "", key)
             rows = []
             for candidate in keys:
-                rows = db.execute("SELECT DISTINCT e.* FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT ?",
-                                  (candidate, limit)).fetchall()
+                boundary = boundary_key(candidate)
+                # schema 5: entries carry boundary_key; aliases only hold author aliases.
+                # Keep the old precedence: exact key / author alias first, then boundary
+                # equivalence only when the exact phase found nothing. This preserves case
+                # distinctions such as "P.M." versus the lower-case boundary match "p.m.".
+                rows = db.execute(
+                    """SELECT * FROM (
+                         SELECT e.* FROM entries e WHERE e.key=?
+                         UNION
+                         SELECT e.* FROM entries e JOIN aliases a ON e.id=a.entry_id
+                           WHERE a.key=?
+                       ) ORDER BY CASE source WHEN 'annota' THEN 0 ELSE 1 END, id LIMIT ?""",
+                    (candidate, candidate, limit),
+                ).fetchall()
                 if not rows:
-                    rows = db.execute("SELECT DISTINCT e.* FROM entries e JOIN aliases a ON e.id=a.entry_id WHERE a.boundary_key=? ORDER BY CASE e.source WHEN 'annota' THEN 0 ELSE 1 END,e.id LIMIT ?",
-                                      (boundary_key(candidate), limit)).fetchall()
+                    rows = db.execute(
+                        """SELECT * FROM (
+                             SELECT e.* FROM entries e WHERE e.boundary_key=?
+                             UNION
+                             SELECT e.* FROM entries e JOIN aliases a ON e.id=a.entry_id
+                               WHERE a.boundary_key=?
+                           ) ORDER BY CASE source WHEN 'annota' THEN 0 ELSE 1 END, id LIMIT ?""",
+                        (boundary, boundary, limit),
+                    ).fetchall()
                 forms = db.execute("SELECT DISTINCT e.* FROM entries e JOIN forms f ON e.id=f.entry_id WHERE f.key=? LIMIT ?",
                                    (candidate, limit)).fetchall()
                 ids = {r['id'] for r in rows}

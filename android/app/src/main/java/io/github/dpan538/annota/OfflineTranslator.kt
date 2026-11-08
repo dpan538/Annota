@@ -97,10 +97,14 @@ class OfflineTranslator private constructor(private val context: Context) {
             }
         }
 
-        fun translate(text: String, active: () -> Boolean = { true }): String {
+        fun translate(
+            text: String,
+            active: () -> Boolean = { true },
+            deadlineMillis: Long = 30000L,
+        ): String {
             check(active()) { "Cancelled" }
             val segments = TranslationInput.segments(text) { tokenizer.encode(it).size }
-            val deadline = android.os.SystemClock.uptimeMillis() + 30000
+            val deadline = android.os.SystemClock.uptimeMillis() + deadlineMillis
             // Return only a complete result. A failed/cancelled later sentence cannot leave a
             // plausible-looking partial translation in the dictionary panel.
             return segments.joinToString("\n") { segment ->
@@ -180,7 +184,7 @@ class OfflineTranslator private constructor(private val context: Context) {
                         check(translation.any { it in '\u3400'..'\u9fff' }) {
                             "No Chinese translation"
                         }
-                        return translation
+                        return TranslationOutput.normalize(translation)
                     }
                     output += next
                 }
@@ -212,5 +216,52 @@ class OfflineTranslator private constructor(private val context: Context) {
                 }
 
         fun eligible(text: String): Boolean = TranslationInput.eligible(text)
+    }
+}
+
+/**
+ * Display normalization for bundled-model output. It fixes Chinese punctuation and spacing
+ * after decoding; it never rewrites digits, Latin words or proper names, and it is mirrored
+ * by the Python comparison script (design/translation/evaluate_variants.py).
+ */
+internal object TranslationOutput {
+    private const val CJK_CLASS = "[\\u3400-\\u9fff]"
+    private val cjk = '\u3400'..'\u9fff'
+    private val spaces = Regex("[ \\t\\u00a0]+")
+    private val spaceAroundCjk = Regex("\\s*($CJK_CLASS)\\s*")
+    private val spaceBeforeAscii = Regex("\\s+([,.;:!?])")
+    private val asciiAfterCjk = Regex("(?<=$CJK_CLASS)\\s*([,;:!?])")
+    private val asciiBeforeCjk = Regex("([,;:!?])(?=$CJK_CLASS)")
+    private val periodAfterCjk = Regex("(?<=$CJK_CLASS)\\.")
+    private val blankLines = Regex("\\n\\s*\\n+")
+    private val punctuation =
+        mapOf(',' to '，', ';' to '；', '!' to '！', '?' to '？', ':' to '：')
+    private const val TERMINATORS = "。！？；：….,!?;:）】》”』"
+
+    fun normalize(text: String): String {
+        var value = spaces.replace(text, " ")
+        // Chinese text does not put a space between CJK characters.
+        value = spaceAroundCjk.replace(value, "$1")
+        value = spaceBeforeAscii.replace(value, "$1")
+        // ASCII punctuation touching a CJK character becomes full-width. A period is only
+        // converted after CJK, so decimal points and abbreviations keep their ASCII form.
+        value =
+            asciiAfterCjk.replace(value) {
+                punctuation.getValue(it.groupValues[1][0]).toString()
+            }
+        value =
+            asciiBeforeCjk.replace(value) {
+                punctuation.getValue(it.groupValues[1][0]).toString()
+            }
+        value = periodAfterCjk.replace(value, "。")
+        value = blankLines.replace(value, "\n")
+        value =
+            value.split('\n').map(String::trim).filter(String::isNotEmpty).joinToString("\n")
+        if (value.isEmpty()) return ""
+        val last = value.last()
+        if ((last in cjk || last.isLetterOrDigit() || last in ")]}") && last !in TERMINATORS) {
+            value += "。"
+        }
+        return value
     }
 }

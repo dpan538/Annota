@@ -13,9 +13,9 @@ import org.junit.Test
 /**
  * Instrumented coverage for the 1.2 local-dictionary retrieval upgrade.
  *
- * Tests that need a rebuilt asset (en-zh schema 4 bloom/freq, zh-en variants, wordnet schema 2,
- * wiktionary schema 3) skip themselves on pre-upgrade assets instead of failing, so the suite is
- * still runnable while the data build is in flight.
+ * Tests that need a rebuilt asset (en-zh schema 5 slim alias table, zh-en variants, wordnet
+ * schema 2, wiktionary schema 3) skip themselves on pre-upgrade assets instead of failing, so the
+ * suite is still runnable while the data build is in flight.
  */
 class DictionarySearchUpgradeTest {
     private val inst = InstrumentationRegistry.getInstrumentation()
@@ -39,6 +39,26 @@ class DictionarySearchUpgradeTest {
 
     private fun hasFrequency(): Boolean =
         openReadOnly("en-zh.sqlite").use { columns(it, "entries").contains("freq") }
+
+    private fun userVersion(name: String): Int =
+        openReadOnly(name).use { db ->
+            db.rawQuery("PRAGMA user_version", null).use { cursor ->
+                if (cursor.moveToFirst()) cursor.getInt(0) else 0
+            }
+        }
+
+    private fun count(db: SQLiteDatabase, sql: String): Int =
+        db.rawQuery(sql, null).use { cursor -> if (cursor.moveToFirst()) cursor.getInt(0) else 0 }
+
+    private fun hasBoundaryKey(): Boolean =
+        openReadOnly("en-zh.sqlite").use { columns(it, "entries").contains("boundary_key") }
+
+    private fun hasIndex(db: SQLiteDatabase, name: String): Boolean =
+        db.rawQuery(
+                "SELECT 1 FROM sqlite_master WHERE type='index' AND name=? LIMIT 1",
+                arrayOf(name),
+            )
+            .use { it.moveToFirst() }
 
     private fun hasSenseOrder(name: String): Boolean =
         openReadOnly(name).use { columns(it, "senses").contains("sense_order") }
@@ -107,26 +127,37 @@ class DictionarySearchUpgradeTest {
                 // A table that exists but is rejected (truncated / inconsistent) would silently
                 // disable the optimization; fail instead of skipping so build regressions show.
                 Assume.assumeTrue(
-                    "en-zh schema 4 lookup_filter required",
+                    "en-zh lookup_filter required",
                     "lookup_filter" in tables(db),
                 )
                 val filter = LookupFilter.open(db) { wikiDb }
                 assertNotNull("lookup_filter exists but was rejected as malformed", filter)
                 val keys = LinkedHashSet<String>()
-                val probes =
+                // Schema 5 covers entries.key/entries.boundary_key/aliases.key/
+                // aliases.boundary_key/forms.key; pre-schema-5 assets lack entries.boundary_key.
+                val enZhProbes =
+                    buildList {
+                        add("SELECT key FROM entries WHERE key IS NOT NULL AND key<>'' LIMIT 125")
+                        if (hasBoundaryKey())
+                            add(
+                                "SELECT boundary_key FROM entries WHERE boundary_key IS NOT NULL " +
+                                    "AND boundary_key<>'' LIMIT 125"
+                            )
+                        add("SELECT key FROM aliases WHERE key IS NOT NULL AND key<>'' LIMIT 125")
+                        add(
+                            "SELECT boundary_key FROM aliases WHERE boundary_key IS NOT NULL " +
+                                "AND boundary_key<>'' LIMIT 75"
+                        )
+                        add("SELECT key FROM forms WHERE key IS NOT NULL AND key<>'' LIMIT 75")
+                    }
+                val wikiProbes =
                     listOf(
-                        "SELECT key FROM entries WHERE key IS NOT NULL AND key<>'' LIMIT 125",
-                        "SELECT key FROM aliases WHERE key IS NOT NULL AND key<>'' LIMIT 125",
-                        "SELECT boundary_key FROM aliases WHERE boundary_key IS NOT NULL AND boundary_key<>'' LIMIT 75",
-                        "SELECT key FROM forms WHERE key IS NOT NULL AND key<>'' LIMIT 75",
                         "SELECT key FROM aliases WHERE key IS NOT NULL AND key<>'' LIMIT 125",
                         "SELECT form FROM forms WHERE form IS NOT NULL AND form<>'' LIMIT 125",
                         "SELECT form FROM source_forms WHERE form IS NOT NULL AND form<>'' LIMIT 125",
                         "SELECT key FROM english_aliases WHERE key IS NOT NULL AND key<>'' LIMIT 125",
                     )
-                // The first four probes read en-zh; the last four read the wiktionary asset.
-                probes.forEachIndexed { index, probe ->
-                    val source = if (index < 4) db else wikiDb
+                fun collect(source: SQLiteDatabase, probe: String) {
                     source.rawQuery(probe, null).use { cursor ->
                         while (cursor.moveToNext()) cursor
                             .getString(0)
@@ -134,6 +165,8 @@ class DictionarySearchUpgradeTest {
                             ?.let { keys += it }
                     }
                 }
+                enZhProbes.forEach { collect(db, it) }
+                wikiProbes.forEach { collect(wikiDb, it) }
                 assertTrue("Not enough sample keys: ${keys.size}", keys.size >= 500)
                 // Every key stored in a column covered by the build-time filter must be present
                 // in the bitmap. Any miss here would be a false negative regression.
@@ -283,7 +316,7 @@ class DictionarySearchUpgradeTest {
     fun frequencyRanksCommonCorrectionFirst() {
         val dictionary = dictionary()
         try {
-            Assume.assumeTrue("en-zh schema 4 with entries.freq required", hasFrequency())
+            Assume.assumeTrue("en-zh schema 4+ with entries.freq required", hasFrequency())
             assertEquals("address", dictionary.query("adress").suggestions.firstOrNull())
             assertEquals("receive", dictionary.query("recieve").suggestions.firstOrNull())
         } finally {
@@ -425,6 +458,121 @@ class DictionarySearchUpgradeTest {
             assertTrue(result.suggestions.isEmpty())
             // The selection must be covered by readings, not silently dropped.
             assertTrue(result.parts.all { it.text.isNotBlank() })
+        } finally {
+            dictionary.close()
+        }
+    }
+
+    @Test
+    fun slimEnZhSchemaDropsRedundantAliases() {
+        Assume.assumeTrue(
+            "en-zh schema 5 with entries.boundary_key required",
+            userVersion("en-zh.sqlite") >= 5 && hasBoundaryKey(),
+        )
+        val dictionary = dictionary()
+        try {
+            openReadOnly("en-zh.sqlite").use { db ->
+                assertEquals(5, userVersion("en-zh.sqlite"))
+                val entries = count(db, "SELECT count(*) FROM entries")
+                val aliases = count(db, "SELECT count(*) FROM aliases")
+                assertTrue("entries.boundary_key missing", "boundary_key" in columns(db, "entries"))
+                assertTrue("en_boundary index missing", hasIndex(db, "en_boundary"))
+                assertTrue("Author aliases must survive the slim-down: $aliases", aliases > 0)
+                assertTrue(
+                    "aliases must stay author-only (<3000 rows), was $aliases",
+                    aliases < 3000,
+                )
+                assertTrue(
+                    "aliases must not duplicate every entry: $aliases/$entries",
+                    aliases * 20 < entries,
+                )
+                assertEquals(
+                    "Every entry needs a non-empty boundary key",
+                    0,
+                    count(db, "SELECT count(*) FROM entries WHERE boundary_key=''"),
+                )
+                assertTrue(
+                    "Hyphen/space boundaries must be precomputed on entries",
+                    count(db, "SELECT count(*) FROM entries WHERE boundary_key<>key") > 50000,
+                )
+                assertEquals(
+                    "Every author alias must point at an entry",
+                    0,
+                    count(
+                        db,
+                        "SELECT count(*) FROM aliases a " +
+                            "LEFT JOIN entries e ON e.id=a.entry_id WHERE e.id IS NULL",
+                    ),
+                )
+            }
+        } finally {
+            dictionary.close()
+        }
+    }
+
+    @Test
+    fun slimSchemaKeepsLookupSemantics() {
+        Assume.assumeTrue(
+            "en-zh schema 5 with entries.boundary_key required",
+            userVersion("en-zh.sqlite") >= 5 && hasBoundaryKey(),
+        )
+        val dictionary = dictionary()
+        try {
+            // Headwords and annota phrases still resolve, annota first.
+            assertEquals(
+                "neural network",
+                dictionary.query("neural network").entries.first().word,
+            )
+            assertTrue(
+                dictionary.lookup("neural network").entries.any { it.word == "neural network" },
+            )
+            // Hyphen and space stay equivalent boundaries.
+            assertEquals(
+                "neural network",
+                dictionary.query("neural-network").entries.first().word,
+            )
+            assertEquals("self-attention", dictionary.query("self attention").entries.first().word)
+            // Author aliases (annota-phrases.tsv) survive even though entries.key is now the
+            // canonical storage for the phrase itself.
+            assertEquals(
+                "attention mechanism",
+                dictionary.query("attention mechanisms").entries.first().word,
+            )
+            assertEquals(
+                "position embedding",
+                dictionary.query("positional embeddings").entries.first().word,
+            )
+            assertEquals(
+                "multi-head attention",
+                dictionary.query("multi head attention").entries.first().word,
+            )
+            // An author alias colliding with an ECDICT head must still prefer the author phrase.
+            assertEquals(
+                "signal-to-noise ratio",
+                dictionary.query("signal to noise ratio").entries.first().word,
+            )
+            // `set up` and `setup` never collapse into one word.
+            assertEquals("set up", dictionary.lookup("set up").entries.first().word)
+            assertEquals("setup", dictionary.lookup("setup").entries.first().word)
+            assertNotEquals(
+                dictionary.lookup("set up").entries.first().word,
+                dictionary.lookup("setup").entries.first().word,
+            )
+            // Source morphology and Wiktionary lemmas still provide recall without aliases.
+            assertTrue(
+                dictionary.lookup("microarchitectures").entries.any {
+                    it.word == "microarchitecture"
+                }
+            )
+            assertTrue(
+                dictionary.lookup("taken into account").entries.any { it.word == "take into account" },
+            )
+            assertTrue(
+                dictionary.lookup("came across").entries.any { it.word == "come across" },
+            )
+            assertTrue(dictionary.query("mice").entries.any { it.word == "mouse" })
+            // Lexical-period headwords stay exact instead of being replaced by a boundary match.
+            assertEquals("P.M.", dictionary.query("P.M.").entries.first().word)
         } finally {
             dictionary.close()
         }

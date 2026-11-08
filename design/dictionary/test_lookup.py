@@ -107,10 +107,13 @@ class OfflineDictionaryTests(unittest.TestCase):
 
     def test_aliases_point_to_existing_entries(self):
         with closing(sqlite3.connect(f'file:{ROOT / "bundle/en-zh.sqlite"}?mode=ro', uri=True)) as db:
-            self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 4)
+            self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 5)
             self.assertEqual(db.execute('SELECT count(*) FROM aliases a LEFT JOIN entries e ON e.id=a.entry_id WHERE e.id IS NULL').fetchone()[0], 0)
             columns = {row[1] for row in db.execute('PRAGMA table_info(entries)')}
             self.assertIn('freq', columns)
+            self.assertIn('boundary_key', columns)
+            self.assertLess(db.execute('SELECT count(*) FROM aliases').fetchone()[0], 3000)
+            self.assertGreater(db.execute("SELECT count(*) FROM entries WHERE boundary_key<>key").fetchone()[0], 50000)
             self.assertGreater(db.execute('SELECT count(*) FROM entries WHERE freq>0').fetchone()[0], 50000)
             # Bloom filter must never hide a real key; the client uses the same layout.
             row = db.execute('SELECT bits, nbits, hashes FROM lookup_filter').fetchall()
@@ -130,7 +133,9 @@ class OfflineDictionaryTests(unittest.TestCase):
 
             for key, in db.execute('SELECT key FROM entries ORDER BY id LIMIT 500'):
                 self.assertTrue(contains(key), key)
-            for key, in db.execute('SELECT boundary_key FROM aliases ORDER BY rowid LIMIT 500'):
+            for key, in db.execute('SELECT boundary_key FROM entries ORDER BY id LIMIT 500'):
+                self.assertTrue(contains(key), key)
+            for key, in db.execute('SELECT key FROM aliases ORDER BY rowid LIMIT 100'):
                 self.assertTrue(contains(key), key)
             absent = [f'zzz{index:06d}' for index in range(1000)]
             self.assertLess(sum(contains(key) for key in absent) / len(absent), 0.02)
@@ -153,6 +158,25 @@ class OfflineDictionaryTests(unittest.TestCase):
             self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 3)
             self.assertEqual(db.execute("SELECT count(*) FROM senses WHERE gloss='Translations'").fetchone()[0], 0)
             self.assertEqual(db.execute('SELECT count(*) FROM senses WHERE sense_order IS NULL').fetchone()[0], 0)
+
+    def test_slim_schema_keeps_boundary_and_phrase_matching(self):
+        self.assertTrue(lookup("neural network")["entries"])
+        self.assertTrue(lookup("neural-network")["entries"])
+        # author alias from annota-phrases.tsv
+        self.assertTrue(lookup("attention mechanisms")["entries"])
+        # set up and setup stay separate
+        self.assertNotEqual(lookup("set up")["entries"][0]["word"].lower(), "setup")
+        self.assertEqual(lookup("set up")["entries"][0]["word"].lower(), "set up")
+
+    def test_reverse_chinese_entries_come_from_attributed_sources(self):
+        result = lookup("一百")
+        self.assertTrue(result["entries"])
+        self.assertTrue(any("wordnet-reverse" in (e.get("source") or "") for e in result["entries"]))
+        with closing(sqlite3.connect(f'file:{ROOT / "bundle/zh-en.sqlite"}?mode=ro', uri=True)) as db:
+            self.assertGreater(
+                db.execute("SELECT count(*) FROM entries WHERE source LIKE '%reverse'").fetchone()[0],
+                100000,
+            )
 
 
 if __name__ == "__main__":

@@ -1,0 +1,119 @@
+{
+  "version": "1.2.1",
+  "versionCode": 23,
+  "channel": "unreleased candidate",
+  "releaseAuthorized": false,
+  "date": "2026-11-08",
+  "device": "dedicated Android16 API36 ARM64 emulator-5584; not target tablet",
+  "networkDuringInstrumentation": "wifi and mobile data disabled",
+  "build": "assembleDebug, assembleDebugAndroidTest, lintDebug, assembleRelease passed",
+  "lint": {
+    "errors": 0,
+    "warnings": 100
+  },
+  "instrumentation": {
+    "tests": 200,
+    "passed": 200,
+    "failed": 0,
+    "seconds": 301.371,
+    "raw": "regression.txt",
+    "note": "ThumbnailNavigationTest needs a 400+ page lecture fixture; this run used a generated 420-page synthetic PDF pushed to the debug app through run-as. The fixture is not committed and contains no user content."
+  },
+  "pythonTests": {
+    "test_lookup": 18,
+    "test_lexicons": 20
+  },
+  "dictionary": {
+    "enZhEntries": 771180,
+    "enZhAliases": 682,
+    "enZhSqliteBytes": 184578048,
+    "enZhPackBytes": 73485205,
+    "zhEnEntries": 238664,
+    "zhEnReverseEntries": 108863,
+    "zhEnReverseBySource": {
+      "wordnet": 81473,
+      "wiktionary": 27390
+    },
+    "variants": 4148,
+    "wordnetSenses": 95221,
+    "wiktionarySenses": 59290,
+    "semanticGlosses": 101085,
+    "bloom": {
+      "keys": 1316131,
+      "bits": 13161310,
+      "hashes": 7,
+      "falsePositiveSample": "8/1000",
+      "falseNegativeSample": "0/500"
+    }
+  },
+  "packing": {
+    "allBundledDbsAreGzipPacks": true,
+    "assetsBytes": 404818258,
+    "firstInstallDecompressSecondsApprox": 3.2,
+    "firstColdLaunchMs": 1870,
+    "subsequentColdLaunchMs": [
+      1047,
+      1025,
+      1002
+    ],
+    "verifiedMarker": ".verified manifest hash skips re-hashing ~310 MB on later starts"
+  },
+  "apk": {
+    "artifact": "Annota-1.2.1-candidate.apk",
+    "sha256": "a291fe0092418e20c24ac513db5ecca67222537f0e4e93e67b336ef497b679fb",
+    "bytes": 408652404,
+    "zipEntries": 277,
+    "nativeAbis": [
+      "arm64-v8a"
+    ],
+    "packageName": "io.github.dpan538.annota",
+    "versionCode": 23,
+    "versionName": "1.2.1",
+    "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18",
+    "signatureV2": true,
+    "signatureV3": false,
+    "assetsAndArchiveVerified": true,
+    "downloadedCopyInstalledAndColdLaunched": true,
+    "transport": "local loopback HTTP only; never uploaded"
+  },
+  "retrieval": {
+    "dictionaryUpgradeTests": "13/13",
+    "dictionaryRelatedRegression": "57/57",
+    "longSelection": {
+      "words": 105,
+      "chars": 704,
+      "firstMs": 269,
+      "repeatMs": 60,
+      "parts": 105
+    },
+    "queryParity": "821,177 candidate keys and 84 queries compared with schema4: no set or order differences"
+  },
+  "translation": {
+    "direction": "en->zh only",
+    "decoding": "greedy (unchanged)",
+    "postprocess": "CJK punctuation/spacing/terminal period; digits and Latin words untouched",
+    "developmentSetCases": 40,
+    "chrF": {
+      "greedyRaw": 35.35,
+      "greedyPostprocessed": 39.11,
+      "beam4": 40.7,
+      "beam4WithCheapGuards": 40.96
+    },
+    "decision": "no stable chrF gain (bootstrap intervals include 0) and beam costs 3.6x; ship post-processing only",
+    "newGateTests": 4,
+    "knownFailures": [
+      "cache miss -> 缓存错误",
+      "without prejudice legal sense",
+      "ticket -> 罚单",
+      "occasional missing quantity/negation nuance"
+    ]
+  },
+  "updateChannel": "unchanged; latest public release remains v1.2.0 (https://github.com/dpan538/Annota/releases/tag/v1.2.0)",
+  "publicDownloadVerified": false,
+  "knownLimitations": [
+    "Reverse zh-en entries are machine-merged equivalents, not individually proofread; at most four English equivalents per Chinese word.",
+    "Packing every database adds one decompression pass on the first launch after install/update (measured ~1.9 s first launch vs ~1.0 s later starts on the emulator).",
+    "Translation improvements are output-format robustness and completeness gates, not semantic accuracy; decoder errors remain.",
+    "Emulator results do not replace Xiaomi Pad 9 Pro Max device acceptance."
+  ]
+}
