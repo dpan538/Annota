@@ -22,6 +22,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private val restored =
         runCatching { org.json.JSONObject(positionPrefs.getString(book.id, "")!!) }.getOrNull()
     var onToolChanged: () -> Unit = {}
+    var onCanvasTouch: () -> Unit = {}
     private val displayPrefs = context.getSharedPreferences("reading-display", Context.MODE_PRIVATE)
     private val displaySaved =
         runCatching { org.json.JSONObject(displayPrefs.getString(book.id, "")!!) }.getOrNull()
@@ -427,6 +428,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private var textLongPage: Sheet? = null
     private var textLongPlace: Placement? = null
     private var textLongPoint = Point(0f, 0f)
+    private var textContextMenu: android.widget.PopupWindow? = null
     private val textHandler = android.os.Handler(android.os.Looper.getMainLooper())
     private val textLongPress =
         Runnable {
@@ -1841,6 +1843,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     private fun handleTextTouch(e: MotionEvent): Boolean {
+        onCanvasTouch()
         val place =
             placements.firstOrNull { it.bounds.contains(e.x, e.y) }
                 ?: placements.firstOrNull { it.index == book.current }
@@ -2061,9 +2064,11 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             }
         popup = android.widget.PopupWindow(content, 220, -2, true)
         popup.isOutsideTouchable = true
+        popup.setOnDismissListener { if (textContextMenu === popup) textContextMenu = null }
         popup.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(0x00000000))
         val location = IntArray(2)
         getLocationOnScreen(location)
+        textContextMenu = popup
         popup.showAtLocation(
             this,
             android.view.Gravity.NO_GRAVITY,

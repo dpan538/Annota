@@ -1500,18 +1500,52 @@ class MainActivity : Activity() {
         val r = reader ?: return
         if (r.readOnly) return
         r.tool = "text"
-        val menu = readerPanel("text", 420f)
-        menu.header(tr("文字", "Text"))
-        listOf(14f to tr("小", "Small"), 20f to tr("中", "Medium"), 28f to tr("大", "Large"), 40f to tr("特大", "Extra large"))
-            .forEach { (size, label) ->
-                menu.item(
-                    "text-size-$size",
-                    tr("字号", "Size") + " · $label" + if (abs(r.textSize - size) < .1f) " ✓" else "",
-                ) {
+        val menu = readerPanel("text", 508f)
+        menu.centerOn = r
+        val ribbon = row()
+        fun divider() {
+            ribbon.addView(
+                View(this).apply { setBackgroundColor(menu.palette.color("rule")) },
+                LinearLayout.LayoutParams(menu.ui.px(1f), menu.ui.px(28f)).apply {
+                    setMargins(menu.ui.px(5f), 0, menu.ui.px(5f), 0)
+                },
+            )
+        }
+        val sizes =
+            listOf(
+                14f to tr("小", "Small"),
+                20f to tr("中", "Medium"),
+                28f to tr("大", "Large"),
+                40f to tr("特大", "Extra large"),
+            )
+        sizes.forEach { (size, label) ->
+            val action =
+                menu.ui.action("${tr("字号", "Size")} $label") {
                     r.textSize = size
                     r.applyTextStyle()
+                    menu.popup.dismiss()
                 }
-            }
+            action.isSelected = abs(r.textSize - size) < .1f
+            action.background =
+                menu.ui.background(
+                    if (action.isSelected) menu.palette.color("side-active") else Color.TRANSPARENT,
+                    9f,
+                )
+            action.addView(
+                TextView(this).apply {
+                    text = "A"
+                    gravity = Gravity.CENTER
+                    setTextColor(if (action.isSelected) menu.palette.accent else menu.palette.ink)
+                    setTextSize(
+                        android.util.TypedValue.COMPLEX_UNIT_PX,
+                        menu.ui.unit * (size / 2.6f),
+                    )
+                },
+                FrameLayout.LayoutParams(-1, -1),
+            )
+            ribbon.addView(action, LinearLayout.LayoutParams(menu.ui.px(32f), menu.ui.px(38f)))
+        }
+        divider()
         val colors =
             listOf(
                 0xff262a2d.toInt() to tr("墨色", "Ink"),
@@ -1521,12 +1555,59 @@ class MainActivity : Activity() {
                 0xff7c3aed.toInt() to tr("紫色", "Purple"),
             )
         colors.forEach { (color, label) ->
-            menu.item("text-color-$color", tr("颜色", "Color") + " · $label" + if (r.textColor == color) " ✓" else "") {
-                r.textColor = color
-                r.applyTextStyle()
-            }
+            val swatch =
+                menu.ui.action("${tr("颜色", "Color")} · $label") {
+                    r.textColor = color
+                    r.applyTextStyle()
+                    menu.popup.dismiss()
+                }
+            swatch.isSelected = r.textColor == color
+            swatch.addView(
+                object : View(this) {
+                    val p = Paint(Paint.ANTI_ALIAS_FLAG)
+
+                    override fun onDraw(c: Canvas) {
+                        val x = width / 2f
+                        val y = height / 2f
+                        val radius = menu.ui.unit * 9f
+                        p.style = Paint.Style.FILL
+                        p.color = color
+                        c.drawCircle(x, y, radius, p)
+                        p.style = Paint.Style.STROKE
+                        p.strokeWidth = menu.ui.unit
+                        p.color = menu.palette.color("rule")
+                        c.drawCircle(x, y, radius, p)
+                        if (r.textColor == color) {
+                            p.color = menu.palette.accent
+                            p.strokeWidth = menu.ui.unit * 1.6f
+                            c.drawCircle(x, y, radius + menu.ui.unit * 3, p)
+                        }
+                    }
+                },
+                FrameLayout.LayoutParams(-1, -1),
+            )
+            ribbon.addView(swatch, LinearLayout.LayoutParams(menu.ui.px(28f), menu.ui.px(38f)))
         }
-        showPanel(menu)
+        val close =
+            menu.ui.action(tr("关闭", "Close")) { menu.popup.dismiss() }
+        close.addView(
+            ReaderGlyph(this, "close").apply { tint = menu.palette.ink },
+            FrameLayout.LayoutParams(menu.ui.px(16f), menu.ui.px(16f), Gravity.CENTER),
+        )
+        ribbon.addView(close, LinearLayout.LayoutParams(menu.ui.px(36f), menu.ui.px(38f)))
+        menu.content.addView(
+            HorizontalScrollView(this).apply {
+                isHorizontalScrollBarEnabled = false
+                addView(ribbon)
+            }
+        )
+        val popup = menu.show()
+        readerPopup = popup
+        // Keep the page interactive while the compact ribbon is open. Selecting a size/colour
+        // dismisses it; a page tap also closes it through ReaderView.onCanvasTouch.
+        popup.isFocusable = false
+        popup.isOutsideTouchable = false
+        r.onCanvasTouch = { if (readerPanelKey == "text") popup.dismiss() }
     }
 
     private fun shapeOptions() {

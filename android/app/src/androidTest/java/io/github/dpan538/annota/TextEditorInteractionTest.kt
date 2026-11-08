@@ -43,7 +43,14 @@ class TextEditorInteractionTest {
             }
             ok
         }
-        inst.runOnMainSync { reader.textTool() }
+        inst.runOnMainSync {
+            val button =
+                all(a.window.decorView).firstOrNull {
+                    it.isClickable && (it.contentDescription == "文字" || it.contentDescription == "Text")
+                }
+            org.junit.Assert.assertNotNull("Text toolbar button must exist", button)
+            button!!.performClick()
+        }
         tap(reader, 420f, 360f)
         // Tap inside the box, away from its corner resize handles.
         tap(reader, 520f, 400f)
@@ -70,6 +77,58 @@ class TextEditorInteractionTest {
         assertTrue("editor popup must stay open", popup?.isShowing == true)
         assertTrue("editor must own focus for the IME", editor?.hasFocus() == true)
         inst.runOnMainSync { popup?.dismiss() }
+
+        // Long-press the box: only Copy/Delete are offered.
+        val now = SystemClock.uptimeMillis()
+        val down = MotionEvent.obtain(now, now, MotionEvent.ACTION_DOWN, 520f, 400f, 0)
+        down.source = InputDevice.SOURCE_STYLUS
+        inst.runOnMainSync { reader.dispatchTouchEvent(down) }
+        SystemClock.sleep(700)
+        var contextMenu: PopupWindow? = null
+        var labels: List<String> = emptyList()
+        inst.runOnMainSync {
+            val f = ReaderView::class.java.getDeclaredField("textContextMenu").apply { isAccessible = true }
+            contextMenu = f.get(reader) as? PopupWindow
+            labels = contextMenu?.contentView?.let { all(it).filterIsInstance<android.widget.TextView>().map { v -> v.text.toString() } }.orEmpty()
+        }
+        assertTrue("long press must show a context menu", contextMenu?.isShowing == true)
+        assertTrue("long-press menu must contain Copy/Delete", labels.any { it.contains("复制") || it.contains("Copy") } && labels.any { it.contains("删除") || it.contains("Delete") })
+        inst.runOnMainSync { contextMenu?.dismiss() }
+        val up = MotionEvent.obtain(now, now + 900, MotionEvent.ACTION_UP, 520f, 400f, 0)
+        up.source = InputDevice.SOURCE_STYLUS
+        inst.runOnMainSync { reader.dispatchTouchEvent(up) }
+        down.recycle()
+        up.recycle()
+
+        // Long-press empty page: paste at the pressed position.
+        val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE)
+            as android.content.ClipboardManager
+        clipboard.setPrimaryClip(android.content.ClipData.newPlainText("Annota", "粘贴文字"))
+        val n2 = SystemClock.uptimeMillis()
+        val down2 = MotionEvent.obtain(n2, n2, MotionEvent.ACTION_DOWN, 700f, 700f, 0)
+        down2.source = InputDevice.SOURCE_STYLUS
+        inst.runOnMainSync { reader.dispatchTouchEvent(down2) }
+        SystemClock.sleep(700)
+        var pasteMenu: PopupWindow? = null
+        var pasteLabel: android.widget.TextView? = null
+        inst.runOnMainSync {
+            val f = ReaderView::class.java.getDeclaredField("textContextMenu").apply { isAccessible = true }
+            pasteMenu = f.get(reader) as? PopupWindow
+            pasteLabel = pasteMenu?.contentView?.let { all(it).filterIsInstance<android.widget.TextView>().firstOrNull { v -> v.text.contains("粘贴") || v.text.contains("Paste") } }
+            labels = pasteMenu?.contentView?.let { all(it).filterIsInstance<android.widget.TextView>().map { v -> v.text.toString() } }.orEmpty()
+        }
+        assertTrue("long press blank page must offer Paste; menu=$pasteMenu labels=$labels", pasteLabel != null)
+        inst.runOnMainSync { pasteLabel?.performClick() }
+        var pasted = false
+        inst.runOnMainSync {
+            pasted = reader.book.pages[0].marks.any { it.tool == "text" && it.text == "粘贴文字" }
+        }
+        assertTrue("pasted text box must be created", pasted)
+        val up2 = MotionEvent.obtain(n2, n2 + 900, MotionEvent.ACTION_UP, 700f, 700f, 0)
+        up2.source = InputDevice.SOURCE_STYLUS
+        inst.runOnMainSync { reader.dispatchTouchEvent(up2) }
+        down2.recycle()
+        up2.recycle()
     }
 
     private fun tap(reader: ReaderView, x: Float, y: Float) {
