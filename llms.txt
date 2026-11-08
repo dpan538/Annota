@@ -3,7 +3,7 @@
 
 ## Releases
 - Stable 1.2.0: https://github.com/dpan538/Annota/releases/tag/v1.2.0 (APK SHA-256 745a560875c6bb6b213504d697fa390f96396320cc69a4b77cb08261cfebbb4b)
-- Preview 1.2.1-preview.1: https://github.com/dpan538/Annota/releases/tag/v1.2.1-preview.1 (APK SHA-256 96ea10fbf34038e18faf0ba9056a9f125119bdcb069234bf714af07e05bce69c; real-device acceptance pending)
+- Preview 1.2.1-preview.1: https://github.com/dpan538/Annota/releases/tag/v1.2.1 (APK SHA-256 96ea10fbf34038e18faf0ba9056a9f125119bdcb069234bf714af07e05bce69c; real-device acceptance pending)
 
 ## Original features
 - [Contact-Intent Edge Guard](https://dpan538.github.io/Annota/features/contact-intent-edge-guard.html): A forearm resting on the screen edge no longer exits the reader: contacts are classified, edge gestures are excluded only while the pen or limb is active, and the first accidental back is deferred.

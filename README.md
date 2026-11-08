@@ -8,14 +8,14 @@
 
 [![Android](https://img.shields.io/badge/Android-10%2B-3DDC84)](DOWNLOAD.md)
 [![Stable](https://img.shields.io/badge/Stable-1.2.0-16A34A)](https://github.com/dpan538/Annota/releases/tag/v1.2.0)
-[![Preview](https://img.shields.io/badge/Preview-1.2.1--preview.1-C2410C)](https://github.com/dpan538/Annota/releases/tag/v1.2.1-preview.1)
+[![Preview](https://img.shields.io/badge/Preview-1.2.1--preview.1-C2410C)](https://github.com/dpan538/Annota/releases/tag/v1.2.1)
 [![License](https://img.shields.io/badge/License-MIT-8B5CF6)](LICENSE)
 ![Offline](https://img.shields.io/badge/Dictionary-Offline-0891B2)
 ![Local](https://img.shields.io/badge/Storage-On_device-DB2777)
 ![No account](https://img.shields.io/badge/Account-Not_required-64748B)
 ![Device](https://img.shields.io/badge/Xiaomi-Pad_9_Pro_Max_only-FF6900)
 
-[**下载 1.2.1-preview.1 预览版 APK**](https://github.com/dpan538/Annota/releases/download/v1.2.1-preview.1/Annota-1.2.1-preview.1.apk) · [下载 1.2.0 正式版 APK](https://github.com/dpan538/Annota/releases/download/v1.2.0/Annota-1.2.0.apk) · [安装说明](DOWNLOAD.md) · [更新日志](CHANGELOG.md)
+[**下载 1.2.1-preview.1 预览版 APK**](https://github.com/dpan538/Annota/releases/download/v1.2.1/Annota-1.2.1.apk) · [下载 1.2.0 正式版 APK](https://github.com/dpan538/Annota/releases/download/v1.2.0/Annota-1.2.0.apk) · [安装说明](DOWNLOAD.md) · [更新日志](CHANGELOG.md)
 
 > **Preview 说明**：1.2.1-preview.1 是已作为普通 Release 发布的预览版，包含新的书写/墨迹系统；真机验收仍在进行。需要最稳定版本请安装 1.2.0。两者使用同一安装证书，可覆盖升级。
 
