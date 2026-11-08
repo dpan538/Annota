@@ -2,69 +2,59 @@
 
 [中文](README.md) · [English](README_EN.md)
 
-**Open a document. Read with focus. Make it your own.**
-
-Local PDF reading and handwritten annotation, designed around **Xiaomi Pad 9 Pro Max**. No account required. Documents, ink, reading progress and dictionary queries stay on your device.
+A local PDF reader and handwriting annotation app optimized for the **Xiaomi Pad 9 Pro Max**. No account: documents, ink, reading position and lookups stay on the device.
 
 [![Android](https://img.shields.io/badge/Android-10%2B-3DDC84)](DOWNLOAD.md)
 [![Stable](https://img.shields.io/badge/Stable-1.2.0-16A34A)](https://github.com/dpan538/Annota/releases/tag/v1.2.0)
 [![Preview](https://img.shields.io/badge/Preview-1.2.1.4-C2410C)](https://github.com/dpan538/Annota/releases/tag/v1.2.1.4)
 [![License](https://img.shields.io/badge/License-MIT-8B5CF6)](LICENSE)
 ![Offline](https://img.shields.io/badge/Dictionary-Offline-0891B2)
-![Local](https://img.shields.io/badge/Storage-On_device-DB2777)
-![No account](https://img.shields.io/badge/Account-Not_required-64748B)
-![Device](https://img.shields.io/badge/Xiaomi-Pad_9_Pro_Max_only-FF6900)
 
-[**Download 1.2.1.4 APK**](https://github.com/dpan538/Annota/releases/download/v1.2.1.4/Annota-1.2.1.4.apk) · [Download 1.2.0 stable APK](https://github.com/dpan538/Annota/releases/download/v1.2.0/Annota-1.2.0.apk) · [Installation](DOWNLOAD.md) · [Changelog](CHANGELOG.md)
+[**Download 1.2.1.4 preview APK**](https://github.com/dpan538/Annota/releases/download/v1.2.1.4/Annota-1.2.1.4.apk) · [Download 1.2.0 stable APK](https://github.com/dpan538/Annota/releases/download/v1.2.0/Annota-1.2.0.apk) · [Installation](DOWNLOAD.md) · [Changelog](CHANGELOG.md)
 
-> **Preview:** 1.2.1.4 is published as a normal GitHub release while real-device acceptance is still running. Use 1.2.0 if you want the most stable build. Both are signed with the same certificate and upgrade in place.
+> 1.2.1.4 is a preview; real-device acceptance is still in progress. Install 1.2.0 if you need the most stable build. Both use the same certificate and upgrade in place.
 
 ## Features
 
-- **Focused reading.** Tiled PDF rendering, continuous scrolling, pinch zoom, adjacent pages, document search, outlines, bookmarks and restored reading positions.
-- **Handwritten annotation.** Pen, pencil, fountain pen and highlighter; pressure response, hold-to-straighten, ruler snapping, selection move / scale / rotation and undo / redo. Handwritten signatures and PDF export.
-- **Offline language tools.** English–Chinese / Chinese–English dictionaries combine ECDICT, Wiktionary, WordNet, Chinese WordNet and Open English WordNet, with technical terms, compounds, traditional/simplified lookup and clearly labelled English definitions. On-device MiniLM compares context with candidate senses; OPUS-MT provides reference translations for English phrases and short passages. All assets ship with the APK.
-- **Local library.** Folders, favorites, search and trash; PDF sharing from other apps, `.annota.zip` backup / restore and a continue-reading home widget.
+- **Reading**: continuous scroll, pinch zoom, adjacent spread, in-document search, outline, bookmarks and position restore.
+- **Handwriting**: pen, pencil, fountain pen and highlighter; pressure, ruler, move/scale/rotate selection, undo/redo, signature and PDF export.
+- **Annotations**: draggable/resizable text boxes with keyboard input; sized partial/whole eraser; shapes and images.
+- **Offline dictionary**: English–Chinese and Chinese–English lookup, professional terms, context-aware senses, fallback English definitions and short English sentence translation, all bundled in the APK.
+- **Local library**: folders, favorites, search, trash, PDF sharing import, full backup and restore.
 
-This page describes the **1.2.0 stable release** and the **1.2.1.4 preview**. See the [changelog](CHANGELOG.md) for differences.
+**Target device: Xiaomi Pad 9 Pro Max.** Android 10+ is an installation requirement, not a claim that other devices are supported. Scanned PDFs can be read and annotated; selection/search need a text layer. OCR, an iPad version, cloud sync and certificate signing are not provided.
 
-## Get started
+## Quick start
 
-1. Install the APK and open the bundled *Attention Is All You Need*, or import a PDF. An illustrated guide is included.
-2. Tap the pen icon to annotate, or use reading mode to hide annotation tools. Long-press text to copy or look it up offline.
-3. Work is saved on the device. Export a PDF to share it, or create a full local backup.
+1. Install the APK, open the bundled *Attention Is All You Need*, or import a PDF.
+2. Annotate from the toolbar; reading mode hides the tools. Long-press text to copy or look it up offline.
+3. Content is saved on device automatically. Export a PDF or full backup to take it elsewhere.
 
-**Target device: Xiaomi Pad 9 Pro Max.** Android 10+ is the installation minimum, not a claim of testing on other devices. Scans can be read and annotated; selection and search require a PDF text layer. OCR, iPad support, cloud sync and certificate-based digital signing are not included.
+## Screenshots
 
-## A closer look
-
-Actual app screenshots in the same blue theme. Select an image to view full size.
-
-| Local library | Annotation tools |
+| Library | Handwriting |
 | --- | --- |
-| [![Library](docs/images/readme-library-blue.png)](docs/images/readme-library-blue.png) | [![Pens](docs/images/readme-pen-blue.png)](docs/images/readme-pen-blue.png) |
+| [![Library](docs/images/readme-library-blue.png)](docs/images/readme-library-blue.png) | [![Pen menu](docs/images/readme-pen-blue.png)](docs/images/readme-pen-blue.png) |
 
 | Offline dictionary | Page navigation |
 | --- | --- |
 | [![Dictionary](docs/images/readme-dictionary-blue.png)](docs/images/readme-dictionary-blue.png) | [![Pages](docs/images/readme-pages-blue.png)](docs/images/readme-pages-blue.png) |
 
-## Local dictionary
+## Offline dictionary
 
-Lookup finishes contextual sense comparison before showing definitions. Insufficient evidence retains alternative meanings; similarity scores are not certainty. Missing Chinese definitions may fall back to explicitly labelled English definitions. Reference translation supports **English → Simplified Chinese**; technical meanings still need review.
+Lookups run entirely on device. Dictionaries cover English–Chinese, Chinese–English, professional terminology and several sense sources; ambiguous words are ranked with the current context, and other senses remain available when evidence is weak. When no Chinese definition exists, a clearly labelled English definition is shown; traditional-Chinese queries expand to simplified automatically. Short English passages can show a reference translation (English → Simplified Chinese); verify professional content.
 
-After opening a PDF, background processing prepares context windows from the current page's already extracted text. Context vectors persist on-device and are reused by content hash, model revision and algorithm version. Dictionaries, models and sense vectors all ship with the APK, including for first use.
+Dictionaries, models and sense vectors ship with the APK and are not downloaded on first use. Semantic reranking can be disabled under Settings → About; ordinary offline lookup keeps working. See [local data](docs/PRIVACY.md).
 
-Under **Settings → About**, **Local dictionary** below App update is enabled by default. It controls semantic reranking and background preparation only; ordinary offline lookup remains available when disabled. See the [local-data policy](docs/PRIVACY.md).
+## Data and updates
 
-## Privacy and updates
+Reading, handwriting, lookup and reference translation work offline. Network is used only when you check for updates, download an APK or submit feedback. Back up before uninstalling or clearing app data.
 
-Reading, writing, dictionary lookup and reference translation are fully offline. Network access is used only when checking for updates, downloading an APK or submitting feedback. Feedback becomes a public GitHub Issue; do not include private documents. Back up before uninstalling or clearing app data.
-
-**1.2.0 is the stable release; 1.2.1.4 is a preview published as a normal release.** The in-app update check will see the latest published preview (versionCode 28); install or keep 1.2.0 if you prefer the most stable build. Download and installation require confirmation; the existing signing certificate is retained for in-place upgrades.
+In-app updates see the latest preview (versionCode 28). To stay on the stable release, install or keep 1.2.0 manually.
 
 ## Build
 
-Native Kotlin / Android Views, PdfRenderer, PDFBox and local SQLite. Requires JDK 17 / 21, Android SDK 36 and Build Tools 36.0.0.
+Native Kotlin / Android Views, system PdfRenderer, PDFBox and local SQLite. Requires JDK 17 / 21, Android SDK 36 and Build Tools 36.0.0.
 
 ```sh
 git clone https://github.com/dpan538/Annota.git
@@ -72,10 +62,10 @@ cd Annota/android
 ./gradlew :app:assembleDebug
 ```
 
-[Android project](android/README.md) · [Testing](docs/testing.md) · [Dictionary sources](design/dictionary/README.md) · [Report an issue](https://github.com/dpan538/Annota/issues)
+[Android project and signing](android/README.md) · [Testing](docs/testing.md) · [Dictionary build](design/dictionary/README.md) · [Issues](https://github.com/dpan538/Annota/issues)
 
 ## License
 
-Code: [MIT](LICENSE). Original visual assets and guide: [CC BY-NC 4.0](LICENSE-VISUALS.md). Fonts, icons, dictionaries and the sample paper retain their respective licenses; see [third-party notices](THIRD_PARTY_NOTICES.md).
+Code: [MIT](LICENSE). Original visuals and guides: [CC BY-NC 4.0](LICENSE-VISUALS.md). Fonts, icons, dictionaries and the sample paper follow their own licenses; see [third-party notices](THIRD_PARTY_NOTICES.md).
 
-An independent project, not affiliated with or endorsed by Xiaomi.
+Independent project; not affiliated with or endorsed by Xiaomi.
