@@ -15,7 +15,14 @@ import kotlin.math.sqrt
  * Supply only attested lemmas; this class performs no IO.
  */
 object SenseRanker {
-    data class Candidate(val id: Int, val gloss: String, val pos: String = "", val rank: Int = 0)
+    data class Candidate(
+        val id: Int,
+        val gloss: String,
+        val pos: String = "",
+        val rank: Int = 0,
+        /** OEWN lexicographer file such as `noun.cognition`; a coarse domain is derived from it. */
+        val domain: String = "",
+    )
 
     data class Evidence(
         val candidateIds: Set<Int>,
@@ -33,6 +40,238 @@ object SenseRanker {
     private const val MAX_CANDIDATES = 128
     private const val WINDOW = 12
     private const val MAX_SIGNATURE_WORDS = 128
+
+    /**
+     * Domain prior thresholds. A prior needs two different context words from one coarse domain, a
+     * strict lead over every other domain, and a candidate already close to the lexical best. These
+     * are evidence weights, not probabilities; unrelated lexicographer files are ignored.
+     */
+    private const val DOMAIN_MIN_CUES = 2
+    private const val DOMAIN_LEXICAL_TOLERANCE = .08
+    private const val DOMAIN_WINNER_MARGIN = .06
+    private const val DOMAIN_BASE_BONUS = .16
+    private const val DOMAIN_EXTRA_BONUS = .08
+    private const val DOMAIN_MAX_BONUS = .32
+
+    /**
+     * OEWN lexicographer files are broad and sometimes ambiguous. These nine coarse domains are a
+     * deliberately small prior: they can break a near tie, never replace confident gloss overlap or
+     * a curated rule. Broad files map to more than one domain (artifacts can be daily objects or
+     * computing devices; communication can be arts or legal accusations; cognition can be science
+     * or a legal dispute). Unknown files and empty domains stay neutral.
+     */
+    private val coarseDomains =
+        setOf(
+            "computing",
+            "medicine",
+            "legal",
+            "finance",
+            "science",
+            "arts",
+            "social",
+            "nature",
+            "daily",
+        )
+
+    private fun cues(value: String): Set<String> = value.split(' ').toSet()
+
+    private val lexfileDomains =
+        mapOf(
+            "noun.artifact" to setOf("daily", "computing"),
+            "adj.all" to setOf("daily"),
+            "noun.plant" to setOf("nature"),
+            "noun.animal" to setOf("nature"),
+            "noun.state" to setOf("science"),
+            "adj.pert" to setOf("science"),
+            "noun.substance" to setOf("science"),
+            "noun.person" to setOf("social"),
+            "noun.act" to setOf("social"),
+            "noun.communication" to setOf("arts", "legal"),
+            "verb.social" to setOf("social", "computing"),
+            "noun.quantity" to setOf("science"),
+            "adv.all" to setOf("daily"),
+            "verb.motion" to setOf("daily"),
+            "verb.change" to setOf("science"),
+            "noun.cognition" to setOf("science", "legal"),
+            "noun.possession" to setOf("finance", "legal"),
+            "verb.communication" to setOf("arts", "legal"),
+            "noun.time" to setOf("daily"),
+            "verb.stative" to setOf("daily"),
+            "verb.possession" to setOf("finance"),
+            "noun.process" to setOf("science"),
+            "noun.group" to setOf("social"),
+            "verb.contact" to setOf("daily", "computing"),
+            "noun.attribute" to setOf("daily"),
+            "noun.food" to setOf("daily"),
+            "noun.body" to setOf("medicine"),
+            "verb.perception" to setOf("science"),
+            "noun.relation" to setOf("science"),
+            "verb.cognition" to setOf("science"),
+            "noun.shape" to setOf("science"),
+            "noun.location" to setOf("nature"),
+            "verb.body" to setOf("medicine"),
+            "noun.event" to setOf("nature"),
+            "noun.object" to setOf("nature"),
+            "noun.phenomenon" to setOf("science"),
+            "noun.feeling" to setOf("social"),
+            "verb.creation" to setOf("arts"),
+            "verb.emotion" to setOf("social"),
+            "verb.competition" to setOf("social"),
+            "verb.consumption" to setOf("daily"),
+            "verb.weather" to setOf("nature"),
+            "adj.ppl" to setOf("daily"),
+            "noun.Tops" to setOf("nature", "medicine"),
+            "noun.motive" to setOf("social"),
+        )
+
+    private val domainClues =
+        mapOf(
+            "computing" to
+                cues(
+                    "computer computers software hardware program programs programming code coding " +
+                        "algorithm algorithms database databases server servers network networks data memory " +
+                        "processor processors cpu cloud digital virtual internet application applications app " +
+                        "apps file files byte bytes compile compiler debug runtime query queries script scripts " +
+                        "module modules keyboard laptop desktop storage login username password browser website " +
+                        "web"
+                ),
+            "medicine" to
+                cues(
+                    "patient patients clinical clinic hospital hospitals doctor doctors nurse nurses " +
+                        "disease diseases treatment treatments diagnosis symptom symptoms blood cell cells " +
+                        "tissue tissues organ organs brain skull neck anatomy medical medicine surgery " +
+                        "infection infections virus viruses bacteria bacterial nucleus membrane protein " +
+                        "proteins gene genes dna drug drugs dose doses fever pain health healthy immune " +
+                        "microscope specimen syringe wound"
+                ),
+            "legal" to
+                cues(
+                    "court courts judge judges lawyer lawyers attorney attorneys legal law laws contract " +
+                        "contracts plaintiff defendant trial trials statute statutes crime crimes criminal " +
+                        "arrest police prison prisoner jail guilty verdict lawsuit sue evidence witness jury " +
+                        "appeal appeals property patent patents copyright constitution constitutional " +
+                        "regulation regulations illegal lawful tribunal custody sentence prosecutor offence " +
+                        "offense"
+                ),
+            "finance" to
+                cues(
+                    "bank banks banking money cash deposit deposits loan loans mortgage mortgages interest " +
+                        "percentage percent debt debts finance financial stock stocks investment investor " +
+                        "investors income revenue capital market markets profit profits payment payments pay " +
+                        "paid price prices cost costs account accounts salary wage wages tax taxes budget " +
+                        "currency dollar dollars euro fund funds credit bill bills fee fees purchase sale sales " +
+                        "borrow borrower lender trade trading economy economic cheque check birthday gift gifts wrapped"
+                ),
+            "science" to
+                cues(
+                    "science sciences scientific scientist scientists research experiment experiments " +
+                        "laboratory laboratories lab labs physics chemistry chemical chemicals biology " +
+                        "biological molecule molecules molecular atom atoms electron electrons proton protons " +
+                        "neutron neutrons electric electrical electricity wire wires ampere amperes conductor " +
+                        "circuit metal metals toxic graphite pencil matter liquid liquids solid solids gas " +
+                        "gases voltage energy force forces magnetic magnet magnetism electromagnetic radiation " +
+                        "equation equations math mathematics algebra geometry statistics statistical " +
+                        "statistically hypothesis hypotheses theory theories quantum particle particles " +
+                        "reaction reactions acid acids solution solutions concentration temperature " +
+                        "temperatures pressure species organism organisms neural training trained parameters " +
+                        "parameter learning gravity mass velocity acceleration wavelength frequency oxygen " +
+                        "hydrogen carbon"
+                ),
+            "arts" to
+                cues(
+                    "art arts artist artists music musical song songs piano guitar painting paintings " +
+                        "sculpture literature literary poem poems poetry novel novels story stories essay " +
+                        "essays article articles book books magazine magazines newspaper newspapers publish " +
+                        "published publisher publication publications writing writer writers author authors " +
+                        "manuscript manuscripts grammar language languages culture cultural theatre theater " +
+                        "film films movie movies drama dramas lyrics prose fiction narrative review reviews " +
+                        "journal journals revise revision chapter poet composer concert gallery"
+                ),
+            "social" to
+                cues(
+                    "society social community communities people person persons group groups organization " +
+                        "organizations government governments political politics party parties leader leaders " +
+                        "leadership manager managers management team teams member members family families " +
+                        "friend friends child children kids army armies military soldier soldiers war wars " +
+                        "election elections vote votes voters public official officials company companies " +
+                        "worker workers employee employees crowd crowds audience audiences class classes nation " +
+                        "nations citizen citizens tribe tribes council committee recruit recruits volunteer " +
+                        "volunteers student students"
+                ),
+            "nature" to
+                cues(
+                    "nature natural animal animals plant plants tree trees leaf leaves root roots soil " +
+                        "earth land field fields farm farms farmer farmers river rivers stream streams water " +
+                        "lake lakes ocean oceans sea seas mountain mountains forest forests wood woods rain " +
+                        "rains wind winds weather storm storms snow ice sun moon sky cloud clouds fish fishes " +
+                        "bird birds insect insects flower flowers grass grasses seed seeds crop crops barn " +
+                        "shore shores coast coasts island islands valley valleys wild wildlife garden gardens " +
+                        "stone stones sand mud swamp jungle desert hill hills canoe downstream salmon trout " +
+                        "feather feathers fur nest nests"
+                ),
+            "daily" to
+                cues(
+                    "house houses home homes room rooms door doors key keys table tables chair chairs bed " +
+                        "beds kitchen food eat eating drink drinking clothes shirt shirts shoe shoes car cars " +
+                        "bus buses train trains ticket tickets work working job jobs school schools teacher " +
+                        "teachers phone phones mobile battery batteries device devices machine machines tool " +
+                        "tools furniture window windows street streets city cities town towns village villages " +
+                        "shop shops store stores morning mornings evening evenings night nights day days time " +
+                        "times hour hours minute minutes week weeks year years today yesterday tomorrow " +
+                        "present presents holiday holidays dinner lunch breakfast coffee " +
+                        "tea bottle bottles bag bags box boxes dress dresses factory factories industrial " +
+                        "manufacturing"
+                ),
+        )
+
+    private val clueDomains: Map<String, Set<String>> =
+        domainClues
+            .flatMap { (domain, words) -> words.map { it to domain } }
+            .groupBy({ it.first }, { it.second })
+            .mapValues { it.value.toSet() }
+
+    private data class DomainSignal(val domain: String, val cues: Set<String>)
+
+    private fun candidateDomains(raw: String): Set<String> {
+        val key = raw.trim()
+        if (key.isEmpty()) return emptySet()
+        val normalizedKey = normalized(key).trim()
+        if (normalizedKey in coarseDomains) return setOf(normalizedKey)
+        // Keep the original spelling first: OEWN uses `noun.Tops` with a capital T.
+        return lexfileDomains[key] ?: lexfileDomains[normalizedKey].orEmpty()
+    }
+
+    /**
+     * Count different context words per coarse domain. Repeated words and the selected word itself
+     * do not count, and a domain must strictly lead every other domain before it can add anything.
+     */
+    private fun domainSignal(
+        before: List<String>,
+        after: List<String>,
+        excluded: Set<String>,
+    ): DomainSignal? {
+        if (before.isEmpty() && after.isEmpty()) return null
+        val context = (nearbyBefore(before) + nearbyAfter(after)).distinct()
+        if (context.isEmpty()) return null
+        val matches = LinkedHashMap<String, MutableSet<String>>()
+        for (token in context) {
+            if (token in stops || token in excluded) continue
+            val domains = clueDomains[token] ?: continue
+            for (domain in domains) matches.getOrPut(domain) { linkedSetOf() }.add(token)
+        }
+        if (matches.isEmpty()) return null
+        val ranked =
+            matches.entries.sortedWith(
+                compareByDescending<Map.Entry<String, MutableSet<String>>> { it.value.size }
+                    .thenBy { it.key }
+            )
+        val best = ranked.first()
+        if (best.value.size < DOMAIN_MIN_CUES) return null
+        val runnerUp = ranked.getOrNull(1)
+        if (runnerUp != null && best.value.size <= runnerUp.value.size) return null
+        return DomainSignal(best.key, best.value)
+    }
+
     private val word = Regex("[a-z]+(?:'[a-z]+)?")
     private val stops =
         ("a an the and or but if then than so because as at by for in of on to up with " +
@@ -133,6 +372,7 @@ object SenseRanker {
         before: List<String>,
         after: List<String>,
         candidates: List<Candidate>,
+        useDomainPrior: Boolean = true,
         lemmas: (String) -> Set<String> = { emptySet() },
     ): Decision {
         val fallback = candidates.sortedBy { it.rank }
@@ -240,14 +480,73 @@ object SenseRanker {
                     .all { (matches[winner] - matches[it]).size >= 2 } &&
                 best.score - second.score >= .12 &&
                 best.score - second.score >= best.score * .2
-        if (!confident) return Decision(fallback, evidence = ranked.map { evidence[it] })
-        val scores = evidence.flatMap { item -> item.candidateIds.map { it to item.score } }.toMap()
+        val lexicalEvidence = ranked.map { evidence[it] }
+        if (confident) {
+            val scores =
+                evidence.flatMap { item -> item.candidateIds.map { it to item.score } }.toMap()
+            return Decision(
+                candidates.sortedWith(
+                    compareByDescending<Candidate> { scores[it.id] ?: 0.0 }.thenBy { it.rank }
+                ),
+                best.candidateIds,
+                lexicalEvidence,
+            )
+        }
+        if (!useDomainPrior) return Decision(fallback, evidence = lexicalEvidence)
+
+        // A domain prior only breaks a near tie or fills a lexical gap. It never runs when the
+        // gloss/rule evidence above is already confident, and a candidate that is too far behind
+        // the lexical best is not rescued: explicit word-level evidence wins.
+        val signal =
+            domainSignal(before, after, excluded)
+                ?: return Decision(fallback, evidence = lexicalEvidence)
+        val groupDomains =
+            groups.map { group -> group.flatMap { candidateDomains(it.domain) }.toSet() }
+        val matching = groups.indices.filter { signal.domain in groupDomains[it] }
+        if (matching.isEmpty()) return Decision(fallback, evidence = lexicalEvidence)
+        val lexicalBest = evidence.maxOf { it.score }
+        val domainBest = matching.maxOf { evidence[it].score }
+        if (domainBest + DOMAIN_LEXICAL_TOLERANCE < lexicalBest)
+            return Decision(fallback, evidence = lexicalEvidence)
+
+        val bonus =
+            minOf(
+                DOMAIN_MAX_BONUS,
+                DOMAIN_BASE_BONUS + DOMAIN_EXTRA_BONUS * (signal.cues.size - DOMAIN_MIN_CUES),
+            )
+        val combined =
+            evidence.mapIndexed { index, item ->
+                item.score + if (index in matching) bonus else 0.0
+            }
+        val domainRanked =
+            groups.indices.sortedWith(
+                compareByDescending<Int> { combined[it] }
+                    .thenBy { groups[it].minOf { candidate -> candidate.rank } }
+            )
+        val domainWinner = domainRanked[0]
+        if (domainWinner !in matching) return Decision(fallback, evidence = lexicalEvidence)
+        val domainRunner = domainRanked[1]
+        if (combined[domainWinner] - combined[domainRunner] < DOMAIN_WINNER_MARGIN)
+            return Decision(fallback, evidence = lexicalEvidence)
+        // The existing determiner veto is a grammatical constraint, not a lexical tie. Do not let
+        // a domain prior promote a verb the caller has already made implausible.
+        if (pos(groups[domainWinner].first().pos) == "v" && hasShortDeterminerPhrase(before))
+            return Decision(fallback, evidence = lexicalEvidence)
+        // If several senses share the winning domain and none has any gloss evidence, the prior
+        // cannot tell them apart. Keep the source order instead of inventing a definite sense.
+        if (evidence[domainWinner].score == 0.0 && matching.count { evidence[it].score == 0.0 } > 1)
+            return Decision(fallback, evidence = lexicalEvidence)
+
+        val combinedById =
+            groups.indices
+                .flatMap { index -> groups[index].map { it.id to combined[index] } }
+                .toMap()
         return Decision(
             candidates.sortedWith(
-                compareByDescending<Candidate> { scores[it.id] ?: 0.0 }.thenBy { it.rank }
+                compareByDescending<Candidate> { combinedById[it.id] ?: 0.0 }.thenBy { it.rank }
             ),
-            best.candidateIds,
-            ranked.map { evidence[it] },
+            groups[domainWinner].map { it.id }.toSet(),
+            lexicalEvidence,
         )
     }
 }

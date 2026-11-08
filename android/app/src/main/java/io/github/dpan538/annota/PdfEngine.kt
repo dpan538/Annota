@@ -467,6 +467,9 @@ class PdfEngine(val context: Context, val store: Store) {
             exportGraphite(document, cs, mark)
             return
         }
+        // v5 liquid ink is exported as one vector contour built from the *same* Sample stream the
+        // canvas consumes, so the PDF has the same taper/pressure geometry rather than a bitmap or
+        // a stroked approximation. Older ink versions keep the generic vector path below.
         val samples = InkGeometry.samples(mark)
         val sink = inkSink(cs)
         cs.setGraphicsStateParameters(
@@ -475,8 +478,11 @@ class PdfEngine(val context: Context, val store: Store) {
                 nonStrokingAlphaConstant = InkGeometry.opacity(mark)
             }
         )
-        InkGeometry.outline(samples, sink)
-        cs.fill()
+        if (InkGeometry.fountainPen(mark)) exportFountainV5(cs, samples, sink)
+        else {
+            InkGeometry.outline(samples, sink)
+            cs.fill()
+        }
         if (mark.tool == "pencil") {
             cs.setGraphicsStateParameters(
                 PDExtendedGraphicsState().apply {
@@ -488,6 +494,22 @@ class PdfEngine(val context: Context, val store: Store) {
             }
             cs.fill()
         }
+    }
+
+    /**
+     * One nonzero-winding fill, exactly like [InkRenderer]: both ends of every segment and every
+     * joint circle are appended from the shared sample widths, so canvas and PDF antialias the
+     * same outline. Kept as a separate hook so the v5 model can gain extra contours later without
+     * touching legacy export.
+     */
+    private fun exportFountainV5(
+        cs: PDPageContentStream,
+        samples: List<InkGeometry.Sample>,
+        sink: InkGeometry.PathSink,
+    ) {
+        if (samples.isEmpty()) return
+        InkGeometry.outline(samples, sink)
+        cs.fill()
     }
 
     /** Rasterize only the textured pencil, in bounded 256 pt tiles at 576 dpi. */

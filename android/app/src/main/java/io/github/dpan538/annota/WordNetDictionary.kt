@@ -22,6 +22,11 @@ class WordNetDictionary(private val file: File, private val source: String = "wo
         val semantic: Boolean = false,
         /** Global source order (schema 2/3 `sense_order`), falling back to [rank]. */
         val order: Int = rank,
+        /**
+         * OEWN lexicographer file (e.g. `noun.cognition`), empty when the bundled schema or the
+         * source synset has no domain. [SenseRanker] maps it to a coarse domain prior.
+         */
+        val domain: String = "",
     )
 
     private val cache = LruCache<String, List<Sense>>(256)
@@ -149,6 +154,8 @@ class WordNetDictionary(private val file: File, private val source: String = "wo
                 .distinct()
                 .take(16)
         val orderValue = if (hasSenseOrder()) "sense_order" else "rank"
+        // Schema 3 adds the OEWN lexicographer file. Older bundled assets must keep working.
+        val domainValue = if (hasColumn("senses", "domain")) "domain" else "''"
         val order = sensesOrderClause()
         val values =
             keys
@@ -179,7 +186,7 @@ class WordNetDictionary(private val file: File, private val source: String = "wo
                                 .flatMap { base ->
                                     connection
                                         .rawQuery(
-                                            "SELECT word,pos,rank,$orderValue,meaning,gloss FROM senses WHERE word=? $order LIMIT 64",
+                                            "SELECT word,pos,rank,$orderValue,meaning,gloss,$domainValue FROM senses WHERE word=? $order LIMIT 64",
                                             arrayOf(base),
                                         )
                                         .use { c ->
@@ -200,6 +207,7 @@ class WordNetDictionary(private val file: File, private val source: String = "wo
                                                         c.getInt(2),
                                                         source = source,
                                                         order = c.getInt(3),
+                                                        domain = c.getString(6).orEmpty(),
                                                     )
                                                 )
                                             }
@@ -216,7 +224,12 @@ class WordNetDictionary(private val file: File, private val source: String = "wo
 
     /** Compare all sources together; a winner from one small source is not global evidence. */
     @Synchronized
-    fun rankSenses(query: String, context: LookupContext?, values: List<Sense>): List<Sense> {
+    fun rankSenses(
+        query: String,
+        context: LookupContext?,
+        values: List<Sense>,
+        domainPrior: Boolean = true,
+    ): List<Sense> {
         val active = context?.takeIf { it.matches(query) } ?: return values
         if (values.isEmpty()) return values
         val connection = connection() ?: return values
@@ -226,8 +239,9 @@ class WordNetDictionary(private val file: File, private val source: String = "wo
                 active.before,
                 active.after,
                 values.mapIndexed { index, sense ->
-                    SenseRanker.Candidate(index, sense.gloss, sense.label, index)
+                    SenseRanker.Candidate(index, sense.gloss, sense.label, index, sense.domain)
                 },
+                useDomainPrior = domainPrior,
             ) { word ->
                 contentForms(listOf(word), connection)
             }

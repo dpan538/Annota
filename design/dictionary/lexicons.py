@@ -241,7 +241,12 @@ def load_oewn():
                     # Keep the first synset and report the collision; CILI is 1:1.
                     stats["duplicate_ili"] += 1
                 else:
-                    synsets[raw_ili] = {"id": synset_id, "pos": pos, "gloss": gloss}
+                    synsets[raw_ili] = {
+                        "id": synset_id,
+                        "pos": pos,
+                        "gloss": gloss,
+                        "lexfile": (element.get("lexfile") or "").strip(),
+                    }
                 if synset_id is not None:
                     synset_ili[synset_id] = raw_ili
             else:

@@ -19,6 +19,10 @@ class OfflineDictionaryTests(unittest.TestCase):
                 self.assertTrue(db.execute('SELECT meaning FROM senses WHERE word=?', (word,)).fetchall(), word)
             plan = db.execute('EXPLAIN QUERY PLAN SELECT * FROM senses WHERE word=?', ('planet',)).fetchall()
             self.assertIn('sense_word', str(plan))
+            self.assertGreater(
+                db.execute("SELECT count(*) FROM senses WHERE domain<>''").fetchone()[0],
+                80000,
+            )
             self.assertFalse(db.execute('SELECT meaning FROM senses WHERE word=?', ('defenestration',)).fetchall())
             self.assertTrue(lookup('defenestration')['entries'])
             self.assertIn('光合作用', db.execute('SELECT meaning FROM senses WHERE word=?', ('photosynthesis',)).fetchone()[0])
@@ -107,11 +111,20 @@ class OfflineDictionaryTests(unittest.TestCase):
 
     def test_aliases_point_to_existing_entries(self):
         with closing(sqlite3.connect(f'file:{ROOT / "bundle/en-zh.sqlite"}?mode=ro', uri=True)) as db:
-            self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 5)
+            self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 6)
             self.assertEqual(db.execute('SELECT count(*) FROM aliases a LEFT JOIN entries e ON e.id=a.entry_id WHERE e.id IS NULL').fetchone()[0], 0)
             columns = {row[1] for row in db.execute('PRAGMA table_info(entries)')}
             self.assertIn('freq', columns)
             self.assertIn('boundary_key', columns)
+            self.assertIn('initials', columns)
+            self.assertGreater(db.execute("SELECT count(*) FROM entries WHERE initials<>''").fetchone()[0], 300000)
+            self.assertGreater(db.execute("SELECT count(*) FROM abbreviations").fetchone()[0], 100)
+            caps = db.execute("SELECT expansion,meaning FROM abbreviations WHERE abbr='CAP' ORDER BY expansion").fetchall()
+            self.assertGreaterEqual(len(caps), 4)
+            self.assertTrue(any('CAP 定理' in row[1] for row in caps))
+            self.assertTrue(db.execute("SELECT 1 FROM abbreviations WHERE abbr='k8s'").fetchone())
+            # Initialism candidates generated from multiword headwords.
+            self.assertGreater(db.execute("SELECT count(*) FROM entries WHERE initials='cap'").fetchone()[0], 20)
             self.assertLess(db.execute('SELECT count(*) FROM aliases').fetchone()[0], 3000)
             self.assertGreater(db.execute("SELECT count(*) FROM entries WHERE boundary_key<>key").fetchone()[0], 50000)
             self.assertGreater(db.execute('SELECT count(*) FROM entries WHERE freq>0').fetchone()[0], 50000)
@@ -149,7 +162,7 @@ class OfflineDictionaryTests(unittest.TestCase):
 
     def test_wordnet_sources_and_pseudo_senses_removed(self):
         with closing(sqlite3.connect(f'file:{ROOT / "bundle/wordnet.sqlite"}?mode=ro', uri=True)) as db:
-            self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 2)
+            self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 3)
             self.assertEqual(db.execute('SELECT count(*) FROM senses WHERE gloss=\'Translations\'').fetchone()[0], 0)
             first = db.execute("SELECT word,pos,gloss FROM senses WHERE word='cut' ORDER BY sense_order LIMIT 1").fetchone()
             self.assertEqual(first[1], 'n')

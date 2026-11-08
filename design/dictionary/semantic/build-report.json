@@ -16,7 +16,7 @@
     "sources": [
       {
         "path": "design/dictionary/bundle/wordnet.sqlite",
-        "sha256": "c75d662199d7ab4abe45a16c7540665b14079a00a27e1ef1658799a67754fc22",
+        "sha256": "1f2c0712b24ab9c708594a983a8d17995b93ce032e2d7f2ebec295e1c99ecad5",
         "rows": 95221,
         "distinct_glosses": 50488
       },
@@ -28,9 +28,9 @@
       }
     ]
   },
-  "build_seconds": 215.541,
+  "build_seconds": 236.964,
   "sqlite_bytes": 60071936,
-  "sqlite_sha256": "2b08ec922faf8c63f9d65dc076ed2bc952325bbd959265b0980f8025fd535c6a",
+  "sqlite_sha256": "cec44b3f643692b23fa92410ab506990df75bd7afaf387f42358dc57c055bbd2",
   "quantization_worst_cosine": 0.9998997449874878,
   "known_pair_checks": [
     {

@@ -1,0 +1,756 @@
+{
+  "versionName": "1.2.1",
+  "versionCode": 23,
+  "summary": {
+    "first": {
+      "rounds": 40,
+      "totalMs": 1662.3312939999996,
+      "meanMs": 41.55828234999999,
+      "medianMs": 9.344916,
+      "p95Ms": 34.763334,
+      "minMs": 0.1485,
+      "maxMs": 1236.559417
+    },
+    "repeat": {
+      "rounds": 40,
+      "totalMs": 0.06595400000000003,
+      "meanMs": 0.0016488500000000007,
+      "medianMs": 0.001583,
+      "p95Ms": 0.001875,
+      "minMs": 0.001416,
+      "maxMs": 0.002625
+    },
+    "warm": {
+      "rounds": 40,
+      "totalMs": 897.658207,
+      "meanMs": 22.441455174999998,
+      "medianMs": 4.921375,
+      "p95Ms": 17.897791,
+      "minMs": 0.133625,
+      "maxMs": 649.930959
+    },
+    "installMs": 2034.362834
+  },
+  "calls": [
+    {
+      "pass": "first",
+      "round": 1,
+      "query": "attention",
+      "ms": 19.522
+    },
+    {
+      "pass": "first",
+      "round": 2,
+      "query": "neural network",
+      "ms": 9.446
+    },
+    {
+      "pass": "first",
+      "round": 3,
+      "query": "transformer",
+      "ms": 9.527625
+    },
+    {
+      "pass": "first",
+      "round": 4,
+      "query": "embedding",
+      "ms": 16.546459
+    },
+    {
+      "pass": "first",
+      "round": 5,
+      "query": "training",
+      "ms": 10.628833
+    },
+    {
+      "pass": "first",
+      "round": 6,
+      "query": "language model",
+      "ms": 6.37675
+    },
+    {
+      "pass": "first",
+      "round": 7,
+      "query": "take into account",
+      "ms": 7.244709
+    },
+    {
+      "pass": "first",
+      "round": 8,
+      "query": "set up",
+      "ms": 15.136417
+    },
+    {
+      "pass": "first",
+      "round": 9,
+      "query": "setup",
+      "ms": 4.221542
+    },
+    {
+      "pass": "first",
+      "round": 10,
+      "query": "self-attention",
+      "ms": 4.52175
+    },
+    {
+      "pass": "first",
+      "round": 11,
+      "query": "running",
+      "ms": 19.683833
+    },
+    {
+      "pass": "first",
+      "round": 12,
+      "query": "written",
+      "ms": 18.726667
+    },
+    {
+      "pass": "first",
+      "round": 13,
+      "query": "mice",
+      "ms": 9.122167
+    },
+    {
+      "pass": "first",
+      "round": 14,
+      "query": "better",
+      "ms": 34.763334
+    },
+    {
+      "pass": "first",
+      "round": 15,
+      "query": "photosynthesis",
+      "ms": 16.221916
+    },
+    {
+      "pass": "first",
+      "round": 16,
+      "query": "democracy",
+      "ms": 9.344916
+    },
+    {
+      "pass": "first",
+      "round": 17,
+      "query": "enzyme",
+      "ms": 11.741167
+    },
+    {
+      "pass": "first",
+      "round": 18,
+      "query": "planet",
+      "ms": 0.806834
+    },
+    {
+      "pass": "first",
+      "round": 19,
+      "query": "mortgage",
+      "ms": 10.432416
+    },
+    {
+      "pass": "first",
+      "round": 20,
+      "query": "measurement",
+      "ms": 6.452875
+    },
+    {
+      "pass": "first",
+      "round": 21,
+      "query": "缓存",
+      "ms": 32.37075
+    },
+    {
+      "pass": "first",
+      "round": 22,
+      "query": "学习",
+      "ms": 10.996458
+    },
+    {
+      "pass": "first",
+      "round": 23,
+      "query": "學習",
+      "ms": 3.31775
+    },
+    {
+      "pass": "first",
+      "round": 24,
+      "query": "字典",
+      "ms": 7.907292
+    },
+    {
+      "pass": "first",
+      "round": 25,
+      "query": "注意力",
+      "ms": 8.311667
+    },
+    {
+      "pass": "first",
+      "round": 26,
+      "query": "模型",
+      "ms": 3.912584
+    },
+    {
+      "pass": "first",
+      "round": 27,
+      "query": "神经网络",
+      "ms": 13.905458
+    },
+    {
+      "pass": "first",
+      "round": 28,
+      "query": "数据",
+      "ms": 13.725125
+    },
+    {
+      "pass": "first",
+      "round": 29,
+      "query": "attenton",
+      "ms": 1236.559417
+    },
+    {
+      "pass": "first",
+      "round": 30,
+      "query": "recieve",
+      "ms": 40.016542
+    },
+    {
+      "pass": "first",
+      "round": 31,
+      "query": "neural nettwork",
+      "ms": 13.675542
+    },
+    {
+      "pass": "first",
+      "round": 32,
+      "query": "qzxwnewnotaword",
+      "ms": 25.274833
+    },
+    {
+      "pass": "first",
+      "round": 33,
+      "query": "low pass filter",
+      "ms": 5.880208
+    },
+    {
+      "pass": "first",
+      "round": 34,
+      "query": "in the field",
+      "ms": 4.678083
+    },
+    {
+      "pass": "first",
+      "round": 35,
+      "query": "i18n",
+      "ms": 0.345167
+    },
+    {
+      "pass": "first",
+      "round": 36,
+      "query": "k8s",
+      "ms": 0.157125
+    },
+    {
+      "pass": "first",
+      "round": 37,
+      "query": "CAP",
+      "ms": 0.207375
+    },
+    {
+      "pass": "first",
+      "round": 38,
+      "query": "GPU",
+      "ms": 0.283958
+    },
+    {
+      "pass": "first",
+      "round": 39,
+      "query": "LLM",
+      "ms": 0.18925
+    },
+    {
+      "pass": "first",
+      "round": 40,
+      "query": "RAG",
+      "ms": 0.1485
+    },
+    {
+      "pass": "repeat",
+      "round": 41,
+      "query": "attention",
+      "ms": 0.002625
+    },
+    {
+      "pass": "repeat",
+      "round": 42,
+      "query": "neural network",
+      "ms": 0.002208
+    },
+    {
+      "pass": "repeat",
+      "round": 43,
+      "query": "transformer",
+      "ms": 0.001792
+    },
+    {
+      "pass": "repeat",
+      "round": 44,
+      "query": "embedding",
+      "ms": 0.001792
+    },
+    {
+      "pass": "repeat",
+      "round": 45,
+      "query": "training",
+      "ms": 0.001666
+    },
+    {
+      "pass": "repeat",
+      "round": 46,
+      "query": "language model",
+      "ms": 0.001709
+    },
+    {
+      "pass": "repeat",
+      "round": 47,
+      "query": "take into account",
+      "ms": 0.001875
+    },
+    {
+      "pass": "repeat",
+      "round": 48,
+      "query": "set up",
+      "ms": 0.001583
+    },
+    {
+      "pass": "repeat",
+      "round": 49,
+      "query": "setup",
+      "ms": 0.0015
+    },
+    {
+      "pass": "repeat",
+      "round": 50,
+      "query": "self-attention",
+      "ms": 0.001792
+    },
+    {
+      "pass": "repeat",
+      "round": 51,
+      "query": "running",
+      "ms": 0.001583
+    },
+    {
+      "pass": "repeat",
+      "round": 52,
+      "query": "written",
+      "ms": 0.001541
+    },
+    {
+      "pass": "repeat",
+      "round": 53,
+      "query": "mice",
+      "ms": 0.001584
+    },
+    {
+      "pass": "repeat",
+      "round": 54,
+      "query": "better",
+      "ms": 0.001625
+    },
+    {
+      "pass": "repeat",
+      "round": 55,
+      "query": "photosynthesis",
+      "ms": 0.001667
+    },
+    {
+      "pass": "repeat",
+      "round": 56,
+      "query": "democracy",
+      "ms": 0.001583
+    },
+    {
+      "pass": "repeat",
+      "round": 57,
+      "query": "enzyme",
+      "ms": 0.001541
+    },
+    {
+      "pass": "repeat",
+      "round": 58,
+      "query": "planet",
+      "ms": 0.001541
+    },
+    {
+      "pass": "repeat",
+      "round": 59,
+      "query": "mortgage",
+      "ms": 0.001791
+    },
+    {
+      "pass": "repeat",
+      "round": 60,
+      "query": "measurement",
+      "ms": 0.001625
+    },
+    {
+      "pass": "repeat",
+      "round": 61,
+      "query": "缓存",
+      "ms": 0.001584
+    },
+    {
+      "pass": "repeat",
+      "round": 62,
+      "query": "学习",
+      "ms": 0.001583
+    },
+    {
+      "pass": "repeat",
+      "round": 63,
+      "query": "學習",
+      "ms": 0.001458
+    },
+    {
+      "pass": "repeat",
+      "round": 64,
+      "query": "字典",
+      "ms": 0.0015
+    },
+    {
+      "pass": "repeat",
+      "round": 65,
+      "query": "注意力",
+      "ms": 0.0015
+    },
+    {
+      "pass": "repeat",
+      "round": 66,
+      "query": "模型",
+      "ms": 0.001416
+    },
+    {
+      "pass": "repeat",
+      "round": 67,
+      "query": "神经网络",
+      "ms": 0.0015
+    },
+    {
+      "pass": "repeat",
+      "round": 68,
+      "query": "数据",
+      "ms": 0.001417
+    },
+    {
+      "pass": "repeat",
+      "round": 69,
+      "query": "attenton",
+      "ms": 0.00175
+    },
+    {
+      "pass": "repeat",
+      "round": 70,
+      "query": "recieve",
+      "ms": 0.001833
+    },
+    {
+      "pass": "repeat",
+      "round": 71,
+      "query": "neural nettwork",
+      "ms": 0.00175
+    },
+    {
+      "pass": "repeat",
+      "round": 72,
+      "query": "qzxwnewnotaword",
+      "ms": 0.001708
+    },
+    {
+      "pass": "repeat",
+      "round": 73,
+      "query": "low pass filter",
+      "ms": 0.001667
+    },
+    {
+      "pass": "repeat",
+      "round": 74,
+      "query": "in the field",
+      "ms": 0.001708
+    },
+    {
+      "pass": "repeat",
+      "round": 75,
+      "query": "i18n",
+      "ms": 0.0015
+    },
+    {
+      "pass": "repeat",
+      "round": 76,
+      "query": "k8s",
+      "ms": 0.001541
+    },
+    {
+      "pass": "repeat",
+      "round": 77,
+      "query": "CAP",
+      "ms": 0.0015
+    },
+    {
+      "pass": "repeat",
+      "round": 78,
+      "query": "GPU",
+      "ms": 0.0015
+    },
+    {
+      "pass": "repeat",
+      "round": 79,
+      "query": "LLM",
+      "ms": 0.001458
+    },
+    {
+      "pass": "repeat",
+      "round": 80,
+      "query": "RAG",
+      "ms": 0.001458
+    },
+    {
+      "pass": "warm",
+      "round": 81,
+      "query": "attention",
+      "ms": 10.761
+    },
+    {
+      "pass": "warm",
+      "round": 82,
+      "query": "neural network",
+      "ms": 3.335125
+    },
+    {
+      "pass": "warm",
+      "round": 83,
+      "query": "transformer",
+      "ms": 4.804917
+    },
+    {
+      "pass": "warm",
+      "round": 84,
+      "query": "embedding",
+      "ms": 6.151875
+    },
+    {
+      "pass": "warm",
+      "round": 85,
+      "query": "training",
+      "ms": 7.953625
+    },
+    {
+      "pass": "warm",
+      "round": 86,
+      "query": "language model",
+      "ms": 4.264666
+    },
+    {
+      "pass": "warm",
+      "round": 87,
+      "query": "take into account",
+      "ms": 4.670167
+    },
+    {
+      "pass": "warm",
+      "round": 88,
+      "query": "set up",
+      "ms": 5.891416
+    },
+    {
+      "pass": "warm",
+      "round": 89,
+      "query": "setup",
+      "ms": 3.687958
+    },
+    {
+      "pass": "warm",
+      "round": 90,
+      "query": "self-attention",
+      "ms": 3.839375
+    },
+    {
+      "pass": "warm",
+      "round": 91,
+      "query": "running",
+      "ms": 11.964834
+    },
+    {
+      "pass": "warm",
+      "round": 92,
+      "query": "written",
+      "ms": 7.514084
+    },
+    {
+      "pass": "warm",
+      "round": 93,
+      "query": "mice",
+      "ms": 8.133791
+    },
+    {
+      "pass": "warm",
+      "round": 94,
+      "query": "better",
+      "ms": 11.023208
+    },
+    {
+      "pass": "warm",
+      "round": 95,
+      "query": "photosynthesis",
+      "ms": 4.247042
+    },
+    {
+      "pass": "warm",
+      "round": 96,
+      "query": "democracy",
+      "ms": 6.258625
+    },
+    {
+      "pass": "warm",
+      "round": 97,
+      "query": "enzyme",
+      "ms": 5.501458
+    },
+    {
+      "pass": "warm",
+      "round": 98,
+      "query": "planet",
+      "ms": 5.712417
+    },
+    {
+      "pass": "warm",
+      "round": 99,
+      "query": "mortgage",
+      "ms": 5.848292
+    },
+    {
+      "pass": "warm",
+      "round": 100,
+      "query": "measurement",
+      "ms": 4.865792
+    },
+    {
+      "pass": "warm",
+      "round": 101,
+      "query": "缓存",
+      "ms": 7.002541
+    },
+    {
+      "pass": "warm",
+      "round": 102,
+      "query": "学习",
+      "ms": 7.296542
+    },
+    {
+      "pass": "warm",
+      "round": 103,
+      "query": "學習",
+      "ms": 3.832458
+    },
+    {
+      "pass": "warm",
+      "round": 104,
+      "query": "字典",
+      "ms": 4.039291
+    },
+    {
+      "pass": "warm",
+      "round": 105,
+      "query": "注意力",
+      "ms": 4.921375
+    },
+    {
+      "pass": "warm",
+      "round": 106,
+      "query": "模型",
+      "ms": 8.732958
+    },
+    {
+      "pass": "warm",
+      "round": 107,
+      "query": "神经网络",
+      "ms": 3.3835
+    },
+    {
+      "pass": "warm",
+      "round": 108,
+      "query": "数据",
+      "ms": 4.187083
+    },
+    {
+      "pass": "warm",
+      "round": 109,
+      "query": "attenton",
+      "ms": 649.930959
+    },
+    {
+      "pass": "warm",
+      "round": 110,
+      "query": "recieve",
+      "ms": 34.744208
+    },
+    {
+      "pass": "warm",
+      "round": 111,
+      "query": "neural nettwork",
+      "ms": 12.817292
+    },
+    {
+      "pass": "warm",
+      "round": 112,
+      "query": "qzxwnewnotaword",
+      "ms": 17.897791
+    },
+    {
+      "pass": "warm",
+      "round": 113,
+      "query": "low pass filter",
+      "ms": 5.634583
+    },
+    {
+      "pass": "warm",
+      "round": 114,
+      "query": "in the field",
+      "ms": 4.545208
+    },
+    {
+      "pass": "warm",
+      "round": 115,
+      "query": "i18n",
+      "ms": 0.252334
+    },
+    {
+      "pass": "warm",
+      "round": 116,
+      "query": "k8s",
+      "ms": 0.137083
+    },
+    {
+      "pass": "warm",
+      "round": 117,
+      "query": "CAP",
+      "ms": 0.1895
+    },
+    {
+      "pass": "warm",
+      "round": 118,
+      "query": "GPU",
+      "ms": 0.15625
+    },
+    {
+      "pass": "warm",
+      "round": 119,
+      "query": "LLM",
+      "ms": 0.133625
+    },
+    {
+      "pass": "warm",
+      "round": 120,
+      "query": "RAG",
+      "ms": 1.393959
+    }
+  ]
+}

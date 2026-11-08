@@ -1,0 +1,131 @@
+# Annota authored abbreviation/expansion table. MIT, original short equivalents.
+# Format: abbr<TAB>expansion<TAB>Chinese meaning<TAB>domain<TAB>context cues (|)<TAB>source
+# Only short, reviewable entries; no long copied definitions.
+k8s	Kubernetes	Kubernetes 容器编排系统	computing	cluster|pod|container|deployment|orchestration	authored
+i18n	internationalization	国际化	computing	locale|translation|localization|language	authored
+a11y	accessibility	无障碍访问	computing	screen reader|contrast|keyboard|disability	authored
+l10n	localization	本地化	computing	locale|language|region|translation	authored
+g11n	globalization	全球化	computing	market|locale|language|region	authored
+k3s	lightweight Kubernetes	轻量 Kubernetes	computing	cluster|edge|container	authored
+e2e	end-to-end	端到端	computing	test|pipeline|encryption	authored
+p2p	peer-to-peer	点对点	computing	network|file sharing|node	authored
+b2b	business-to-business	企业对企业	business	customer|enterprise|sales	authored
+b2c	business-to-consumer	企业对消费者	business	customer|retail|sales	authored
+API	Application Programming Interface	应用程序接口	computing	endpoint|request|client|service	authored
+SDK	Software Development Kit	软件开发工具包	computing	library|tool|build	authored
+CLI	command-line interface	命令行界面	computing	terminal|shell|command	authored
+GUI	graphical user interface	图形用户界面	computing	window|screen|button	authored
+CPU	Central Processing Unit	中央处理器	computing	core|processor|thread	authored
+GPU	Graphics Processing Unit	图形处理器	computing	graphics|parallel|CUDA|memory	authored
+TPU	Tensor Processing Unit	张量处理器	ml	acceleration|tensor|inference	authored
+NPU	Neural Processing Unit	神经网络处理器	ml	inference|neural|acceleration	authored
+RAM	Random Access Memory	随机存取存储器	computing	memory|capacity|module	authored
+RAM	Random Access Machine	随机存取机	computing	model|computation|algorithm|complexity	authored
+ROM	read-only memory	只读存储器	computing	firmware|memory|storage	authored
+SSD	solid-state drive	固态硬盘	computing	storage|disk|flash	authored
+HDD	hard disk drive	机械硬盘	computing	storage|disk|platter	authored
+VM	Virtual Machine	虚拟机	computing	hypervisor|guest|host	authored
+VPC	Virtual Private Cloud	专有网络	computing	subnet|region|network	authored
+DNS	Domain Name System	域名系统	network	domain|resolver|record	authored
+DHCP	Dynamic Host Configuration Protocol	动态主机配置协议	network	address|lease|client	authored
+HTTP	HyperText Transfer Protocol	超文本传输协议	network	request|response|header|web	authored
+HTTPS	HTTP Secure	安全超文本传输协议	network	certificate|tls|web	authored
+TCP	Transmission Control Protocol	传输控制协议	network	connection|packet|reliable	authored
+UDP	User Datagram Protocol	用户数据报协议	network	datagram|packet|port	authored
+IP	Internet Protocol	网际协议	network	address|packet|routing	authored
+IP	Intellectual Property	知识产权	legal	patent|copyright|rights|licensing	authored
+IP	Ingress Protection	外壳防护等级	general	water|dust|rating|enclosure	authored
+SSH	Secure Shell	安全外壳协议	network	remote|login|key	authored
+FTP	File Transfer Protocol	文件传输协议	network	upload|download|server	authored
+TLS	Transport Layer Security	传输层安全	network	certificate|handshake|encryption	authored
+SSL	Secure Sockets Layer	安全套接层	network	certificate|handshake|encryption	authored
+JWT	JSON Web Token	JSON 网络令牌	computing	token|claim|signature	authored
+YAML	YAML Ain't Markup Language	YAML 配置语言	computing	config|indent|document	authored
+JSON	JavaScript Object Notation	JSON 数据格式	computing	object|array|key	authored
+XML	Extensible Markup Language	可扩展标记语言	computing	tag|element|schema	authored
+CSV	comma-separated values	逗号分隔值	computing	column|row|file	authored
+SQL	Structured Query Language	结构化查询语言	computing	query|table|database	authored
+NoSQL	not-only SQL	非关系型数据库	computing	database|document|key-value	authored
+ORM	object-relational mapping	对象关系映射	computing	entity|table|model	authored
+CRUD	create, read, update, delete	增删改查	computing	database|operation|record	authored
+REST	representational state transfer	表述性状态转移	computing	endpoint|resource|stateless	authored
+RPC	remote procedure call	远程过程调用	computing	client|server|stub	authored
+CI	continuous integration	持续集成	computing	build|test|pipeline	authored
+CD	continuous delivery	持续交付	computing	deploy|pipeline|release	authored
+IaC	infrastructure as code	基础设施即代码	computing	terraform|provision|config	authored
+QA	quality assurance	质量保证	computing	test|bug|release	authored
+UAT	user acceptance testing	用户验收测试	computing	test|user|staging	authored
+SLA	Service Level Agreement	服务级别协议	business	uptime|latency|agreement	authored
+SLO	Service Level Objective	服务级别目标	business	uptime|latency|target	authored
+DDoS	distributed denial of service	分布式拒绝服务攻击	security	attack|traffic|server	authored
+XSS	cross-site scripting	跨站脚本攻击	security	script|browser|injection	authored
+CSRF	cross-site request forgery	跨站请求伪造	security	forgery|request|session	authored
+AI	Artificial Intelligence	人工智能	ml	model|intelligence|agent	authored
+ML	machine learning	机器学习	ml	model|training|feature	authored
+DL	deep learning	深度学习	ml	neural|layer|training	authored
+NLP	natural language processing	自然语言处理	ml	language|token|text	authored
+CV	computer vision	计算机视觉	ml	image|vision|pixel	authored
+RL	reinforcement learning	强化学习	ml	reward|policy|agent	authored
+LLM	large language model	大语言模型	ml	language|token|prompt|context	authored
+RAG	retrieval-augmented generation	检索增强生成	ml	retrieval|document|generation|embedding	authored
+MoE	mixture of experts	混合专家模型	ml	expert|router|sparse	authored
+KV	cache key-value	键值缓存	ml	cache|attention|context	authored
+RLHF	reinforcement learning from human feedback	基于人类反馈的强化学习	ml	reward|preference|alignment	authored
+SFT	supervised fine-tuning	监督微调	ml	fine-tune|label|dataset	authored
+DPO	direct preference optimization	直接偏好优化	ml	preference|alignment|policy	authored
+PPO	proximal policy optimization	近端策略优化	ml	policy|reward|clip	authored
+GAN	generative adversarial network	生成对抗网络	ml	generator|discriminator|image	authored
+VAE	variational autoencoder	变分自编码器	ml	latent|encoder|decoder	authored
+CNN	convolutional neural network	卷积神经网络	ml	convolution|kernel|image	authored
+RNN	recurrent neural network	循环神经网络	ml	sequence|hidden|time step	authored
+LSTM	long short-term memory	长短期记忆网络	ml	gate|sequence|memory	authored
+GRU	gated recurrent unit	门控循环单元	ml	gate|sequence|memory	authored
+BERT	Bidirectional Encoder Representations from Transformers	双向编码器表示模型	ml	encoder|pretrain|mask	authored
+GPT	Generative Pre-trained Transformer	生成式预训练变换器	ml	generative|pretrain|token	authored
+SGD	stochastic gradient descent	随机梯度下降	ml	gradient|optimizer|batch	authored
+AUC	area under the curve	曲线下面积	ml	roc|metric|threshold	authored
+ROC	receiver operating characteristic	受试者工作特征曲线	ml	curve|metric|threshold	authored
+F1	F1 score	F1 分数	ml	precision|recall|metric	authored
+BLEU	bilingual evaluation understudy	BLEU 翻译评测指标	ml	translation|metric|score	authored
+ROUGE	Recall-Oriented Understudy for Gisting Evaluation	ROUGE 摘要评测指标	ml	summary|metric|recall	authored
+MSE	mean squared error	均方误差	ml	error|regression|loss	authored
+MAE	mean absolute error	平均绝对误差	ml	error|regression|loss	authored
+MLE	maximum likelihood estimation	最大似然估计	math	likelihood|parameter|estimate	authored
+KL	Kullback-Leibler divergence	KL 散度	math	divergence|distribution|entropy	authored
+IQ	interquartile range	四分位距	math	quartile|distribution|statistics	authored
+CI	confidence interval	置信区间	math	interval|estimate|statistics	authored
+SD	standard deviation	标准差	math	deviation|mean|statistics	authored
+ANOVA	analysis of variance	方差分析	math	variance|group|test	authored
+PCA	principal component analysis	主成分分析	math	component|variance|dimension	authored
+SVD	singular value decomposition	奇异值分解	math	matrix|factorization|rank	authored
+ODE	ordinary differential equation	常微分方程	math	differential|equation|solution	authored
+PDE	partial differential equation	偏微分方程	math	differential|equation|boundary	authored
+DNA	deoxyribonucleic acid	脱氧核糖核酸	biology	gene|sequence|cell	authored
+RNA	ribonucleic acid	核糖核酸	biology	gene|transcript|cell	authored
+ATP	adenosine triphosphate	三磷酸腺苷	biology	energy|cell|metabolism	authored
+pH	potential of hydrogen	酸碱度	chemistry	acid|alkaline|solution	authored
+CAP	CAP theorem	CAP 定理（一致性、可用性、分区容忍）	computing	theorem|consistency|availability|partition	authored
+CAP	Common Agricultural Policy	共同农业政策	policy	farm|subsidy|eu|agriculture	authored
+CAP	civil air patrol	民航巡逻队	general	aircraft|pilot|patrol	authored
+CAP	combat air patrol	战斗空中巡逻	military	aircraft|fighter|patrol	authored
+GDP	gross domestic product	国内生产总值	economics	country|growth|output	authored
+CPI	consumer price index	消费者价格指数	economics	inflation|price|index	authored
+CEO	chief executive officer	首席执行官	business	company|executive|board	authored
+CFO	chief financial officer	首席财务官	business	finance|executive|company	authored
+CTO	chief technology officer	首席技术官	business	technology|executive|company	authored
+HR	human resources	人力资源	business	hiring|employee|policy	authored
+PR	pull request	拉取请求	computing	merge|branch|review	authored
+PR	public relations	公共关系	business	media|image|communication	authored
+PDF	Portable Document Format	便携式文档格式	computing	document|page|export	authored
+OCR	optical character recognition	光学字符识别	computing	scan|image|text	authored
+QR	quick response	二维码	computing	code|scan|camera	authored
+GPS	Global Positioning System	全球定位系统	general	location|satellite|navigation	authored
+USB	Universal Serial Bus	通用串行总线	computing	port|cable|device	authored
+HDMI	High-Definition Multimedia Interface	高清多媒体接口	computing	cable|display|port	authored
+LAN	local area network	局域网	network	router|switch|host	authored
+WAN	wide area network	广域网	network	router|link|site	authored
+IoT	Internet of Things	物联网	computing	sensor|device|network	authored
+AR	augmented reality	增强现实	computing	overlay|camera|display	authored
+VR	virtual reality	虚拟现实	computing	headset|immersive|display	authored
+XR	extended reality	扩展现实	computing	headset|immersive|display	authored
+HCI	human-computer interaction	人机交互	computing	interface|user|usability	authored

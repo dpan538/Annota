@@ -79,13 +79,14 @@ def build_wordnet():
         oewn_synset = oewn_synsets.get(ili) if ili else None
         gloss = (oewn_synset["gloss"] if oewn_synset else "") or cow_gloss.get(synset) \
             or (wordnet["gloss"] if wordnet else "")
+        domain = (oewn_synset.get("lexfile", "") if oewn_synset else "")
         if not gloss:
             continue
         meaning = "；".join(meanings)
         tag = ",".join(sorted(sources[synset]))
         for lemma in dict.fromkeys(lemmas):
             key = (lemma, pos, synset)
-            rows.append((lemma, pos, order_of.get(key, 0), synset, meaning, gloss, tag))
+            rows.append((lemma, pos, order_of.get(key, 0), synset, meaning, gloss, tag, domain))
     # Deterministic global order: frequency rank first (matching the previous
     # ORDER BY rank,pos behaviour) with pos as the stable tie-break.
     rows.sort(key=lambda row: (row[0], row[2], row[1], row[3]))
@@ -102,16 +103,17 @@ def build_wordnet():
     temp = dest.with_suffix(".building")
     temp.unlink(missing_ok=True)
     db = sqlite3.connect(temp)
-    db.executescript("""PRAGMA user_version=2;
+    db.executescript("""PRAGMA user_version=3;
       CREATE TABLE senses(word TEXT, pos TEXT, rank INTEGER, sense_order INTEGER,
-        synset TEXT, meaning TEXT, gloss TEXT, sources TEXT);
+        synset TEXT, meaning TEXT, gloss TEXT, sources TEXT, domain TEXT);
       CREATE INDEX sense_word ON senses(word);
       CREATE INDEX sense_order ON senses(sense_order);
+      CREATE INDEX sense_domain ON senses(domain);
       CREATE TABLE forms(form TEXT, lemma TEXT, pos TEXT, UNIQUE(form,lemma,pos));
       CREATE INDEX wn_form ON forms(form);""")
     db.executemany(
-        "INSERT INTO senses VALUES(?,?,?,?,?,?,?,?)",
-        [(row[0], row[1], row[2], index, row[3], row[4], row[5], row[6])
+        "INSERT INTO senses VALUES(?,?,?,?,?,?,?,?,?)",
+        [(row[0], row[1], row[2], index, row[3], row[4], row[5], row[6], row[7])
          for index, row in enumerate(unique)],
     )
     for form, lemma, pos in cow["exceptions"]:
@@ -140,6 +142,7 @@ def build_wordnet():
         "senses": count,
         "headwords": words,
         "synsets": len(chinese),
+        "domainTaggedSenses": sum(1 for row in unique if row[7]),
         "source": "Princeton WordNet 3.0 + Chinese Open WordNet + Chinese WordNet + "
                   "OMW Wiktionary Chinese + Open English WordNet (CILI aligned)",
         "license": "WordNet / Chinese Open WordNet CC-BY-SA-4.0 / CWN notice / "

@@ -1,0 +1,46 @@
+{
+  "cases": [
+    {
+      "marks": 50,
+      "points": 20000,
+      "diff": {
+        "pixels": 1555200,
+        "changed": 0,
+        "changedRatio": 0,
+        "maxChannelDelta": 0,
+        "meanChannelDelta": 0
+      },
+      "exact": true
+    },
+    {
+      "marks": 300,
+      "points": 19800,
+      "diff": {
+        "pixels": 1555200,
+        "changed": 0,
+        "changedRatio": 0,
+        "maxChannelDelta": 0,
+        "meanChannelDelta": 0
+      },
+      "exact": true
+    },
+    {
+      "marks": 1000,
+      "points": 20000,
+      "diff": {
+        "pixels": 1555200,
+        "changed": 0,
+        "changedRatio": 0,
+        "maxChannelDelta": 0,
+        "meanChannelDelta": 0
+      },
+      "exact": true
+    }
+  ],
+  "scenario": "picture-vs-direct",
+  "timestamp": 1794119021375,
+  "sdk": 36,
+  "hardware": "ranchu",
+  "model": "sdk_gphone64_arm64",
+  "canvas": "software Canvas(Bitmap) 1080x1440; hardware-layer main-thread cost is lower"
+}

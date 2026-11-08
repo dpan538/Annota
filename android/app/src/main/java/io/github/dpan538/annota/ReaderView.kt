@@ -150,10 +150,12 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         if (apply && page != null && !readOnly) {
             val mark = pending.mark()
             page.marks.add(mark)
+            bumpInk(page)
             try {
                 store.commit(book)
             } catch (t: Throwable) {
                 page.marks.remove(mark)
+                bumpInk(page)
                 throw t
             }
             onChanged()
@@ -174,10 +176,28 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     private fun tr(zh: String, en: String) = if (english) en else zh
 
     private val inkRenderer = InkRenderer()
+
+    /**
+     * Completed page ink is recorded once as a page-space Picture and replayed as one op per frame.
+     * Flipping this to false restores the pre-P1 per-mark path for benchmarks and pixel
+     * comparisons.
+     */
+    private var inkPicturesEnabled = true
+    private var frameInvalidationPending = false
+    private val inkVersions = HashMap<String, Long>()
+    private val recordPageMarks: (Canvas, List<Mark>) -> Unit = { c, marks ->
+        marks.forEach { drawMark(c, it) }
+    }
     private var previousErase: Point? = null
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
     private val documentPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
     private val memory = RenderMemory.from(context)
+    // Recorded pictures live in native memory, so keep them a small share of the page budget.
+    private val inkPictures = InkPagePictures(max(2 * 1024 * 1024, memory.pages / 16))
+    private val pageRect = RectF()
+    private val tileRect = RectF()
+    private val markRect = RectF()
+    private val trianglePath = Path()
     private val cache =
         object : LruCache<String, Bitmap>(memory.pages / 4) {
             override fun sizeOf(key: String, value: Bitmap) = value.allocationByteCount
@@ -192,6 +212,35 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     @Volatile private var wantedTiles = emptySet<String>()
     private var movingLayout = false
     private var settledTilePlans = emptyMap<Int, List<Tile>>()
+
+    /**
+     * Last frame plan. Writing frames reuse it untouched; pure panning shifts the existing matrices
+     * in place; only layout/zoom/page/row changes rebuild placements and the tile grid.
+     */
+    private class FrameKey {
+        var layout: ContinuousLayout? = null
+        var zoom = 0f
+        var width = 0
+        var height = 0
+        var firstRow = 0
+        var lastRow = 0
+        var epoch = 0
+        var moving = false
+        var panX = 0f
+        var panY = 0f
+    }
+
+    private val frameKey = FrameKey()
+    private var bookEpoch = 0
+    private var frameIndices = IntArray(0)
+    private var frameBaseWidths = IntArray(0)
+    private var frameBaseKeys: Array<String> = emptyArray()
+    private var framePreloadIndices = IntArray(0)
+    private var framePreloadWidths = IntArray(0)
+    private var framePreloadKeys: Array<String> = emptyArray()
+    private var framePlans: Map<Int, List<Tile>> = emptyMap()
+    private val polyFrom = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f)
+    private val polyTo = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f)
 
     /** Scale cached page pixels during spatial transitions; refine once the viewport settles. */
     fun setLayoutTransition(moving: Boolean) {
@@ -259,7 +308,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 selected = listOfNotNull(selectionStart)
                 selectionText = PageText(words.get(page.id).orEmpty())
                 selectionPage = page.id
-                invalidate()
+                invalidateFrame()
             }
         }
     }
@@ -308,6 +357,9 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         tiles.resize(max(1024 * 1024, memory.pages * 3 / 8))
         imageCache.resize(max(1024 * 1024, memory.images / 2))
         words.resize(max(512 * 1024, memory.words / 2))
+        // Base bitmap widths derive from the cache budget; drop recorded pictures and re-plan.
+        frameKey.layout = null
+        inkPictures.clear()
         invalidate()
     }
 
@@ -320,15 +372,17 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         tiles.resize(memory.pages * 3 / 4)
         imageCache.resize(memory.images)
         words.resize(memory.words)
+        frameKey.layout = null
         invalidate()
     }
 
-    private data class Placement(
-        val index: Int,
-        val matrix: Matrix,
-        val inverse: Matrix,
-        val bounds: RectF,
-    )
+    /** Reusable page→screen transform; matrices and bounds are updated in place every frame. */
+    private class Placement {
+        var index = -1
+        val matrix = Matrix()
+        val inverse = Matrix()
+        val bounds = RectF()
+    }
 
     private val placements = mutableListOf<Placement>()
     private var active: Placement? = null
@@ -431,6 +485,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
 
     fun dispose() {
         inkRenderer.invalidate()
+        inkPictures.clear()
         finishSignature(false)
         persistPosition()
         stopMotion()
@@ -456,6 +511,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     fun refresh() {
         cancelStroke()
         inkRenderer.invalidate()
+        bookChanged()
         stopMotion()
         clearSelection()
         book.current = book.current.coerceIn(0, book.pages.lastIndex)
@@ -551,7 +607,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         }
         removeCallbacks(savePosition)
         postDelayed(savePosition, 300)
-        invalidate()
+        invalidateFrame()
     }
 
     private fun saveReadingDisplay() {
@@ -725,6 +781,14 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         cancelStroke()
         val layout = ensureGeometry() ?: return
         val page = index.coerceIn(0, book.pages.lastIndex)
+        // Keep the logical page in sync with the request before the (optional) scroll starts:
+        // a trim/persist may land while the scroll animation is still settling.
+        if (book.current != page) {
+            book.current = page
+            onActivePage(page)
+            // Persist the logical page immediately; a later trim must not be the first writer.
+            store.position(book)
+        }
         scrollToPosition(layout.rowForPage(page).top * zoom, animated)
         requestedPage = if (viewportAnimator?.isRunning == true) page else null
         onActivePage(page)
@@ -857,9 +921,11 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         return pages.all { it.source < 0 || cache.get("${pageKey(it)}:${baseWidth(it)}") != null }
     }
 
-    private fun request(p: Sheet, width: Int) {
+    private fun request(p: Sheet, width: Int) =
+        requestKey(p, width, "${book.source}:${p.id}:${p.style}:${p.paper}:$width")
+
+    private fun requestKey(p: Sheet, width: Int, key: String) {
         if (closed || suspended) return
-        val key = "${book.source}:${p.id}:${p.style}:${p.paper}:$width"
         if (cache.get(key) != null || !pending.add(key)) return
         val generation = epoch
         try {
@@ -1024,7 +1090,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         if (y < 40 * scale) panY += 12 * scale else if (y > height - 40 * scale) panY -= 12 * scale
         viewportChanged()
         magnifier?.show(x.coerceIn(0f, width.toFloat()), y.coerceIn(0f, height.toFloat()))
-        invalidate()
+        invalidateFrame()
     }
 
     private fun followLink(x: Float, y: Float): Boolean {
@@ -1098,9 +1164,9 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
     }
 
     override fun onDraw(canvas: Canvas) {
+        frameInvalidationPending = false
         canvas.drawColor(if (reading) readingStyle.surround else 0xfff4f4f4.toInt())
         documentPaint.colorFilter = if (reading) readingStyle.filter else null
-        placements.clear()
         if (suspended || closed) return
         book.pages.getOrNull(book.current)?.let { semanticWarmup.prefer(it.id) }
         if (
@@ -1112,61 +1178,25 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             semanticWarmup.defer()
         val layout = ensureGeometry() ?: return
         clampViewport(layout)
+        if (layout.rows.isEmpty()) return
         val firstRow = layout.rowAt(max(0f, (-panY - layout.margin) / zoom))
         val lastRow = layout.rowAt((height - panY - layout.margin) / zoom)
-        val frames = (firstRow..lastRow).flatMap { layout.rows[it].pages }
-        val preload = layout.rows.getOrNull(lastRow + 1)?.pages.orEmpty()
-        fun bitmapWidth(index: Int) = baseWidth(book.pages[index])
-        val plans = mutableMapOf<Int, List<Tile>>()
+        updateFrame(layout, firstRow, lastRow)
+        // Give every visible page its readable base before queueing any detail tiles. The retry
+        // checks stay on every frame so a rejected/evicted base render still recovers while the
+        // cached frame plan is reused during writing.
+        for (n in frameIndices.indices) {
+            val p = book.pages.getOrNull(frameIndices[n]) ?: continue
+            if (p.source >= 0) requestKey(p, frameBaseWidths[n], frameBaseKeys[n])
+        }
         drawnTiles = 0
-        val wanted = mutableSetOf<String>()
-        // Fit the actual grid (including edge tiles, bleed and both pages of a spread).
-        // Estimating from viewport pixels alone can overfill an LRU and leave blurry holes.
-        val tileBudget = (tiles.maxSize() * .88f).toLong()
-        var quality = 1f
-        if (movingLayout) {
-            plans.putAll(settledTilePlans)
-            wanted.addAll(plans.values.flatten().map { it.key })
-        }
-        while (!movingLayout) {
-            plans.clear()
-            wanted.clear()
-            var bytes = 0L
-            for (frame in frames) {
-                val page = book.pages[frame.index]
-                val bounds = pageBounds(frame.index) ?: continue
-                if (page.source < 0) continue
-                val m = pageMatrix(page, bounds)
-                val inverse = Matrix().also { m.invert(it) }
-                val plan = tilePlan(page, m, inverse, quality)
-                plans[frame.index] = plan
-                wanted.addAll(plan.map { it.key })
-                bytes += plan.sumOf { it.area.width().toLong() * it.area.height() * 4 }
-            }
-            if (bytes <= tileBudget) break
-            quality *= min(.85f, sqrt(tileBudget.toFloat() / bytes) * .95f)
-        }
-        if (!movingLayout) settledTilePlans = plans.toMap()
-        wantedTiles = wanted
-        wantedPages = (frames + preload).map { book.pages[it.index].id }.toSet()
-        // Give every visible page its readable base before queueing any detail tiles.
-        // In a spread the first page's tiles must not keep the second page blank.
-        frames.forEach { frame ->
-            val p = book.pages[frame.index]
-            if (p.source >= 0) request(p, bitmapWidth(frame.index))
-        }
-        for (frame in frames) {
-            val i = frame.index
-            val p = book.pages[i]
-            val bounds = pageBounds(i) ?: continue
+        for (n in frameIndices.indices) {
+            val i = frameIndices[n]
+            val p = book.pages.getOrNull(i) ?: continue
+            val place = placements.getOrNull(n) ?: continue
+            val bounds = place.bounds
             if (bounds.bottom < 0 || bounds.top > height) continue
-            val m = pageMatrix(p, bounds)
-            val inv = Matrix()
-            m.invert(inv)
-            placements.add(Placement(i, m, inv, bounds))
-            val bw = bitmapWidth(i)
-            val key = "${pageKey(p)}:$bw"
-            val bitmap = cache.get(key)
+            val m = place.matrix
             canvas.save()
             canvas.concat(m)
             canvas.clipRect(0f, 0f, p.w, p.h)
@@ -1184,44 +1214,43 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                     p,
                     if (reading && p.paper != "black") readingStyle.paper(paper) else null,
                 )
-            } else if (bitmap != null) {
-                canvas.drawBitmap(bitmap, null, RectF(0f, 0f, p.w, p.h), documentPaint)
             } else {
-                paint.color = 0xffa0a0a0.toInt()
-                paint.textSize = 15f
-                canvas.drawText(tr("正在渲染…", "Rendering…"), 30f, 40f, paint)
+                val bitmap = cache.get(frameBaseKeys[n])
+                if (bitmap != null) {
+                    pageRect.set(0f, 0f, p.w, p.h)
+                    canvas.drawBitmap(bitmap, null, pageRect, documentPaint)
+                } else {
+                    paint.color = 0xffa0a0a0.toInt()
+                    paint.textSize = 15f
+                    canvas.drawText(tr("正在渲染…", "Rendering…"), 30f, 40f, paint)
+                }
             }
-            plans[i].orEmpty().forEach { tile ->
-                val detail = tiles.get(tile.key)
-                if (detail != null) {
-                    paint.color = Color.WHITE
-                    paint.alpha = 255
-                    canvas.drawBitmap(
-                        detail,
-                        null,
-                        RectF(
+            val plan = framePlans[i]
+            if (plan != null) {
+                for (tile in plan) {
+                    val detail = tiles.get(tile.key)
+                    if (detail != null) {
+                        paint.color = Color.WHITE
+                        paint.alpha = 255
+                        tileRect.set(
                             tile.area.left / tile.scale,
                             tile.area.top / tile.scale,
                             tile.area.right / tile.scale,
                             tile.area.bottom / tile.scale,
-                        ),
-                        documentPaint,
-                    )
-                    drawnTiles++
+                        )
+                        canvas.drawBitmap(detail, null, tileRect, documentPaint)
+                        drawnTiles++
+                    }
+                    if (!movingLayout) requestTile(p, tile)
                 }
-                if (!movingLayout) requestTile(p, tile)
             }
-            p.marks.forEach { drawMark(canvas, it) }
-            annotationSelection.draw(
-                canvas,
-                p,
-                scale * p.w / placements.first { it.index == i }.bounds.width(),
-            )
+            drawStaticInk(canvas, p, m)
+            annotationSelection.draw(canvas, p, scale * p.w / bounds.width())
             signature
                 ?.takeIf { it.pageId == p.id }
                 ?.let { pending ->
                     drawMark(canvas, pending.mark())
-                    val pixel = p.w / placements.first { it.index == i }.bounds.width()
+                    val pixel = p.w / bounds.width()
                     paint.color = 0xff435dc2.toInt()
                     paint.style = Paint.Style.STROKE
                     paint.strokeWidth = 1.5f * scale * pixel
@@ -1235,9 +1264,10 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                     )
                 }
             if (active?.index == i) stroke?.let { drawMark(canvas, it) }
-            searchHits.forEachIndexed { n, hit ->
+            searchHits.forEachIndexed { hitIndex, hit ->
                 if (hit.pageId == p.id) {
-                    paint.color = if (n == currentSearchHit) 0xaaffc44c.toInt() else 0x55f4d572
+                    paint.color =
+                        if (hitIndex == currentSearchHit) 0xaaffc44c.toInt() else 0x55f4d572
                     paint.style = Paint.Style.FILL
                     hit.words.forEach { canvas.drawRect(it.box, paint) }
                 }
@@ -1252,9 +1282,9 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 requestWords(p)
             words.get(p.id)?.let { semanticWarmup.offer(p.id, it) }
         }
-        preload.forEach {
-            if (book.pages[it.index].source >= 0)
-                request(book.pages[it.index], bitmapWidth(it.index))
+        for (n in framePreloadIndices.indices) {
+            val p = book.pages.getOrNull(framePreloadIndices[n]) ?: continue
+            if (p.source >= 0) requestKey(p, framePreloadWidths[n], framePreloadKeys[n])
         }
         if (ruler && !readOnly) drawRuler(canvas)
         paint.color = 0xff435dc2.toInt()
@@ -1264,6 +1294,226 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             canvas.drawLine(p.x, p.y - 7 * scale, p.x, p.y, paint)
             canvas.drawCircle(p.x, p.y, 5 * scale, paint)
         }
+    }
+
+    /** Completed page ink replays as one cached page-space picture instead of one drawPath/mark. */
+    private fun drawStaticInk(c: Canvas, p: Sheet, m: Matrix) {
+        if (p.marks.isEmpty()) return
+        if (!inkPicturesEnabled) {
+            p.marks.forEach { drawMark(c, it) }
+            return
+        }
+        val zoomBucket = (m.mapRadius(1f) * 4f).roundToInt()
+        val recorded =
+            inkPictures.draw(c, p.id, inkVersion(p), zoomBucket, p.w, p.h, p.marks, recordPageMarks)
+        // On the frame that records the page, paint the marks directly: one raster pass instead of
+        // recording the display list and immediately replaying it for the same frame.
+        if (recorded) p.marks.forEach { drawMark(c, it) }
+    }
+
+    private fun inkVersion(page: Sheet): Long = inkVersions[page.id] ?: 0L
+
+    /**
+     * A page's completed ink changed (stroke, erase, transform, signature, undo): invalidate it.
+     */
+    private fun bumpInk(page: Sheet?) {
+        page ?: return
+        inkVersions[page.id] = (inkVersions[page.id] ?: 0L) + 1L
+    }
+
+    private fun invalidateAllInk() {
+        inkVersions.clear()
+        inkPictures.clear()
+    }
+
+    /**
+     * Ink was replaced wholesale (refresh, undo/redo, erase rollback): drop pictures and geometry.
+     */
+    private fun bookChanged() {
+        bookEpoch++
+        frameKey.layout = null
+        invalidateAllInk()
+    }
+
+    /** Coalesce several invalidate calls in one input event into a single next-frame redraw. */
+    private fun invalidateFrame() {
+        if (frameInvalidationPending) return
+        frameInvalidationPending = true
+        postInvalidateOnAnimation()
+    }
+
+    /**
+     * Reuse the last frame plan while the viewport, layout and page epoch are unchanged (every
+     * writing frame). Pure panning shifts the existing matrices in place instead of reallocating
+     * them; layout/zoom/page/row changes rebuild placements and the tile grid once.
+     */
+    private fun updateFrame(layout: ContinuousLayout, firstRow: Int, lastRow: Int) {
+        val key = frameKey
+        val reusable =
+            key.layout === layout &&
+                key.zoom == zoom &&
+                key.width == width &&
+                key.height == height &&
+                key.firstRow == firstRow &&
+                key.lastRow == lastRow &&
+                key.epoch == bookEpoch &&
+                key.moving == movingLayout &&
+                frameIndices.isNotEmpty() &&
+                placements.size == frameIndices.size
+        if (reusable) {
+            val dx = panX - key.panX
+            val dy = panY - key.panY
+            if (dx != 0f || dy != 0f)
+                placements.forEach {
+                    it.matrix.postTranslate(dx, dy)
+                    it.inverse.preTranslate(-dx, -dy)
+                    it.bounds.offset(dx, dy)
+                }
+            key.panX = panX
+            key.panY = panY
+            return
+        }
+        key.layout = layout
+        key.zoom = zoom
+        key.width = width
+        key.height = height
+        key.firstRow = firstRow
+        key.lastRow = lastRow
+        key.epoch = bookEpoch
+        key.moving = movingLayout
+        key.panX = panX
+        key.panY = panY
+        rebuildFrame(layout, firstRow, lastRow)
+    }
+
+    private fun rebuildFrame(layout: ContinuousLayout, firstRow: Int, lastRow: Int) {
+        val rows = firstRow..lastRow.coerceAtMost(layout.rows.lastIndex)
+        val frames = ArrayList<ContinuousLayout.Page>(layout.stride * (lastRow - firstRow + 1))
+        for (row in rows) frames.addAll(layout.rows[row].pages)
+        val preload = layout.rows.getOrNull(lastRow + 1)?.pages.orEmpty()
+        val activeIndex = active?.index
+        // Fresh objects while a gesture pins Placement references (reused objects would make the
+        // active page mapping alias another page). Otherwise reuse everything.
+        if (activeIndex != null) placements.clear()
+        while (placements.size < frames.size) placements.add(Placement())
+        while (placements.size > frames.size) placements.removeAt(placements.size - 1)
+        // Screen bounds are linear in pan/zoom, exactly like pageBounds().
+        for (n in frames.indices) {
+            val frame = frames[n]
+            val page = book.pages.getOrNull(frame.index) ?: continue
+            val place = placements[n]
+            place.index = frame.index
+            place.bounds.set(
+                width / 2f + (frame.bounds.left - width / 2f) * zoom + panX,
+                layout.margin + frame.bounds.top * zoom + panY,
+                width / 2f + (frame.bounds.right - width / 2f) * zoom + panX,
+                layout.margin + frame.bounds.bottom * zoom + panY,
+            )
+            setPageMatrix(place.matrix, page, place.bounds)
+            place.matrix.invert(place.inverse)
+        }
+        if (activeIndex != null) active = placements.firstOrNull { it.index == activeIndex }
+        frameIndices = IntArray(frames.size) { frames[it].index }
+        frameBaseWidths = IntArray(frames.size)
+        frameBaseKeys = Array(frames.size) { "" }
+        for (n in frames.indices) {
+            val page = book.pages.getOrNull(frameIndices[n]) ?: continue
+            frameBaseWidths[n] = baseWidth(page)
+            frameBaseKeys[n] = "${pageKey(page)}:${frameBaseWidths[n]}"
+        }
+        framePreloadIndices = IntArray(preload.size) { preload[it].index }
+        framePreloadWidths = IntArray(preload.size)
+        framePreloadKeys = Array(preload.size) { "" }
+        for (n in preload.indices) {
+            val page = book.pages.getOrNull(framePreloadIndices[n]) ?: continue
+            framePreloadWidths[n] = baseWidth(page)
+            framePreloadKeys[n] = "${pageKey(page)}:${framePreloadWidths[n]}"
+        }
+        val tileBudget = (tiles.maxSize() * .88f).toLong()
+        val plans: Map<Int, List<Tile>>
+        if (movingLayout) {
+            plans = settledTilePlans
+        } else {
+            val fresh = HashMap<Int, List<Tile>>(frames.size)
+            var quality = 1f
+            while (true) {
+                fresh.clear()
+                var bytes = 0L
+                for (n in frames.indices) {
+                    val place = placements[n]
+                    val page = book.pages.getOrNull(place.index) ?: continue
+                    if (page.source < 0) continue
+                    val plan = tilePlan(page, place.matrix, place.inverse, quality)
+                    fresh[frameIndices[n]] = plan
+                    bytes += plan.sumOf { it.area.width().toLong() * it.area.height() * 4 }
+                }
+                if (bytes <= tileBudget) break
+                quality *= min(.85f, sqrt(tileBudget.toFloat() / bytes) * .95f)
+            }
+            settledTilePlans = fresh
+            plans = fresh
+        }
+        framePlans = plans
+        val wanted = HashSet<String>(plans.values.sumOf { it.size })
+        plans.values.forEach { plan -> plan.forEach { wanted.add(it.key) } }
+        wantedTiles = wanted
+        val wantedPageIds = HashSet<String>(frames.size + preload.size)
+        frames.forEach {
+            book.pages.getOrNull(it.index)?.let { page -> wantedPageIds.add(page.id) }
+        }
+        preload.forEach {
+            book.pages.getOrNull(it.index)?.let { page -> wantedPageIds.add(page.id) }
+        }
+        wantedPages = wantedPageIds
+    }
+
+    /** Allocation-free equivalent of pageMatrix() for the per-frame placement rebuild. */
+    private fun setPageMatrix(matrix: Matrix, p: Sheet, bounds: RectF) {
+        val x = bounds.left
+        val y = bounds.top
+        val dw = bounds.width()
+        val dh = bounds.height()
+        polyFrom[0] = 0f
+        polyFrom[1] = 0f
+        polyFrom[2] = p.w
+        polyFrom[3] = 0f
+        polyFrom[4] = 0f
+        polyFrom[5] = p.h
+        when (p.rotation) {
+            90 -> {
+                polyTo[0] = x + dw
+                polyTo[1] = y
+                polyTo[2] = x + dw
+                polyTo[3] = y + dh
+                polyTo[4] = x
+                polyTo[5] = y
+            }
+            180 -> {
+                polyTo[0] = x + dw
+                polyTo[1] = y + dh
+                polyTo[2] = x
+                polyTo[3] = y + dh
+                polyTo[4] = x + dw
+                polyTo[5] = y
+            }
+            270 -> {
+                polyTo[0] = x
+                polyTo[1] = y + dh
+                polyTo[2] = x
+                polyTo[3] = y
+                polyTo[4] = x + dw
+                polyTo[5] = y + dh
+            }
+            else -> {
+                polyTo[0] = x
+                polyTo[1] = y
+                polyTo[2] = x + dw
+                polyTo[3] = y
+                polyTo[4] = x
+                polyTo[5] = y + dh
+            }
+        }
+        matrix.setPolyToPoly(polyFrom, 0, polyTo, 0, 3)
     }
 
     private fun pageMatrix(p: Sheet, bounds: RectF): Matrix {
@@ -1314,15 +1564,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         paint.strokeWidth = m.width
         val a = m.points.first()
         val b = m.points.last()
-        val rect = RectF(min(a.x, b.x), min(a.y, b.y), max(a.x, b.x), max(a.y, b.y))
-        fun shape(draw: () -> Unit) {
-            if (m.filled) {
-                paint.style = Paint.Style.FILL
-                draw()
-                paint.style = Paint.Style.STROKE
-            }
-            draw()
-        }
+        markRect.set(min(a.x, b.x), min(a.y, b.y), max(a.x, b.x), max(a.y, b.y))
         when (m.tool) {
             "image" -> {
                 var bm = imageCache.get(m.image)
@@ -1340,19 +1582,36 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                     }
                 }
                 paint.alpha = 255
-                c.drawBitmap(bm, null, rect, paint)
+                c.drawBitmap(bm, null, markRect, paint)
             }
-            "rectangle" -> shape { c.drawRect(rect, paint) }
-            "ellipse" -> shape { c.drawOval(rect, paint) }
+            "rectangle" -> {
+                if (m.filled) {
+                    paint.style = Paint.Style.FILL
+                    c.drawRect(markRect, paint)
+                    paint.style = Paint.Style.STROKE
+                }
+                c.drawRect(markRect, paint)
+            }
+            "ellipse" -> {
+                if (m.filled) {
+                    paint.style = Paint.Style.FILL
+                    c.drawOval(markRect, paint)
+                    paint.style = Paint.Style.STROKE
+                }
+                c.drawOval(markRect, paint)
+            }
             "triangle" -> {
-                val path =
-                    Path().apply {
-                        moveTo((a.x + b.x) / 2, a.y)
-                        lineTo(b.x, b.y)
-                        lineTo(a.x, b.y)
-                        close()
-                    }
-                shape { c.drawPath(path, paint) }
+                trianglePath.rewind()
+                trianglePath.moveTo((a.x + b.x) / 2, a.y)
+                trianglePath.lineTo(b.x, b.y)
+                trianglePath.lineTo(a.x, b.y)
+                trianglePath.close()
+                if (m.filled) {
+                    paint.style = Paint.Style.FILL
+                    c.drawPath(trianglePath, paint)
+                    paint.style = Paint.Style.STROKE
+                }
+                c.drawPath(trianglePath, paint)
             }
             else -> {
                 if (m.points.size == 1) {
@@ -1517,6 +1776,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
         }
         page.marks.clear()
         page.marks.addAll(result)
+        bumpInk(page)
     }
 
     private fun saveChange() {
@@ -1528,6 +1788,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             book.pages.addAll(saved.pages)
             book.cursor = saved.cursor
             book.revision = saved.revision
+            bookChanged()
             onError(
                 java.io.IOException(
                     "${tr("本次笔迹未保存", "Stroke could not be saved")}: ${t.message}",
@@ -1541,6 +1802,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
 
     private fun cancelStroke() {
         clearStrokeHold()
+        // A selection drag mutates marks in place; dropping the page picture is cheap insurance.
+        bumpInk(annotationSelection.page)
         annotationSelection.clear()
         stroke = null
         rulerEdge = null
@@ -1548,6 +1811,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
             val a = org.json.JSONArray(state)
             book.pages.clear()
             repeat(a.length()) { book.pages.add(Sheet.from(a.getJSONObject(it))) }
+            bookChanged()
         }
         beforeErase = null
         previousErase = null
@@ -1680,7 +1944,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                     point[1] - signatureDown.y,
                                     page,
                                 )
-                            invalidate()
+                            invalidateFrame()
                         }
                 MotionEvent.ACTION_CANCEL -> {
                     signatureStart?.let { pending.bounds.set(it) }
@@ -1728,9 +1992,13 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                         onActivePage(place.index)
                         annotationSelection.down(page, location.x, location.y, hit)
                     }
-                    MotionEvent.ACTION_MOVE -> annotationSelection.move(location.x, location.y)
+                    MotionEvent.ACTION_MOVE -> {
+                        annotationSelection.move(location.x, location.y)
+                        bumpInk(page)
+                    }
                     MotionEvent.ACTION_UP -> {
                         annotationSelection.move(location.x, location.y)
+                        bumpInk(page)
                         if (annotationSelection.up(hit)) {
                             saveChange()
                             onChanged()
@@ -1912,7 +2180,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                     }
                     lastX = e.x
                     lastY = e.y
-                    invalidate()
+                    invalidateFrame()
                     return true
                 }
                 if (draggingRuler) {
@@ -1963,7 +2231,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 }
                 lastX = e.x
                 lastY = e.y
-                invalidate()
+                invalidateFrame()
                 return true
             }
             MotionEvent.ACTION_POINTER_UP -> {
@@ -2056,7 +2324,9 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                 }
                             }
                         }
-                        book.pages[active!!.index].marks.add(stroke!!)
+                        val page = book.pages[active!!.index]
+                        page.marks.add(stroke!!)
+                        bumpInk(page)
                         stroke = null
                         clearStrokeHold()
                         saveChange()
@@ -2105,8 +2375,8 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                                 if (maxPointers == 2) "undo" else "redo",
                             )
                         when (action) {
-                            "undo" -> if (!readOnly) store.undo(book, false)
-                            "redo" -> if (!readOnly) store.undo(book, true)
+                            "undo" -> if (!readOnly && store.undo(book, false)) bookChanged()
+                            "redo" -> if (!readOnly && store.undo(book, true)) bookChanged()
                             "toolbar" -> onToolbarToggle()
                         }
                         if (!readOnly) onChanged()

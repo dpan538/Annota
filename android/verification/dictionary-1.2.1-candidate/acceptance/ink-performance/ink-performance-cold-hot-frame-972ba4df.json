@@ -1,0 +1,142 @@
+{
+  "cases": [
+    {
+      "marks": 50,
+      "points": 20000,
+      "coldNew": {
+        "count": 3,
+        "min": 421.384876,
+        "median": 429.5055,
+        "mean": 452.40872266666673,
+        "max": 506.335792
+      },
+      "hotNew": {
+        "count": 10,
+        "min": 72.08925,
+        "median": 86.9445,
+        "mean": 87.65243749999999,
+        "max": 108.916667
+      },
+      "coldPerMark": {
+        "count": 3,
+        "min": 244.262625,
+        "median": 288.624375,
+        "mean": 278.1353056666667,
+        "max": 301.518917
+      },
+      "hotPerMark": {
+        "count": 10,
+        "min": 161.148541,
+        "median": 232.594875,
+        "mean": 229.64057930000004,
+        "max": 268.075708
+      },
+      "hotSpeedup": 2.6198995241860796,
+      "pictureRecordsDuringCase": 4,
+      "pictureReplaysDuringCase": 10,
+      "pictureEntries": 1,
+      "pictureWeight": 1288448,
+      "readerOutputDiff": {
+        "pixels": 1555200,
+        "changed": 0,
+        "changedRatio": 0,
+        "maxChannelDelta": 0,
+        "meanChannelDelta": 0
+      }
+    },
+    {
+      "marks": 300,
+      "points": 19480,
+      "coldNew": {
+        "count": 3,
+        "min": 442.626833,
+        "median": 450.287833,
+        "mean": 453.3545276666666,
+        "max": 467.148917
+      },
+      "hotNew": {
+        "count": 10,
+        "min": 70.175292,
+        "median": 86.791917,
+        "mean": 84.8285291,
+        "max": 124.343958
+      },
+      "coldPerMark": {
+        "count": 3,
+        "min": 335.543166,
+        "median": 372.353417,
+        "mean": 361.95527766666663,
+        "max": 377.96925
+      },
+      "hotPerMark": {
+        "count": 10,
+        "min": 277.218667,
+        "median": 311.132583,
+        "mean": 381.36502520000005,
+        "max": 739.577167
+      },
+      "hotSpeedup": 4.495716585518398,
+      "pictureRecordsDuringCase": 4,
+      "pictureReplaysDuringCase": 10,
+      "pictureEntries": 1,
+      "pictureWeight": 1287168,
+      "readerOutputDiff": {
+        "pixels": 1555200,
+        "changed": 0,
+        "changedRatio": 0,
+        "maxChannelDelta": 0,
+        "meanChannelDelta": 0
+      }
+    },
+    {
+      "marks": 1000,
+      "points": 19676,
+      "coldNew": {
+        "count": 3,
+        "min": 241.54325,
+        "median": 304.764917,
+        "mean": 297.27988899999997,
+        "max": 345.5315
+      },
+      "hotNew": {
+        "count": 10,
+        "min": 65.020667,
+        "median": 66.381209,
+        "mean": 66.12910860000001,
+        "max": 67.381416
+      },
+      "coldPerMark": {
+        "count": 3,
+        "min": 160.647042,
+        "median": 162.039958,
+        "mean": 162.252014,
+        "max": 164.069042
+      },
+      "hotPerMark": {
+        "count": 10,
+        "min": 156.025958,
+        "median": 160.892958,
+        "mean": 164.32691659999995,
+        "max": 187.321583
+      },
+      "hotSpeedup": 2.484940748165475,
+      "pictureRecordsDuringCase": 4,
+      "pictureReplaysDuringCase": 10,
+      "pictureEntries": 1,
+      "pictureWeight": 1389312,
+      "readerOutputDiff": {
+        "pixels": 1555200,
+        "changed": 0,
+        "changedRatio": 0,
+        "maxChannelDelta": 0,
+        "meanChannelDelta": 0
+      }
+    }
+  ],
+  "scenario": "cold-hot-frame",
+  "timestamp": 1794119040401,
+  "sdk": 36,
+  "hardware": "ranchu",
+  "model": "sdk_gphone64_arm64",
+  "canvas": "software Canvas(Bitmap) 1080x1440; hardware-layer main-thread cost is lower"
+}

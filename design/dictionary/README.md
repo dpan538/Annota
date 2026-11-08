@@ -106,7 +106,7 @@ python3 android/scripts/sync-assets.py
 - 已知边界：OEWN 2025 有 3,184 个 synset 的 `ili` 为字面量 `"in"`，无法对齐，不进入索引；
   合并词库与主词库存在重叠，条目数不能相加；CWN/OMW 新增中文释义未经人工逐条校对。
 
-## 1.2.1 候选（未发布）：瘦身、扩词与翻译后处理
+## 1.2.1 候选（未发布）：瘦身、扩词、缩写与上下文
 
 - **en-zh 瘦身**：边界等价由 `entries.boundary_key` 列 + `en_boundary` 索引提供；逐词复制的
   771,180 行 `aliases` 删除，`aliases` 只保留 682 条作者别名。en-zh SQLite 240.9→184.6 MB，
@@ -117,6 +117,12 @@ python3 android/scripts/sync-assets.py
 - **汉英扩词**：由 `wordnet.sqlite`/`wiktionary.sqlite` 的中文义项反向生成 108,863 条汉英条目
   （每词最多 4 个英文等价词，来源逐行标注），`zh-en` 129,801→238,664；仍按 CC BY-SA 4.0/3.0
   与 WordNet 通知分发。
+- **缩写/简写**：新增作者缩写表 `sources/annota-abbreviations.tsv`（128 条，MIT，含 CAP 4 义、
+  RAM 2 义、CI 2 义、k8s/i18n/a11y/l10n 等）；en-zh schema 6 增加 `abbreviations` 表与
+  `entries.initials` 首字母索引（401,909 条）。数字缩合（k8s/i18n 等）、ALL-CAPS 首字母展开与
+  作者表共用上下文线索选义；未收录缩写只有上下文命中时才展开。
+- **上下文领域**：`wordnet.sqlite` schema 3 增加 OEWN `lexfile` 领域标签（86,060/95,221 条），
+  供离线领域先验排序使用；仍保留“证据不足不强行选义”。
 - **英→中整句**：40 条自写开发集对比 greedy/no-repeat/repetition-penalty/EOS-guard/beam2-4，
   greedy 已 100% 正常结束；beam4 的 chrF 增益统计不稳定且耗时 3.6×，因此不替换解码。仅新增
   零推理开销的中文标点/空格/句末后处理与 4 项守门测试；不宣称语义准确率提升。

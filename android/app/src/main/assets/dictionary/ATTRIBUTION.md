@@ -44,6 +44,15 @@ CC-CEDICT 社区维护，MDBG 发布；来源版本 2026-10-19。
 
 界面和指南所用字体许可另附。系统手写使用设备已安装的输入法，其网络行为由输入法管理。
 
+## Annota 缩写与首字母索引
+
+Copyright (c) 2026 Dai Pan and Annota contributors. MIT License（完整许可：licenses/Annota-phrases-MIT.txt）。
+原创源文件：sources/annota-abbreviations.tsv。共 128 条经人工编写的缩写/数字缩合条目
+（CAP、RAM、CI、k8s、i18n、a11y、l10n、LLM、RAG 等），每条含全称、中文短义、领域与上下文线索词；
+中文释义为项目原创编辑，没有复制外部词典解释。另有 401,909 条多词词条的首字母签名（initials 列）
+仅用于生成候选展开，不新增词条、不改变原有释义。
+缩写识别在设备内完成，不联网；未收录缩写只有在上下文命中候选词时才显示展开，否则回退普通查词。
+
 ## 索引精简
 
 英汉检索的边界等价（连字符/空格）由 `entries.boundary_key` 列与索引提供，不再为每个词条复制

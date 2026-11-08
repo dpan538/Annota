@@ -472,7 +472,7 @@ class DictionarySearchUpgradeTest {
         val dictionary = dictionary()
         try {
             openReadOnly("en-zh.sqlite").use { db ->
-                assertEquals(5, userVersion("en-zh.sqlite"))
+                assertEquals(6, userVersion("en-zh.sqlite"))
                 val entries = count(db, "SELECT count(*) FROM entries")
                 val aliases = count(db, "SELECT count(*) FROM aliases")
                 assertTrue("entries.boundary_key missing", "boundary_key" in columns(db, "entries"))

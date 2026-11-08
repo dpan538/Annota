@@ -52,6 +52,39 @@ def authored_phrases():
     return rows
 
 
+def authored_abbreviations():
+    """Original short abbreviation expansions with context cues; no copied definitions."""
+    rows, seen = [], set()
+    for number, line in enumerate(
+            (ROOT / "sources/annota-abbreviations.tsv").read_text().splitlines(), 1):
+        if not line.strip() or line.startswith("#"):
+            continue
+        fields = line.split("\t")
+        if len(fields) != 6:
+            raise ValueError(f"Invalid abbreviation format on line {number}")
+        abbr, expansion, meaning, domain, cues, source = fields
+        if not abbr or len(abbr) > 20 or not expansion or len(expansion) > 120:
+            raise ValueError(f"Invalid abbreviation on line {number}")
+        if not meaning.strip() or len(meaning) > 60:
+            raise ValueError(f"Abbreviation meaning should be concise: {abbr}")
+        key = (abbr, expansion)
+        if key in seen:
+            raise ValueError(f"Duplicate abbreviation expansion: {abbr} {expansion}")
+        seen.add(key)
+        rows.append({"abbr": abbr, "expansion": expansion, "meaning": meaning,
+                     "domain": domain, "cues": cues, "source": source})
+    return rows
+
+
+def initials_of(key):
+    """Initialism key for multiword headwords (2-6 alphabetic tokens)."""
+    words = re.findall(r"[A-Za-z]+", key)
+    if not 2 <= len(words) <= 6:
+        return ""
+    letters = "".join(word[0].lower() for word in words)
+    return letters if 2 <= len(letters) <= 6 else ""
+
+
 def database(path, schema):
     # Never overwrite a user dictionary; these are generated build artifacts.
     temp = path.with_suffix(".building")
@@ -143,14 +176,16 @@ def build(ecdict_path):
 
     phrases = authored_phrases()
     en, temp = database(out / "en-zh.sqlite", """
-        PRAGMA user_version=5;
+        PRAGMA user_version=6;
         CREATE TABLE entries(id INTEGER PRIMARY KEY, word TEXT NOT NULL, key TEXT NOT NULL,
             compact TEXT NOT NULL, reverse_key TEXT NOT NULL, boundary_key TEXT NOT NULL,
+            initials TEXT NOT NULL DEFAULT '',
             phonetic TEXT, definition TEXT, translation TEXT,
             source TEXT NOT NULL DEFAULT 'ecdict', category TEXT NOT NULL DEFAULT '',
             freq INTEGER NOT NULL DEFAULT 0);
         CREATE INDEX en_key ON entries(key);
         CREATE INDEX en_boundary ON entries(boundary_key);
+        CREATE INDEX en_initials ON entries(initials);
         CREATE INDEX en_compact ON entries(compact);
         CREATE INDEX en_reverse ON entries(reverse_key);
         CREATE TABLE forms(key TEXT NOT NULL, entry_id INTEGER NOT NULL);
@@ -159,13 +194,19 @@ def build(ecdict_path):
             entry_id INTEGER NOT NULL, UNIQUE(key, entry_id));
         CREATE INDEX alias_key ON aliases(key);
         CREATE INDEX alias_boundary ON aliases(boundary_key);
+        CREATE TABLE abbreviations(abbr TEXT NOT NULL, expansion TEXT NOT NULL,
+            meaning TEXT NOT NULL, domain TEXT NOT NULL DEFAULT '',
+            cues TEXT NOT NULL DEFAULT '', source TEXT NOT NULL DEFAULT 'annota',
+            PRIMARY KEY(abbr, expansion));
+        CREATE INDEX abbr_key ON abbreviations(abbr);
     """)
     with gzip.open(ROOT / "sources/ecdict-core.csv.gz", "rt", encoding="utf-8", newline="") as src:
         for row in csv.DictReader(src):
             key = normalize(row["word"])
             compact = re.sub(r"[^a-z0-9]", "", key)
-            ident = en.execute("INSERT INTO entries(word,key,compact,reverse_key,boundary_key,phonetic,definition,translation,freq) VALUES(?,?,?,?,?,?,?,?,?)",
-                               (row["word"], key, compact, compact[::-1], boundary_key(key), row["phonetic"],
+            ident = en.execute("INSERT INTO entries(word,key,compact,reverse_key,boundary_key,initials,phonetic,definition,translation,freq) VALUES(?,?,?,?,?,?,?,?,?,?)",
+                               (row["word"], key, compact, compact[::-1], boundary_key(key),
+                                initials_of(key), row["phonetic"],
                                 row["definition"].replace("\\n", "\n"),
                                 row["translation"].replace("\\n", "\n"),
                                 frequency_rank(row))).lastrowid
@@ -198,9 +239,10 @@ def build(ecdict_path):
     for row in phrases:
         compact = re.sub(r"[^a-z0-9]", "", row["key"])
         # Author-owned phrase meanings take priority without removing original source records.
-        ident = en.execute("""INSERT INTO entries(word,key,compact,reverse_key,boundary_key,phonetic,definition,
-                           translation,source,category) VALUES(?,?,?,?,?,?,?,?,?,?)""",
-                           (row["word"], row["key"], compact, compact[::-1], boundary_key(row["key"]), "", "",
+        ident = en.execute("""INSERT INTO entries(word,key,compact,reverse_key,boundary_key,initials,
+                           phonetic,definition,translation,source,category) VALUES(?,?,?,?,?,?,?,?,?,?,?)""",
+                           (row["word"], row["key"], compact, compact[::-1],
+                            boundary_key(row["key"]), initials_of(row["key"]), "", "",
                             row["meaning"], "annota", row["category"])).lastrowid
         # The phrase key itself is already an entries.key; explicit aliases keep a row even
         # when the alias equals the boundary form: otherwise an ECDICT exact match could hide
@@ -209,6 +251,13 @@ def build(ecdict_path):
             en.execute("INSERT OR IGNORE INTO aliases VALUES(?,?,?)",
                        (key, boundary_key(key), ident))
     assert en.execute("SELECT count(*) FROM aliases").fetchone()[0] < 3000, "aliases must stay author-only"
+    abbreviations = authored_abbreviations()
+    en.executemany(
+        "INSERT INTO abbreviations VALUES(?,?,?,?,?,?)",
+        [(row["abbr"], row["expansion"], row["meaning"], row["domain"], row["cues"],
+          row["source"]) for row in abbreviations],
+    )
+    initials_count = en.execute("SELECT count(*) FROM entries WHERE initials<>''").fetchone()[0]
     en_count = en.execute("SELECT count(*) FROM entries").fetchone()[0]
     finish(en, temp, out / "en-zh.sqlite")
 
@@ -328,6 +377,8 @@ def build(ecdict_path):
         "lookupFilter": filter_report,
         "schemaVersion": 3, "networkRequired": False,
         "en-zh": {"entries": en_count, "baseEntries": base_en_count,
+                  "initialsIndexed": initials_count,
+                  "abbreviations": len(abbreviations),
                   "source": "ECDICT complete translated vocabulary + Annota authored phrases",
                   "license": "MIT", "url": "https://github.com/skywind3000/ECDICT"},
         "zh-en": {"entries": zh_count, "baseEntries": base_zh_count,
@@ -339,6 +390,11 @@ def build(ecdict_path):
                             "Chinese WordNet / OMW Wiktionary Chinese + "
                             "reverse index from WordNet/Wiktionary Chinese senses",
                   "license": "CC-BY-SA-4.0", "url": "https://www.mdbg.net/chinese/dictionary?page=cc-cedict"},
+        "annota-abbreviations": {
+            "entries": len(abbreviations),
+            "license": "MIT",
+            "source": "Original Annota abbreviation expansions with context cues, 2026-11-08",
+        },
         "annota-phrases": {"entries": len(phrases), "aliases": sum(len(r["aliases"]) for r in phrases),
                            "license": "MIT", "source": "Original Annota phrase equivalents, 2026-11-01",
                            "categories": {c: sum(r["category"] == c for r in phrases)

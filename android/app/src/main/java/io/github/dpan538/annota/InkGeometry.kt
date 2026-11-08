@@ -4,7 +4,11 @@ import kotlin.math.*
 
 /** Versioned, deterministic ink geometry shared by the canvas and PDF exporter. */
 object InkGeometry {
-    const val VERSION = 4
+    const val VERSION = 5
+
+    /** First version of the liquid-ink fountain pen model. Only fountain marks use it. */
+    const val FOUNTAIN_VERSION = 5
+
     private val tools = setOf("pen", "fountain", "pencil", "highlight")
 
     data class Sample(val x: Float, val y: Float, val p: Float, val width: Float, val t: Long)
@@ -18,6 +22,12 @@ object InkGeometry {
     )
 
     fun supports(mark: Mark) = mark.inkVersion in 1..VERSION && mark.tool in tools
+
+    /**
+     * v5 liquid-ink model. Deliberately keyed on tool *and* version: pen/pencil/highlighter, and
+     * every fountain stroke captured before v5, keep the geometry they were written with.
+     */
+    fun fountainPen(mark: Mark) = mark.tool == "fountain" && mark.inkVersion >= FOUNTAIN_VERSION
 
     fun opacity(mark: Mark): Float =
         when (mark.tool) {
@@ -38,12 +48,17 @@ object InkGeometry {
     /** Incremental counterpart of samples(); retained only for cached, append-only strokes. */
     class Stream(private val mark: Mark) {
         private val base = mark.width.takeIf { it.isFinite() }?.coerceIn(.1f, 200f) ?: 1f
+        // v5 liquid ink is fountain-only; every other tool and every older mark keeps its model.
+        private val liquidInk = fountainPen(mark)
         private var previousRaw: Point? = null
         private var earlierRaw: Point? = null
         private var fx = 0f
         private var fy = 0f
         private var pressure = .5f
         private var speed = 0f
+        private var travelled = 0f
+        private var lingering = 0f
+        private var tilt = 0f
         var last: Sample? = null
             private set
 
@@ -60,13 +75,15 @@ object InkGeometry {
                 speed = 0f
                 return Sample(fx, fy, pressure, point.w, point.t).also { last = it }
             }
+            val raw = validPressure(point.p)
             val before = previousRaw
+            var step = 1f / 120f
             if (before == null) {
                 fx = point.x
                 fy = point.y
-                pressure = validPressure(point.p)
+                pressure = raw
             } else {
-                val dt =
+                step =
                     if (point.t > before.t && before.t > 0)
                         ((point.t - before.t) / 1000f).coerceIn(.001f, .05f)
                     else 1f / 120f
@@ -78,7 +95,7 @@ object InkGeometry {
                     mark.inkVersion >= 2 && mark.tool == "pencil" && distance < .03f && last != null
                 )
                     return null
-                speed += .35f * ((distance / dt).coerceAtMost(5000f) - speed)
+                speed += .35f * ((distance / step).coerceAtMost(5000f) - speed)
                 var corner = false
                 earlierRaw?.let { earlier ->
                     val ax = before.x - earlier.x
@@ -93,7 +110,7 @@ object InkGeometry {
                 if (mark.refined && mark.tool != "highlight") {
                     // Page coordinates keep damping independent of viewport zoom and export DPI.
                     val cutoff = 18f + min(100f, speed * .16f)
-                    val alpha = dt / (dt + 1f / (2f * PI.toFloat() * cutoff))
+                    val alpha = step / (step + 1f / (2f * PI.toFloat() * cutoff))
                     if (corner) {
                         fx = point.x
                         fy = point.y
@@ -107,21 +124,40 @@ object InkGeometry {
                             fy = point.y + (fy - point.y) * limit / lag
                         }
                     }
-                    val pressureAlpha = dt / (dt + .012f)
-                    pressure += pressureAlpha * (validPressure(point.p) - pressure)
+                    val pressureAlpha = step / (step + .012f)
+                    pressure += pressureAlpha * (raw - pressure)
                 } else {
                     fx = point.x
                     fy = point.y
-                    pressure = validPressure(point.p)
+                    pressure = raw
                 }
             }
             earlierRaw = before
             previousRaw = point
-            val tilt = if (point.tilt.isFinite()) point.tilt.coerceIn(0f, 1.4f) else 0f
+            val pointTilt = if (point.tilt.isFinite()) point.tilt.coerceIn(0f, 1.4f) else 0f
+            if (liquidInk) {
+                // All envelopes are causal and time-smoothed, so no width can jump between
+                // packets and the same packet sequence always produces the same outline.
+                last?.let { travelled += hypot(fx - it.x, fy - it.y) }
+                val motion = speed / (speed + 420f)
+                lingering += ((1f - motion) - lingering) * (step / (step + .07f))
+                tilt += (sin(pointTilt) - tilt) * (step / (step + .03f))
+            }
             val shading =
-                if (mark.tool == "pencil" && mark.inkVersion >= 3) 1f + 2.2f * sin(tilt).pow(3f)
+                if (mark.tool == "pencil" && mark.inkVersion >= 3) 1f + 2.2f * sin(pointTilt).pow(3f)
                 else 1f
-            val w = width(mark.tool, base, pressure, speed) * shading
+            val w =
+                if (liquidInk)
+                    fountainWidth(
+                        base,
+                        pressure,
+                        speed,
+                        travelled,
+                        lingering,
+                        tilt,
+                        pressureDrop(before, raw),
+                    )
+                else width(mark.tool, base, pressure, speed) * shading
             val previous = last
             if (
                 previous != null &&
@@ -131,6 +167,18 @@ object InkGeometry {
                 return null
             return Sample(fx, fy, pressure, w, point.t).also { last = it }
         }
+    }
+
+    /**
+     * How abruptly raw pressure collapsed between two packets (0..1). A real pen-up reports a
+     * release; a slow pressure change does not. This is the only lift signal available to a
+     * causal stream, so the release taper stays inside the final segment.
+     */
+    private fun pressureDrop(before: Point?, raw: Float): Float {
+        if (before == null) return 0f
+        val previous = validPressure(before.p)
+        if (previous <= .15f) return 0f
+        return ((previous - raw) / previous).coerceIn(0f, 1f)
     }
 
     private fun validPressure(value: Float): Float =
@@ -147,6 +195,46 @@ object InkGeometry {
                 else -> 1f
             }
         return base * ratio
+    }
+
+    /**
+     * v5 liquid-ink width. Pressure is the primary control; speed and the slow-write envelope are
+     * secondary. Every factor is bounded and smoothed by the caller:
+     *
+     * * body: 0.28 + 1.47 * p^0.9 (p in 0.03..1), so pressure always dominates.
+     * * speed: up to -20% at 2000 page units/s, so fast strokes are dry, not thin lines.
+     * * lingering: up to +14% while the pen has been moving slowly for >~150 ms ("pooling").
+     * * entry: 0.72 -> 1.0 over the first 1.8 base widths (<= 9 page units) of travel.
+     * * lift: up to -70% when raw pressure collapses between two packets (pen-up taper).
+     * * tilt: up to +10% for a leaning nib, 1.0 when the device reports no tilt.
+     *
+     * The product is clamped to 0.26..1.95 base widths, so no input sequence can produce a spike.
+     */
+    private fun fountainWidth(
+        base: Float,
+        pressure: Float,
+        speed: Float,
+        travelled: Float,
+        lingering: Float,
+        tilt: Float,
+        drop: Float,
+    ): Float {
+        val p = pressure.coerceIn(.03f, 1f)
+        val motion = speed / (speed + 420f)
+        val body = .28f + 1.47f * p.pow(.9f)
+        val speedScale = 1f - .20f * motion
+        val pool = 1f + .14f * smooth(.60f, .95f, lingering)
+        val entryLength = (1.8f * base).coerceIn(2.5f, 9f)
+        val entry = .72f + .28f * smooth(0f, entryLength, travelled)
+        val release = 1f - .70f * smooth(.30f, .85f, drop)
+        val nib = 1f + .10f * smooth(.10f, .85f, tilt)
+        return base * (body * speedScale * pool * entry * release * nib).coerceIn(.26f, 1.95f)
+    }
+
+    /** Hermite smoothstep; monotone in [edge0, edge1] and flat outside, so no width jumps. */
+    private fun smooth(edge0: Float, edge1: Float, x: Float): Float {
+        val t = ((x - edge0) / (edge1 - edge0)).coerceIn(0f, 1f)
+        return t * t * (3f - 2f * t)
     }
 
     /** Subtle grain anchored to page space, preserved across frames, export, and eraser cuts. */

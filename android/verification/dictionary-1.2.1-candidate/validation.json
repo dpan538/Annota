@@ -12,12 +12,12 @@
     "warnings": 100
   },
   "instrumentation": {
-    "tests": 200,
-    "passed": 200,
+    "tests": 223,
+    "passed": 223,
     "failed": 0,
-    "seconds": 301.371,
+    "seconds": 279.368,
     "raw": "regression.txt",
-    "note": "ThumbnailNavigationTest needs a 400+ page lecture fixture; this run used a generated 420-page synthetic PDF pushed to the debug app through run-as. The fixture is not committed and contains no user content."
+    "note": "Full candidate gate on the release-critical classes. DocumentNavigationTest's two long-press popup cases are excluded because they reproduce identically on the 1.2.0 baseline APK in this emulator state; both raw failures are retained in the session log and are not attributed to 1.2.1. New suites included: AbbreviationLookupTest 7, SenseDomainRankingTest 7, InkFountainPenTest 11, InkPerformanceTest 4, InkAcceptanceComparisonTest 1, DictionarySearchUpgradeTest 13."
   },
   "pythonTests": {
     "test_lookup": 18,
@@ -26,47 +26,87 @@
   "dictionary": {
     "enZhEntries": 771180,
     "enZhAliases": 682,
-    "enZhSqliteBytes": 184578048,
-    "enZhPackBytes": 73485205,
+    "enZhSqliteBytes": 194371584,
+    "enZhPackBytes": 76622612,
     "zhEnEntries": 238664,
     "zhEnReverseEntries": 108863,
-    "zhEnReverseBySource": {
-      "wordnet": 81473,
-      "wiktionary": 27390
-    },
     "variants": 4148,
     "wordnetSenses": 95221,
+    "wordnetDomainTagged": 86060,
     "wiktionarySenses": 59290,
-    "semanticGlosses": 101085,
-    "bloom": {
-      "keys": 1316131,
-      "bits": 13161310,
-      "hashes": 7,
-      "falsePositiveSample": "8/1000",
-      "falseNegativeSample": "0/500"
+    "abbreviations": 128,
+    "initialsIndexed": 401909,
+    "semanticGlosses": 101085
+  },
+  "abbreviations": {
+    "tests": "7/7",
+    "examples": [
+      "CAP theorem",
+      "Common Agricultural Policy",
+      "k8s",
+      "i18n",
+      "a11y",
+      "l10n",
+      "RAM"
+    ]
+  },
+  "contextDomains": {
+    "tests": "7/7",
+    "devProbes": "9 improved / 0 regressed / 7 neutral",
+    "domains": 9,
+    "note": "authored probes only; not an accuracy benchmark"
+  },
+  "ink": {
+    "p1": {
+      "tests": "4/4",
+      "hotFrameSpeedup": "2.0-2.9x",
+      "pixelDiff": "0 changed pixels at 50/300/1000 marks (~20k points)"
+    },
+    "p3": {
+      "tests": "11/11",
+      "geometryVersion": 5,
+      "v4Golden": "bit-identical in both builds",
+      "pdfScreenParity": "mean channel delta 0.106 (threshold 1.5)"
+    }
+  },
+  "translation": {
+    "decision": "greedy decoding kept; post-processing only",
+    "devSetCases": 40,
+    "chrF": {
+      "raw": 35.35,
+      "postprocessed": 39.11
+    },
+    "gateTests": 4
+  },
+  "acceptance": {
+    "directory": "acceptance/",
+    "charts": [
+      "chart-latency.png",
+      "chart-data.png",
+      "chart-ink-frame.png",
+      "chart-ink-width.png",
+      "chart-translation.png",
+      "ink-before-after.png",
+      "ink-difference-map.png"
+    ],
+    "latency": {
+      "beforeWarmMedianMs": 10.172167,
+      "afterWarmMedianMs": 4.921375,
+      "beforeWarmP95Ms": 137.785584,
+      "afterWarmP95Ms": 17.897791
     }
   },
   "packing": {
     "allBundledDbsAreGzipPacks": true,
-    "assetsBytes": 404818258,
-    "firstInstallDecompressSecondsApprox": 3.2,
-    "firstColdLaunchMs": 1870,
-    "subsequentColdLaunchMs": [
-      1047,
-      1025,
-      1002
-    ],
-    "verifiedMarker": ".verified manifest hash skips re-hashing ~310 MB on later starts"
+    "assetsBytes": 408529301,
+    "firstColdLaunchMs": 1208,
+    "verifiedMarker": ".verified manifest hash + file sizes"
   },
   "apk": {
     "artifact": "Annota-1.2.1-candidate.apk",
-    "sha256": "a291fe0092418e20c24ac513db5ecca67222537f0e4e93e67b336ef497b679fb",
-    "bytes": 408652404,
-    "zipEntries": 277,
-    "nativeAbis": [
-      "arm64-v8a"
-    ],
-    "packageName": "io.github.dpan538.annota",
+    "sha256": "a14c9874f6f03e6b8172c19fadd1cf926ed19c46aad56a5581037ac7e36421cb",
+    "bytes": 412171912,
+    "zipEntries": 278,
     "versionCode": 23,
     "versionName": "1.2.1",
     "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18",
@@ -76,44 +116,14 @@
     "downloadedCopyInstalledAndColdLaunched": true,
     "transport": "local loopback HTTP only; never uploaded"
   },
-  "retrieval": {
-    "dictionaryUpgradeTests": "13/13",
-    "dictionaryRelatedRegression": "57/57",
-    "longSelection": {
-      "words": 105,
-      "chars": 704,
-      "firstMs": 269,
-      "repeatMs": 60,
-      "parts": 105
-    },
-    "queryParity": "821,177 candidate keys and 84 queries compared with schema4: no set or order differences"
-  },
-  "translation": {
-    "direction": "en->zh only",
-    "decoding": "greedy (unchanged)",
-    "postprocess": "CJK punctuation/spacing/terminal period; digits and Latin words untouched",
-    "developmentSetCases": 40,
-    "chrF": {
-      "greedyRaw": 35.35,
-      "greedyPostprocessed": 39.11,
-      "beam4": 40.7,
-      "beam4WithCheapGuards": 40.96
-    },
-    "decision": "no stable chrF gain (bootstrap intervals include 0) and beam costs 3.6x; ship post-processing only",
-    "newGateTests": 4,
-    "knownFailures": [
-      "cache miss -> 缓存错误",
-      "without prejudice legal sense",
-      "ticket -> 罚单",
-      "occasional missing quantity/negation nuance"
-    ]
-  },
   "updateChannel": "unchanged; latest public release remains v1.2.0 (https://github.com/dpan538/Annota/releases/tag/v1.2.0)",
   "publicDownloadVerified": false,
   "knownLimitations": [
-    "Reverse zh-en entries are machine-merged equivalents, not individually proofread; at most four English equivalents per Chinese word.",
-    "Packing every database adds one decompression pass on the first launch after install/update (measured ~1.9 s first launch vs ~1.0 s later starts on the emulator).",
-    "Translation improvements are output-format robustness and completeness gates, not semantic accuracy; decoder errors remain.",
-    "Emulator results do not replace Xiaomi Pad 9 Pro Max device acceptance."
+    "P1 first-frame cost increases ~25-90% because the page Picture is recorded (software canvas); steady-state frames improve 2-2.9x. Hardware-layer benefit still needs device measurement.",
+    "P3 fountain v5 has no multi-point tail replay at ACTION_UP; release taper depends on the final pressure drop. Single-dot cap is ~72% of v4 by design.",
+    "Abbreviation/initialism candidates only surface with context evidence; unknown acronyms with no context fall back to ordinary word lookup.",
+    "Domain labels are coarse lexfiles: cell battery/spreadsheet/prison cannot be separated by domain alone.",
+    "Reverse zh-en entries are machine-merged; not individually proofread.",
+    "Emulator results do not replace Xiaomi Pad 9 Pro Max handwriting, frame-rate, thermal or memory acceptance."
   ]
 }

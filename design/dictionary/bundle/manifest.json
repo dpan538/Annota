@@ -3,6 +3,7 @@
     "senses": 95221,
     "headwords": 72948,
     "synsets": 50639,
+    "domainTaggedSenses": 86060,
     "source": "Princeton WordNet 3.0 + Chinese Open WordNet + Chinese WordNet + OMW Wiktionary Chinese + Open English WordNet (CILI aligned)",
     "license": "WordNet / Chinese Open WordNet CC-BY-SA-4.0 / CWN notice / Wiktionary CC-BY-SA-3.0 / OEWN CC-BY-4.0",
     "sourceRevision": "406bf83b3c507a3d1f26e88252d5d66893fd36bf",
@@ -31,6 +32,8 @@
   "en-zh": {
     "entries": 771180,
     "baseEntries": 770238,
+    "initialsIndexed": 401909,
+    "abbreviations": 128,
     "source": "ECDICT complete translated vocabulary + Annota authored phrases",
     "license": "MIT",
     "url": "https://github.com/skywind3000/ECDICT"
@@ -48,6 +51,11 @@
     "source": "CC-CEDICT + Annota authored reverse equivalents + Chinese WordNet / OMW Wiktionary Chinese + reverse index from WordNet/Wiktionary Chinese senses",
     "license": "CC-BY-SA-4.0",
     "url": "https://www.mdbg.net/chinese/dictionary?page=cc-cedict"
+  },
+  "annota-abbreviations": {
+    "entries": 128,
+    "license": "MIT",
+    "source": "Original Annota abbreviation expansions with context cues, 2026-11-08"
   },
   "annota-phrases": {
     "entries": 942,
@@ -69,8 +77,8 @@
   "files": {
     "en-zh.sqlite": {
       "asset": "en-zh.sqlite.pack",
-      "bytes": 184578048,
-      "sha256": "1b65b9600e68ffaa03dd07925df2f6b1936fd4fce847bcdc72531bca4c0bbb7d"
+      "bytes": 194371584,
+      "sha256": "baeeed15a01fae5c4155bded8a80c2e3ecab1c2168e89160d0f874c75d01c17e"
     },
     "wiktionary.sqlite": {
       "asset": "wiktionary.sqlite.pack",
@@ -79,8 +87,8 @@
     },
     "wordnet.sqlite": {
       "asset": "wordnet.sqlite.pack",
-      "bytes": 18755584,
-      "sha256": "c75d662199d7ab4abe45a16c7540665b14079a00a27e1ef1658799a67754fc22"
+      "bytes": 21643264,
+      "sha256": "1f2c0712b24ab9c708594a983a8d17995b93ce032e2d7f2ebec295e1c99ecad5"
     },
     "zh-en.sqlite": {
       "asset": "zh-en.sqlite.pack",
@@ -89,6 +97,7 @@
     }
   },
   "sources": {
+    "annota-abbreviations.tsv": "131a796bc257428715436a96abc63ab15a9ae7b0f2f93f8b612f30fff2887211",
     "annota-phrases.tsv": "47fad91cc431ba663ab3320298e8e94312d8574fcd936dd372241ebfd0333582",
     "cedict.txt.gz": "2d42d41f75df8708d9d9b236d8ae15ecf1cef525aef8ebb8499a74cb09e1b096",
     "ecdict-core.csv.gz": "48b24e7ce69ae9483d37eb532420651767946a1f273cbbcc0842cf28eda3d9cb",

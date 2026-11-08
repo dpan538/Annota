@@ -18,7 +18,11 @@ data class DictionaryReading(
 /**
  * Conservative offline phrase/collocation and grammatical cues; uncertain senses stay available.
  */
-class DictionaryReadings(context: Context) {
+class DictionaryReadings(
+    context: Context,
+    private val abbreviations: ((AbbreviationToken, LookupContext?) -> DictionaryReading?)? = null,
+    private val initials: ((AbbreviationToken, LookupContext?) -> DictionaryReading?)? = null,
+) {
     private val rules =
         JSONArray(
             context.assets.open("dictionary/context-senses.json").bufferedReader().use {
@@ -33,34 +37,63 @@ class DictionaryReadings(context: Context) {
             }
         )
 
-    /** Case is evidence: an uppercase initialism must not collapse into an English pronoun. */
+    /**
+     * Case is evidence: an uppercase initialism must not collapse into an English pronoun.
+     *
+     * Authored database rows win, then the legacy JSON (which still owns IT/ICT and their pronoun
+     * exception), then uncurated `entries.initials` evidence. One normalized token makes "CAPs",
+     * "CAP's" and "CAps" reach the same expansion.
+     */
     fun acronym(query: String, context: LookupContext?): DictionaryReading? {
-        val raw =
-            java.text.Normalizer.normalize(query, java.text.Normalizer.Form.NFKC)
-                .trim()
-                .trim { !it.isLetterOrDigit() }
-                .removeSuffix("s")
+        val token = abbreviationToken(query) ?: return null
+        if (!token.abbreviationLike) return null
+        // ALL-CAPS prose still contains pronouns; explicit grammatical evidence beats casing.
+        if (token.upper == "IT" && pronounContext(query, context)) return null
+        val database = abbreviations?.invoke(token, context)
+        val legacy = legacyAcronym(token, query, context)
+        // The authored table is primary. When its cues cannot decide but the legacy list can
+        // (for example RAM + "storage"), keep the pre-schema-6 contextual answer.
+        if (database != null && !database.contextual && legacy?.contextual == true) return legacy
+        database?.let {
+            return it
+        }
+        legacy?.let {
+            return it
+        }
+        if (!token.digit)
+            initials?.invoke(token, context)?.let {
+                return it
+            }
+        return null
+    }
+
+    private fun pronounContext(query: String, context: LookupContext?): Boolean {
+        val active = context?.takeIf { it.matches(query) } ?: return false
+        return active.after.take(2).joinToString(" ") in
+            setOf(
+                "is raining",
+                "was raining",
+                "is snowing",
+                "was snowing",
+                "is a",
+                "was a",
+                "will be",
+            )
+    }
+
+    /** The pre-schema-6 author list: nine acronyms, including IT's grammatical exception. */
+    private fun legacyAcronym(
+        token: AbbreviationToken,
+        query: String,
+        context: LookupContext?,
+    ): DictionaryReading? {
+        val raw = token.upper
         if (!raw.matches(Regex("[A-Z]{2,6}"))) return null
         val item =
             (0 until acronyms.length())
                 .map { acronyms.getJSONObject(it) }
                 .firstOrNull { it.getString("word") == raw } ?: return null
         val active = context?.takeIf { it.matches(query) }
-        // ALL-CAPS prose still contains pronouns; explicit grammatical evidence beats casing.
-        if (
-            raw == "IT" &&
-                active?.after?.take(2)?.joinToString(" ") in
-                    setOf(
-                        "is raining",
-                        "was raining",
-                        "is snowing",
-                        "was snowing",
-                        "is a",
-                        "was a",
-                        "will be",
-                    )
-        )
-            return null
         val window = active?.let { it.before.takeLast(8) + it.after.take(8) }.orEmpty()
         val variants = item.getJSONArray("senses")
         val ranked =

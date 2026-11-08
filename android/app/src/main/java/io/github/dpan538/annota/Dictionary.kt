@@ -9,6 +9,83 @@ import java.text.Normalizer
 import java.util.Locale
 import org.json.JSONObject
 
+/**
+ * Normalized surface form of a possible abbreviation.
+ *
+ * [source] keeps the punctuation-free original spelling so a local context keyed on "CAP's" still
+ * matches after the possessive is stripped from [raw]. [upper] is the canonical key used for the
+ * authored `abbreviations` table and the legacy acronym JSON.
+ */
+data class AbbreviationToken(
+    val source: String,
+    val raw: String,
+    val upper: String,
+    val lower: String,
+    val digit: Boolean,
+    val abbreviationLike: Boolean,
+)
+
+/**
+ * NFKC, edge punctuation, possessive `'s` and the all-caps plural `-s` are the only tolerated
+ * changes. Interior punctuation (for example "P.M.") intentionally falls back to ordinary lookup.
+ */
+internal fun abbreviationToken(query: String): AbbreviationToken? {
+    val source =
+        Normalizer.normalize(query, Normalizer.Form.NFKC).trim().trim { !it.isLetterOrDigit() }
+    if (source.isEmpty()) return null
+    val raw = source.replace(Regex("['’][sS]$"), "")
+    if (raw.isEmpty()) return null
+    if (raw.any { it !in 'A'..'Z' && it !in 'a'..'z' && it !in '0'..'9' }) return null
+    val digit = raw.matches(Regex("[A-Za-z]\\d{1,2}[A-Za-z]"))
+    val allCaps = raw.none { it.isLowerCase() } && raw.any { it.isLetter() }
+    val leadingUpper = raw.takeWhile { it.isUpperCase() }.length
+    var upper = raw.uppercase(Locale.ROOT)
+    // Only a lower-case plural "s" is inflection: "CAPs"/"VMs" -> CAP/VM, while "DNS" stays DNS.
+    if (
+        raw.length >= 3 &&
+            raw.last() == 's' &&
+            upper.endsWith("S") &&
+            (allCaps || leadingUpper >= 2) &&
+            upper.dropLast(1).length >= 2
+    ) {
+        upper = upper.dropLast(1)
+    }
+    val letters = upper.all { it.isLetter() }
+    val abbreviationLike =
+        digit || (letters && upper.length in 2..6 && (allCaps || leadingUpper >= 2))
+    return AbbreviationToken(
+        source,
+        raw,
+        upper,
+        upper.lowercase(Locale.ROOT),
+        digit,
+        abbreviationLike,
+    )
+}
+
+/** Function words do not prove that a phrase is the expansion of an unknown initialism. */
+private val ABBREVIATION_STOPWORDS =
+    setOf(
+        "a",
+        "an",
+        "the",
+        "of",
+        "for",
+        "in",
+        "on",
+        "at",
+        "to",
+        "from",
+        "with",
+        "by",
+        "and",
+        "or",
+        "as",
+        "per",
+        "i",
+        "o",
+    )
+
 class Dictionary(private val context: Context) {
     data class Entry(
         val word: String,
@@ -252,10 +329,17 @@ class Dictionary(private val context: Context) {
             .rerank(text, lookup, wordnet().rankSenses(text, lookup, senses), isActive)
     }
 
-    private val readings by lazy { DictionaryReadings(context) }
+    private val readings by lazy {
+        DictionaryReadings(
+            context,
+            abbreviations = { token, local -> lookupAbbreviation(token, local) },
+            initials = { token, local -> lookupInitials(token, local) },
+        )
+    }
     private val englishCache = LruCache<String, List<Entry>>(512)
     private val resultCache = LruCache<String, Result>(192)
     private val queryCache = LruCache<String, Result>(256)
+    private val abbreviationCache = LruCache<String, DictionaryReading>(384)
     private val lexicalCandidates = LruCache<String, List<WordNetDictionary.Sense>>(512)
     private val lexicalResults = LruCache<String, List<WordNetDictionary.Sense>>(256)
 
@@ -310,6 +394,328 @@ class Dictionary(private val context: Context) {
             .take(3)
             .also { englishCache.put(text, it) }
     }
+
+    private data class AbbreviationRow(
+        val abbr: String,
+        val expansion: String,
+        val meaning: String,
+        val cues: List<String>,
+    )
+
+    private data class RankedAbbreviation(val row: AbbreviationRow, val score: Int, val index: Int)
+
+    private data class EntryCandidate(
+        val word: String,
+        val meaning: String,
+        val phonetic: String,
+        val freq: Int,
+    )
+
+    private data class InitialsCandidate(val candidate: EntryCandidate, val hits: Int)
+
+    /**
+     * Authored abbreviations win over the legacy JSON and over uncurated initials. The local
+     * before/after window only ranks senses; it never invents an expansion.
+     */
+    private fun lookupAbbreviation(
+        token: AbbreviationToken,
+        context: LookupContext?,
+    ): DictionaryReading? {
+        val active = abbreviationContext(context, token)
+        val cacheKey =
+            token.source + "\u0000" + token.upper + "\u0000" + abbreviationContextKey(active)
+        abbreviationCache.get(cacheKey)?.let {
+            return it
+        }
+        val db = enZh() ?: return null
+        val rows =
+            if (hasColumn(db, "abbreviations", "abbr")) abbreviationRows(db, token) else emptyList()
+        val reading =
+            when {
+                rows.isNotEmpty() -> abbreviationReading(rows, active)
+                token.digit -> digitContractionReading(db, token)
+                else -> null
+            }
+        if (reading != null) abbreviationCache.put(cacheKey, reading)
+        return reading
+    }
+
+    /**
+     * Exact spelling first, then the lower- and upper-case fallbacks. "K8S" reaches the authored
+     * lower-case row while "CAps" reaches CAP only after the all-caps fallback.
+     */
+    private fun abbreviationRows(
+        db: SQLiteDatabase,
+        token: AbbreviationToken,
+    ): List<AbbreviationRow> {
+        val variants =
+            buildList {
+                add(token.raw)
+                add(token.lower)
+                add(token.upper)
+                // An all-caps plural written with an upper-case S ("CAPS") is the same
+                // initialism. Exact rows such as DNS/HTTPS win before this fallback is reached.
+                if (
+                    token.upper.length >= 3 &&
+                        token.upper.endsWith("S") &&
+                        token.upper.all { it.isLetter() }
+                )
+                    add(token.upper.dropLast(1))
+            }
+                .distinct()
+        for (variant in variants) {
+            val rows =
+                db.rawQuery(
+                        "SELECT abbr,expansion,meaning,cues FROM abbreviations WHERE abbr=? ORDER BY rowid",
+                        arrayOf(variant),
+                    )
+                    .use { cursor ->
+                        buildList {
+                            while (cursor.moveToNext()) add(
+                                AbbreviationRow(
+                                    cursor.getString(0).orEmpty(),
+                                    cursor.getString(1).orEmpty(),
+                                    cursor.getString(2).orEmpty(),
+                                    splitAbbreviationCues(cursor.getString(3)),
+                                )
+                            )
+                        }
+                    }
+            if (rows.isNotEmpty()) return rows
+        }
+        return emptyList()
+    }
+
+    private fun splitAbbreviationCues(value: String?): List<String> =
+        value
+            .orEmpty()
+            .split('|')
+            .map { it.trim().lowercase(Locale.ROOT) }
+            .filter { it.isNotEmpty() }
+
+    private fun abbreviationReading(
+        rows: List<AbbreviationRow>,
+        context: LookupContext?,
+    ): DictionaryReading {
+        val window = context?.let { it.before.takeLast(12) + it.after.take(12) }.orEmpty()
+        val ranked =
+            rows
+                .mapIndexed { index, row ->
+                    RankedAbbreviation(row, cueScore(row.cues, window), index)
+                }
+                .sortedWith(
+                    compareByDescending<RankedAbbreviation> { it.score }.thenBy { it.index }
+                )
+        val best = ranked.first()
+        // One leading sense needs positive context evidence; ties keep the first two meanings.
+        val confident = best.score > 0 && best.score > (ranked.getOrNull(1)?.score ?: 0)
+        val chosen = if (confident) listOf(best) else ranked.take(2)
+        val chosenIndexes = chosen.map { it.index }.toSet()
+        fun sense(row: AbbreviationRow) =
+            DictionarySense("abbr.", row.meaning.ifBlank { row.expansion })
+        return DictionaryReading(
+            chosen.first().row.abbr,
+            "",
+            chosen.map { sense(it.row) },
+            ranked.filter { it.index !in chosenIndexes }.map { sense(it.row) },
+            confident,
+            chosen.joinToString(" / ") { it.row.expansion },
+        )
+    }
+
+    private fun cueScore(cues: List<String>, window: List<String>): Int {
+        if (window.isEmpty()) return 0
+        return cues.count { cuePresent(it, window) }
+    }
+
+    private fun cuePresent(cue: String, window: List<String>): Boolean {
+        val parts = cue.split(Regex("\\s+")).filter { it.isNotEmpty() }
+        if (parts.isEmpty()) return false
+        if (parts.size == 1) return window.any { cueTokenMatches(parts[0], it) }
+        for (start in 0..window.size - parts.size) {
+            if (parts.indices.all { cueTokenMatches(parts[it], window[start + it]) }) return true
+        }
+        return false
+    }
+
+    /** Match a cue against one token, tolerating the regular English plural. */
+    private fun cueTokenMatches(cue: String, token: String): Boolean =
+        token == cue || token == cue + "s" || (cue.endsWith("s") && token == cue.dropLast(1))
+
+    /**
+     * Digit contractions that are absent from the authored table fall back to the compact `entries`
+     * key. A single hit is safe; several hits require a clearly better corpus rank.
+     */
+    private fun digitContractionReading(
+        db: SQLiteDatabase,
+        token: AbbreviationToken,
+    ): DictionaryReading? {
+        val key = token.lower
+        entryCandidate(db, key)?.let {
+            return digitReading(token, it)
+        }
+        val digits = key.count { it.isDigit() }
+        if (digits !in 1..2) return null
+        val freq = frequencyColumn(db)
+        val candidates =
+            db.rawQuery(
+                    "SELECT word,translation,definition,phonetic,$freq AS freq FROM entries " +
+                        "WHERE length(key)=? AND key LIKE ? AND key LIKE ? " +
+                        "ORDER BY CASE WHEN $freq>0 THEN $freq ELSE 2147483647 END,length(word),word LIMIT 16",
+                    arrayOf((digits + 2).toString(), key.first() + "%", "%" + key.last()),
+                )
+                .use { cursor ->
+                    buildList {
+                        while (cursor.moveToNext()) readEntryCandidate(cursor)?.let { add(it) }
+                    }
+                }
+                .distinctBy { it.word.lowercase(Locale.ROOT) }
+        val best = candidates.firstOrNull() ?: return null
+        val second = candidates.getOrNull(1)
+        val clearlyAhead =
+            second == null || (best.freq > 0 && (second.freq == 0 || second.freq >= best.freq * 4))
+        if (!clearlyAhead) return null
+        return digitReading(token, best)
+    }
+
+    private fun digitReading(
+        token: AbbreviationToken,
+        candidate: EntryCandidate,
+    ): DictionaryReading =
+        DictionaryReading(
+            token.raw,
+            candidate.phonetic,
+            listOf(DictionarySense("abbr.", compactMeaning(candidate.meaning))),
+            emptyList(),
+            false,
+            candidate.word,
+        )
+
+    /**
+     * Uncurated ALL-CAPS abbreviations only resolve when the local window names at least one word
+     * of a candidate headword. Without that evidence the ordinary lower-case query wins, which
+     * keeps "CAP" contextual and "cap" a hat.
+     */
+    private fun lookupInitials(
+        token: AbbreviationToken,
+        context: LookupContext?,
+    ): DictionaryReading? {
+        if (token.digit) return null
+        val active = abbreviationContext(context, token) ?: return null
+        val initials = token.lower
+        if (initials.length !in 2..6) return null
+        val db = enZh() ?: return null
+        if (!hasColumn(db, "entries", "initials")) return null
+        val window = active.before.takeLast(16) + active.after.take(16)
+        if (window.isEmpty()) return null
+        val freq = frequencyColumn(db)
+        val rows =
+            db.rawQuery(
+                    "SELECT word,translation,definition,phonetic,$freq AS freq FROM entries " +
+                        "WHERE initials=? " +
+                        "ORDER BY CASE WHEN $freq>0 THEN $freq ELSE 2147483647 END,length(word),word LIMIT 128",
+                    arrayOf(initials),
+                )
+                .use { cursor ->
+                    buildList {
+                        while (cursor.moveToNext()) readEntryCandidate(cursor)?.let { add(it) }
+                    }
+                }
+        val windowSet = window.toSet()
+        val scored =
+            rows
+                .mapNotNull { candidate ->
+                    val words =
+                        LookupContext.tokens(candidate.word)
+                            .filter { it !in ABBREVIATION_STOPWORDS }
+                            .distinct()
+                    val hits = words.count { it in windowSet }
+                    if (hits == 0) null else InitialsCandidate(candidate, hits)
+                }
+                .sortedWith(
+                    compareByDescending<InitialsCandidate> { it.hits }
+                        .thenBy { if (it.candidate.freq > 0) it.candidate.freq else Int.MAX_VALUE }
+                        .thenBy { it.candidate.word.length }
+                        .thenBy { it.candidate.word }
+                )
+        val best = scored.firstOrNull() ?: return null
+        val chosen =
+            if (scored.size == 1 || best.hits > scored[1].hits) listOf(best) else scored.take(2)
+        val chosenWords = chosen.map { it.candidate.word }.toSet()
+        fun sense(candidate: EntryCandidate) =
+            DictionarySense("abbr.", compactMeaning(candidate.meaning))
+        return DictionaryReading(
+            token.upper,
+            chosen.first().candidate.phonetic,
+            chosen.map { sense(it.candidate) },
+            scored
+                .filter { it.candidate.word !in chosenWords }
+                .take(12)
+                .map { sense(it.candidate) },
+            true,
+            chosen.joinToString(" / ") { it.candidate.word },
+        )
+    }
+
+    private fun entryCandidate(db: SQLiteDatabase, key: String): EntryCandidate? {
+        val freq = frequencyColumn(db)
+        return db.rawQuery(
+                "SELECT word,translation,definition,phonetic,$freq AS freq FROM entries WHERE key=? LIMIT 1",
+                arrayOf(key),
+            )
+            .use { cursor -> if (cursor.moveToFirst()) readEntryCandidate(cursor) else null }
+    }
+
+    private fun readEntryCandidate(cursor: Cursor): EntryCandidate? {
+        val word = cursor.getString(0).orEmpty().trim()
+        val translation = cursor.getString(1).orEmpty()
+        val definition = cursor.getString(2).orEmpty()
+        val meaning = translation.ifBlank { definition }
+        if (word.isBlank() || meaning.isBlank()) return null
+        return EntryCandidate(word, meaning, cursor.getString(3).orEmpty(), cursor.getInt(4))
+    }
+
+    private fun frequencyColumn(db: SQLiteDatabase): String =
+        if (hasColumn(db, "entries", "freq")) "freq" else "0"
+
+    private fun compactMeaning(value: String): String {
+        val first =
+            value
+                .replace("\\n", "\n")
+                .lineSequence()
+                .map { it.trim() }
+                .firstOrNull { it.isNotEmpty() } ?: return ""
+        return if (first.length <= 72) first else first.take(71).trimEnd() + "…"
+    }
+
+    private fun abbreviationContext(
+        context: LookupContext?,
+        token: AbbreviationToken,
+    ): LookupContext? =
+        context?.takeIf {
+            it.matches(token.source) ||
+                it.matches(token.raw) ||
+                it.matches(token.upper) ||
+                it.matches(token.lower)
+        }
+
+    private fun abbreviationContextKey(context: LookupContext?): String =
+        if (context == null) ""
+        else context.before.joinToString(" ") + "\u0001" + context.after.joinToString(" ")
+
+    private fun abbreviationResult(reading: DictionaryReading): Result =
+        Result(
+            listOf(
+                Entry(
+                    reading.word,
+                    reading.pronunciation,
+                    reading.primary.joinToString("；") { it.text },
+                    "annota-terminology",
+                )
+            ),
+            emptyList(),
+            reading,
+        )
 
     fun lookup(
         text: String,
@@ -367,20 +773,9 @@ class Dictionary(private val context: Context) {
             )
         }
         readings.acronym(text, context)?.let { reading ->
-            return Result(
-                listOf(
-                    Entry(
-                        reading.word,
-                        "",
-                        reading.primary.joinToString("；") { it.text },
-                        "annota-terminology",
-                    )
-                ),
-                emptyList(),
-                reading,
-            )
+            return abbreviationResult(reading)
         }
-        val result = query(text, withSuggestions = false)
+        val result = queryExact(text, withSuggestions = false)
         val lexical = lexical(text, result.entries.map { it.word }, context, isActive)
         val active = context?.takeIf { it.matches(text) }
         val phrase = if (active == null || text.length > MAX_QUERY_LENGTH) null else phrase(active)
@@ -415,7 +810,7 @@ class Dictionary(private val context: Context) {
         val parts = decompose(text, active, isActive)
         return if (parts.any { it.reading != null })
             resolved.copy(suggestions = emptyList(), parts = parts)
-        else query(text)
+        else queryExact(text, withSuggestions = true)
     }
 
     /**
@@ -664,7 +1059,7 @@ class Dictionary(private val context: Context) {
                                                     listOf(chunk.entry)
                                                 }
                                             else ->
-                                                query(selected, withSuggestions = false)
+                                                queryExact(selected, withSuggestions = false)
                                                     .entries
                                                     .ifEmpty { listOf(chunk.entry) }
                                         }
@@ -840,6 +1235,7 @@ class Dictionary(private val context: Context) {
         englishCache.evictAll()
         resultCache.evictAll()
         queryCache.evictAll()
+        abbreviationCache.evictAll()
         lexicalCandidates.evictAll()
         lexicalResults.evictAll()
     }
@@ -858,8 +1254,14 @@ class Dictionary(private val context: Context) {
         // an app update changes the manifest hash and forces one full verification.
         val marker = java.security.MessageDigest.getInstance("SHA-256").digest(manifestBytes)
             .joinToString("") { "%02x".format(it) }
-        if (verified.isFile && verified.readText() == marker && names.all { File(dir, it).isFile })
-            return
+        fun installed(name: String): Boolean {
+            val file = File(dir, name)
+            return file.isFile &&
+                file.length() == manifest.getJSONObject(name).getLong("bytes")
+        }
+        // The marker proves a completed verification for this manifest. File sizes guard against
+        // a stale data directory left by an interrupted or downgraded install.
+        if (verified.isFile && verified.readText() == marker && names.all(::installed)) return
         verified.delete()
         val pool = java.util.concurrent.Executors.newFixedThreadPool(minOf(4, names.size))
         try {
@@ -892,7 +1294,22 @@ class Dictionary(private val context: Context) {
         atomicWrite(verified) { it.write(marker.toByteArray()) }
     }
 
+    /**
+     * Direct dictionary input (the search field) resolves a curated abbreviation before the
+     * ordinary headword path, so "k8s" and "CAP" are useful when typed rather than selected.
+     * Lookup/decomposition call [queryExact] after their context-aware acronym pass, which keeps
+     * "IT is raining" a pronoun instead of re-entering the abbreviation layer without context.
+     */
     fun query(text: String, withSuggestions: Boolean = true): Result {
+        if (text.length <= MAX_QUERY_LENGTH) {
+            readings.acronym(text, null)?.let {
+                return abbreviationResult(it)
+            }
+        }
+        return queryExact(text, withSuggestions)
+    }
+
+    private fun queryExact(text: String, withSuggestions: Boolean): Result {
         // Long passages are not dictionary entries. Never silently truncate a selection.
         if (text.length > MAX_QUERY_LENGTH) return Result(emptyList(), emptyList())
         val cacheKey = withSuggestions.toString() + "\u0000" + text
