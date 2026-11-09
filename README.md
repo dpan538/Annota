@@ -5,20 +5,19 @@
 本地 PDF 阅读与手写批注应用，围绕 **Xiaomi Pad 9 Pro Max** 优化。无账号，文档、笔迹、阅读进度和查词都留在设备上。
 
 [![Android](https://img.shields.io/badge/Android-10%2B-3DDC84)](DOWNLOAD.md)
-[![Stable](https://img.shields.io/badge/Stable-1.2.0-16A34A)](https://github.com/dpan538/Annota/releases/tag/v1.2.0)
-[![Preview](https://img.shields.io/badge/Preview-1.2.1.4-C2410C)](https://github.com/dpan538/Annota/releases/tag/v1.2.1.4)
+[![Stable](https://img.shields.io/badge/Stable-1.2.2-16A34A)](https://github.com/dpan538/Annota/releases/tag/v1.2.2)
 [![License](https://img.shields.io/badge/License-MIT-8B5CF6)](LICENSE)
 ![Offline](https://img.shields.io/badge/Dictionary-Offline-0891B2)
 
-[**下载 1.2.1.4 预览版 APK**](https://github.com/dpan538/Annota/releases/download/v1.2.1.4/Annota-1.2.1.4.apk) · [下载 1.2.0 正式版 APK](https://github.com/dpan538/Annota/releases/download/v1.2.0/Annota-1.2.0.apk) · [安装说明](DOWNLOAD.md) · [更新日志](CHANGELOG.md)
+[**下载 1.2.2 正式版 APK**](https://github.com/dpan538/Annota/releases/download/v1.2.2/Annota-1.2.2.apk) · [安装说明](DOWNLOAD.md) · [更新日志](CHANGELOG.md)
 
-> 1.2.1.4 是预览版，真机验收仍在进行；需要最稳定版本请安装 1.2.0。两者证书相同，可覆盖升级。
+> 1.2.2 为当前正式版。
 
 ## 功能
 
 - **阅读**：连续滚动、双指缩放、相邻双页、文内搜索、目录、书签、阅读位置恢复。
 - **手写**：笔、铅笔、钢笔、荧光笔；压感、直尺、框选移动/缩放/旋转；撤销/重做；手写签名与 PDF 导出。
-- **标注**：可拖动、缩放、输入文字的文字框；独立大小与局部/整笔模式的橡皮；图形与图片标注。
+- **标注**：独立大小与局部/整笔模式的橡皮；图形与图片标注。
 - **离线词典**：英汉/汉英查询、专业术语、语境选义、英文释义与英文短句参考翻译，全部随 APK 安装。
 - **本地书库**：文件夹、收藏、搜索、废纸篓、PDF 分享导入、完整备份与恢复。
 
@@ -50,7 +49,7 @@
 
 阅读、书写、查词和参考翻译离线完成；仅主动检查更新、下载 APK 或提交反馈时使用网络。卸载或清除应用数据前请先备份。
 
-应用内更新会看到最新预览版（versionCode 28）。不需要预览版时，请手动安装或保留 1.2.0。
+应用内更新会看到当前正式版（versionCode 29）。
 
 ## 开发
 

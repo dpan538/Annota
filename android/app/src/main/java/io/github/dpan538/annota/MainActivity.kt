@@ -961,16 +961,6 @@ class MainActivity : Activity() {
             readerPopup?.dismiss()
             reader?.tool = "select"
         }
-        add(center, "text", tr("文字", "Text")) {
-            reader?.let { r ->
-                if (r.tool != "text") {
-                    readerPopup?.dismiss()
-                    r.textTool()
-                } else if (readerPopup?.isShowing == true && readerPanelKey == "text")
-                    readerPopup?.dismiss()
-                else textOptions()
-            }
-        }
         add(center, "hand", tr("手形", "Hand")) {
             readerPopup?.dismiss()
             reader?.tool = "hand"

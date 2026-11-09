@@ -179,6 +179,46 @@ class WritingRegressionTest {
     }
 
     @Test
+    fun partialEraserDragDoesNotDeleteWholeFountainStroke() {
+        val v = view()
+        lateinit var page: Sheet
+        inst.runOnMainSync { page = v.book.pages[0] }
+        val bounds = v.pageBounds(0)!!
+        fun sx(px: Float) = bounds.left + px / page.w * bounds.width()
+        fun sy(py: Float) = bounds.top + py / page.h * bounds.height()
+        v.tool = "fountain"
+        var t = SystemClock.uptimeMillis()
+        touch(v, MotionEvent.ACTION_DOWN, sx(120f), sy(120f), t, MotionEvent.TOOL_TYPE_STYLUS)
+        for (y in 150..300 step 30) {
+            t += 12
+            touch(v, MotionEvent.ACTION_MOVE, sx(120f), sy(y.toFloat()), t, MotionEvent.TOOL_TYPE_STYLUS)
+        }
+        t += 12
+        touch(v, MotionEvent.ACTION_UP, sx(120f), sy(300f), t, MotionEvent.TOOL_TYPE_STYLUS)
+        assertEquals(1, page.marks.count { it.tool == "fountain" })
+        v.tool = "eraser"
+        v.eraserWidth = 12f
+        v.eraserLocal = true
+        t += 20
+        touch(v, MotionEvent.ACTION_DOWN, sx(120f), sy(190f), t, MotionEvent.TOOL_TYPE_STYLUS)
+        for (y in 200..230 step 10) {
+            t += 12
+            touch(v, MotionEvent.ACTION_MOVE, sx(120f), sy(y.toFloat()), t, MotionEvent.TOOL_TYPE_STYLUS)
+        }
+        t += 12
+        touch(v, MotionEvent.ACTION_UP, sx(120f), sy(230f), t, MotionEvent.TOOL_TYPE_STYLUS)
+        val marks = page.marks.filter { it.tool == "fountain" }
+        assertTrue("partial erase must leave material", marks.isNotEmpty())
+        assertTrue(
+            "partial erase must not leave one fragment spanning the whole original stroke",
+            marks.none { m ->
+                val ys = m.points.map { it.y }
+                ys.minOrNull()!! < 130f && ys.maxOrNull()!! > 290f
+            },
+        )
+    }
+
+    @Test
     fun eraserSizeAndModesDoNotDeleteNeighbours() {
         for (local in listOf(true, false)) {
             val v = view()

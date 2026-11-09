@@ -2,7 +2,7 @@
 > Offline Android PDF reader, handwriting and dictionary. Original systems are documented with problem, mechanism, measurable evidence and limitations.
 
 ## Releases
-- Stable 1.2.0: https://github.com/dpan538/Annota/releases/tag/v1.2.0 (APK SHA-256 745a560875c6bb6b213504d697fa390f96396320cc69a4b77cb08261cfebbb4b)
+- Stable 1.2.2: https://github.com/dpan538/Annota/releases/tag/v1.2.2 (APK SHA-256 6e7e0261c8cd45fa156f6f6843bd676c634d432b960054b773d61f130b788686)
 - Preview 1.2.1.4: https://github.com/dpan538/Annota/releases/tag/v1.2.1.4 (APK SHA-256 8c30b1b2d6b1548e51187af5d13b276b4db8572f34028cada0b40572b42835b2; real-device acceptance pending)
 
 ## Original features
@@ -13,7 +13,6 @@
 - [Predict–Reconcile Ink Compositor](https://dpan538.github.io/Annota/features/predict-reconcile.html): A self-written short-horizon predictor draws a confidence-weighted tail for the active stroke, then reconciles it when the real sample arrives; predictions never enter saved ink or PDF export.
 - [Page-Picture Ink Cache](https://dpan538.github.io/Annota/features/page-picture-cache.html): Completed page ink is recorded once as a page-space Picture and replayed as one canvas op per frame; steady-state writing frames are 2.0–2.9× cheaper with zero changed pixels.
 - [Offline Context Dictionary](https://dpan538.github.io/Annota/features/offline-context-dictionary.html): A fully offline English–Chinese dictionary with an author abbreviation layer, initialism index, numeric-short-form recognition and a conservative OEWN domain prior for context sense selection.
-- [Editable Text Annotation Box](https://dpan538.github.io/Annota/features/text-annotation-box.html): A page-anchored text box can be created from the toolbar, moved and resized, opened with the system keyboard, persisted with undo, and exported to PDF with the same layout.
 - [Sized Partial/Whole Eraser](https://dpan538.github.io/Annota/features/adaptive-eraser.html): The eraser has its own four sizes, independent from the pen, and explicit partial or whole-stroke modes; whole mode removes only the nearest hit instead of wiping neighbouring glyphs.
 - [Professional Terminology Layer](https://dpan538.github.io/Annota/features/professional-terminology-layer.html): A curated, domain-tagged terminology table prioritised ahead of general dictionary entries, with source/confidence metadata and translation protection.
 

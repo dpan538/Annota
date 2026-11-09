@@ -1,0 +1,31 @@
+{
+  "version": "1.2.2",
+  "versionCode": 29,
+  "channel": "stable (Latest)",
+  "releaseDate": "2026-11-09",
+  "device": "API 36 ARM64 emulator (ranchu), synthetic stylus/touch; not Xiaomi Pad 9 Pro Max",
+  "instrumentation": {
+    "tests": 280,
+    "passed": 280,
+    "failed": 0,
+    "raw": "regression.txt"
+  },
+  "apk": {
+    "artifact": "Annota-1.2.2.apk",
+    "bytes": 412487328,
+    "sha256": "6e7e0261c8cd45fa156f6f6843bd676c634d432b960054b773d61f130b788686",
+    "certificateSha256": "90e5c38e8278dd1bbc80bb88a2a7255835f687677786aae01aa56ab320b8be18",
+    "verified": true,
+    "coldStartMs": 1290
+  },
+  "changes": {
+    "textTool": "removed from toolbar/code path; legacy text data/PDF kept read-only",
+    "eraser": "partial is default and only cuts hit stroke segments; whole removes nearest hit object",
+    "stable": "1.2.2 replaces 1.2.0 as current stable"
+  },
+  "evidence": [
+    "regression.txt",
+    "apk.json"
+  ],
+  "limit": "Emulator only; real-device stylus/forearm/PDF acceptance still pending."
+}

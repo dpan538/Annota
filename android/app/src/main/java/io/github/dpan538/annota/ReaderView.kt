@@ -88,7 +88,14 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
 
     var penWidth = displaySaved?.optDouble("width", 2.4)?.toFloat() ?: 2.4f
     var filled = displaySaved?.optBoolean("filled", false) ?: false
-    var eraserLocal = displaySaved?.optBoolean("eraserLocal", true) ?: true
+    var eraserLocal = true
+
+    init {
+        // 1.2.2 starts in the non-destructive partial mode. Older saved "whole" choices are
+        // migrated once; subsequent explicit choices are persisted with eraserModeVersion.
+        if ((displaySaved?.optInt("eraserModeVersion", 0) ?: 0) >= 1)
+            eraserLocal = displaySaved?.optBoolean("eraserLocal", true) ?: true
+    }
     /** Eraser radius in page units; deliberately independent from the pen width. */
     var eraserWidth = displaySaved?.optDouble("eraserWidth", 10.0)?.toFloat() ?: 10f
 
@@ -685,6 +692,7 @@ class ReaderView(context: Context, val store: Store, val pdf: PdfEngine, var boo
                 .put("filled", filled)
                 .put("eraserLocal", eraserLocal)
                 .put("eraserWidth", eraserWidth.toDouble())
+                .put("eraserModeVersion", 1)
                 .put("textSize", textSize.toDouble())
                 .put("textColor", textColor)
                 .put("onlyHighlight", onlyHighlight)

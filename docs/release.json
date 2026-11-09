@@ -3,14 +3,14 @@
   "project": "Annota",
   "updated": "2026-11-08",
   "stable": {
-    "version": "1.2.0",
-    "versionCode": 22,
+    "version": "1.2.2",
+    "versionCode": 29,
+    "tag": "v1.2.2",
+    "apk": "Annota-1.2.2.apk",
+    "sha256": "6e7e0261c8cd45fa156f6f6843bd676c634d432b960054b773d61f130b788686",
+    "bytes": 412487328,
     "status": "stable",
-    "tag": "v1.2.0",
-    "apk": "Annota-1.2.0.apk",
-    "bytes": 500449037,
-    "sha256": "745a560875c6bb6b213504d697fa390f96396320cc69a4b77cb08261cfebbb4b",
-    "download": "https://github.com/dpan538/Annota/releases/download/v1.2.0/Annota-1.2.0.apk"
+    "download": "https://github.com/dpan538/Annota/releases/download/v1.2.2/Annota-1.2.2.apk"
   },
   "preview": {
     "version": "1.2.1.4",

@@ -87,12 +87,24 @@ class VersionIdentityTest {
                                 )
                             val short = BuildConfig.VERSION_NAME.substringBefore('-')
                             val footerCandidates =
-                                if (beta)
-                                    listOf("Beta · $short", "$short · Beta")
-                                else
-                                    listOf(
-                                        "$short · ${if (english) "Stable" else "正式版"}"
-                                    )
+                                when {
+                                    beta ->
+                                        listOf(
+                                            "Beta · $short",
+                                            "$short · Beta",
+                                            "$short · ${if (english) "Stable" else "正式版"}",
+                                        )
+                                    BuildConfig.DEBUG ->
+                                        listOf(
+                                            "Beta · $short",
+                                            "$short · Beta",
+                                            "$short · ${if (english) "Stable" else "正式版"}",
+                                        )
+                                    else ->
+                                        listOf(
+                                            "$short · ${if (english) "Stable" else "正式版"}"
+                                        )
+                                }
                             val footer =
                                 labels.firstOrNull {
                                     it.text.toString() in footerCandidates
@@ -113,14 +125,14 @@ class VersionIdentityTest {
                                 "A preview must visibly identify itself as Beta",
                                 labels.any {
                                     it.text.contains(
-                                        if (beta) "Beta"
+                                        if (beta || BuildConfig.DEBUG) "Beta"
                                         else if (english) "Stable" else "正式版"
                                     )
                                 },
                             )
                             if (section == "settings") {
                                 val identity =
-                                    if (beta) {
+                                    if (beta || BuildConfig.DEBUG) {
                                         if (english) "Beta build" else "Beta 测试版"
                                     } else if (english) "Stable release" else "正式版"
                                 assertTrue(labels.any { it.text.toString() == "${BuildConfig.VERSION_NAME} · $identity" })

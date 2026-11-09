@@ -6,13 +6,13 @@
   "updated": "2026-11-08",
   "releases": {
     "stable": {
-      "version": "1.2.0",
-      "versionCode": 22,
-      "status": "stable",
-      "tag": "v1.2.0",
-      "apk": "Annota-1.2.0.apk",
-      "bytes": 500449037,
-      "sha256": "745a560875c6bb6b213504d697fa390f96396320cc69a4b77cb08261cfebbb4b"
+      "version": "1.2.2",
+      "versionCode": 29,
+      "tag": "v1.2.2",
+      "apk": "Annota-1.2.2.apk",
+      "sha256": "6e7e0261c8cd45fa156f6f6843bd676c634d432b960054b773d61f130b788686",
+      "bytes": 412487328,
+      "status": "stable"
     },
     "preview": {
       "version": "1.2.1.4",
@@ -29,8 +29,8 @@
       "id": "contact-intent-edge-guard",
       "name": "Contact-Intent Edge Guard",
       "nameZh": "接触意图边缘防误退出",
-      "version": "1.2.1.2",
-      "status": "preview",
+      "version": "1.2.2",
+      "status": "stable",
       "summary": "A forearm resting on the screen edge no longer exits the reader: contacts are classified, edge gestures are excluded only while the pen or limb is active, and the first accidental back is deferred.",
       "problem": "On tablets the forearm often touches the left or right screen edge. Android turns that edge contact into the system back gesture before the app sees it, so the reader closes while writing.",
       "mechanism": "ContactIntent classifies stylus / finger / limb from tool type, touch major/minor and edge distance. A limb contact is consumed instead of drawing, panning or tapping chrome. While the pen or a limb is active, narrow left/right strips are excluded from the system back gesture; the first back within 1.8 s of a limb contact is deferred once and a second deliberate back still leaves.",
@@ -66,8 +66,8 @@
       "id": "ink-transaction-ledger",
       "name": "Ink Transaction Ledger",
       "nameZh": "笔迹事务账本",
-      "version": "1.2.1.2",
-      "status": "preview",
+      "version": "1.2.2",
+      "status": "stable",
       "summary": "Pen-up no longer serializes the whole book on the UI thread: a per-book append-only binary ledger records each stroke, and a single whole-book snapshot is written asynchronously.",
       "problem": "Every pen-up synchronously serialized the whole book twice, gzipped and hashed it and committed SQLite on the UI thread. Fast handwriting lost the next stroke's early events (perceived as broken contact).",
       "mechanism": "Each book has an append-only ledger with CRC frames, page append/replace ops and a custom point codec (zigzag fixed-point with bit-exact float fallback). The UI snapshots page lists, reserves a cursor version and queues a background commit. Serialization, gzip, SHA-256 and SQLite run off-thread; undo/export/close flush first; a read after pen-up waits for the queued snapshot.",
@@ -119,8 +119,8 @@
       "id": "stroke-continuity",
       "name": "Stroke Continuity Reconstruction",
       "nameZh": "笔画连续性重建",
-      "version": "1.2.1.2",
-      "status": "preview",
+      "version": "1.2.2",
+      "status": "stable",
       "summary": "Short input gaps inside one stroke are bridged with a curvature-constrained cubic Hermite, never across a pen lift and never into the future.",
       "problem": "Stylus packets are occasionally swallowed (palm/forearm interference, scheduler stalls), which appears as a broken line in fast cursive writing.",
       "mechanism": "The current packet cadence is compared with a running median to detect a suspicious gap. If bridgeable, a cubic Hermite between the two real endpoints uses tangents from a local three-point osculating-circle/quadratic fit and rejects turns over 70 degrees, curvature over the observed bound or low confidence. Output timestamps stay strictly between the real endpoints.",
@@ -164,8 +164,8 @@
       "id": "ink-dynamics-v6",
       "name": "Ink-Flow Dynamics (inkVersion 6)",
       "nameZh": "墨流动力学（inkVersion 6）",
-      "version": "1.2.1.2",
-      "status": "preview",
+      "version": "1.2.2",
+      "status": "stable",
       "summary": "A fixed-step continuous-time model of ink reservoir, flow, paper absorption and nib friction drives the width of new fountain-pen strokes, keeping connected strokes joined and giving slow writing more weight.",
       "problem": "Fixed entry/release tapers and a position-only low-pass filter make connected writing look thin at joins and give little sense of pen-to-paper damping.",
       "mechanism": "InkDynamics integrates at 1/240 s: pressure drives flow, speed consumes the pressure head, the reservoir refills and drains, absorption and friction respond, and the resulting factors scale width/darkness. A new stroke can start from the previous stroke's state, so a joined-up hand keeps a wet seam. Only new fountain marks use v6; v4 and v5 geometry remain bit-identical.",
@@ -219,8 +219,8 @@
       "id": "predict-reconcile",
       "name": "Predict–Reconcile Ink Compositor",
       "nameZh": "预测-校正墨迹合成器",
-      "version": "1.2.1.2",
-      "status": "preview",
+      "version": "1.2.2",
+      "status": "stable",
       "summary": "A self-written short-horizon predictor draws a confidence-weighted tail for the active stroke, then reconciles it when the real sample arrives; predictions never enter saved ink or PDF export.",
       "problem": "Reducing perceived pen-to-ink latency usually improves responsiveness but naive prediction overshoots on fast reversals and can corrupt the stroke.",
       "mechanism": "A recency-weighted least-squares velocity and a quadratic curvature estimate extrapolate along an arc. Confidence combines a one-step backtest residual, turn quality, gap quality and look-ahead decay. Fast reversals fall back to one short low-confidence frame. When the real point arrives, the error is compared with a lead-scaled tolerance; large errors retract the prediction, otherwise the displayed point blends toward the truth. Only the active-stroke layer is drawn; Mark/Store/PDF are untouched.",
@@ -268,8 +268,8 @@
       "id": "page-picture-cache",
       "name": "Page-Picture Ink Cache",
       "nameZh": "按页笔迹 Picture 缓存",
-      "version": "1.2.1.2",
-      "status": "preview",
+      "version": "1.2.2",
+      "status": "stable",
       "summary": "Completed page ink is recorded once as a page-space Picture and replayed as one canvas op per frame; steady-state writing frames are 2.0–2.9× cheaper with zero changed pixels.",
       "problem": "Replaying every completed mark as a drawPath on every frame made long annotated pages expensive while writing or scrolling.",
       "mechanism": "Each page records a page-space display list, keyed by page id and ink version, and invalidated precisely when a stroke/erase/undo/selection change touches that page. The frame that records the list paints the marks directly; later frames replay one drawPicture op. Frame plans, placements and matrices are cached and updated in place for pure pans.",
@@ -317,8 +317,8 @@
       "id": "offline-context-dictionary",
       "name": "Offline Context Dictionary",
       "nameZh": "离线上下文词典",
-      "version": "1.2.1.2",
-      "status": "preview",
+      "version": "1.2.2",
+      "status": "stable",
       "summary": "A fully offline English–Chinese dictionary with an author abbreviation layer, initialism index, numeric-short-form recognition and a conservative OEWN domain prior for context sense selection.",
       "problem": "Offline dictionaries usually behave as a static word list: abbreviations such as CAP, RAM, k8s or i18n and context-dependent senses are missing or guessed without evidence.",
       "mechanism": "A 128-entry authored abbreviation table, a 401,909-entry initialism index and numeric contraction rules share context-cue ranking. WordNet senses carry OEWN lexfile domain labels and a nine-domain prior runs only after weighted Lesk abstains, requiring at least two independent leading cues. Unknown acronyms expand only when the context matches a candidate.",
@@ -366,55 +366,11 @@
       ]
     },
     {
-      "id": "text-annotation-box",
-      "name": "Editable Text Annotation Box",
-      "nameZh": "可拖动/缩放文字输入框",
-      "version": "1.2.1.2",
-      "status": "preview",
-      "summary": "A page-anchored text box can be created from the toolbar, moved and resized, opened with the system keyboard, persisted with undo, and exported to PDF with the same layout.",
-      "problem": "Notes often need typed text next to handwriting, but a PDF annotation canvas usually only offers ink and images; typing requires leaving the page.",
-      "mechanism": "A Mark of tool text stores a box in page coordinates and its text. A toolbar Type icon creates a default box; tapping inside opens an EditText popup over the page, the IME edits live, and drag or corner handles move/resize the box. The same StaticLayout rule is used on screen and in a 4x lossless PDF raster so Chinese, wrapping and line breaks match. Text boxes participate in undo, ledger recovery, selection and the eraser as atomic objects.",
-      "difference": "The editor is anchored to the page-space box (not a separate dialog), so the writer sees the final typography in context; a single layout rule drives both screen and PDF instead of two approximations.",
-      "evidence": [
-        {
-          "label": "creation/move/resize/persistence tests",
-          "value": "3/3"
-        },
-        {
-          "label": "text data/PDF/ledger tests",
-          "value": "3/3 + ledger 6/6"
-        },
-        {
-          "label": "PDF raster parity",
-          "value": "same sans-serif / 1.0 line spacing / simple breaks"
-        }
-      ],
-      "verifiedOn": "API 36 ARM64 emulator (ranchu), synthetic touch and keyboard popup",
-      "notVerifiedOn": "Xiaomi Pad 9 Pro Max IME/window insets and real PDF reader",
-      "limitations": [
-        "Text PDF is rasterized (not selectable)",
-        "Text taller than the box is not clipped; the box can be enlarged",
-        "Old app versions do not understand the text field"
-      ],
-      "code": [
-        "android/app/src/main/java/io/github/dpan538/annota/ReaderView.kt",
-        "android/app/src/main/java/io/github/dpan538/annota/PdfEngine.kt",
-        "android/app/src/main/java/io/github/dpan538/annota/InkLedger.kt"
-      ],
-      "tags": [
-        "text",
-        "annotation",
-        "IME",
-        "PDF",
-        "undo"
-      ]
-    },
-    {
       "id": "adaptive-eraser",
       "name": "Sized Partial/Whole Eraser",
       "nameZh": "独立档位橡皮（局部/整笔）",
-      "version": "1.2.1.2",
-      "status": "preview",
+      "version": "1.2.2",
+      "status": "stable",
       "summary": "The eraser has its own four sizes, independent from the pen, and explicit partial or whole-stroke modes; whole mode removes only the nearest hit instead of wiping neighbouring glyphs.",
       "problem": "The old eraser radius was derived from the pen width and the default whole-stroke mode deleted any hit mark, so adjacent letters or one continuous multi-letter stroke disappeared together.",
       "mechanism": "An eraserWidth preference is independent from penWidth and exposed as four size levels in the eraser popover. Partial mode splits only the intersected mark; whole mode ranks hit marks by actual centreline/box distance and removes only the nearest one. Text and shapes are atomic and are never split into fragments.",
@@ -454,8 +410,8 @@
       "id": "professional-terminology-layer",
       "name": "Professional Terminology Layer",
       "nameZh": "专业术语层",
-      "version": "1.2.1.3",
-      "status": "preview",
+      "version": "1.2.2",
+      "status": "stable",
       "summary": "A curated, domain-tagged terminology table prioritised ahead of general dictionary entries, with source/confidence metadata and translation protection.",
       "problem": "General bilingual dictionaries merge everyday senses with professional terms; cloud/CS/ML terms (control plane, etcd, transformer) can be literal, missing or translated inconsistently.",
       "mechanism": "Schema 7 adds a terms table (word, key, zh, domain, pos, definition, source, confidence). 1,157 entries are loaded from the authored Annota seed and existing curated phrases, covering cloud-native, computer science, ML, science, academic, legal, medical and finance domains. Exact term lookup runs before ordinary entries and renders a technical-term card; the same matches protect sentence translation by replacing residual source terms.",

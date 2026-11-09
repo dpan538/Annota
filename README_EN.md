@@ -5,20 +5,19 @@
 A local PDF reader and handwriting annotation app optimized for the **Xiaomi Pad 9 Pro Max**. No account: documents, ink, reading position and lookups stay on the device.
 
 [![Android](https://img.shields.io/badge/Android-10%2B-3DDC84)](DOWNLOAD.md)
-[![Stable](https://img.shields.io/badge/Stable-1.2.0-16A34A)](https://github.com/dpan538/Annota/releases/tag/v1.2.0)
-[![Preview](https://img.shields.io/badge/Preview-1.2.1.4-C2410C)](https://github.com/dpan538/Annota/releases/tag/v1.2.1.4)
+[![Stable](https://img.shields.io/badge/Stable-1.2.2-16A34A)](https://github.com/dpan538/Annota/releases/tag/v1.2.2)
 [![License](https://img.shields.io/badge/License-MIT-8B5CF6)](LICENSE)
 ![Offline](https://img.shields.io/badge/Dictionary-Offline-0891B2)
 
-[**Download 1.2.1.4 preview APK**](https://github.com/dpan538/Annota/releases/download/v1.2.1.4/Annota-1.2.1.4.apk) · [Download 1.2.0 stable APK](https://github.com/dpan538/Annota/releases/download/v1.2.0/Annota-1.2.0.apk) · [Installation](DOWNLOAD.md) · [Changelog](CHANGELOG.md)
+[**Download 1.2.2 stable APK**](https://github.com/dpan538/Annota/releases/download/v1.2.2/Annota-1.2.2.apk) · [Installation](DOWNLOAD.md) · [Changelog](CHANGELOG.md)
 
-> 1.2.1.4 is a preview; real-device acceptance is still in progress. Install 1.2.0 if you need the most stable build. Both use the same certificate and upgrade in place.
+> 1.2.2 is the current stable release.
 
 ## Features
 
 - **Reading**: continuous scroll, pinch zoom, adjacent spread, in-document search, outline, bookmarks and position restore.
 - **Handwriting**: pen, pencil, fountain pen and highlighter; pressure, ruler, move/scale/rotate selection, undo/redo, signature and PDF export.
-- **Annotations**: draggable/resizable text boxes with keyboard input; sized partial/whole eraser; shapes and images.
+- **Annotations**: sized partial/whole eraser; shapes and images.
 - **Offline dictionary**: English–Chinese and Chinese–English lookup, professional terms, context-aware senses, fallback English definitions and short English sentence translation, all bundled in the APK.
 - **Local library**: folders, favorites, search, trash, PDF sharing import, full backup and restore.
 
@@ -50,7 +49,7 @@ Dictionaries, models and sense vectors ship with the APK and are not downloaded 
 
 Reading, handwriting, lookup and reference translation work offline. Network is used only when you check for updates, download an APK or submit feedback. Back up before uninstalling or clearing app data.
 
-In-app updates see the latest preview (versionCode 28). To stay on the stable release, install or keep 1.2.0 manually.
+In-app updates see the current stable release (versionCode 29).
 
 ## Build
 
